@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated 2018-7-18 10:09:13 by Hibernate Tools 5.2.10.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping auto-import="true" default-access="property" default-cascade="none" default-lazy="true">
+    <class catalog="lottery" dynamic-insert="false" dynamic-update="false" mutable="true" name="com.jll.entity.PayType" optimistic-lock="version" polymorphism="implicit" select-before-update="false" table="pay_type">
+        <id name="id" type="java.lang.Integer">
+            <column name="id"/>
+            <generator class="identity"/>
+        </id>
+        <property generated="never" lazy="false" name="name" optimistic-lock="true" type="string" unique="false">
+            <column length="50" name="name">
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="nickName" optimistic-lock="true" type="string" unique="false">
+            <column length="50" name="nick_name">
+                <comment>ƽ̨֧������</comment>
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="typeClass" optimistic-lock="true" type="string" unique="false">
+            <column length="30" name="type_class">
+                <comment>֧����ʽ����</comment>
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="seq" optimistic-lock="true" type="java.lang.Integer" unique="false">
+            <column name="seq">
+                <comment>�������</comment>
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="state" optimistic-lock="true" type="java.lang.Integer" unique="false">
+            <column name="state">
+                <comment>֧����ʽ�Ƿ���Ч:0,��Ч;1,��Ч</comment>
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="isTp" optimistic-lock="true" type="java.lang.Integer" unique="false">
+            <column name="is_tp">
+                <comment>�Ƿ��3��ƽ̨:0,�ǵ�3��ƽ̨;1,��3��ƽ̨</comment>
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="platId" optimistic-lock="true" type="string" unique="false">
+            <column length="50" name="plat_id">
+                <comment>֧��ƽ̨,ϵͳ����</comment>
+            </column>
+        </property>
+    </class>
+</hibernate-mapping>

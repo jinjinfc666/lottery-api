@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-reverse-engineering PUBLIC "-//Hibernate/Hibernate Reverse Engineering DTD 3.0//EN" "http://hibernate.org/dtd/hibernate-reverse-engineering-3.0.dtd" >
+
+<hibernate-reverse-engineering>
+  <table-filter match-catalog="lottery" match-name="deposit_application"/>
+  <table-filter match-catalog="lottery" match-name="issue"/>
+  <table-filter match-catalog="lottery" match-name="order_info"/>
+  <table-filter match-catalog="lottery" match-name="pay_channel"/>
+  <table-filter match-catalog="lottery" match-name="pay_type"/>
+  <table-filter match-catalog="lottery" match-name="promo"/>
+  <table-filter match-catalog="lottery" match-name="promo_claim"/>
+  <table-filter match-catalog="lottery" match-name="signup_rec"/>
+  <table-filter match-catalog="lottery" match-name="site_mess_feedback"/>
+  <table-filter match-catalog="lottery" match-name="site_message"/>
+  <table-filter match-catalog="lottery" match-name="sys_authority"/>
+  <table-filter match-catalog="lottery" match-name="sys_code"/>
+  <table-filter match-catalog="lottery" match-name="sys_notification"/>
+  <table-filter match-catalog="lottery" match-name="sys_role"/>
+  <table-filter match-catalog="lottery" match-name="tp_notices"/>
+  <table-filter match-catalog="lottery" match-name="user_account"/>
+  <table-filter match-catalog="lottery" match-name="user_account_details"/>
+  <table-filter match-catalog="lottery" match-name="user_bank_card"/>
+  <table-filter match-catalog="lottery" match-name="user_info"/>
+  <table-filter match-catalog="lottery" match-name="withdraw_application"/>
+</hibernate-reverse-engineering>

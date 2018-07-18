@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<b:beans xmlns:b="http://www.springframework.org/schema/beans"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xmlns="http://www.springframework.org/schema/security"
+		 xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd
+	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<http auto-config="true">
+		<!-- <intercept-url pattern="/api/login" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
+		<intercept-url pattern="/api/logout" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
+		
+		<form-login login-page="/api/login" 
+			authentication-success-handler-ref="loginSuccessHandler"
+			authentication-failure-handler-ref="loginFailureHandler"/> -->
+			
+		<!-- <intercept-url pattern="/api/configuration/online/bankAccounts" access="IS_AUTHENTICATED_ANONYMOUSLY"/> -->
+		<form-login
+			authentication-success-handler-ref="loginSuccessHandler"
+			authentication-failure-handler-ref="loginFailureHandler"/>
+	</http>
+
+	<b:bean id="loginSuccessHandler" class="com.sys.security.LoginSuccessHandler"/>
+	<b:bean id="loginFailureHandler" class="com.sys.security.LoginFailureHandler"/>
+	
+	<b:bean id="encoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"/>
+	
+	<authentication-manager>
+		<authentication-provider>
+			<password-encoder ref="encoder"/>
+		   	<jdbc-user-service data-source-ref="dataSource"
+		   		users-by-username-query="select user_name username , login_pwd password, isUserEnabled(state, unlock_time) enabled from user_info where username = ?"
+		   		authorities-by-username-query="select user_name username, role.role_name authority from sys_authority auth, user_info user, sys_role role where auth.user_id = `user`.id and auth.role_id = role.id and user_name=?"/>
+			<!-- <user-service>
+				<user name="user" password="password" authorities="ROLE_USER" />
+				<user name="admin" password="password" authorities="ROLE_USER,ROLE_ADMIN"/>
+			</user-service> -->
+		</authentication-provider>
+	</authentication-manager>
+</b:beans>

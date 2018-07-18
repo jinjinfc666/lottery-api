@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated 2018-7-18 10:09:13 by Hibernate Tools 5.2.10.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping auto-import="true" default-access="property" default-cascade="none" default-lazy="true">
+    <class catalog="lottery" dynamic-insert="false" dynamic-update="false" mutable="true" name="com.jll.entity.UserInfo" optimistic-lock="version" polymorphism="implicit" select-before-update="false" table="user_info">
+        <id name="id" type="java.lang.Integer">
+            <column name="id"/>
+            <generator class="identity"/>
+        </id>
+        <property generated="never" lazy="false" name="realName" optimistic-lock="true" type="string" unique="false">
+            <column length="30" name="real_name"/>
+        </property>
+        <property generated="never" lazy="false" name="userName" optimistic-lock="true" type="string" unique="false">
+            <column length="50" name="user_name"/>
+        </property>
+        <property generated="never" lazy="false" name="loginPwd" optimistic-lock="true" type="string" unique="false">
+            <column length="256" name="login_pwd"/>
+        </property>
+        <property generated="never" lazy="false" name="fundPwd" optimistic-lock="true" type="string" unique="false">
+            <column length="256" name="fund_pwd"/>
+        </property>
+        <property generated="never" lazy="false" name="state" optimistic-lock="true" type="java.lang.Integer" unique="false">
+            <column name="state">
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="level" optimistic-lock="true" type="java.lang.Integer" unique="false">
+            <column name="level">
+                <comment>�û�����,��Ӧ�û��������</comment>
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="loginCount" optimistic-lock="true" type="java.lang.Integer" unique="false">
+            <column name="login_count"/>
+        </property>
+        <property generated="never" lazy="false" name="unlockTime" optimistic-lock="true" type="timestamp" unique="false">
+            <column length="26" name="unlock_time"/>
+        </property>
+        <property generated="never" lazy="false" name="userType" optimistic-lock="true" type="java.lang.Integer" unique="false">
+            <column name="user_type">
+                <comment>�û�����:0,ƽ̨�ͻ�;1,����;2,ϵͳ�û�</comment>
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="superior" optimistic-lock="true" type="string" unique="false">
+            <column length="200" name="superior"/>
+        </property>
+        <property generated="never" lazy="false" name="rebate" optimistic-lock="true" type="big_decimal" unique="false">
+            <column name="rebate"/>
+        </property>
+        <property generated="never" lazy="false" name="phoneNum" optimistic-lock="true" type="string" unique="false">
+            <column length="30" name="phone_num"/>
+        </property>
+        <property generated="never" lazy="false" name="qq" optimistic-lock="true" type="string" unique="false">
+            <column length="30" name="qq"/>
+        </property>
+        <property generated="never" lazy="false" name="wechat" optimistic-lock="true" type="string" unique="false">
+            <column length="30" name="wechat"/>
+        </property>
+        <property generated="never" lazy="false" name="email" optimistic-lock="true" type="string" unique="false">
+            <column length="50" name="email"/>
+        </property>
+        <property generated="never" lazy="false" name="isValidPhone" optimistic-lock="true" type="java.lang.Integer" unique="false">
+            <column name="is_valid_phone"/>
+        </property>
+        <property generated="never" lazy="false" name="isValidEmail" optimistic-lock="true" type="java.lang.Integer" unique="false">
+            <column name="is_valid_email"/>
+        </property>
+        <property generated="never" lazy="false" name="regIp" optimistic-lock="true" type="string" unique="false">
+            <column length="50" name="reg_ip"/>
+        </property>
+        <property generated="never" lazy="false" name="createTime" optimistic-lock="true" type="timestamp" unique="false">
+            <column length="26" name="create_time"/>
+        </property>
+        <property generated="never" lazy="false" name="creator" optimistic-lock="true" type="java.lang.Integer" unique="false">
+            <column name="creator"/>
+        </property>
+    </class>
+</hibernate-mapping>

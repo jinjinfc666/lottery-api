@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated 2018-7-18 10:09:13 by Hibernate Tools 5.2.10.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping auto-import="true" default-access="property" default-cascade="none" default-lazy="true">
+    <class catalog="lottery" dynamic-insert="false" dynamic-update="false" mutable="true" name="com.jll.entity.TpNotices" optimistic-lock="version" polymorphism="implicit" select-before-update="false" table="tp_notices">
+        <composite-id class="com.jll.entity.TpNoticesId" mapped="false" name="id" unsaved-value="undefined">
+            <key-property name="result" type="string">
+                <column length="20" name="result"/>
+            </key-property>
+            <key-property name="amount" type="java.lang.Float">
+                <column name="amount" precision="8"/>
+            </key-property>
+            <key-property name="orderNum" type="string">
+                <column length="50" name="order_num"/>
+            </key-property>
+            <key-property name="transactionNum" type="string">
+                <column length="50" name="transaction_num"/>
+            </key-property>
+            <key-property name="createTime" type="timestamp">
+                <column length="26" name="create_time"/>
+            </key-property>
+        </composite-id>
+    </class>
+</hibernate-mapping>

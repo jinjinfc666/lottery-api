@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated 2018-7-18 10:09:13 by Hibernate Tools 5.2.10.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping auto-import="true" default-access="property" default-cascade="none" default-lazy="true">
+    <class catalog="lottery" dynamic-insert="false" dynamic-update="false" mutable="true" name="com.jll.entity.UserAccount" optimistic-lock="version" polymorphism="implicit" select-before-update="false" table="user_account">
+        <id name="id" type="java.lang.Integer">
+            <column name="id"/>
+            <generator class="identity"/>
+        </id>
+        <property generated="never" lazy="false" name="userId" optimistic-lock="true" type="java.lang.Integer" unique="false">
+            <column name="user_id"/>
+        </property>
+        <property generated="never" lazy="false" name="accName" optimistic-lock="true" type="string" unique="false">
+            <column length="50" name="acc_name"/>
+        </property>
+        <property generated="never" lazy="false" name="balance" optimistic-lock="true" type="big_decimal" unique="false">
+            <column name="balance"/>
+        </property>
+        <property generated="never" lazy="false" name="freeze" optimistic-lock="true" type="big_decimal" unique="false">
+            <column name="freeze"/>
+        </property>
+        <property generated="never" lazy="false" name="prize" optimistic-lock="true" type="big_decimal" unique="false">
+            <column name="prize"/>
+        </property>
+        <property generated="never" lazy="false" name="rewardPoints" optimistic-lock="true" type="string" unique="false">
+            <column length="10" name="reward_points">
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="accType" optimistic-lock="true" type="java.lang.Integer" unique="false">
+            <column name="acc_type">
+                <comment>��ϵͳ���������ж���:1,��Ǯ��;2,���Ǯ��</comment>
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="remark" optimistic-lock="true" type="string" unique="false">
+            <column length="100" name="remark"/>
+        </property>
+    </class>
+</hibernate-mapping>

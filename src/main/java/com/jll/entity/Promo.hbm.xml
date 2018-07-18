@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated 2018-7-18 10:09:13 by Hibernate Tools 5.2.10.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping auto-import="true" default-access="property" default-cascade="none" default-lazy="true">
+    <class catalog="lottery" dynamic-insert="false" dynamic-update="false" mutable="true" name="com.jll.entity.Promo" optimistic-lock="version" polymorphism="implicit" select-before-update="false" table="promo">
+        <id name="id" type="java.lang.Integer">
+            <column name="id"/>
+            <generator class="identity"/>
+        </id>
+        <property generated="never" lazy="false" name="promoName" optimistic-lock="true" type="string" unique="false">
+            <column length="50" name="promo_name">
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="promoType" optimistic-lock="true" type="string" unique="false">
+            <column length="50" name="promo_type">
+                <comment>��ϵͳ�������ж�Ӧ</comment>
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="isMultiple" optimistic-lock="true" type="java.lang.Integer" unique="false">
+            <column name="is_multiple">
+                <comment>�Ƿ�����ȡ</comment>
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="minDepositAmount" optimistic-lock="true" type="java.lang.Float" unique="false">
+            <column name="min_deposit_amount" precision="8">
+                <comment>��С��ֵ�����Ϊ0������</comment>
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="flowTimes" optimistic-lock="true" type="java.lang.Integer" unique="false">
+            <column name="flow_times">
+                <comment>��ˮ���������Ϊ0��û������</comment>
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="valueType" optimistic-lock="true" type="java.lang.Integer" unique="false">
+            <column name="value_type">
+                <comment>0,�ֽ�;1,����</comment>
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="value" optimistic-lock="true" type="java.lang.Float" unique="false">
+            <column name="value" precision="8">
+                <comment>��ֵ</comment>
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="expiredTime" optimistic-lock="true" type="timestamp" unique="false">
+            <column length="26" name="expired_time">
+                <comment>����ʱ��</comment>
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="withdrawFlowTimes" optimistic-lock="true" type="java.lang.Integer" unique="false">
+            <column name="withdraw_flow_times">
+                <comment>�����ˮ����,���Ϊ0������</comment>
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="createTime" optimistic-lock="true" type="timestamp" unique="false">
+            <column length="26" name="create_time"/>
+        </property>
+        <property generated="never" lazy="false" name="creator" optimistic-lock="true" type="timestamp" unique="false">
+            <column length="26" name="creator"/>
+        </property>
+        <property generated="never" lazy="false" name="updateTime" optimistic-lock="true" type="timestamp" unique="false">
+            <column length="26" name="update_time"/>
+        </property>
+    </class>
+</hibernate-mapping>

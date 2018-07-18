@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated 2018-7-18 10:09:13 by Hibernate Tools 5.2.10.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping auto-import="true" default-access="property" default-cascade="none" default-lazy="true">
+    <class catalog="lottery" dynamic-insert="false" dynamic-update="false" mutable="true" name="com.jll.entity.OrderInfo" optimistic-lock="version" polymorphism="implicit" select-before-update="false" table="order_info">
+        <id name="id" type="java.lang.Integer">
+            <column name="id"/>
+            <generator class="identity"/>
+        </id>
+        <property generated="never" lazy="false" name="orderNum" optimistic-lock="true" type="string" unique="false">
+            <column length="50" name="order_num"/>
+        </property>
+        <property generated="never" lazy="false" name="userId" optimistic-lock="true" type="java.lang.Integer" unique="false">
+            <column name="user_id"/>
+        </property>
+        <property generated="never" lazy="false" name="issueId" optimistic-lock="true" type="java.lang.Integer" unique="false">
+            <column name="issue_id">
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="playType" optimistic-lock="true" type="string" unique="false">
+            <column length="30" name="play_type">
+                <comment>�淨</comment>
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="betNum" optimistic-lock="true" type="string" unique="false">
+            <column length="30" name="bet_num">
+                <comment>Ͷע����</comment>
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="betTotal" optimistic-lock="true" type="java.lang.Integer" unique="false">
+            <column name="bet_total">
+                <comment>ע��</comment>
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="betAmount" optimistic-lock="true" type="java.lang.Float" unique="false">
+            <column name="bet_amount" precision="8">
+                <comment>Ͷע���</comment>
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="times" optimistic-lock="true" type="java.lang.Integer" unique="false">
+            <column name="times">
+                <comment>����</comment>
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="pattern" optimistic-lock="true" type="big_decimal" unique="false">
+            <column name="pattern" precision="9" scale="3">
+                <comment>ÿע����Ǯ</comment>
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="prizeRate" optimistic-lock="true" type="big_decimal" unique="false">
+            <column name="prize_rate" precision="9" scale="3">
+                <comment>����</comment>
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="state" optimistic-lock="true" type="java.lang.Integer" unique="false">
+            <column name="state">
+                <comment>0,�ȴ��ɽ�;1,Ӯ;2,��;3,�û�ȡ������;4,ϵͳȡ������;5,׷���н�ȡ��</comment>
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="delayPayoutFlag" optimistic-lock="true" type="java.lang.Integer" unique="false">
+            <column name="delay_payout_flag">
+                <comment>�ӳ��ɽ���ʶ:0,���ӳ�;1,�ӳ��ɽ�</comment>
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="isZh" optimistic-lock="true" type="java.lang.Integer" unique="false">
+            <column name="is_zh">
+                <comment>�Ƿ�׷��:0,��׷��;1,׷��</comment>
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="isZhBlock" optimistic-lock="true" type="java.lang.Integer" unique="false">
+            <column name="is_zh_block">
+                <comment>׷������£��н����Ƿ����</comment>
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="createTime" optimistic-lock="true" type="timestamp" unique="false">
+            <column length="26" name="create_time"/>
+        </property>
+    </class>
+</hibernate-mapping>

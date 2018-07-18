@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated 2018-7-18 10:09:13 by Hibernate Tools 5.2.10.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping auto-import="true" default-access="property" default-cascade="none" default-lazy="true">
+    <class catalog="lottery" dynamic-insert="false" dynamic-update="false" mutable="true" name="com.jll.entity.UserBankCard" optimistic-lock="version" polymorphism="implicit" select-before-update="false" table="user_bank_card">
+        <id name="id" type="java.lang.Integer">
+            <column name="id"/>
+            <generator class="identity"/>
+        </id>
+        <property generated="never" lazy="false" name="cardNum" optimistic-lock="true" type="string" unique="false">
+            <column length="30" name="card_num">
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="userId" optimistic-lock="true" type="java.lang.Integer" unique="false">
+            <column name="user_id">
+                <comment>�û�ID</comment>
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="bankBranch" optimistic-lock="true" type="string" unique="false">
+            <column length="100" name="bank_branch">
+                <comment>֧��</comment>
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="bankCode" optimistic-lock="true" type="string" unique="false">
+            <column length="10" name="bank_code">
+                <comment>���д���</comment>
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="state" optimistic-lock="true" type="java.lang.Integer" unique="false">
+            <column name="state">
+                <comment>��״̬:0,��Ч;1,��Ч</comment>
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="creator" optimistic-lock="true" type="java.lang.Integer" unique="false">
+            <column name="creator"/>
+        </property>
+        <property generated="never" lazy="false" name="createTime" optimistic-lock="true" type="timestamp" unique="false">
+            <column length="26" name="create_time"/>
+        </property>
+        <property generated="never" lazy="false" name="remark" optimistic-lock="true" type="string" unique="false">
+            <column length="200" name="remark"/>
+        </property>
+    </class>
+</hibernate-mapping>

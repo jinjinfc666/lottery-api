@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated 2018-7-18 10:09:13 by Hibernate Tools 5.2.10.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping auto-import="true" default-access="property" default-cascade="none" default-lazy="true">
+    <class catalog="lottery" dynamic-insert="false" dynamic-update="false" mutable="true" name="com.jll.entity.Issue" optimistic-lock="version" polymorphism="implicit" select-before-update="false" table="issue">
+        <id name="id" type="java.lang.Integer">
+            <column name="id"/>
+            <generator class="identity"/>
+        </id>
+        <property generated="never" lazy="false" name="lotteryType" optimistic-lock="true" type="string" unique="false">
+            <column length="30" name="lottery_type">
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="issueNum" optimistic-lock="true" type="string" unique="false">
+            <column length="50" name="issue_num">
+                <comment>�ڴκ�</comment>
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="retNum" optimistic-lock="true" type="string" unique="false">
+            <column length="30" name="ret_num">
+                <comment>��������</comment>
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="state" optimistic-lock="true" type="java.lang.Integer" unique="false">
+            <column name="state">
+                <comment>0,��ʼ״̬;1,Ͷע;2,����Ͷע;3,�ȴ�����;4,�ѿ���;5,���ɽ�</comment>
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="startTime" optimistic-lock="true" type="timestamp" unique="false">
+            <column length="26" name="start_time"/>
+        </property>
+        <property generated="never" lazy="false" name="endTime" optimistic-lock="true" type="timestamp" unique="false">
+            <column length="26" name="end_time"/>
+        </property>
+    </class>
+</hibernate-mapping>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated 2018-7-18 10:09:13 by Hibernate Tools 5.2.10.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping auto-import="true" default-access="property" default-cascade="none" default-lazy="true">
+    <class catalog="lottery" dynamic-insert="false" dynamic-update="false" mutable="true" name="com.jll.entity.UserAccountDetails" optimistic-lock="version" polymorphism="implicit" select-before-update="false" table="user_account_details">
+        <id name="id" type="java.lang.Integer">
+            <column name="id"/>
+            <generator class="identity"/>
+        </id>
+        <property generated="never" lazy="false" name="userId" optimistic-lock="true" type="java.lang.Integer" unique="false">
+            <column name="user_id"/>
+        </property>
+        <property generated="never" lazy="false" name="amount" optimistic-lock="true" type="java.lang.Float" unique="false">
+            <column name="amount" precision="8">
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="preAmount" optimistic-lock="true" type="java.lang.Float" unique="false">
+            <column name="pre_amount" precision="8">
+                <comment>�䶯ǰ���</comment>
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="postAmount" optimistic-lock="true" type="java.lang.Float" unique="false">
+            <column name="post_amount" precision="8">
+                <comment>�䶯����</comment>
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="walletId" optimistic-lock="true" type="java.lang.Integer" unique="false">
+            <column name="wallet_id">
+                <comment>�û��˻�id</comment>
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="orderId" optimistic-lock="true" type="java.lang.Integer" unique="false">
+            <column name="order_id">
+                <comment>�����Դ�ڳ�ֵ��������������룬��Ҫ��д</comment>
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="operationType" optimistic-lock="true" type="string" unique="false">
+            <column length="30" name="operation_type">
+                <comment>�˻��������ͣ���Ӧϵͳ����</comment>
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="createTime" optimistic-lock="true" type="timestamp" unique="false">
+            <column length="26" name="create_time"/>
+        </property>
+    </class>
+</hibernate-mapping>
