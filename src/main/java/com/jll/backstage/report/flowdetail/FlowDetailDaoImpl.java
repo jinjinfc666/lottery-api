@@ -69,7 +69,7 @@ public class FlowDetailDaoImpl extends HibernateDaoSupport implements FlowDetail
 			timeSql=" and a.createTime >'"+startTime+"' and a.createTime <='"+endTime+"'";
 		}
 		Integer userType=2;
-		String sql="from UserAccountDetails a,UserInfo b,SysCode c where a.userId=b.id and a.operationType=c.codeVal and b.userType !=?"+userNameSql+orderIdSql+amountStartSql+amountEndSql+operationTypeSql+timeSql+"order by a.id";
+		String sql="from UserAccountDetails a,UserInfo b,SysCode c where a.userId=b.id and a.operationType=c.codeName and b.userType !=?"+userNameSql+orderIdSql+amountStartSql+amountEndSql+operationTypeSql+timeSql+"order by a.id";
 		Query<?> query = getSessionFactory().getCurrentSession().createQuery(sql);
 		query.setParameter(0, userType);
 		Iterator<Object> it = list.iterator();
@@ -88,7 +88,7 @@ public class FlowDetailDaoImpl extends HibernateDaoSupport implements FlowDetail
 	}
 	@Override
 	public List<SysCode> queryType() {
-	    String sql="select * from sys_code where code_type=(select id from sys_code where code_val='acc_ope_type') and state='1' order by seq";
+	    String sql="select * from sys_code where code_type=(select id from sys_code where code_name='acc_ope_type') and state='1' order by seq";
 //	    Query<SysCode> query = getSessionFactory().getCurrentSession().createQuery(sql,SysCode.class);
 	    Query<SysCode> query = getSessionFactory().getCurrentSession().createSQLQuery(sql).addEntity(SysCode.class);
 	    List<SysCode> types = new ArrayList<>();

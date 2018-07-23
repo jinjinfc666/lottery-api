@@ -47,7 +47,7 @@ public class RedPackageDaoImpl extends HibernateDaoSupport implements RedPackage
 		}
 		Integer userType=2;
 		Integer accType=2;
-		String sql="from UserAccountDetails a,UserAccount b,UserInfo c,SysCode d where a.walletId=b.id and a.userId=c.id and a.operationType=d.codeVal  and c.userType !=? and b.accType=?  "+userNameSql+timeSql+"order by a.id";
+		String sql="from UserAccountDetails a,UserAccount b,UserInfo c,SysCode d where a.walletId=b.id and a.userId=c.id and a.operationType=d.codeName  and c.userType !=? and b.accType=?  "+userNameSql+timeSql+"order by a.id";
 		logger.debug(sql+"-----------------------------RedPackageDaoImpl----SQL--------------------------------");
 		Query<?> query = getSessionFactory().getCurrentSession().createQuery(sql);
 		query.setParameter(0, userType);
