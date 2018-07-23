@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping({ "/security" })
-public class SysConfigController {
-	private Logger logger = Logger.getLogger(SysConfigController.class);
+public class LoginController {
+	private Logger logger = Logger.getLogger(LoginController.class);
 
 	@Autowired
 	private TokenStore tokenStore;

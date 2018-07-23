@@ -22,7 +22,7 @@
 		</Console>
 
 		<!-- ROOT日志 -->
-		<RollingFile name="ROOT" fileName="${LOG_HOME}/ROOT.log"
+		<RollingFile name="ROOT" fileName="${LOG_HOME}/root.log"
 			filePattern="${LOG_HOME}/log4j2/$${date:yyyy-MM}/app-%d{MM-dd-yyyy}-%i_ROOT.log.gz">
 			<PatternLayout
 				pattern="%d{yyyy-MM-dd HH:mm:ss} %-5level %class{36}[%L].%M - %msg%xEx%n" />
@@ -39,11 +39,16 @@
 	<loggers>
 		<!--建立一个默认的root的logger -->
 		<root level="trace">
-			<!-- <appender-ref ref="ROOT" /> -->
+			<appender-ref ref="ROOT" />
 			<appender-ref ref="Console" />
 		</root>
 		
 		<logger name="com.jll" level="debug" additivity="false">
+			<AppenderRef ref="Console"/>
+			<AppenderRef ref="ROOT"/>
+		</logger>
+		
+		<logger name="org.springframework" level="debug" additivity="false">
 			<AppenderRef ref="Console"/>
 			<AppenderRef ref="ROOT"/>
 		</logger>	

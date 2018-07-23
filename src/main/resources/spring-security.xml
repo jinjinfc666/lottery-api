@@ -1,39 +1,128 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<b:beans xmlns:b="http://www.springframework.org/schema/beans"
-		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		 xmlns="http://www.springframework.org/schema/security"
-		 xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd
-	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
-
-	<http auto-config="true">
-		<!-- <intercept-url pattern="/api/login" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
-		<intercept-url pattern="/api/logout" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
+<?xml version="1.0" encoding="UTF-8"?>					
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+	xmlns:beans="http://www.springframework.org/schema/beans"	
+	xmlns:oauth2="http://www.springframework.org/schema/security/oauth2"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+    http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-4.2.xsd
+    http://www.springframework.org/schema/security/oauth2 http://www.springframework.org/schema/security/spring-security-oauth2-2.0.xsd">
+						
+    <!--处理访问成功-->
+	<beans:bean id="oauth2AuthenticationEntryPoint" class="org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint" />
 		
-		<form-login login-page="/api/login" 
-			authentication-success-handler-ref="loginSuccessHandler"
-			authentication-failure-handler-ref="loginFailureHandler"/> -->
-			
-		<!-- <intercept-url pattern="/api/configuration/online/bankAccounts" access="IS_AUTHENTICATED_ANONYMOUSLY"/> -->
-		<form-login
-			authentication-success-handler-ref="loginSuccessHandler"
-			authentication-failure-handler-ref="loginFailureHandler"/>
-	</http>
+    <!--处理访问拒绝-->
+	<beans:bean id="oauth2AccessDeniedHandler" class="org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler" />
+		
+	<!--处理认证点-->
+    <beans:bean id="oauth2UserApprovalHandler" class="org.springframework.security.oauth2.provider.approval.DefaultUserApprovalHandler" />
 
-	<b:bean id="loginSuccessHandler" class="com.sys.security.LoginSuccessHandler"/>
-	<b:bean id="loginFailureHandler" class="com.sys.security.LoginFailureHandler"/>
+	<beans:bean id="encoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder" />
 	
-	<b:bean id="encoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"/>
+	<http pattern="/oauth/token" create-session="stateless" use-expressions="false" authentication-manager-ref="oauth2AuthenticationManager">
+		<intercept-url pattern="/oauth/token" access="IS_AUTHENTICATED_FULLY"/>
+		<anonymous enabled="false" />
+		<!-- <http-basic entry-point-ref="oauth2AuthenticationEntryPoint" /> -->
+		<!-- <custom-filter ref="clientCredentialsTokenEndpointFilter" before="BASIC_AUTH_FILTER" /> -->
+		
+		<custom-filter ref="clientCredentialsTokenEndpointFilter" after="BASIC_AUTH_FILTER" />
+		<access-denied-handler ref="oauth2AccessDeniedHandler" />
+		<http-basic/>
+		<csrf disabled="true"/>
+		
+	</http>
 	
-	<authentication-manager>
+	<http realm="lottery-api" pattern="/**" create-session="stateless">
+		<headers>
+			<frame-options policy="SAMEORIGIN" />
+			<header name="Access-Control-Allow-Origin" value="*" />
+			<header name="Access-Control-Allow-Methods" value="POST, GET, PUT, DELETE, OPTIONS" />
+       		<header name="Access-Control-Allow-Headers" value="Content-Type, Authorization, X-Requested-With" />
+		</headers>
+		<csrf disabled="true"/>
+		<custom-filter ref="resourceServer" before="PRE_AUTH_FILTER" />
+    	<http-basic entry-point-ref="oauth2AuthenticationEntryPoint" />
+    	
+		<intercept-url pattern="/users/attrs/user-name/**" access="hasRole('ROLE_USER1')" />
+	</http>
+	
+    
+	<oauth2:client-details-service id="clientDetailsService" >
+        <oauth2:client client-id="lottery-client" authorized-grant-types="password,refresh_token" secret="secret_1" scope="read,write,trust"/>
+    </oauth2:client-details-service>
+    
+    <beans:bean id="oauth2ClientDetailsUserService" class="org.springframework.security.oauth2.provider.client.ClientDetailsUserDetailsService">
+        <beans:constructor-arg ref="clientDetailsService" />
+    </beans:bean>
+    
+    <authentication-manager id="oauth2AuthenticationManager">
+        <authentication-provider user-service-ref="oauth2ClientDetailsUserService" />
+    </authentication-manager>
+
+
+	
+	
+	<beans:bean id="tokenStore" class="org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore" />
+	
+    <beans:bean id="tokenServices" class="com.sys.security.CusTokenService">
+		<beans:property name="tokenStore" ref="tokenStore" />
+        <!--允许刷新token ， 默认不允许-->
+		<beans:property name="supportRefreshToken" value="true" />
+	</beans:bean>
+	
+		
+    <!--处理访问控制-->
+	<beans:bean id="oauth2AccessDecisionManager" class="org.springframework.security.access.vote.UnanimousBased">
+		<beans:constructor-arg>
+			<beans:list>
+				<beans:bean class="org.springframework.security.oauth2.provider.vote.ScopeVoter" />
+				<beans:bean class="org.springframework.security.access.vote.RoleVoter" />
+				<beans:bean class="org.springframework.security.access.vote.AuthenticatedVoter" />
+			</beans:list>
+		</beans:constructor-arg>
+	</beans:bean>
+
+	<beans:bean id="clientCredentialsTokenEndpointFilter" class="org.springframework.security.oauth2.provider.client.ClientCredentialsTokenEndpointFilter">
+		<beans:property name="authenticationManager" ref="oauth2AuthenticationManager" />
+	</beans:bean>
+	
+	<!--oauth2 的server所能支持的请求类型-->
+	<oauth2:authorization-server authorization-endpoint-url="/oauth/authorize"
+								      token-endpoint-url="/oauth/token"
+								      client-details-service-ref="clientDetailsService" 
+								      token-services-ref="tokenServices" 
+								      user-approval-handler-ref="oauth2UserApprovalHandler">
+		<oauth2:authorization-code />
+		<oauth2:implicit />
+		<oauth2:refresh-token />
+		<oauth2:client-credentials />
+		<oauth2:password authentication-manager-ref="authenticationManager"/>
+	</oauth2:authorization-server>
+
+    <!--指定spring要保护的资源，如果没有这个，访问控制的时候会说没有Authentication object：-->
+	<oauth2:resource-server id="resourceServer" token-services-ref="tokenServices" />
+	
+	
+	<authentication-manager id="authenticationManager" alias="authenticationManager">
+    <authentication-provider>
+      <user-service>
+        <user name="gptadmin" password="gptadmin" authorities="ROLE_ADMIN,ROLE_PUBLISHER" />
+        <user name="admin" password="admin" authorities="ROLE_ADMIN,ROLE_PUBLISHER" />
+        <user name="publisher" password="publisher" authorities="ROLE_PUBLISHER" />
+        <user name="user" password="user" authorities="ROLE_USER" />
+        <user name="marissa" password="koala" authorities="ROLE_USER" />
+      </user-service>
+    </authentication-provider>
+  </authentication-manager>
+  
+  <authentication-manager>
 		<authentication-provider>
-			<password-encoder ref="encoder"/>
-		   	<jdbc-user-service data-source-ref="dataSource"
-		   		users-by-username-query="select user_name username , login_pwd password, isUserEnabled(state, unlock_time) enabled from user_info where username = ?"
-		   		authorities-by-username-query="select user_name username, role.role_name authority from sys_authority auth, user_info user, sys_role role where auth.user_id = `user`.id and auth.role_id = role.id and user_name=?"/>
-			<!-- <user-service>
-				<user name="user" password="password" authorities="ROLE_USER" />
-				<user name="admin" password="password" authorities="ROLE_USER,ROLE_ADMIN"/>
-			</user-service> -->
+			<password-encoder ref="encoder" />
+			<jdbc-user-service data-source-ref="dataSource"
+				users-by-username-query="select user_name username , login_pwd password, isUserEnabled(state, unlock_time) enabled from user_info where username = ?"
+				authorities-by-username-query="select user_name username, role.role_name authority from sys_authority auth, user_info user, sys_role role where auth.user_id = `user`.id and auth.role_id = role.id and user_name=?" />
+			<!-- <user-service> <user name="user" password="password" authorities="ROLE_USER" 
+				/> <user name="admin" password="password" authorities="ROLE_USER,ROLE_ADMIN"/> 
+				</user-service> -->
 		</authentication-provider>
-	</authentication-manager>
-</b:beans>
+    </authentication-manager>
+</beans:beans>

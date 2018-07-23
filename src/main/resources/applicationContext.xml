@@ -142,4 +142,5 @@
 	<!-- <import resource="spring-daoes.xml" />
 	<import resource="spring-services.xml" /> -->
 	<import resource="spring-security.xml" />
+	<!-- <import resource="spring-oauth.xml" /> -->
 </beans>
