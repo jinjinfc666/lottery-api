@@ -3,8 +3,6 @@ package com.jll.user;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.websocket.server.PathParam;
-
 import org.apache.log4j.Logger;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,7 +29,7 @@ public class UserController {
 	 * @param request
 	 */
 	@RequestMapping(value="/attrs/user-name/{userName}", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> queryUserByUserName(@PathParam("userName") String userName) {
+	public Map<String, Object> queryUserByUserName(@PathVariable("userName") String userName) {
 		Map<String, Object> resp = new HashMap<String, Object>();
 		
 		
