@@ -8,8 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.support.HibernateDaoSupport;
 import org.springframework.stereotype.Repository;
 
-import com.jll.backstage.report.flowdetail.FlowDetailController;
-import com.jll.entity.SysCode;
+import com.jll.report.FlowDetailController;
 import com.jll.entity.UserInfo;
 
 @Repository

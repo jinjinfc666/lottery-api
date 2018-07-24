@@ -1,4 +1,4 @@
-package com.jll.backstage.report.flowdetail;
+package com.jll.report;
 
 import java.util.HashMap;
 import java.util.List;
@@ -13,11 +13,17 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.jll.backstage.report.redpackage.RedPackageService;
+import com.jll.report.RedPackageService;
 import com.jll.common.constants.Message;
 import com.jll.entity.SysCode;
+import com.jll.entity.UserAccountDetails;
+import com.jll.entity.UserInfo;
 import com.jll.user.UserInfoService;
+import com.terran4j.commons.api2doc.annotations.Api2Doc;
+import com.terran4j.commons.api2doc.annotations.ApiComment;
 
+@Api2Doc(id = "report", name = "Flow Detail")
+@ApiComment(seeClass = UserAccountDetails.class)
 @RestController
 @RequestMapping({"/record"})
 public class FlowDetailController {

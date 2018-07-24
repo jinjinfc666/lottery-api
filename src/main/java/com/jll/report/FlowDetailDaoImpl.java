@@ -1,4 +1,4 @@
-package com.jll.backstage.report.flowdetail;
+package com.jll.report;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -15,9 +15,6 @@ import org.springframework.stereotype.Repository;
 
 import com.jll.entity.SysCode;
 import com.jll.user.UserInfoService;
-
-
-
 
 @Repository
 public class FlowDetailDaoImpl extends HibernateDaoSupport implements FlowDetailDao {
