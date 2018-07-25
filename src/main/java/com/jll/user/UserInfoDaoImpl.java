@@ -8,13 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.support.HibernateDaoSupport;
 import org.springframework.stereotype.Repository;
 
-import com.jll.report.FlowDetailController;
+import com.jll.report.ReportController;
 import com.jll.entity.UserInfo;
 
 @Repository
 public class UserInfoDaoImpl extends HibernateDaoSupport implements UserInfoDao
 {
-	private Logger logger = Logger.getLogger(FlowDetailController.class);
+	private Logger logger = Logger.getLogger(ReportController.class);
   @Autowired
   public void setSuperSessionFactory(SessionFactory sessionFactory)
   {

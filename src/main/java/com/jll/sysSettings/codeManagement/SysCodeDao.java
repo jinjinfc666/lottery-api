@@ -13,4 +13,5 @@ public interface SysCodeDao {
 	public void updateSyscode(SysCode sysCode);
 	public void updateBigState(Integer id,Integer state);
 	public void updateSmallState(Integer id,Integer state);
+	public List<SysCode> queryType(String bigType);
 }

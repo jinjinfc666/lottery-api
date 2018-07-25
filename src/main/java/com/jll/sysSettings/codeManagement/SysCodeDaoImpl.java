@@ -1,6 +1,9 @@
 package com.jll.sysSettings.codeManagement;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import javax.persistence.NoResultException;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -14,7 +17,7 @@ import com.jll.entity.SysCode;
 
 @Repository
 public class SysCodeDaoImpl extends HibernateDaoSupport implements SysCodeDao {
-	
+	private final String state="1";
 	@Autowired
 	public void setSuperSessionFactory(SessionFactory sessionFactory){
 		super.setSessionFactory(sessionFactory);
@@ -125,5 +128,19 @@ public class SysCodeDaoImpl extends HibernateDaoSupport implements SysCodeDao {
 		query.executeUpdate();
 //		getSessionFactory().getCurrentSession().getTransaction().commit();
 	}
-	
+	@Override
+	public List<SysCode> queryType(String bigType) {
+	    String sql="select * from sys_code where code_type=(select id from sys_code where code_name=?) and state=? order by seq";
+//	    Query<SysCode> query = getSessionFactory().getCurrentSession().createQuery(sql,SysCode.class);
+	    Query<SysCode> query = getSessionFactory().getCurrentSession().createSQLQuery(sql).addEntity(SysCode.class);
+	    query.setParameter(0, bigType);
+	    query.setParameter(1, state);
+	    List<SysCode> types = new ArrayList<>();
+	    try {			
+	    	types = query.list();
+		}catch(NoResultException ex) {
+			
+		}
+		return types;
+	}
 }

@@ -34,20 +34,15 @@ public class RedPackageDaoImpl extends HibernateDaoSupport implements RedPackage
 		String timeSql="";
 		List<Object> list=new ArrayList<Object>();
 		if(userName!=null&&!userName.equals("")) {
-			boolean isUserInfo=userInfoService.isUserInfo(userName);
-			if(isUserInfo) {
-//				userNameSql=" and a.userId=:userId";
-				userNameSql=" and a.userId=?";
-				Integer userId=userInfoService.getUserId(userName);
-				list.add(userId);
-			}
+			userNameSql=" and c.userName=?";
+			list.add(userName);
 		}
 		if(startTime!=null&&endTime!=null&&!startTime.equals("")&&!endTime.equals("")) {
 			timeSql=" and a.createTime >'"+startTime+"' and a.createTime <='"+endTime+"'";
 		}
 		Integer userType=2;
 		Integer accType=2;
-		String sql="from UserAccountDetails a,UserAccount b,UserInfo c,SysCode d where a.walletId=b.id and a.userId=c.id and a.operationType=d.codeName  and c.userType !=? and b.accType=?  "+userNameSql+timeSql+"order by a.id";
+		String sql="from UserAccountDetails a,UserAccount b,UserInfo c,SysCode d where a.walletId=b.id and a.userId=c.id and a.operationType=d.codeName  and c.userType !=? and b.accType=?  "+userNameSql+timeSql+" order by a.id";
 		logger.debug(sql+"-----------------------------RedPackageDaoImpl----SQL--------------------------------");
 		Query<?> query = getSessionFactory().getCurrentSession().createQuery(sql);
 		query.setParameter(0, userType);

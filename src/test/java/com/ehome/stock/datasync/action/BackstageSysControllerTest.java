@@ -150,6 +150,10 @@ public class BackstageSysControllerTest extends ControllerJunitBase{
 //			}
 //		}
 //	}
+	/**
+	 *SysCode测试代码
+	 * @author Silence
+	 */
 	public void addSysCode() throws Exception{
 		ObjectMapper mapper = new ObjectMapper();
 		try {
