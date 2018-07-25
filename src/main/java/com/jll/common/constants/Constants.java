@@ -151,4 +151,22 @@ public class Constants {
 			return null;
 		}
 	}
+	/**
+	 *The state required to set the code
+	 * @author Silence
+	 */
+	public static enum SysCodeState{
+		VALID_STATE(1),
+		INVALID_STATE(0);
+		
+		private int value;
+		
+		private SysCodeState(int value) {
+			this.value = value;
+		}
+		
+		public int getCode() {
+			return value;
+		}
+	}
 }

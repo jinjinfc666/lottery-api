@@ -1,4 +1,4 @@
-package com.jll.backstage.report.flowdetail;
+package com.jll.report;
 
 import java.util.List;
 
