@@ -74,14 +74,14 @@ public class ReportController {
 //			
 //			
 //		}
-		String userName1="";
-		if(userName!=null&&!userName.equals("")) {
-			boolean isUserInfo=userInfoService.isUserInfo(userName);
-			if(isUserInfo) {
-				userName1=userName;
-			}
-		}
-		ret.put("userName", userName1);
+//		String userName1="";
+//		if(userName!=null&&!userName.equals("")) {
+//			boolean isUserInfo=userInfoService.isUserInfo(userName);
+//			if(isUserInfo) {
+//				userName1=userName;
+//			}
+//		}
+		ret.put("userName", userName);
 		ret.put("orderNum", orderNum);
 		ret.put("amountStart", amountStart);
 		ret.put("amountEnd", amountEnd);
@@ -119,14 +119,14 @@ public class ReportController {
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
 	    	return ret;
 		}
-		String userName1="";
-		if(userName!=null&&!userName.equals("")) {
-			boolean isUserInfo=userInfoService.isUserInfo(userName);
-			if(isUserInfo) {
-				userName1=userName;
-			}
-		}
-		ret.put("userName", userName1);
+//		String userName1="";
+//		if(userName!=null&&!userName.equals("")) {
+//			boolean isUserInfo=userInfoService.isUserInfo(userName);
+//			if(isUserInfo) {
+//				userName1=userName;
+//			}
+//		}
+		ret.put("userName", userName);
 		ret.put("startTime", startTime);
 		ret.put("endTime", endTime);
 		logger.debug(ret+"------------------------------queryRedUserAccountDetails--------------------------------------");
@@ -159,36 +159,36 @@ public class ReportController {
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
 	    	return ret;
 		}
-		String issueNum1="";
-		String userName1="";
-		String orderNum1="";
+//		String issueNum1="";
+//		String userName1="";
+//		String orderNum1="";
 		ret.put("lotteryType", lotteryType);
 		ret.put("isZh", isZh);
 		ret.put("state", state);
 		ret.put("terminalType", terminalType);
 		ret.put("startTime", startTime);
 		ret.put("endTime", endTime);
-		if(issueNum!=null&&!issueNum.equals("")) {
-			boolean isIssue=issueService.isIssue(issueNum);
-			if(isIssue) {
-				issueNum1=issueNum;
-			}
-		}
-		if(userName!=null&&!userName.equals("")) {
-			boolean isUserInfo=userInfoService.isUserInfo(userName);
-			if(isUserInfo) {
-				userName1=userName;
-			}
-		}
-		if(orderNum!=null&&!orderNum.equals("")) {
-			boolean isOrderInfo=orderInfoService.isOrderInfo(orderNum);
-			if(isOrderInfo) {
-				orderNum1=orderNum;
-			}
-		}
-		ret.put("issueNum", issueNum1);   
-		ret.put("userName", userName1);
-		ret.put("orderNum", orderNum1);
+//		if(issueNum!=null&&!issueNum.equals("")) {
+//			boolean isIssue=issueService.isIssue(issueNum);
+//			if(isIssue) {
+//				issueNum1=issueNum;
+//			}
+//		}
+//		if(userName!=null&&!userName.equals("")) {
+//			boolean isUserInfo=userInfoService.isUserInfo(userName);
+//			if(isUserInfo) {
+//				userName1=userName;
+//			}
+//		}
+//		if(orderNum!=null&&!orderNum.equals("")) {
+//			boolean isOrderInfo=orderInfoService.isOrderInfo(orderNum);
+//			if(isOrderInfo) {
+//				orderNum1=orderNum;
+//			}
+//		}
+		ret.put("issueNum", issueNum);   
+		ret.put("userName", userName);
+		ret.put("orderNum", orderNum);
 		logger.debug(ret+"------------------------------queryLoyTst--------------------------------------");
 		List<?> list = loyTstService.queryLoyTst(ret);
 		logger.debug(list+"------------------------------queryLoyTst--------------------------------------");
