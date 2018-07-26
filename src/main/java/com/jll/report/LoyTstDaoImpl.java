@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.annotation.Resource;
 import javax.persistence.NoResultException;
 
 import org.apache.log4j.Logger;
@@ -14,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.support.HibernateDaoSupport;
 import org.springframework.stereotype.Repository;
 
-import com.jll.user.UserInfoService;
 
 
 
@@ -26,8 +24,6 @@ public class LoyTstDaoImpl extends HibernateDaoSupport implements LoyTstDao {
 	public void setSuperSessionFactory(SessionFactory sessionFactory){
 		super.setSessionFactory(sessionFactory);
 	}
-	@Resource
-	UserInfoService userInfoService;
 	@Override
 	public List<?> queryLoyTst(String lotteryType,Integer isZh,Integer state,Integer terminalType,String startTime,String endTime,String issueNum,String userName,String orderNum) {
 		String lotteryTypeSql="";

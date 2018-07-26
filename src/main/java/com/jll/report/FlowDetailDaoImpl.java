@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.annotation.Resource;
 import javax.persistence.NoResultException;
 
 import org.hibernate.SessionFactory;
@@ -13,8 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.support.HibernateDaoSupport;
 import org.springframework.stereotype.Repository;
 
-import com.jll.entity.SysCode;
-import com.jll.user.UserInfoService;
 
 @Repository
 public class FlowDetailDaoImpl extends HibernateDaoSupport implements FlowDetailDao {
@@ -22,8 +19,6 @@ public class FlowDetailDaoImpl extends HibernateDaoSupport implements FlowDetail
 	public void setSuperSessionFactory(SessionFactory sessionFactory){
 		super.setSessionFactory(sessionFactory);
 	}
-	@Resource
-	UserInfoService userInfoService;
 	@Override
 	public List<?> queryUserAccountDetails(String userName,String orderNum,Float amountStart,Float amountEnd,String operationType,String startTime,String endTime) {
 		String userNameSql="";
