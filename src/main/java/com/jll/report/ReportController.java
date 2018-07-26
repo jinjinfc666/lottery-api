@@ -44,6 +44,8 @@ public class ReportController {
 	OrderInfoService orderInfoService;
 	@Resource
 	SysCodeService sysCodeService;
+	@Resource
+	DWDetailsService dWDetailsService;
 	/**
 	 *流水明细
 	 * @author Silence
@@ -58,7 +60,7 @@ public class ReportController {
 			  @RequestParam(name = "endTime", required = true) String endTime,
 			  HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
-		if(userName==null&&orderNum==null&&amountStart==null&&amountEnd==null&&operationType==null&&startTime==null&&endTime==null) {
+		if(startTime.equals("")||endTime.equals("")) {
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
@@ -108,24 +110,17 @@ public class ReportController {
 	 * @author Silence
 	 */
 	@RequestMapping(value={"/redPackage"}, method={RequestMethod.POST}, produces={"application/json"})
-	public Map<String, Object> queryRedUserAccountDetails(@RequestParam(name = "userName", required = false) String userName,
-			  @RequestParam(name = "startTime", required = false) String startTime,
-			  @RequestParam(name = "endTime", required = false) String endTime,
+	public Map<String, Object> queryRedUserAccountDetails(@RequestParam(name = "userName", required = true) String userName,
+			  @RequestParam(name = "startTime", required = true) String startTime,
+			  @RequestParam(name = "endTime", required = true) String endTime,
 			  HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
-		if(userName==null&&startTime==null&&endTime==null) {
+		if(userName.equals("")||startTime.equals("")||endTime.equals("")) {
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
 	    	return ret;
 		}
-//		String userName1="";
-//		if(userName!=null&&!userName.equals("")) {
-//			boolean isUserInfo=userInfoService.isUserInfo(userName);
-//			if(isUserInfo) {
-//				userName1=userName;
-//			}
-//		}
 		ret.put("userName", userName);
 		ret.put("startTime", startTime);
 		ret.put("endTime", endTime);
@@ -153,7 +148,7 @@ public class ReportController {
 			  @RequestParam(name = "orderNum", required = false) String orderNum,//订单号 String
 			  HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
-		if(startTime==null||endTime==null||startTime.equals("")||endTime.equals("")) {
+		if(startTime.equals("")||endTime.equals("")) {
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
@@ -228,6 +223,85 @@ public class ReportController {
 		Map<String, Object> ret = new HashMap<>();
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		ret.put("data", Constants.TerminalType.getTerminalTypeByCode());
+		return ret;
+	}
+	/**
+	 *存取款明细
+	 * @author Silence
+	 */
+	@RequestMapping(value={"/DWD"}, method={RequestMethod.POST}, produces={"application/json"})
+	public Map<String, Object> queryDWD(@RequestParam(name = "type", required = true) String type,//存款:1 取款:2
+			  @RequestParam(name = "state", required = false) Integer state,
+			  @RequestParam(name = "userName", required = false) String userName,
+			  @RequestParam(name = "orderNum", required = false) String orderNum,//订单号 String
+			  @RequestParam(name = "amountStart", required = false) Float amountStart,
+			  @RequestParam(name = "amountEnd", required = false) Float amountEnd,
+			  @RequestParam(name = "startTime", required = true) String startTime,//时间 String
+			  @RequestParam(name = "endTime", required = true) String endTime,//时间 String
+			  HttpServletRequest request) {
+		Map<String, Object> ret = new HashMap<>();
+		if(startTime.equals("")||endTime.equals("")||type.equals("")) {
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+	    	return ret;
+		}
+		ret.put("type", type);
+		ret.put("state", state);
+		ret.put("userName", userName);
+		ret.put("orderNum", orderNum);
+		ret.put("amountStart", amountStart);
+		ret.put("amountEnd", amountEnd);
+		ret.put("startTime", startTime);   
+		ret.put("endTime", endTime);
+		logger.debug(ret+"------------------------------queryDWD--------------------------------------");
+		List<?> list = dWDetailsService.queryDetails(ret);
+		logger.debug(list+"------------------------------queryDWD--------------------------------------");
+		ret.clear();
+		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		ret.put("data", list);
+		return ret;
+	}
+	//查询条件:存取类型
+	@RequestMapping(value={"/DWType"}, method={RequestMethod.POST}, produces={"application/json"})
+	public Map<String, Object> queryDWDType() {
+		Map<String, Object> ret = new HashMap<>();
+		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		ret.put("data", Constants.DWType.getDWTypeByCode());
+		return ret;
+	}
+	//查询条件:存取类型
+	@RequestMapping(value={"/DWDState"}, method={RequestMethod.POST}, produces={"application/json"})
+	public Map<String, Object> queryDWDState() {
+		Map<String, Object> ret = new HashMap<>();
+		Map<String, Object> ret1 = new HashMap<>();
+		ret1.put("存款状态", Constants.DepositType.getDepositTypeByCode());
+		ret1.put("取款状态", Constants.WithdrawType.getWithdrawTypeByCode());
+		
+		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		ret.put("data", ret1);
+		return ret;
+	}
+	//存取款明细的详细信息
+	@RequestMapping(value={"/DWDetails"}, method={RequestMethod.POST}, produces={"application/json"})
+	public Map<String, Object> queryDWDetails(@RequestParam(name = "type", required = true) String type,//存款:1 取款:2
+			  @RequestParam(name = "id", required = true) Integer id,
+			  HttpServletRequest request) {
+		Map<String, Object> ret = new HashMap<>();
+		if(type.equals("")||id==null) {
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+	    	return ret;
+		}
+		ret.put("type", type);
+		ret.put("id", id);
+		logger.debug(ret+"------------------------------queryDWD--------------------------------------");
+		List<?> list = dWDetailsService.queryDWDetails(ret);
+		logger.debug(list+"------------------------------queryDWD--------------------------------------");
+		ret.clear();
+		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		ret.put("data", list);
 		return ret;
 	}
 }

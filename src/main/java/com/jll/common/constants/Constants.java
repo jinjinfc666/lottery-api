@@ -1,5 +1,6 @@
 package com.jll.common.constants;
 
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,143 +22,10 @@ public class Constants {
 		public int getCode() {
 			return value;
 		}
-	}
+	}	
 	
-	public static enum CAI_PAY_MODE{
-		ALI_PAY_SCAN_QR("00021", "支付宝扫码"),
-		WECHAT_SCAN_QR("00022", "微信扫码"),
-		QQ_SCAN_QR("00032", "QQ扫码"),
-		UNION_SCAN_QR("00045", "银联扫码"),
-		JD_SCAN_QR("00027", "京东扫码"),
-		JD_ONLINE_BANK("00023", "快捷"),
-		ALIPAY_WAP_ONLINE_BANK("00024", "支付宝Wap"),
-		WECHAT_H5_ONLINE_BANK("00025", "微信h5"),
-		QQ_H5_ONLINE_BANK("00033", "QQh5"),
-		JD_WAP_ONLINE_BANK("00046", "京东wap"),
-		ALIPAY_H5_ONLINE_BANK("00026", "支付宝h5"),
-		BANK_ACC_ONLINE_BANK("00020", "银行卡");
-		
-		private String code;
-		
-		private String des;
-		
-		private CAI_PAY_MODE(String code, String desc) {
-			this.code = code;
-			this.des = desc;
-		}
-		
-		public String getCode() {
-			return code;
-		}
-		
-		public String getDesc() {
-			return this.des;
-		}
-		
-		public static String getDescByCode(String code) {
-			CAI_PAY_MODE[] modes = CAI_PAY_MODE.values();
-			for(CAI_PAY_MODE mode : modes) {
-				if(mode.getCode().equals(code)) {
-					return mode.getDesc();
-				}
-			}
-			
-			return null;
-		}
-		
-		public static String getCodeByDesc(String desc) {
-			CAI_PAY_MODE[] modes = CAI_PAY_MODE.values();
-			for(CAI_PAY_MODE mode : modes) {
-				if(mode.getDesc().equals(desc)) {
-					return mode.getCode();
-				}
-			}
-			
-			return null;
-		}
-	}
-	
-	public static enum ZHIH_PAY_MODE{
-		ALI_PAY_SCAN_QR("alipay_scan", "支付宝扫码"),
-		WECHAT_SCAN_QR("weixin_scan", "微信扫码"),
-		QQ_SCAN_QR("tenpay_scan", "QQ扫码"),
-		UNION_SCAN_QR("ylpay_scan", "银联扫码"),
-		DIRECT_ONLINE_BANK("direct_pay", "快捷");
-		
-		private String code;
-		
-		private String des;
-		
-		private ZHIH_PAY_MODE(String code, String desc) {
-			this.code = code;
-			this.des = desc;
-		}
-		
-		public String getCode() {
-			return code;
-		}
-		
-		public String getDesc() {
-			return this.des;
-		}
-		
-		public static String getDescByCode(String code) {
-			ZHIH_PAY_MODE[] modes = ZHIH_PAY_MODE.values();
-			for(ZHIH_PAY_MODE mode : modes) {
-				if(mode.getCode().equals(code)) {
-					return mode.getDesc();
-				}
-			}
-			
-			return null;
-		}
-		
-		public static String getCodeByDesc(String desc) {
-			ZHIH_PAY_MODE[] modes = ZHIH_PAY_MODE.values();
-			for(ZHIH_PAY_MODE mode : modes) {
-				if(mode.getDesc().equals(desc)) {
-					return mode.getCode();
-				}
-			}
-			
-			return null;
-		}
-	}
-	
-	public static enum THIRD_PART_DEPOSIT{
-		CAI_PAY("0001", "彩付"),
-		ZHIH_PAY("0002", "智慧付");
-		
-		private String code;
-		
-		private String des;
-		
-		private THIRD_PART_DEPOSIT(String code, String desc) {
-			this.code = code;
-			this.des = desc;
-		}
-		
-		public String getCode() {
-			return code;
-		}
-		
-		public String getDesc() {
-			return this.des;
-		}
-		
-		public static String getDescByCode(String code) {
-			THIRD_PART_DEPOSIT[] modes = THIRD_PART_DEPOSIT.values();
-			for(THIRD_PART_DEPOSIT mode : modes) {
-				if(mode.getCode().equals(code)) {
-					return mode.getDesc();
-				}
-			}
-			
-			return null;
-		}
-	}
 	/**
-	 *设置代码所需的状态
+	 *The state required to set the code
 	 * @author Silence
 	 */
 	public static enum SysCodeState{
@@ -172,6 +40,204 @@ public class Constants {
 		
 		public int getCode() {
 			return value;
+		}
+	}
+	
+	public static enum WalletType{
+		MAIN_WALLET(1, "主钱包"),
+		RED_PACKET_WALLET(2, "红包钱包");
+		
+		private int code;
+		
+		private String desc;
+		
+		private WalletType(int code, String desc) {
+			this.code = code;
+			this.desc = desc;
+		}
+		
+		public int getCode() {
+			return this.code;
+		}
+		
+		public String getDesc() {
+			return this.desc;
+		}
+		
+		public static WalletType getWalletTypeByCode(int code) {
+			WalletType[] walletTypes = WalletType.values();
+			for(WalletType walletType: walletTypes) {
+				if(walletType.getCode() == code) {
+					return walletType;
+				}
+			}
+			return null;
+		}
+	}
+	
+	public static enum EmailValidState{
+		UNVERIFIED(0, "未验证"),
+		VERIFIED(1, "已验证");
+		
+		private int code;
+		
+		private String desc;
+		
+		private EmailValidState(int code, String desc) {
+			this.code = code;
+			this.desc = desc;
+		}
+		
+		public int getCode() {
+			return this.code;
+		}
+		
+		public String getDesc() {
+			return this.desc;
+		}
+		
+		public static EmailValidState getStateByCode(int code) {
+			EmailValidState[] states = EmailValidState.values();
+			for(EmailValidState state: states) {
+				if(state.getCode() == code) {
+					return state;
+				}
+			}
+			return null;
+		}
+	}
+	
+	public static enum PhoneValidState{
+		UNVERIFIED(0, "未验证"),
+		VERIFIED(1, "已验证");
+		
+		private int code;
+		
+		private String desc;
+		
+		private PhoneValidState(int code, String desc) {
+			this.code = code;
+			this.desc = desc;
+		}
+		
+		public int getCode() {
+			return this.code;
+		}
+		
+		public String getDesc() {
+			return this.desc;
+		}
+		
+		public static PhoneValidState getStateByCode(int code) {
+			PhoneValidState[] states = PhoneValidState.values();
+			for(PhoneValidState state: states) {
+				if(state.getCode() == code) {
+					return state;
+				}
+			}
+			return null;
+		}
+	}
+	
+	public static enum UserState{
+		NORMAL(0, "正常"),
+		LOCKING(1, "锁定"),
+		REVOKED(2, "销毁");
+		
+		private int code;
+		
+		private String desc;
+		
+		private UserState(int code, String desc) {
+			this.code = code;
+			this.desc = desc;
+		}
+		
+		public int getCode() {
+			return this.code;
+		}
+		
+		public String getDesc() {
+			return this.desc;
+		}
+		
+		public static UserState getStateByCode(int code) {
+			UserState[] states = UserState.values();
+			for(UserState state: states) {
+				if(state.getCode() == code) {
+					return state;
+				}
+			}
+			return null;
+		}
+	}
+	
+	public static enum UserType{
+		PLAYER(0, "玩家"),
+		AGENCY(1, "代理"),
+		SYS_ADMIN(2, "系统用户"),
+		GENERAL_AGENCY(3, "总代");
+		
+		private int code;
+		
+		private String desc;
+		
+		private UserType(int code, String desc) {
+			this.code = code;
+			this.desc = desc;
+		}
+		
+		public int getCode() {
+			return this.code;
+		}
+		
+		public String getDesc() {
+			return this.desc;
+		}
+		
+		public static UserType getStateByCode(int code) {
+			UserType[] states = UserType.values();
+			for(UserType state: states) {
+				if(state.getCode() == code) {
+					return state;
+				}
+			}
+			return null;
+		}
+	}
+	
+	public static enum UserLevel{
+		LEVEL_0(0, "青铜"),
+		LEVEL_1(1, "白银"),
+		LEVEL_2(2, "黄金"),
+		LEVEL_3(3, "铂金"),
+		LEVEL_4(4, "钻石");
+		
+		private int code;
+		
+		private String desc;
+		
+		private UserLevel(int code, String desc) {
+			this.code = code;
+			this.desc = desc;
+		}
+		
+		public int getCode() {
+			return this.code;
+		}
+		
+		public String getDesc() {
+			return this.desc;
+		}
+		
+		public static UserLevel getStateByCode(int code) {
+			UserLevel[] states = UserLevel.values();
+			for(UserLevel state: states) {
+				if(state.getCode() == code) {
+					return state;
+				}
+			}
+			return null;
 		}
 	}
 	/**
@@ -288,6 +354,111 @@ public class Constants {
 			Map<String,Object> map=new HashMap<String,Object>();
 			TerminalType[] names = TerminalType.values();
 			for(TerminalType name: names) {
+				map.put(name.getCode(), name.getNames());
+			}
+			return map;
+		}
+	}
+
+	/**
+	 *存取款明细：查询条件：取款状态
+	 * @author Silence
+	 */
+	public static enum WithdrawType{
+		WAIT("0", "等待付款"),
+		SUCESS("1", "付款成功"),
+		AUDIT_NOT_PASSED("2", "审核不通过"),
+		BANK_FAILURE("3", "银行故障"),
+		ACCOUNT_INFORMATION_ERROR("4", "账户信息错误"),
+		OTHER("5", "others");
+		private String code;
+		
+		private String names;
+		
+		private WithdrawType(String code, String names) {
+			this.code = code;
+			this.names = names;
+		}
+		
+		public String getCode() {
+			return this.code;
+		}
+		
+		public String getNames() {
+			return this.names;
+		}
+		
+		public static Map<String,Object> getWithdrawTypeByCode() {
+			Map<String,Object> map=new HashMap<String,Object>();
+			WithdrawType[] names = WithdrawType.values();
+			for(WithdrawType name: names) {
+				map.put(name.getCode(), name.getNames());
+			}
+			return map;
+		}
+	}
+	/**
+	 *存取款明细：查询条件：存款状态
+	 * @author Silence
+	 */
+	public static enum DepositType{
+		WAIT("0", "等待充值"),
+		SUCESS("1", "充值成功"),
+		AUDIT_NOT_PASSED("2", "充值失败");
+		private String code;
+		
+		private String names;
+		
+		private DepositType(String code, String names) {
+			this.code = code;
+			this.names = names;
+		}
+		
+		public String getCode() {
+			return this.code;
+		}
+		
+		public String getNames() {
+			return this.names;
+		}
+		
+		public static Map<String,Object> getDepositTypeByCode() {
+			Map<String,Object> map=new HashMap<String,Object>();
+			DepositType[] names = DepositType.values();
+			for(DepositType name: names) {
+				map.put(name.getCode(), name.getNames());
+			}
+			return map;
+		}
+	}
+	/**
+	 *存取款明细：类别
+	 * @author Silence
+	 */
+	public static enum DWType{
+		WAIT("1", "存款"),
+		SUCESS("2", "取款");
+		private String code;
+		
+		private String names;
+		
+		private DWType(String code, String names) {
+			this.code = code;
+			this.names = names;
+		}
+		
+		public String getCode() {
+			return this.code;
+		}
+		
+		public String getNames() {
+			return this.names;
+		}
+		
+		public static Map<String,Object> getDWTypeByCode() {
+			Map<String,Object> map=new HashMap<String,Object>();
+			DWType[] names = DWType.values();
+			for(DWType name: names) {
 				map.put(name.getCode(), name.getNames());
 			}
 			return map;

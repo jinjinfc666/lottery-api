@@ -21,6 +21,7 @@ public class UserInfo implements java.io.Serializable {
 	private Integer userType;
 	private String superior;
 	private BigDecimal rebate;
+	private BigDecimal platRebate;
 	private String phoneNum;
 	private String qq;
 	private String wechat;
@@ -35,7 +36,7 @@ public class UserInfo implements java.io.Serializable {
 	}
 
 	public UserInfo(String realName, String userName, String loginPwd, String fundPwd, Integer state, Integer level,
-			Integer loginCount, Date unlockTime, Integer userType, String superior, BigDecimal rebate, String phoneNum,
+			Integer loginCount, Date unlockTime, Integer userType, String superior, BigDecimal rebate,BigDecimal platRebate, String phoneNum,
 			String qq, String wechat, String email, Integer isValidPhone, Integer isValidEmail, String regIp,
 			Date createTime, Integer creator) {
 		this.realName = realName;
@@ -49,6 +50,7 @@ public class UserInfo implements java.io.Serializable {
 		this.userType = userType;
 		this.superior = superior;
 		this.rebate = rebate;
+		this.platRebate = platRebate;
 		this.phoneNum = phoneNum;
 		this.qq = qq;
 		this.wechat = wechat;
@@ -226,6 +228,14 @@ public class UserInfo implements java.io.Serializable {
 
 	public void setCreator(Integer creator) {
 		this.creator = creator;
+	}
+
+	public BigDecimal getPlatRebate() {
+		return platRebate;
+	}
+
+	public void setPlatRebate(BigDecimal platRebate) {
+		this.platRebate = platRebate;
 	}
 
 }
