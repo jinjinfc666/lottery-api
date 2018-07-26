@@ -36,7 +36,7 @@ public class BackstageSysController {
 			  @RequestParam(name = "remark", required = true) String remark,
 			  HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
-		if(type==null||codeName==null||codeVal==null||remark==null||(type==2 && typeCodeName==null)) {
+		if(type==null||codeName.equals("")||codeVal.equals("")||remark.equals("")||(type==2 && typeCodeName.equals(""))) {
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
@@ -91,7 +91,7 @@ public class BackstageSysController {
 			  @RequestParam(name = "remark", required = false) String remark,
 			  HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
-		if(codeName==null||codeVal==null||seq==null||remark==null) {
+		if(codeName.equals("")||codeVal.equals("")||seq==null||remark.equals("")) {
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
