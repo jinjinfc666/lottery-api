@@ -4,17 +4,7 @@ import com.jll.entity.UserInfo;
 
 public interface UserInfoService
 {
-	/**
-	 * @param userName
-	 * @return
-	 */
 	int getUserId(String userName);
-	
-	/**
-	 * if specified user is existing
-	 * @param userName
-	 * @return
-	 */
 	boolean isUserInfo(String userName);
 	
 	/**

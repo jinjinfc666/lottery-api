@@ -28,11 +28,11 @@ public class FlowDetailDaoImpl extends HibernateDaoSupport implements FlowDetail
 		String operationTypeSql="";
 		String timeSql="";
 		List<Object> list=new ArrayList<Object>();
-		if(userName!=null&&!userName.equals("")) {
+		if(!userName.equals("")) {
 			userNameSql=" and b.userName=?";
 			list.add(userName);
 		}
-		if(orderNum!=null) {
+		if(!orderNum.equals("")) {
 //			orderIdSql=" and a.orderId=:orderId";
 			orderNumSql=" and d.orderNum=?";
 			list.add(orderNum);
@@ -47,12 +47,12 @@ public class FlowDetailDaoImpl extends HibernateDaoSupport implements FlowDetail
 			amountEndSql=" and a.amount<=?";
 			list.add(amountEnd);
 		}
-		if(operationType!=null&&!operationType.equals("")) {
+		if(!operationType.equals("")) {
 //			operationTypeSql=" and a.operationType=:operationType";
 			operationTypeSql=" and a.operationType=?";
 			list.add(operationType);
 		}
-		if(startTime!=null&&endTime!=null&&!startTime.equals("")&&!endTime.equals("")) {
+		if(!startTime.equals("")&&!endTime.equals("")) {
 			timeSql=" and a.createTime >'"+startTime+"' and a.createTime <='"+endTime+"'";
 		}
 		Integer userType=2;

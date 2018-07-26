@@ -359,4 +359,109 @@ public class Constants {
 			return map;
 		}
 	}
+
+	/**
+	 *存取款明细：查询条件：取款状态
+	 * @author Silence
+	 */
+	public static enum WithdrawType{
+		WAIT("0", "等待付款"),
+		SUCESS("1", "付款成功"),
+		AUDIT_NOT_PASSED("2", "审核不通过"),
+		BANK_FAILURE("3", "银行故障"),
+		ACCOUNT_INFORMATION_ERROR("4", "账户信息错误"),
+		OTHER("5", "others");
+		private String code;
+		
+		private String names;
+		
+		private WithdrawType(String code, String names) {
+			this.code = code;
+			this.names = names;
+		}
+		
+		public String getCode() {
+			return this.code;
+		}
+		
+		public String getNames() {
+			return this.names;
+		}
+		
+		public static Map<String,Object> getWithdrawTypeByCode() {
+			Map<String,Object> map=new HashMap<String,Object>();
+			WithdrawType[] names = WithdrawType.values();
+			for(WithdrawType name: names) {
+				map.put(name.getCode(), name.getNames());
+			}
+			return map;
+		}
+	}
+	/**
+	 *存取款明细：查询条件：存款状态
+	 * @author Silence
+	 */
+	public static enum DepositType{
+		WAIT("0", "等待充值"),
+		SUCESS("1", "充值成功"),
+		AUDIT_NOT_PASSED("2", "充值失败");
+		private String code;
+		
+		private String names;
+		
+		private DepositType(String code, String names) {
+			this.code = code;
+			this.names = names;
+		}
+		
+		public String getCode() {
+			return this.code;
+		}
+		
+		public String getNames() {
+			return this.names;
+		}
+		
+		public static Map<String,Object> getDepositTypeByCode() {
+			Map<String,Object> map=new HashMap<String,Object>();
+			DepositType[] names = DepositType.values();
+			for(DepositType name: names) {
+				map.put(name.getCode(), name.getNames());
+			}
+			return map;
+		}
+	}
+	/**
+	 *存取款明细：类别
+	 * @author Silence
+	 */
+	public static enum DWType{
+		WAIT("1", "存款"),
+		SUCESS("2", "取款");
+		private String code;
+		
+		private String names;
+		
+		private DWType(String code, String names) {
+			this.code = code;
+			this.names = names;
+		}
+		
+		public String getCode() {
+			return this.code;
+		}
+		
+		public String getNames() {
+			return this.names;
+		}
+		
+		public static Map<String,Object> getDWTypeByCode() {
+			Map<String,Object> map=new HashMap<String,Object>();
+			DWType[] names = DWType.values();
+			for(DWType name: names) {
+				map.put(name.getCode(), name.getNames());
+			}
+			return map;
+		}
+	}
 }

@@ -24,7 +24,6 @@ public class Message {
 	
 	//code : **-->module name;****-->errorNum
 	public static enum Error{
-		/****common module****/
 		ERROR_COMMON_ERROR_PARAMS("000001", "Error parameter!!"),
 		ERROR_COMMON_NO_PERMISSION("000002", "No permission!!"),
 		ERROR_COMMON_ERROR_LOGIN("000003", "No pricipal!!"),
@@ -44,19 +43,7 @@ public class Message {
 		ERROR_USER_INVALID_USER_TYPE("010010", "Invalid User type!!"),
 		ERROR_USER_INVALID_PLAT_REBATE("010011", "Invalid Platform rebate!!"),
 		ERROR_USER_FAILED_SAVE("010012", "Failed save user!!"),
-		ERROR_USER_FAILED_REGISTER("010013", "Failed register user!!"),
-		
-		ERROR_PAYMENT_TLCLOUD_FAILED_PUSH_ORDER("010002", "Failed to push order!!"),
-		ERROR_PAYMENT_TLCLOUD_FAILED_CANCEL_ORDER("010003", "Failed to cancel order!!"),
-		ERROR_PAYMENT_DEPOSIT_ERROR_ORDER("010004", "No order existing!!"),
-		
-		ERROR_PAYMENT_CAIPAY_FAILED_CANCEL_ORDER("010005", "configuration of cai-pay is wrong!!"),
-		ERROR_PAYMENT_CAIPAY_FAILED_SIGNATURE_PARAMS("010006", "Can not sign the parameters!!"),
-		
-		
-		ERROR_SYSTEM_CONFIG_NO_RECEIVER_BANK_CARD("020001", "No Receiver bank card is specified!!"),
-		
-		ERROR_SYSTEM_AUTH_NO_ACCESS_PERMISSION("030001", "No Permission to access resource!!")
+		ERROR_USER_FAILED_REGISTER("010013", "Failed register user!!")
 		
 		;
 		

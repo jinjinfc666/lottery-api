@@ -39,11 +39,11 @@
 		<csrf disabled="true"/>
 		<custom-filter ref="resourceServer" before="PRE_AUTH_FILTER" />
     	<http-basic entry-point-ref="oauth2AuthenticationEntryPoint" />
-    	
 		<intercept-url pattern="/users/attrs/user-name/**" access="hasRole('ROLE_USER')" />
 		<intercept-url method="POST" pattern="/users/players" access="hasRole('ROLE_AGENT')" />
 		<intercept-url method="POST" pattern="/users/agents" access="hasRole('ROLE_ADMIN')" />
 	</http>
+	
 	
     
 	<oauth2:client-details-service id="clientDetailsService" >

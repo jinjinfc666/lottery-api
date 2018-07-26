@@ -42,8 +42,8 @@ public class UserController {
 	public Map<String, Object> queryUserByUserName(@PathVariable("userName") String userName) {
 		Map<String, Object> resp = new HashMap<String, Object>();
 		
-		resp.put(Message.KEY_STATUS, Message.status.SUCCESS);
-		return resp;
+		
+		return null;
 	}
 	
 	/**
@@ -61,10 +61,10 @@ public class UserController {
 	
 	/**
 	 * register the user who can login front-end web application
-	 * this will be only called  by the agent with role:role_agent
+	 * this will be only called  by the agent
 	 * @param request
 	 */
-	@RequestMapping(value="/players", method = { RequestMethod.POST }, consumes = MediaType.APPLICATION_JSON_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(method = { RequestMethod.POST }, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> regUser(@RequestBody UserInfo user) {
 		Map<String, Object> resp = new HashMap<String, Object>();
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -147,7 +147,7 @@ public class UserController {
 	 * this will be only called  by the user with role:role_admin
 	 * @param request
 	 */
-	@RequestMapping(value="/agents", method = { RequestMethod.POST }, consumes = MediaType.APPLICATION_JSON_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value="/agents", method = { RequestMethod.POST }, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> regAgent(@RequestBody UserInfo user) {
 		Map<String, Object> resp = new HashMap<String, Object>();
 				

@@ -35,7 +35,7 @@ public class LoyTstDaoImpl extends HibernateDaoSupport implements LoyTstDao {
 		String userNameSql="";
 		String orderNumSql="";
 		List<Object> list=new ArrayList<Object>();
-		if(lotteryType!=null&&!lotteryType.equals("")) {
+		if(!lotteryType.equals("")) {
 			lotteryTypeSql=" and e.codeName=?"; 
 			list.add(lotteryType);
 		}
@@ -51,18 +51,18 @@ public class LoyTstDaoImpl extends HibernateDaoSupport implements LoyTstDao {
 			terminalTypeSql=" and a.terminalType=?";
 			list.add(terminalType);
 		}
-		if(startTime!=null&&endTime!=null&&!startTime.equals("")&&!endTime.equals("")) {
+		if(!startTime.equals("")&&!endTime.equals("")) {
 			timeSql=" and a.createTime >'"+startTime+"' and a.createTime <='"+endTime+"'";
 		}
-		if(issueNum!=null&&!issueNum.equals("")) {
+		if(!issueNum.equals("")) {
 			issueNumSql=" and d.issueNum=?";		
 			list.add(issueNum);
 		}
-		if(userName!=null&&!userName.equals("")) {
+		if(!userName.equals("")) {
 			userNameSql=" and b.userName=?";
 			list.add(userName);
 		}
-		if(orderNum!=null&&!orderNum.equals("")) {
+		if(!orderNum.equals("")) {
 			orderNumSql=" and a.orderNum=?";
 			list.add(orderNum);
 		}

@@ -29,11 +29,11 @@ public class RedPackageDaoImpl extends HibernateDaoSupport implements RedPackage
 		String userNameSql="";
 		String timeSql="";
 		List<Object> list=new ArrayList<Object>();
-		if(userName!=null&&!userName.equals("")) {
+		if(!userName.equals("")) {
 			userNameSql=" and c.userName=?";
 			list.add(userName);
 		}
-		if(startTime!=null&&endTime!=null&&!startTime.equals("")&&!endTime.equals("")) {
+		if(!startTime.equals("")&&!endTime.equals("")) {
 			timeSql=" and a.createTime >'"+startTime+"' and a.createTime <='"+endTime+"'";
 		}
 		Integer userType=2;
