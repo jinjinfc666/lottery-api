@@ -83,5 +83,8 @@ public class SysCodeServiceImpl implements SysCodeService {
 			sysCodeDao.updateSmallState(id, state);
 		}
 	}
-	
+	@Override
+	public List<SysCode> queryType(String bigType) {
+		return sysCodeDao.queryType(bigType);
+	}
 }

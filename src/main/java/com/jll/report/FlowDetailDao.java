@@ -6,6 +6,5 @@ import com.jll.entity.SysCode;
 
 public interface FlowDetailDao {
 	
-	public List<?> queryUserAccountDetails(String userName,Integer orderId,Float amountStart,Float amountEnd,String operationType,String startTime,String endTime);
-	public List<SysCode> queryType();
+	public List<?> queryUserAccountDetails(String userName,String orderNum,Float amountStart,Float amountEnd,String operationType,String startTime,String endTime);
 }

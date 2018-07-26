@@ -42,7 +42,7 @@
     	
 		<intercept-url pattern="/users/attrs/user-name/**" access="hasRole('ROLE_USER')" />
 		<intercept-url method="POST" pattern="/users/players" access="hasRole('ROLE_AGENT')" />
-		<!-- <intercept-url method="POST" pattern="/users/agents" access="hasRole('role_admin')" /> -->
+		<intercept-url method="POST" pattern="/users/agents" access="hasRole('ROLE_ADMIN')" />
 	</http>
 	
     
@@ -110,7 +110,7 @@
         <user name="publisher" password="publisher" authorities="ROLE_PUBLISHER" />
         <user name="user" password="user" authorities="ROLE_USER" />
         <user name="marissa" password="koala" authorities="ROLE_USER,ROLE_AGENT" />
-        <user name="marissa_agent" password="marissa_agent" authorities="ROLE_ADMIN" />
+        <user name="marissa_sys" password="marissa_sys" authorities="ROLE_ADMIN" />
       </user-service>
     </authentication-provider>
   </authentication-manager>

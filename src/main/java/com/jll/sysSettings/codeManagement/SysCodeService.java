@@ -12,4 +12,5 @@ public interface SysCodeService {
 	List<SysCode> querySmallType(Integer id);
 	void updateSyscode(Map<String,Object> ret);
 	void updateState(Map<String,Object> ret);
+	List<SysCode> queryType(String bigType);
 }

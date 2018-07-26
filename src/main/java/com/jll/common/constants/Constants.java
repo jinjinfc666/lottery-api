@@ -1,5 +1,9 @@
 package com.jll.common.constants;
 
+
+import java.util.HashMap;
+import java.util.Map;
+
 import com.jll.common.constants.Message.Error;
 
 public class Constants {	
@@ -234,6 +238,125 @@ public class Constants {
 				}
 			}
 			return null;
+		}
+	}
+	/**
+	 *SysCode大类类型
+	 * @author Silence
+	 */
+	public static enum SysCodeTypes{
+		LOTTERY_TYPES("caizhongleixing"),
+		FLOW_TYPES("acc_ope_type");
+		private String value;
+		
+		private SysCodeTypes(String value) {
+			this.value = value;
+		}
+		
+		public String getCode() {
+			return value;
+		}
+	}
+	/**
+	 *彩票交易明细列表：查询条件：是否追号
+	 * @author Silence
+	 */
+	public static enum IsZh{
+		IS_ZH("1", "是"),
+		NO_ZH("0", "否");
+		private String code;
+		
+		private String names;
+		
+		private IsZh(String code, String names) {
+			this.code = code;
+			this.names = names;
+		}
+		
+		public String getCode() {
+			return this.code;
+		}
+		
+		public String getNames() {
+			return this.names;
+		}
+		
+		public static Map<String,Object> getIsZhByCode() {
+			Map<String,Object> map=new HashMap<String,Object>();
+			IsZh[] names = IsZh.values();
+			for(IsZh name: names) {
+				map.put(name.getCode(), name.getNames());
+			}
+			return map;
+		}
+	}
+	/**
+	 *彩票交易明细列表：查询条件：中奖情况
+	 * @author Silence
+	 */
+	public static enum State{
+		WAITING_FOR_PRIZE("0", "等待派奖"),
+		HAS_WON("1", "已中奖"),
+		NOT_WON("2", "未中奖"),
+		USER_CANCEL_ORDER("3", "用户取消订单"),
+		SYSTEM_CANCEL_ORDER("4", "系统取消订单");
+		private String code;
+		
+		private String names;
+		
+		private State(String code, String names) {
+			this.code = code;
+			this.names = names;
+		}
+		
+		public String getCode() {
+			return this.code;
+		}
+		
+		public String getNames() {
+			return this.names;
+		}
+		
+		public static Map<String,Object> getStateByCode() {
+			Map<String,Object> map=new HashMap<String,Object>();
+			State[] names = State.values();
+			for(State name: names) {
+				map.put(name.getCode(), name.getNames());
+			}
+			return map;
+		}
+	}
+	/**
+	 *彩票交易明细列表：查询条件：订单来源
+	 * @author Silence
+	 */
+	public static enum TerminalType{
+		MOBILE_PHONE("1", "手机端"),
+		PC("0", "PC端");
+		private String code;
+		
+		private String names;
+		
+		private TerminalType(String code, String names) {
+			this.code = code;
+			this.names = names;
+		}
+		
+		public String getCode() {
+			return this.code;
+		}
+		
+		public String getNames() {
+			return this.names;
+		}
+		
+		public static Map<String,Object> getTerminalTypeByCode() {
+			Map<String,Object> map=new HashMap<String,Object>();
+			TerminalType[] names = TerminalType.values();
+			for(TerminalType name: names) {
+				map.put(name.getCode(), name.getNames());
+			}
+			return map;
 		}
 	}
 }

@@ -3,8 +3,13 @@ package com.jll.user;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.Resource;
+
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.jll.common.constants.Constants.UserType;
+import com.jll.common.constants.Message;
 import com.jll.entity.UserInfo;
 import com.terran4j.commons.api2doc.annotations.Api2Doc;
 import com.terran4j.commons.api2doc.annotations.ApiComment;
@@ -23,6 +30,9 @@ import com.terran4j.commons.api2doc.annotations.ApiComment;
 public class UserController {
 	private Logger logger = Logger.getLogger(UserController.class);
 
+	@Resource
+	UserInfoService userServ;
+	
 	/**
 	 * query the specified user by userName, only the operator with userName or operator with role:role_bus_manager
 	 * can obtain the full information, the person without permission can only read part of information.
@@ -32,8 +42,8 @@ public class UserController {
 	public Map<String, Object> queryUserByUserName(@PathVariable("userName") String userName) {
 		Map<String, Object> resp = new HashMap<String, Object>();
 		
-		
-		return null;
+		resp.put(Message.KEY_STATUS, Message.status.SUCCESS);
+		return resp;
 	}
 	
 	/**
@@ -51,15 +61,85 @@ public class UserController {
 	
 	/**
 	 * register the user who can login front-end web application
-	 * this will be only called  by the agent
+	 * this will be only called  by the agent with role:role_agent
 	 * @param request
 	 */
-	@RequestMapping(method = { RequestMethod.POST }, produces=MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value="/players", method = { RequestMethod.POST }, consumes = MediaType.APPLICATION_JSON_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> regUser(@RequestBody UserInfo user) {
 		Map<String, Object> resp = new HashMap<String, Object>();
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		UserInfo superior = null;
+		boolean isExisting = false;
 		
+		if(auth == null) {
+			resp.put(Message.KEY_STATUS, Message.status.FAILED);
+			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_LOGIN.getCode());
+			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_LOGIN.getErrorMes());
+			return resp;
+		}
 		
-		return null;
+		try {
+			superior = userServ.getUserByUserName(auth.getName());
+			
+			if(superior == null) {
+				throw new Exception("No superior!");
+			}
+		}catch(Exception ex) {
+			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_INVALID_USER_NAME.getCode());
+			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_INVALID_USER_NAME.getErrorMes());
+			return resp;
+		}		
+		
+		user.setSuperior(superior.getId()+","+superior.getSuperior());
+		String ret = userServ.validUserInfo(user);
+		if(StringUtils.isBlank(ret) ) {
+			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			return resp;
+		}
+		
+		if(!Integer.toString(Message.status.SUCCESS.getCode()).equals(ret)) {
+			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			resp.put(Message.KEY_ERROR_CODE, ret);
+			resp.put(Message.KEY_ERROR_MES, Message.Error.getErrorByCode(ret).getErrorMes());
+			return resp;
+		}
+		
+		if(StringUtils.isBlank(user.getFundPwd())) {
+			user.setFundPwd(user.getLoginPwd());
+		}
+		
+		try {
+			isExisting = userServ.isUserExisting(user);
+		}catch(Exception ex) {
+			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			return resp;
+		}
+		
+		if(isExisting) {
+			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_EXISTING.getCode());
+			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_EXISTING.getErrorMes());
+			return resp;
+		}		
+		
+		user.setUserType(UserType.PLAYER.getCode());
+		
+		try {
+			userServ.regUser(user);
+		}catch(Exception ex) {
+			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_FAILED_REGISTER.getCode());
+			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_FAILED_REGISTER.getErrorMes());
+			return resp;
+		}
+				
+		resp.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		return resp;
 	}
 	
 	/**
@@ -67,12 +147,58 @@ public class UserController {
 	 * this will be only called  by the user with role:role_admin
 	 * @param request
 	 */
-	@RequestMapping(value="/agents", method = { RequestMethod.POST }, produces=MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value="/agents", method = { RequestMethod.POST }, consumes = MediaType.APPLICATION_JSON_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> regAgent(@RequestBody UserInfo user) {
 		Map<String, Object> resp = new HashMap<String, Object>();
+				
+		UserInfo generalAgency = userServ.getGeneralAgency();
+		if(generalAgency == null) {
+			resp.put(Message.KEY_STATUS, Message.status.FAILED);
+			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_NO_GENERAL_AGENCY.getCode());
+			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_NO_GENERAL_AGENCY.getErrorMes());
+			return resp;
+		}
 		
+		user.setSuperior(Integer.toString(generalAgency.getId()));
+		String ret = userServ.validUserInfo(user);
+		if(StringUtils.isBlank(ret) ) {
+			resp.put(Message.KEY_STATUS, Message.status.FAILED);
+			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			return resp;
+		}
 		
-		return null;
+		if(!Integer.toString(Message.status.SUCCESS.getCode()).equals(ret)) {
+			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			resp.put(Message.KEY_ERROR_CODE, ret);
+			resp.put(Message.KEY_ERROR_MES, Message.Error.getErrorByCode(ret).getErrorMes());
+			return resp;
+		}
+		
+		if(StringUtils.isBlank(user.getFundPwd())) {
+			user.setFundPwd(user.getLoginPwd());
+		}
+		
+		boolean isExisting = userServ.isUserExisting(user);
+		if(isExisting) {
+			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_EXISTING.getCode());
+			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_EXISTING.getErrorMes());
+			return resp;
+		}		
+		
+		user.setUserType(UserType.AGENCY.getCode());
+		try {
+			userServ.regUser(user);
+		}catch(Exception ex) {
+			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_FAILED_REGISTER.getCode());
+			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_FAILED_REGISTER.getErrorMes());
+			return resp;
+		}
+		
+		resp.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		return resp;
 	}
 	
 	/**
