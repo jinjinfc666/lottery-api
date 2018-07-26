@@ -92,7 +92,7 @@ public class UserController {
 		}		
 		
 		user.setSuperior(superior.getId()+","+superior.getSuperior());
-		String ret = userServ.validUserInfo(user);
+		String ret = userServ.validUserInfo(user, superior);
 		if(StringUtils.isBlank(ret) ) {
 			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
@@ -128,7 +128,7 @@ public class UserController {
 		}		
 		
 		user.setUserType(UserType.PLAYER.getCode());
-		
+		user.setRebate(superior.getPlatRebate().subtract(user.getPlatRebate()));
 		try {
 			userServ.regUser(user);
 		}catch(Exception ex) {
@@ -160,7 +160,7 @@ public class UserController {
 		}
 		
 		user.setSuperior(Integer.toString(generalAgency.getId()));
-		String ret = userServ.validUserInfo(user);
+		String ret = userServ.validUserInfo(user, generalAgency);
 		if(StringUtils.isBlank(ret) ) {
 			resp.put(Message.KEY_STATUS, Message.status.FAILED);
 			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
@@ -187,6 +187,7 @@ public class UserController {
 			return resp;
 		}		
 		
+		user.setRebate(generalAgency.getPlatRebate().subtract(user.getPlatRebate()));
 		user.setUserType(UserType.AGENCY.getCode());
 		try {
 			userServ.regUser(user);
@@ -206,12 +207,59 @@ public class UserController {
 	 * this will be only called  by the user with role:role_admin
 	 * @param request
 	 */
-	@RequestMapping(value="/sys-users", method = { RequestMethod.POST }, produces=MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value="/sys-users", method = { RequestMethod.POST }, consumes = MediaType.APPLICATION_JSON_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> regSysUser(@RequestBody UserInfo user) {
 		Map<String, Object> resp = new HashMap<String, Object>();
 		
+		UserInfo generalAgency = userServ.getGeneralAgency();
+		if(generalAgency == null) {
+			resp.put(Message.KEY_STATUS, Message.status.FAILED);
+			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_NO_GENERAL_AGENCY.getCode());
+			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_NO_GENERAL_AGENCY.getErrorMes());
+			return resp;
+		}
 		
-		return null;
+		user.setSuperior(Integer.toString(generalAgency.getId()));
+		String ret = userServ.validUserInfo(user, generalAgency);
+		if(StringUtils.isBlank(ret) ) {
+			resp.put(Message.KEY_STATUS, Message.status.FAILED);
+			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			return resp;
+		}
+		
+		if(!Integer.toString(Message.status.SUCCESS.getCode()).equals(ret)) {
+			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			resp.put(Message.KEY_ERROR_CODE, ret);
+			resp.put(Message.KEY_ERROR_MES, Message.Error.getErrorByCode(ret).getErrorMes());
+			return resp;
+		}
+		
+		if(StringUtils.isBlank(user.getFundPwd())) {
+			user.setFundPwd(user.getLoginPwd());
+		}
+		
+		boolean isExisting = userServ.isUserExisting(user);
+		if(isExisting) {
+			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_EXISTING.getCode());
+			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_EXISTING.getErrorMes());
+			return resp;
+		}		
+		
+		user.setRebate(generalAgency.getPlatRebate().subtract(user.getPlatRebate()));
+		user.setUserType(UserType.AGENCY.getCode());
+		try {
+			userServ.regUser(user);
+		}catch(Exception ex) {
+			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_FAILED_REGISTER.getCode());
+			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_FAILED_REGISTER.getErrorMes());
+			return resp;
+		}
+		
+		resp.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		return resp;
 	}
 	
 	/**

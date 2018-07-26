@@ -9,6 +9,11 @@ How to import project
 
 how to init data
 
-user_info 总代理数据
-user_account 总代理数据
+user_info 
+1,总代理数据
+2,系统管理员账户
+
+user_account 
+1,总代理数据          general_agency
+2,系统管理员账户 admin 
 

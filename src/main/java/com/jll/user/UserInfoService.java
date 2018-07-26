@@ -31,7 +31,13 @@ public interface UserInfoService
 	 *         Message.status.SUCCESS or
 	 *         Message.Error
 	 */
-	String validUserInfo(UserInfo user);
+	/**
+	 * valid the user information
+	 * @param user       the user should be verified
+	 * @param superior   the superior of user
+	 * @return
+	 */
+	String validUserInfo(UserInfo user, UserInfo superior);
 
 	/**
 	 * if the specified user is existing

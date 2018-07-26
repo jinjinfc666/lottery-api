@@ -110,7 +110,7 @@
         <user name="publisher" password="publisher" authorities="ROLE_PUBLISHER" />
         <user name="user" password="user" authorities="ROLE_USER" />
         <user name="marissa" password="koala" authorities="ROLE_USER,ROLE_AGENT" />
-        <user name="marissa_sys" password="marissa_sys" authorities="ROLE_ADMIN" />
+        <user name="agent001" password="agent001" authorities="ROLE_USER,ROLE_AGENT" />
       </user-service>
     </authentication-provider>
   </authentication-manager>

@@ -52,7 +52,7 @@ public class UserInfoServiceImpl implements UserInfoService
 	}
 
 	@Override
-	public String validUserInfo(UserInfo user) {
+	public String validUserInfo(UserInfo user, UserInfo superior) {
 		if(user == null) {
 			return Message.Error.ERROR_USER_NO_VALID_USER.getCode();
 		}
@@ -95,7 +95,13 @@ public class UserInfoServiceImpl implements UserInfoService
 			return Message.Error.ERROR_USER_INVALID_USER_TYPE.getCode();
 		}
 		
-		//if(user.getRebate() == null || user.getp)
+		
+		if(user.getPlatRebate() == null
+				|| (user.getPlatRebate().compareTo(superior.getPlatRebate())) == 1) {
+			return Message.Error.ERROR_USER_INVALID_PLAT_REBATE.getCode();
+		}
+		
+		
 		return Integer.toString(Message.status.SUCCESS.getCode());
 	}
 
