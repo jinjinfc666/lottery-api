@@ -7,6 +7,8 @@ public class Message {
 	
 	public final static String KEY_STATUS = "status";
 	
+	public final static String KEY_DATA = "data";
+	
 	public static enum status{
 		SUCCESS(1),
 		FAILED(0);
@@ -34,6 +36,11 @@ public class Message {
 		ERROR_PAYMENT_CAIPAY_FAILED_CANCEL_ORDER("010005", "configuration of cai-pay is wrong!!"),
 		ERROR_PAYMENT_CAIPAY_FAILED_SIGNATURE_PARAMS("010006", "Can not sign the parameters!!"),
 		
+		ERROR_OLD_FUND_PWD_ERROR("010007", "Old fund password error!!"),
+		ERROR_OLD_LOGIN_PWD_ERROR("010008", "Old login password error!!"),
+		ERROR_MORE_UPDATE_REAL_NAME("010009", "The real name is binding and cannot be modified. If necessary, please contact customer service.!!"),
+		ERROR_MORE_UPDATE_EMAIL("010010", "The email is binding and cannot be modified. If necessary, please contact customer service.!!"),
+		ERROR_MORE_UPDATE_PHONE_NUM("010011", "The phone num is binding and cannot be modified. If necessary, please contact customer service.!!"),
 		
 		ERROR_SYSTEM_CONFIG_NO_RECEIVER_BANK_CARD("020001", "No Receiver bank card is specified!!"),
 		

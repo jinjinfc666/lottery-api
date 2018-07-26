@@ -1,21 +1,17 @@
 package com.jll.user;
 
 
-import org.apache.log4j.Logger;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.hibernate5.support.HibernateDaoSupport;
 import org.springframework.stereotype.Repository;
 
-import com.jll.backstage.report.flowdetail.FlowDetailController;
-import com.jll.entity.SysCode;
+import com.jll.dao.SupserDao;
 import com.jll.entity.UserInfo;
 
 @Repository
-public class UserInfoDaoImpl extends HibernateDaoSupport implements UserInfoDao
+public class UserInfoDaoImpl extends SupserDao implements UserInfoDao
 {
-	private Logger logger = Logger.getLogger(FlowDetailController.class);
   @Autowired
   public void setSuperSessionFactory(SessionFactory sessionFactory)
   {

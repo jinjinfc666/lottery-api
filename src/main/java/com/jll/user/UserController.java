@@ -3,6 +3,8 @@ package com.jll.user;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.Resource;
+
 import org.apache.log4j.Logger;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,7 +23,11 @@ import com.terran4j.commons.api2doc.annotations.ApiComment;
 @RestController
 @RequestMapping({ "/users" })
 public class UserController {
+	
 	private Logger logger = Logger.getLogger(UserController.class);
+	
+	@Resource
+	UserInfoService userInfoService;
 
 	/**
 	 * query the specified user by userName, only the operator with userName or operator with role:role_bus_manager
@@ -93,41 +99,59 @@ public class UserController {
 	 * @param user
 	 * @return
 	 */
-	@RequestMapping(value="/{userId}", method = { RequestMethod.PUT}, produces=MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> updateUserBasic(@PathVariable("userId") int userId,
+	@ApiComment("update the basic information of user[real name,wechar,qq,phone,email]")
+	@RequestMapping(value="/{userName}", method = { RequestMethod.PUT}, produces=MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> updateUserBasic(@PathVariable("userName") String userName,
 			@RequestBody UserInfo user) {
-		Map<String, Object> resp = new HashMap<String, Object>();
-		
-		
-		return null;
+		user.setUserName(userName);
+		return userInfoService.updateUserInfoInfo(user);
 	}
 	
 	/**
-	 * change the 
-	 * @param user
+	 * Update User login password
+	 * 
+	 * @param userName
+	 * @param oldPwd
+	 * @param newPwd
 	 * @return
 	 */
-	@RequestMapping(value="/{userId}/attrs/login-pwd", method = { RequestMethod.PUT}, produces=MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> updateLoginPwd(@PathVariable("userId") int userId,
-			@RequestBody UserInfo user) {
-		Map<String, Object> resp = new HashMap<String, Object>();
-		
-		
-		return null;
+    @ApiComment("Update User Login Password")
+	@RequestMapping(value="/{userName}/attrs/login-pwd", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> updateLoginPwd(
+			 @PathVariable("userName") String userName,
+			 @RequestParam(name = "oldPwd", required = true) String oldPwd,
+			 String newPwd) {
+		return userInfoService.updateFundPwd(userName, oldPwd, newPwd);
 	}
 	
 	/**
-	 * update the basic information of user
-	 * @param user
+	 * 
+	 *  Update User fund password
+	 * 
+	 * @param userName
+	 * @param oldPwd
+	 * @param newPwd
 	 * @return
 	 */
-	@RequestMapping(value="/{userId}/attrs/fund-pwd", method = { RequestMethod.PUT}, produces=MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> updateFundPwd(@PathVariable("userId") int userId,
-			@RequestBody UserInfo user) {
-		Map<String, Object> resp = new HashMap<String, Object>();
-		
-		
-		return null;
+    @ApiComment("Update User Fun Password")
+	@RequestMapping(value="/{userName}/attrs/fund-pwd", method = { RequestMethod.PUT}, produces=MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> updateFundPwd( @PathVariable("userName") String userName,
+			 @RequestParam(name = "oldPwd", required = true) String oldPwd,
+			 @RequestParam(name = "newPwd", required = true) String newPwd) {
+		return userInfoService.updateFundPwd(userName, oldPwd, newPwd);
+	}
+    
+    
+    /**
+     * Get User Info
+     * if login user has role[role_user_info] ,show all info
+     * @param userName
+     * @return
+     */
+    @ApiComment("Get User Info")
+	@RequestMapping(value="/{userName}", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> getUserInfo( @PathVariable("userName") String userName) {
+		return userInfoService.getUserInfoByUserName(userName);
 	}
 	
 

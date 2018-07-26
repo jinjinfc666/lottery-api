@@ -6,7 +6,7 @@ import java.util.Set;
 import java.util.SortedMap;
 
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 
 /**

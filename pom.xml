@@ -203,18 +203,20 @@
 			<artifactId>spring-security-oauth2</artifactId>
 			<!-- <version>2.3.3.RELEASE</version> -->
 		</dependency>
-		<dependency>
+		
+		
+		<!-- <dependency>
 			<groupId>org.bouncycastle</groupId>
 			<artifactId>bcprov-jdk16</artifactId>
 			<version>1.45</version>
-		</dependency>
-
+		</dependency> -->
+		
 		<dependency>
-			<groupId>org.apache.directory.studio</groupId>
-			<artifactId>org.apache.commons.lang</artifactId>
-			<version>2.6</version>
+		    <groupId>com.github.terran4j</groupId>
+		    <artifactId>terran4j-commons-api2doc</artifactId>
+		    <version>1.0.2</version>
 		</dependency>
-
+        
 		<!-- <dependency>
 			<groupId>com.github.terran4j</groupId>
 			<artifactId>terran4j-commons-api2doc</artifactId>
