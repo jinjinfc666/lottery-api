@@ -12,6 +12,7 @@ import com.jll.entity.UserInfo;
 @Repository
 public class UserInfoDaoImpl extends SupserDao implements UserInfoDao
 {
+	
   @Autowired
   public void setSuperSessionFactory(SessionFactory sessionFactory)
   {

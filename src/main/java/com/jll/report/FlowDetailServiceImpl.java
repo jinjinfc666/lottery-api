@@ -1,4 +1,4 @@
-package com.jll.backstage.report.flowdetail;
+package com.jll.report;
 
 import java.util.List;
 import java.util.Map;
@@ -19,17 +19,13 @@ public class FlowDetailServiceImpl implements FlowDetailService {
 	@Override
 	public List<?> queryUserAccountDetails(Map<String, Object> ret) {
 		String userName=(String)ret.get("userName");
-		Integer orderId=(Integer)ret.get("orderId");
+		String orderNum=(String)ret.get("orderNum");
 		Float amountStart=(Float)ret.get("amountStart");
 		Float amountEnd=(Float)ret.get("amountEnd");
 		String operationType=(String)ret.get("operationType");
 		String startTime=(String) ret.get("startTime");
 		String endTime=(String) ret.get("endTime");
 		
-		return flowDetailDao.queryUserAccountDetails(userName,orderId,amountStart,amountEnd,operationType,startTime,endTime);
-	}
-	@Override
-	public List<SysCode> queryType() {
-		return flowDetailDao.queryType();
+		return flowDetailDao.queryUserAccountDetails(userName,orderNum,amountStart,amountEnd,operationType,startTime,endTime);
 	}
 }

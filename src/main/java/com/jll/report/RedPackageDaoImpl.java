@@ -1,10 +1,9 @@
-package com.jll.backstage.report.redpackage;
+package com.jll.report;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.annotation.Resource;
 import javax.persistence.NoResultException;
 
 import org.apache.log4j.Logger;
@@ -14,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.support.HibernateDaoSupport;
 import org.springframework.stereotype.Repository;
 
-import com.jll.user.UserInfoService;
 
 
 
@@ -26,28 +24,21 @@ public class RedPackageDaoImpl extends HibernateDaoSupport implements RedPackage
 	public void setSuperSessionFactory(SessionFactory sessionFactory){
 		super.setSessionFactory(sessionFactory);
 	}
-	@Resource
-	UserInfoService userInfoService;
 	@Override
 	public List<?> queryRedUserAccountDetails(String userName,String startTime,String endTime) {
 		String userNameSql="";
 		String timeSql="";
 		List<Object> list=new ArrayList<Object>();
 		if(userName!=null&&!userName.equals("")) {
-			boolean isUserInfo=userInfoService.isUserInfo(userName);
-			if(isUserInfo) {
-//				userNameSql=" and a.userId=:userId";
-				userNameSql=" and a.userId=?";
-				Integer userId=userInfoService.getUserId(userName);
-				list.add(userId);
-			}
+			userNameSql=" and c.userName=?";
+			list.add(userName);
 		}
 		if(startTime!=null&&endTime!=null&&!startTime.equals("")&&!endTime.equals("")) {
 			timeSql=" and a.createTime >'"+startTime+"' and a.createTime <='"+endTime+"'";
 		}
 		Integer userType=2;
 		Integer accType=2;
-		String sql="from UserAccountDetails a,UserAccount b,UserInfo c,SysCode d where a.walletId=b.id and a.userId=c.id and a.operationType=d.codeName  and c.userType !=? and b.accType=?  "+userNameSql+timeSql+"order by a.id";
+		String sql="from UserAccountDetails a,UserAccount b,UserInfo c,SysCode d where a.walletId=b.id and a.userId=c.id and a.operationType=d.codeName  and c.userType !=? and b.accType=?  "+userNameSql+timeSql+" order by a.id";
 		logger.debug(sql+"-----------------------------RedPackageDaoImpl----SQL--------------------------------");
 		Query<?> query = getSessionFactory().getCurrentSession().createQuery(sql);
 		query.setParameter(0, userType);

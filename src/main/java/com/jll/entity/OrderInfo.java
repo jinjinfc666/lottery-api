@@ -1,5 +1,5 @@
 package com.jll.entity;
-// Generated 2018-7-18 10:09:13 by Hibernate Tools 5.2.10.Final
+// Generated 2018-7-25 12:24:23 by Hibernate Tools 5.2.10.Final
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -24,6 +24,7 @@ public class OrderInfo implements java.io.Serializable {
 	private Integer delayPayoutFlag;
 	private Integer isZh;
 	private Integer isZhBlock;
+	private Integer terminalType;
 	private Date createTime;
 
 	public OrderInfo() {
@@ -31,7 +32,7 @@ public class OrderInfo implements java.io.Serializable {
 
 	public OrderInfo(String orderNum, Integer userId, Integer issueId, String playType, String betNum, Integer betTotal,
 			Float betAmount, Integer times, BigDecimal pattern, BigDecimal prizeRate, Integer state,
-			Integer delayPayoutFlag, Integer isZh, Integer isZhBlock, Date createTime) {
+			Integer delayPayoutFlag, Integer isZh, Integer isZhBlock, Integer terminalType, Date createTime) {
 		this.orderNum = orderNum;
 		this.userId = userId;
 		this.issueId = issueId;
@@ -46,6 +47,7 @@ public class OrderInfo implements java.io.Serializable {
 		this.delayPayoutFlag = delayPayoutFlag;
 		this.isZh = isZh;
 		this.isZhBlock = isZhBlock;
+		this.terminalType = terminalType;
 		this.createTime = createTime;
 	}
 
@@ -167,6 +169,14 @@ public class OrderInfo implements java.io.Serializable {
 
 	public void setIsZhBlock(Integer isZhBlock) {
 		this.isZhBlock = isZhBlock;
+	}
+
+	public Integer getTerminalType() {
+		return this.terminalType;
+	}
+
+	public void setTerminalType(Integer terminalType) {
+		this.terminalType = terminalType;
 	}
 
 	public Date getCreateTime() {
