@@ -1,5 +1,5 @@
 package com.jll.entity;
-// Generated 2018-7-25 12:24:23 by Hibernate Tools 5.2.10.Final
+// Generated 2018-7-26 11:57:20 by Hibernate Tools 5.2.10.Final
 
 import java.math.BigDecimal;
 
@@ -8,13 +8,17 @@ import java.math.BigDecimal;
  */
 public class UserAccount implements java.io.Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Integer id;
 	private Integer userId;
 	private String accName;
 	private BigDecimal balance;
 	private BigDecimal freeze;
 	private BigDecimal prize;
-	private String rewardPoints;
+	private Long rewardPoints;
 	private Integer accType;
 	private String remark;
 
@@ -22,7 +26,7 @@ public class UserAccount implements java.io.Serializable {
 	}
 
 	public UserAccount(Integer userId, String accName, BigDecimal balance, BigDecimal freeze, BigDecimal prize,
-			String rewardPoints, Integer accType, String remark) {
+			Long rewardPoints, Integer accType, String remark) {
 		this.userId = userId;
 		this.accName = accName;
 		this.balance = balance;
@@ -81,11 +85,11 @@ public class UserAccount implements java.io.Serializable {
 		this.prize = prize;
 	}
 
-	public String getRewardPoints() {
+	public Long getRewardPoints() {
 		return this.rewardPoints;
 	}
 
-	public void setRewardPoints(String rewardPoints) {
+	public void setRewardPoints(Long rewardPoints) {
 		this.rewardPoints = rewardPoints;
 	}
 

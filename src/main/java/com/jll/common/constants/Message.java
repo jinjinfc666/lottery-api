@@ -35,16 +35,34 @@ public class Message {
 		
 		ERROR_PAYMENT_CAIPAY_FAILED_CANCEL_ORDER("010005", "configuration of cai-pay is wrong!!"),
 		ERROR_PAYMENT_CAIPAY_FAILED_SIGNATURE_PARAMS("010006", "Can not sign the parameters!!"),
-		
-		ERROR_OLD_FUND_PWD_ERROR("010007", "Old fund password error!!"),
-		ERROR_OLD_LOGIN_PWD_ERROR("010008", "Old login password error!!"),
-		ERROR_MORE_UPDATE_REAL_NAME("010009", "The real name is binding and cannot be modified. If necessary, please contact customer service.!!"),
-		ERROR_MORE_UPDATE_EMAIL("010010", "The email is binding and cannot be modified. If necessary, please contact customer service.!!"),
-		ERROR_MORE_UPDATE_PHONE_NUM("010011", "The phone num is binding and cannot be modified. If necessary, please contact customer service.!!"),
-		
 		ERROR_SYSTEM_CONFIG_NO_RECEIVER_BANK_CARD("020001", "No Receiver bank card is specified!!"),
 		
-		ERROR_SYSTEM_AUTH_NO_ACCESS_PERMISSION("030001", "No Permission to access resource!!")
+		ERROR_SYSTEM_AUTH_NO_ACCESS_PERMISSION("030001", "No Permission to access resource!!"),
+		ERROR_COMMON_NO_PERMISSION("000002", "No permission!!"),
+		ERROR_COMMON_ERROR_LOGIN("000003", "No pricipal!!"),
+		
+		ERROR_COMMON_OTHERS("000003", "Others!!"),
+		
+		/******user module**************/
+		ERROR_USER_EXISTING("010001", "The user is existing!!"),
+		ERROR_USER_NO_GENERAL_AGENCY("010002", "No general agency!!"),
+		ERROR_USER_NO_VALID_USER("010003", "No valid user!!"),
+		ERROR_USER_INVALID_USER_NAME("010004", "Invalid user name!!"),
+		ERROR_USER_INVALID_USER_LOGIN_PWD("010005", "Invalid user login pwd!!"),
+		ERROR_USER_INVALID_USER_FUND_PWD("010006", "Invalid user fund pwd!!"),
+		ERROR_USER_INVALID_EMAIL("010007", "Invalid Email!!"),
+		ERROR_USER_INVALID_PHONE_NUMBER("010008", "Invalid Phone number!!"),
+		ERROR_USER_INVALID_REAL_NAME("010009", "Invalid Real name!!"),
+		ERROR_USER_INVALID_USER_TYPE("010010", "Invalid User type!!"),
+		ERROR_USER_INVALID_PLAT_REBATE("010011", "Invalid Platform rebate!!"),
+		ERROR_USER_FAILED_SAVE("010012", "Failed save user!!"),
+		ERROR_USER_FAILED_REGISTER("010013", "Failed register user!!"),
+		
+		ERROR_OLD_FUND_PWD_ERROR("010014", "Old fund password error!!"),
+		ERROR_OLD_LOGIN_PWD_ERROR("010015", "Old login password error!!"),
+		ERROR_MORE_UPDATE_REAL_NAME("010016", "The real name is binding and cannot be modified. If necessary, please contact customer service.!!"),
+		ERROR_MORE_UPDATE_EMAIL("010017", "The email is binding and cannot be modified. If necessary, please contact customer service.!!"),
+		ERROR_MORE_UPDATE_PHONE_NUM("010017", "The phone num is binding and cannot be modified. If necessary, please contact customer service.!!"),
 		
 		;
 		

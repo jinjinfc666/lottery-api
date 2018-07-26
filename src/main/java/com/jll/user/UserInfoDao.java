@@ -1,5 +1,6 @@
 package com.jll.user;
 
+import com.jll.entity.UserInfo;
 
 public interface UserInfoDao
 {
@@ -12,4 +13,25 @@ public interface UserInfoDao
 	 */
 	int getUserId(String userName);
 	long getCountUser(String userName);
+	
+	UserInfo getUserByUserName(String userName);
+	
+	/**
+	 * if the user is existing in database
+	 * @param user
+	 * @return
+	 */
+	boolean isUserExisting(UserInfo user);
+	
+	/**
+	 * persist the user entity
+	 * @param user
+	 */
+	void saveUser(UserInfo user);
+	
+	/**
+	 * the general agency is unique in the system
+	 * @return
+	 */
+	UserInfo getGeneralAgency();
 }
