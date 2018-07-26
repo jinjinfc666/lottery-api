@@ -21,8 +21,6 @@
 	<http pattern="/oauth/token" create-session="stateless" use-expressions="false" authentication-manager-ref="oauth2AuthenticationManager">
 		<intercept-url pattern="/oauth/token" access="IS_AUTHENTICATED_FULLY"/>
 		<anonymous enabled="false" />
-		<!-- <http-basic entry-point-ref="oauth2AuthenticationEntryPoint" /> -->
-<!-- 		<custom-filter ref="clientCredentialsTokenEndpointFilter" before="BASIC_AUTH_FILTER" /> -->
 		
 		<custom-filter ref="clientCredentialsTokenEndpointFilter" after="BASIC_AUTH_FILTER" />
 		<access-denied-handler ref="oauth2AccessDeniedHandler" />
@@ -41,7 +39,9 @@
 		<csrf disabled="true"/>
 		<custom-filter ref="resourceServer" before="PRE_AUTH_FILTER" />
     	<http-basic entry-point-ref="oauth2AuthenticationEntryPoint" />
-		<intercept-url pattern="/users/attrs/user-name/**" access="hasRole('ROLE_USER1')" />
+		<intercept-url pattern="/users/attrs/user-name/**" access="hasRole('ROLE_USER')" />
+		<intercept-url method="POST" pattern="/users/players" access="hasRole('ROLE_AGENT')" />
+		<intercept-url method="POST" pattern="/users/agents" access="hasRole('ROLE_ADMIN')" />
 	</http>
 	
 	
@@ -109,7 +109,8 @@
         <user name="admin" password="admin" authorities="ROLE_ADMIN,ROLE_PUBLISHER" />
         <user name="publisher" password="publisher" authorities="ROLE_PUBLISHER" />
         <user name="user" password="user" authorities="ROLE_USER" />
-        <user name="marissa" password="koala" authorities="ROLE_USER" />
+        <user name="marissa" password="koala" authorities="ROLE_USER,ROLE_AGENT" />
+        <user name="marissa_sys" password="marissa_sys" authorities="ROLE_ADMIN" />
       </user-service>
     </authentication-provider>
   </authentication-manager>
