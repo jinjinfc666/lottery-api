@@ -1,7 +1,6 @@
 package com.jll.user;
 
 
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +16,7 @@ import com.jll.entity.UserInfo;
 public class UserInfoDaoImpl extends DefaultGenericDaoImpl<UserInfo> implements UserInfoDao
 {
 	private Logger logger = Logger.getLogger(UserInfoDaoImpl.class);
-	
+
 
 	@Override
 	public int getUserId(String userName) {

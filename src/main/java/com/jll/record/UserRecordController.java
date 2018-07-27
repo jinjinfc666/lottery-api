@@ -1,6 +1,5 @@
 package com.jll.record;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -14,10 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.jll.dao.PageQueryDao;
 import com.jll.entity.OrderInfo;
-import com.jll.entity.UserAccount;
 import com.jll.entity.UserAccountDetails;
 import com.jll.entity.UserInfo;
-import com.jll.user.UserInfoService;
 import com.terran4j.commons.api2doc.annotations.Api2Doc;
 import com.terran4j.commons.api2doc.annotations.ApiComment;
 
@@ -49,7 +46,7 @@ public class UserRecordController {
 	
 	
 	@ApiComment("Get User Credit Record")
-	@RequestMapping(value="/{userId}/bet-order", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value="/{userId}/account-flow", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> getUserBetOrder(
 			@PathVariable("userId") int userId,
 			@RequestBody UserAccountDetails query,
