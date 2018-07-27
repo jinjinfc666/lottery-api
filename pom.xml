@@ -249,17 +249,22 @@
 			<exclusions>
 				<exclusion>
 					<groupId>org.slf4j</groupId>
-    				<artifactId>slf4j-api</artifactId>
+					<artifactId>slf4j-api</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
 
 		<dependency>
-    <groupId>org.slf4j</groupId>
-    <artifactId>slf4j-log4j12</artifactId>
-    <!-- <version>1.7.25</version> -->
-</dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<!-- <version>1.7.25</version> -->
+		</dependency>
 
+		<dependency>
+			<groupId>javax.mail</groupId>
+			<artifactId>javax.mail-api</artifactId>
+			<version>1.6.0</version>
+		</dependency>
 	</dependencies>
 
 

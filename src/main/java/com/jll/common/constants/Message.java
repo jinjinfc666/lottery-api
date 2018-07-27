@@ -65,7 +65,9 @@ public class Message {
 		ERROR_MORE_UPDATE_PHONE_NUM("010017", "The phone num is binding and cannot be modified. If necessary, please contact customer service.!!"),
 		
 		/**************third party*************************/
-		ERROR_TP_INVALID_SMS("020001", "Invalid SMS!!")
+		ERROR_TP_INVALID_SMS("020001", "Invalid SMS!!"),
+		ERROR_TP_INVALID_SMS_URL("020002", "Invalid SMS URL!!"),
+		ERROR_TP_SENDING_EMAIL("020003", "Failed sending Email!!")
 		;
 		
 		
