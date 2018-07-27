@@ -1,6 +1,5 @@
 package com.jll.record;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -14,10 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.jll.dao.PageQueryDao;
 import com.jll.entity.OrderInfo;
-import com.jll.entity.UserAccount;
 import com.jll.entity.UserAccountDetails;
 import com.jll.entity.UserInfo;
-import com.jll.user.UserInfoService;
 import com.terran4j.commons.api2doc.annotations.Api2Doc;
 import com.terran4j.commons.api2doc.annotations.ApiComment;
 

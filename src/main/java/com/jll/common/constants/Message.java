@@ -62,7 +62,10 @@ public class Message {
 		ERROR_OLD_LOGIN_PWD_ERROR("010015", "Old login password error!!"),
 		ERROR_MORE_UPDATE_REAL_NAME("010016", "The real name is binding and cannot be modified. If necessary, please contact customer service.!!"),
 		ERROR_MORE_UPDATE_EMAIL("010017", "The email is binding and cannot be modified. If necessary, please contact customer service.!!"),
-		ERROR_MORE_UPDATE_PHONE_NUM("010017", "The phone num is binding and cannot be modified. If necessary, please contact customer service.!!"),
+		ERROR_MORE_UPDATE_PHONE_NUM("010018", "The phone num is binding and cannot be modified. If necessary, please contact customer service.!!"),
+		ERROR_BANK_CARD_HAS_BIND("010019", "The bank card  has been bound by other users. Please re-input the bank card.!!"),
+		ERROR_USER_INVALID_BANK_CARD("010020", "Invalid bank card!!"),
+		ERROR_USER_MORE_BIND_BANK_CARD("010021", "Users bind up to %d bank cards!!"),
 		
 		/**************third party*************************/
 		ERROR_TP_INVALID_SMS("020001", "Invalid SMS!!")

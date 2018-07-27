@@ -2,6 +2,7 @@ package com.jll.user;
 
 import java.util.Map;
 
+import com.jll.entity.UserBankCard;
 import com.jll.entity.UserInfo;
 
 public interface UserInfoService
@@ -64,4 +65,9 @@ public interface UserInfoService
 	UserInfo getGeneralAgency();
 	
 	String resetLoginPwd();
+	
+	Map<String, Object> getUserBankLists(int userId);
+	Map<String, Object> addUserBank(int userId, UserBankCard bank);
+	Map<String, Object> getBankCodeList();
+	Map<String, Object> verifyUserBankInfo(int userId, UserBankCard bank);
 }
