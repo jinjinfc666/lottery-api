@@ -128,10 +128,9 @@ public class UserControllerTest extends ControllerJunitBase{
 			ObjectNode node = mapper.createObjectNode();
 			node.putPOJO("userName", "sys_user_001");
 			node.putPOJO("loginPwd", "sys_user_001");
-			node.putPOJO("platRebate", "0.00");
 			
 			bis = new ByteArrayInputStream(mapper.writeValueAsBytes(node));
-			WebRequest request = new PostMethodWebRequest("http://localhost:8080/users/agents",
+			WebRequest request = new PostMethodWebRequest("http://localhost:8080/users/sys-users",
 					bis,
 					MediaType.APPLICATION_JSON_VALUE);
 			WebConversation wc = new WebConversation();

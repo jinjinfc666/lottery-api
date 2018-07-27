@@ -16,6 +16,7 @@ import com.jll.common.constants.Constants.EmailValidState;
 import com.jll.common.constants.Constants.PhoneValidState;
 import com.jll.common.constants.Constants.UserLevel;
 import com.jll.common.constants.Constants.UserState;
+import com.jll.common.constants.Constants.UserType;
 import com.jll.common.constants.Message;
 import com.jll.common.utils.Utils;
 import com.jll.entity.UserInfo;
@@ -95,10 +96,11 @@ public class UserInfoServiceImpl implements UserInfoService
 			return Message.Error.ERROR_USER_INVALID_USER_TYPE.getCode();
 		}
 		
-		
-		if(user.getPlatRebate() == null
-				|| (user.getPlatRebate().compareTo(superior.getPlatRebate())) == 1) {
-			return Message.Error.ERROR_USER_INVALID_PLAT_REBATE.getCode();
+		if(user.getUserType() != UserType.SYS_ADMIN.getCode()) {
+			if(user.getPlatRebate() == null
+					|| (user.getPlatRebate().compareTo(superior.getPlatRebate())) == 1) {
+				return Message.Error.ERROR_USER_INVALID_PLAT_REBATE.getCode();
+			}			
 		}
 		
 		
@@ -118,7 +120,10 @@ public class UserInfoServiceImpl implements UserInfoService
 		String loginUserName = null;
 		
 		user.setLoginPwd(encoder.encode(user.getLoginPwd()));
-		user.setFundPwd(encoder.encode(user.getFundPwd()));
+		
+		if(user.getUserType() != UserType.SYS_ADMIN.getCode()) {
+			user.setFundPwd(encoder.encode(user.getFundPwd()));
+		}
 		user.setCreateTime(new Date());
 		user.setIsValidEmail(EmailValidState.UNVERIFIED.getCode());
 		user.setIsValidPhone(PhoneValidState.UNVERIFIED.getCode());

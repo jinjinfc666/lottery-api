@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.jll.common.constants.Constants.UserType;
 import com.jll.common.constants.Message;
 import com.jll.entity.UserInfo;
+import com.jll.user.tp.SMSService;
 import com.terran4j.commons.api2doc.annotations.Api2Doc;
 import com.terran4j.commons.api2doc.annotations.ApiComment;
 
@@ -32,6 +33,9 @@ public class UserController {
 
 	@Resource
 	UserInfoService userServ;
+	
+	@Resource
+	SMSService smsServ;
 	
 	/**
 	 * query the specified user by userName, only the operator with userName or operator with role:role_bus_manager
@@ -64,7 +68,7 @@ public class UserController {
 	 * this will be only called  by the agent
 	 * @param request
 	 */
-	@RequestMapping(method = { RequestMethod.POST }, produces=MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value="/players", method = { RequestMethod.POST }, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> regUser(@RequestBody UserInfo user) {
 		Map<String, Object> resp = new HashMap<String, Object>();
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -92,6 +96,7 @@ public class UserController {
 		}		
 		
 		user.setSuperior(superior.getId()+","+superior.getSuperior());
+		user.setUserType(UserType.PLAYER.getCode());
 		String ret = userServ.validUserInfo(user, superior);
 		if(StringUtils.isBlank(ret) ) {
 			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
@@ -127,7 +132,6 @@ public class UserController {
 			return resp;
 		}		
 		
-		user.setUserType(UserType.PLAYER.getCode());
 		user.setRebate(superior.getPlatRebate().subtract(user.getPlatRebate()));
 		try {
 			userServ.regUser(user);
@@ -160,6 +164,7 @@ public class UserController {
 		}
 		
 		user.setSuperior(Integer.toString(generalAgency.getId()));
+		user.setUserType(UserType.AGENCY.getCode());
 		String ret = userServ.validUserInfo(user, generalAgency);
 		if(StringUtils.isBlank(ret) ) {
 			resp.put(Message.KEY_STATUS, Message.status.FAILED);
@@ -188,7 +193,6 @@ public class UserController {
 		}		
 		
 		user.setRebate(generalAgency.getPlatRebate().subtract(user.getPlatRebate()));
-		user.setUserType(UserType.AGENCY.getCode());
 		try {
 			userServ.regUser(user);
 		}catch(Exception ex) {
@@ -211,16 +215,8 @@ public class UserController {
 	public Map<String, Object> regSysUser(@RequestBody UserInfo user) {
 		Map<String, Object> resp = new HashMap<String, Object>();
 		
-		UserInfo generalAgency = userServ.getGeneralAgency();
-		if(generalAgency == null) {
-			resp.put(Message.KEY_STATUS, Message.status.FAILED);
-			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_NO_GENERAL_AGENCY.getCode());
-			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_NO_GENERAL_AGENCY.getErrorMes());
-			return resp;
-		}
-		
-		user.setSuperior(Integer.toString(generalAgency.getId()));
-		String ret = userServ.validUserInfo(user, generalAgency);
+		user.setUserType(UserType.SYS_ADMIN.getCode());
+		String ret = userServ.validUserInfo(user, null);
 		if(StringUtils.isBlank(ret) ) {
 			resp.put(Message.KEY_STATUS, Message.status.FAILED);
 			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
@@ -235,9 +231,6 @@ public class UserController {
 			return resp;
 		}
 		
-		if(StringUtils.isBlank(user.getFundPwd())) {
-			user.setFundPwd(user.getLoginPwd());
-		}
 		
 		boolean isExisting = userServ.isUserExisting(user);
 		if(isExisting) {
@@ -247,8 +240,6 @@ public class UserController {
 			return resp;
 		}		
 		
-		user.setRebate(generalAgency.getPlatRebate().subtract(user.getPlatRebate()));
-		user.setUserType(UserType.AGENCY.getCode());
 		try {
 			userServ.regUser(user);
 		}catch(Exception ex) {
@@ -370,11 +361,43 @@ public class UserController {
 	 * @return
 	 */
 	@RequestMapping(value="/{userName}/attrs/login-pwd/reset/sms", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> applyResetLoginPwdBySMS(@PathVariable("userName") String userName) {
+	public Map<String, Object> applyResetLoginPwdBySMS(@PathVariable(name="userName", required = true) String userName) {
 		Map<String, Object> resp = new HashMap<String, Object>();
 		
+		UserInfo user = new UserInfo();
+		user.setUserName(userName);
 		
-		return null;
+		boolean isExisting = userServ.isUserExisting(user);
+		if(!isExisting) {
+			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_NO_VALID_USER.getCode());
+			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_NO_VALID_USER.getErrorMes());
+			return resp;
+		}
+		
+		user = userServ.getUserByUserName(userName);
+		
+		boolean ifPhoneValid = (user.getIsValidPhone() != null && user.getIsValidPhone() == 1)?true:false;
+		if(!ifPhoneValid) {
+			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_INVALID_PHONE_NUMBER.getCode());
+			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_INVALID_PHONE_NUMBER.getErrorMes());
+			return resp;
+		}
+		
+		String ret = smsServ.sending6digitsNumbers(user.getPhoneNum());
+		if(!Integer.toString(Message.status.SUCCESS.getCode()).equals(ret)) {
+			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			resp.put(Message.KEY_ERROR_CODE, ret);
+			resp.put(Message.KEY_ERROR_MES, Message.Error.getErrorByCode(ret).getErrorMes());
+			return resp;
+		}
+		
+		Map<String,Object> data = new HashMap<>();
+		data.put("expired_time", 120);
+		resp.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		resp.put(Message.KEY_DATA, data);
+		return resp;
 	}
 	
 	/**
@@ -385,12 +408,41 @@ public class UserController {
 	 * @return
 	 */
 	@RequestMapping(value="/{userName}/attrs/login-pwd/reset/sms", method = { RequestMethod.PUT}, produces=MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> resetLoginPwdBySMS(@PathVariable("userName") String userName,
+	public Map<String, Object> resetLoginPwdBySMS(@PathVariable(name="userName", required = true) String userName,
 			@RequestParam("sms") String sms) {
 		Map<String, Object> resp = new HashMap<String, Object>();
+		UserInfo user = new UserInfo();
+		user.setUserName(userName);
 		
+		boolean isExisting = userServ.isUserExisting(user);
+		if(!isExisting) {
+			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_NO_VALID_USER.getCode());
+			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_NO_VALID_USER.getErrorMes());
+			return resp;
+		}
 		
-		return null;
+		user = userServ.getUserByUserName(userName);
+		
+		boolean isSmsValid = smsServ.isSmsValid(user, sms);
+		
+		if(!isSmsValid) {
+			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_TP_INVALID_SMS.getCode());
+			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_TP_INVALID_SMS.getErrorMes());
+			return resp;
+		}
+		
+		String ret = userServ.resetLoginPwd();
+		if(!Integer.toString(Message.status.SUCCESS.getCode()).equals(ret)) {
+			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			resp.put(Message.KEY_ERROR_CODE, ret);
+			resp.put(Message.KEY_ERROR_MES, Message.Error.getErrorByCode(ret).getErrorMes());
+			return resp;
+		}
+		
+		resp.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		return resp;
 	}
 	
 	/**
@@ -402,8 +454,7 @@ public class UserController {
 	@RequestMapping(value="/{userName}/attrs/login-pwd/pre-reset/email", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> applyResetLoginPwdByEmail(@PathVariable("userName") String userName) {
 		Map<String, Object> resp = new HashMap<String, Object>();
-		
-		
+				
 		return null;
 	}
 	
@@ -417,7 +468,6 @@ public class UserController {
 	public Map<String, Object> resetLoginPwdByEmail(@PathVariable("userName") String userName,
 			@RequestParam("verifyCode") String verifyCode) {
 		Map<String, Object> resp = new HashMap<String, Object>();
-		
 		
 		return null;
 	}

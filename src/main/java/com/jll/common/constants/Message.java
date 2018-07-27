@@ -7,6 +7,8 @@ public class Message {
 	
 	public final static String KEY_STATUS = "status";
 	
+	public final static String KEY_DATA = "data";
+	
 	public static enum status{
 		SUCCESS(1),
 		FAILED(0);
@@ -43,8 +45,10 @@ public class Message {
 		ERROR_USER_INVALID_USER_TYPE("010010", "Invalid User type!!"),
 		ERROR_USER_INVALID_PLAT_REBATE("010011", "Invalid Platform rebate!!"),
 		ERROR_USER_FAILED_SAVE("010012", "Failed save user!!"),
-		ERROR_USER_FAILED_REGISTER("010013", "Failed register user!!")
+		ERROR_USER_FAILED_REGISTER("010013", "Failed register user!!"),
 		
+		/**************third party*************************/
+		ERROR_TP_INVALID_SMS("020001", "Invalid SMS!!")
 		;
 		
 		
