@@ -2,19 +2,25 @@ package com.jll.user;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
 
 import org.apache.log4j.Logger;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.jll.common.constants.Constants;
 import com.jll.common.constants.Constants.EmailValidState;
 import com.jll.common.constants.Constants.PhoneValidState;
+import com.jll.common.constants.Constants.SysCodeTypes;
+import com.jll.common.constants.Constants.SysCodeUseLists;
 import com.jll.common.constants.Constants.UserLevel;
 import com.jll.common.constants.Constants.UserState;
 import com.jll.common.constants.Message;
@@ -22,7 +28,10 @@ import com.jll.common.utils.SecurityUtils;
 import com.jll.common.utils.StringUtils;
 import com.jll.common.utils.Utils;
 import com.jll.dao.SupserDao;
+import com.jll.entity.SysCode;
+import com.jll.entity.UserBankCard;
 import com.jll.entity.UserInfo;
+import com.jll.sysSettings.codeManagement.SysCodeService;
 import com.jll.user.wallet.WalletService;
 
 
@@ -40,6 +49,9 @@ public class UserInfoServiceImpl implements UserInfoService
 
 	@Resource
 	WalletService walletServ;
+	
+	@Resource
+	SysCodeService sysCodeService;
 	
 	
 	@Override
@@ -182,9 +194,8 @@ public class UserInfoServiceImpl implements UserInfoService
 						&& !StringUtils.isEmpty(userInfo.getEmail()))
 				||(isAdmin && !StringUtils.isEmpty(userInfo.getEmail()))){
 			dbInfo.setEmail(userInfo.getEmail());
-			dbInfo.setIsValidEmail(0);
+			dbInfo.setIsValidEmail(Constants.EmailValidState.UNVERIFIED.getCode());
 		}
-		
 		
 		if(!isAdmin 
 				&& !StringUtils.isEmpty(dbInfo.getPhoneNum())
@@ -198,7 +209,7 @@ public class UserInfoServiceImpl implements UserInfoService
 						&& !StringUtils.isEmpty(userInfo.getPhoneNum()))
 				||(isAdmin && !StringUtils.isEmpty(userInfo.getPhoneNum()))){
 			dbInfo.setPhoneNum(userInfo.getPhoneNum());
-			dbInfo.setIsValidPhone(0);
+			dbInfo.setIsValidPhone(Constants.PhoneValidState.UNVERIFIED.getCode());
 		}
 		
 		dbInfo.setWechat(userInfo.getWechat());
@@ -312,5 +323,64 @@ public class UserInfoServiceImpl implements UserInfoService
 	@Override
 	public UserInfo getGeneralAgency() {
 		return userDao.getGeneralAgency();
+	}
+
+	@Override
+	public Map<String, Object> getUserBankLists(int userId) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+		DetachedCriteria dc = DetachedCriteria.forClass(UserBankCard.class);
+		dc.add(Restrictions.eq("userId",userId));
+		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		ret.put(Message.KEY_DATA,supserDao.findByCriteria(dc));
+		return ret;
+	}
+
+	@Override
+	public Map<String, Object> addUserBank(int userId, UserBankCard bank) {
+		Map<String, Object> bankInfo = verifyUserBankInfo(userId, bank);
+		if(null == bankInfo.get(Message.KEY_DATA)){
+			return bankInfo;
+		}
+		bank.setBankCode(bankInfo.get(Message.KEY_DATA).toString());
+		bank.setCreateTime(new Date());
+		bank.setCreator(userId);
+		bank.setState(Constants.BankCardState.ENABLED.getCode());
+		return null;
+	}
+
+	@Override
+	public Map<String, Object> getBankCodeList() {
+		Map<String, Object> ret = new HashMap<>();
+		List<SysCode> types = sysCodeService.queryType(SysCodeTypes.LOTTERY_TYPES.getCode());
+		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		ret.put("data", types);
+		return ret;
+	}
+
+	@Override
+	public Map<String, Object> verifyUserBankInfo(int userId, UserBankCard bank) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+		Map<String, Object> bankInfo =  getUserBankLists(userId);
+		List<?> bankList = (List<?>) bankInfo.get(Message.KEY_DATA);
+		int maxCardNum = Integer.valueOf(((SysCode)supserDao.get(SysCode.class, "codeName", SysCodeUseLists.MAX_BIND_BANK)).getCodeVal());
+		if(bankList.size() == maxCardNum){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_MORE_BIND_BANK_CARD.getCode());
+			ret.put(Message.KEY_ERROR_MES, String.format(Message.Error.ERROR_USER_MORE_BIND_BANK_CARD.getErrorMes(),maxCardNum));
+			return ret;
+		}
+		List<?> checkList = supserDao.findByName(UserBankCard.class,"cardNum",bank.getCardNum());
+		if(!checkList.isEmpty()){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_BANK_CARD_HAS_BIND.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_BANK_CARD_HAS_BIND.getErrorMes());
+			return ret;
+		}
+		ret =  Utils.validBankInfo(bank.getCardNum());
+		return ret;
+	}
+	
+	public static void main(String[] args) {
+		System.out.println(String.format(Message.Error.ERROR_USER_MORE_BIND_BANK_CARD.getErrorMes(), 3));
 	}
 }

@@ -1,9 +1,15 @@
 package com.jll.common.utils;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 import java.util.regex.Pattern;
 
+
 import org.apache.commons.lang3.StringUtils;
+
+import com.google.gson.Gson;
+import com.jll.common.constants.Message;
 
 public class Utils {
 	public static final char[] alphabet = {'a','b','c','d','e','f','g','h','i',
@@ -124,6 +130,25 @@ public class Utils {
 			}
 		}
 		return true;
+	}
+	
+	public static Map<String,Object> validBankInfo(String bank){
+		Map<String, Object> ret = new HashMap<String, Object>();
+		Gson json = new Gson();
+		Map<String, Object> checkResut = json.fromJson(HttpUtils.sendGetRepuest("https://ccdcapi.alipay.com/validateAndCacheCardInfo.json?_input_charset=utf-8&cardNo="+bank+"&cardBinCheck=true"), HashMap.class);
+		if(!Boolean.valueOf(checkResut.get("validated").toString())){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_INVALID_BANK_CARD.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_INVALID_BANK_CARD.getErrorMes());
+			return ret;
+		}
+		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		ret.put(Message.KEY_DATA,checkResut.get("bank").toString().toUpperCase());
+		return ret;
+	}
+	
+	public static void main(String[] args) {
+		System.out.println(validBankInfo("6217002710000684874"));
 	}
 /*
 	public static boolean isChineseByName(String str) {

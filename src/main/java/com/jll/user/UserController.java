@@ -20,7 +20,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.jll.common.constants.Constants.UserType;
 import com.jll.common.constants.Message;
 import com.jll.common.utils.StringUtils;
+import com.jll.entity.UserBankCard;
 import com.jll.entity.UserInfo;
+import com.jll.sysSettings.codeManagement.SysCodeService;
 import com.terran4j.commons.api2doc.annotations.Api2Doc;
 import com.terran4j.commons.api2doc.annotations.ApiComment;
 
@@ -38,6 +40,10 @@ public class UserController {
 	@Resource
 	UserInfoService userServ;
 	
+	
+	@Resource
+	SysCodeService sysCodeService;
+	
 	/**
 	 * query the specified user by userName, only the operator with userName or operator with role:role_bus_manager
 	 * can obtain the full information, the person without permission can only read part of information.
@@ -45,10 +51,7 @@ public class UserController {
 	 */
 	@RequestMapping(value="/attrs/user-name/{userName}", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> queryUserByUserName(@PathVariable("userName") String userName) {
-		Map<String, Object> resp = new HashMap<String, Object>();
-		
-		
-		return null;
+		return userInfoService.getUserInfoByUserName(userName);
 	}
 	
 	/**
@@ -326,6 +329,53 @@ public class UserController {
 	public Map<String, Object> getUserInfo( @PathVariable("userName") String userName) {
 		return userInfoService.getUserInfoByUserName(userName);
 	}
+    
+    
+    /**
+     * Get User bank lists
+     * @param usreId
+     * @return
+     */
+    @ApiComment("Get User bank lists")
+	@RequestMapping(value="/{userId}/bank-list", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> getUserBankLists( @PathVariable("userId") int userId) {
+		return userInfoService.getUserBankLists(userId);
+	}
+    
+    
+    /**
+     * Add user bank
+     * @param usreId
+     * @return
+     */
+    @ApiComment("Add user bank")
+	@RequestMapping(value="/{userId}/add-bank", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> addUserBank( @PathVariable("userId") int userId,
+			@RequestBody UserBankCard bank) {
+		return userInfoService.addUserBank(userId,bank);
+	}
+    
+    /**
+     * verify user bank card
+     * @return
+     */
+    @ApiComment("verify user bank card")
+	@RequestMapping(value="/{userId}/check-bank-card", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> verifyUserBankInfo( @PathVariable("userId") int userId,
+			@RequestBody UserBankCard bank) {
+		return userInfoService.verifyUserBankInfo(userId,bank);
+	}
+    
+    
+    /**
+     * Get Bank Code Lists
+     * @return
+     */
+    @ApiComment("Get Bank Code Lists")
+	@RequestMapping(value="/bank-code-list", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> getBankCodeList() {
+		return userInfoService.getBankCodeList();
+	}
 	
 
 	/**
@@ -458,4 +508,5 @@ public class UserController {
 		
 		return null;
 	}
+	
 }
