@@ -64,6 +64,7 @@ public interface UserInfoService
 	 */
 	UserInfo getGeneralAgency();
 	
+	String resetLoginPwd();
 	
 	Map<String, Object> getUserBankLists(int userId);
 	Map<String, Object> addUserBank(int userId, UserBankCard bank);

@@ -42,6 +42,7 @@
 		<intercept-url pattern="/users/attrs/user-name/**" access="hasRole('ROLE_USER')" />
 		<intercept-url method="POST" pattern="/users/players" access="hasRole('ROLE_AGENT')" />
 		<intercept-url method="POST" pattern="/users/agents" access="hasRole('ROLE_ADMIN')" />
+		<intercept-url method="POST" pattern="/users/sys-users" access="hasRole('ROLE_ADMIN')" />
 	</http>
 	
 	

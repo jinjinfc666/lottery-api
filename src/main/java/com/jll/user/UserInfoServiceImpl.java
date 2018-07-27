@@ -380,6 +380,12 @@ public class UserInfoServiceImpl implements UserInfoService
 		return ret;
 	}
 	
+	@Override
+	public String resetLoginPwd() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
 	public static void main(String[] args) {
 		System.out.println(String.format(Message.Error.ERROR_USER_MORE_BIND_BANK_CARD.getErrorMes(), 3));
 	}
