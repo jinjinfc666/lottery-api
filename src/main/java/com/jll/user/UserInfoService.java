@@ -62,4 +62,6 @@ public interface UserInfoService
 	 * @return
 	 */
 	UserInfo getGeneralAgency();
+	
+	String resetLoginPwd();
 }

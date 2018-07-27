@@ -318,4 +318,10 @@ public class UserInfoServiceImpl implements UserInfoService
 	public UserInfo getGeneralAgency() {
 		return userDao.getGeneralAgency();
 	}
+
+	@Override
+	public String resetLoginPwd() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

@@ -1,5 +1,7 @@
 package com.jll.user.tp;
 
+import com.jll.entity.UserInfo;
+
 public interface SMSService
 {
 	/**
@@ -9,4 +11,6 @@ public interface SMSService
 	 * @return
 	 */
 	String sending6digitsNumbers(String phoneNum);
+
+	boolean isSmsValid(UserInfo user, String sms);
 }
