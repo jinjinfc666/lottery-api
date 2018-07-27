@@ -45,7 +45,7 @@
             <column name="rebate"/>
         </property>
         <property generated="never" lazy="false" name="platRebate" optimistic-lock="true" type="big_decimal" unique="false">
-            <column name="platRebate"/>
+            <column name="plat_rebate"/>
         </property>
         <property generated="never" lazy="false" name="phoneNum" optimistic-lock="true" type="string" unique="false">
             <column length="30" name="phone_num"/>

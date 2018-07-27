@@ -21,7 +21,7 @@
         <property generated="never" lazy="false" name="prize" optimistic-lock="true" type="big_decimal" unique="false">
             <column name="prize"/>
         </property>
-        <property generated="never" lazy="false" name="rewardPoints" optimistic-lock="true" type="string" unique="false">
+        <property generated="never" lazy="false" name="rewardPoints" optimistic-lock="true" type="java.lang.Long" unique="false">
             <column length="10" name="reward_points">
             </column>
         </property>
