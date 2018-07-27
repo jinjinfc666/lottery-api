@@ -46,6 +46,8 @@ public class ReportController {
 	SysCodeService sysCodeService;
 	@Resource
 	DWDetailsService dWDetailsService;
+	@Resource
+	DepositApplicationService depositApplicationService;
 	/**
 	 *流水明细
 	 * @author Silence
@@ -304,4 +306,57 @@ public class ReportController {
 		ret.put("data", list);
 		return ret;
 	}
+	/**
+	 *充值明细
+	 * @author Silence
+	 */
+	@RequestMapping(value={"/DepositApplication"}, method={RequestMethod.POST}, produces={"application/json"})
+	public Map<String, Object> queryDepositApplication(@RequestParam(name = "userName", required = false) String userName,
+			  @RequestParam(name = "orderNum", required = false) String orderNum,//订单号 String
+			  @RequestParam(name = "startTime", required = true) String startTime,//时间 String
+			  @RequestParam(name = "endTime", required = true) String endTime,//时间 String
+			  HttpServletRequest request) {
+		Map<String, Object> ret = new HashMap<>();
+		if(startTime.equals("")||endTime.equals("")) {
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+	    	return ret;
+		}
+		ret.put("userName", userName);
+		ret.put("orderNum", orderNum);
+		ret.put("startTime", startTime);
+		ret.put("endTime", endTime);
+		logger.debug(ret+"------------------------------queryDWD--------------------------------------");
+		List<?> list = depositApplicationService.queryDetails(ret);
+		logger.debug(list+"------------------------------queryDWD--------------------------------------");
+		ret.clear();
+		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		ret.put("data", list);
+		return ret;
+	}
+	//修改存款状态
+	@RequestMapping(value={"/UpdateDepositState"}, method={RequestMethod.POST}, produces={"application/json"})
+	public Map<String, Object> UpdateDepositState(@RequestParam(name = "id", required = true) Integer id,
+			  @RequestParam(name = "state", required = true) Integer state,//状态
+			  HttpServletRequest request) {
+		Map<String, Object> ret = new HashMap<>();
+		if(id==null||state==null) {
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+	    	return ret;
+		}
+		ret.put("id", id);
+		ret.put("state", state);
+		logger.debug(ret+"------------------------------queryDWD--------------------------------------");
+		depositApplicationService.updateState(ret);
+//		logger.debug(list+"------------------------------queryDWD--------------------------------------");
+		ret.clear();
+		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+//		ret.put("data", list);
+		return ret;
+	}
+	
+	
 }

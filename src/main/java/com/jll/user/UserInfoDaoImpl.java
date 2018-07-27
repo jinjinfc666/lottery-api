@@ -6,29 +6,17 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.jll.dao.DefaultGenericDaoImpl;
-import com.jll.report.ReportController;
 import com.jll.entity.UserInfo;
 
 @Repository
 public class UserInfoDaoImpl extends DefaultGenericDaoImpl<UserInfo> implements UserInfoDao
 {
 	private Logger logger = Logger.getLogger(UserInfoDaoImpl.class);
-	
-  /*@Autowired
-=======
-	private Logger logger = Logger.getLogger(ReportController.class);
-  @Autowired
->>>>>>> 7e005b036dabe8e7371171e9a91a640dd7e8fbe7
-  public void setSuperSessionFactory(SessionFactory sessionFactory)
-  {
-    super.setSessionFactory(sessionFactory);
-  }*/
+
 
 	@Override
 	public int getUserId(String userName) {

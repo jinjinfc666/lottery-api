@@ -4,8 +4,6 @@ package com.jll.common.constants;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.jll.common.constants.Message.Error;
-
 public class Constants {	
 	public static enum DepositOrderState{
 		INIT_OR_PUSHED(0),
@@ -99,6 +97,39 @@ public class Constants {
 		public static EmailValidState getStateByCode(int code) {
 			EmailValidState[] states = EmailValidState.values();
 			for(EmailValidState state: states) {
+				if(state.getCode() == code) {
+					return state;
+				}
+			}
+			return null;
+		}
+	}
+	
+	
+	public static enum BankCardState{
+		DISABLE(0, "无效"),
+		ENABLED(1, "有效");
+		
+		private int code;
+		
+		private String desc;
+		
+		private BankCardState(int code, String desc) {
+			this.code = code;
+			this.desc = desc;
+		}
+		
+		public int getCode() {
+			return this.code;
+		}
+		
+		public String getDesc() {
+			return this.desc;
+		}
+		
+		public static BankCardState getStateByCode(int code) {
+			BankCardState[] states = BankCardState.values();
+			for(BankCardState state: states) {
 				if(state.getCode() == code) {
 					return state;
 				}
@@ -246,6 +277,7 @@ public class Constants {
 	 */
 	public static enum SysCodeTypes{
 		LOTTERY_TYPES("caizhongleixing"),
+		BANK_LIST("bank_list"),
 		FLOW_TYPES("acc_ope_type");
 		private String value;
 		
@@ -253,6 +285,23 @@ public class Constants {
 			this.value = value;
 		}
 		
+		public String getCode() {
+			return value;
+		}
+	}
+	
+	
+	
+	
+	/**
+	 *SysCode 直接使用
+	 */
+	public static enum SysCodeUseLists{
+		MAX_BIND_BANK("max_bind_bank");
+		private String value;
+		private SysCodeUseLists(String value) {
+			this.value = value;
+		}
 		public String getCode() {
 			return value;
 		}

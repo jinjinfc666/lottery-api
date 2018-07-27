@@ -17,12 +17,16 @@ import com.jll.dao.SupserDao;
 import com.jll.entity.OrderInfo;
 import com.jll.entity.SysCode;
 import com.jll.entity.UserAccountDetails;
+import com.jll.sysSettings.codeManagement.SysCodeService;
 
 @Service
 public class UserRecordServiceImpl implements UserRecordService{
 
 	@Resource
 	SupserDao  supserDao; 
+	
+	@Resource
+	SysCodeService sysCodeService;
 	
 	@Override
 	public Map<String, Object> getUserBetRecord(OrderInfo pramsInfo,PageQueryDao page) {

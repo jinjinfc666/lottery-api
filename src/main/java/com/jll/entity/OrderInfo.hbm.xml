@@ -16,7 +16,7 @@
             <column name="issue_id">
             </column>
         </property>
-        <property generated="never" lazy="false" name="playType" optimistic-lock="true" type="string" unique="false">
+        <property generated="never" lazy="false" name="playType" optimistic-lock="true" type="java.lang.Integer" unique="false">
             <column length="30" name="play_type">
                 <comment>�淨</comment>
             </column>
