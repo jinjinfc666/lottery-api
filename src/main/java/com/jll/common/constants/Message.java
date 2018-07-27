@@ -27,6 +27,17 @@ public class Message {
 	//code : **-->module name;****-->errorNum
 	public static enum Error{
 		ERROR_COMMON_ERROR_PARAMS("000001", "Error parameter!!"),
+		
+		ERROR_PAYMENT_TLCLOUD_CONFIGURATION("010001", "configuration of tl-cloud is wrong!!"),
+		ERROR_PAYMENT_TLCLOUD_FAILED_PUSH_ORDER("010002", "Failed to push order!!"),
+		ERROR_PAYMENT_TLCLOUD_FAILED_CANCEL_ORDER("010003", "Failed to cancel order!!"),
+		ERROR_PAYMENT_DEPOSIT_ERROR_ORDER("010004", "No order existing!!"),
+		
+		ERROR_PAYMENT_CAIPAY_FAILED_CANCEL_ORDER("010005", "configuration of cai-pay is wrong!!"),
+		ERROR_PAYMENT_CAIPAY_FAILED_SIGNATURE_PARAMS("010006", "Can not sign the parameters!!"),
+		ERROR_SYSTEM_CONFIG_NO_RECEIVER_BANK_CARD("020001", "No Receiver bank card is specified!!"),
+		
+		ERROR_SYSTEM_AUTH_NO_ACCESS_PERMISSION("030001", "No Permission to access resource!!"),
 		ERROR_COMMON_NO_PERMISSION("000002", "No permission!!"),
 		ERROR_COMMON_ERROR_LOGIN("000003", "No pricipal!!"),
 		
@@ -46,6 +57,12 @@ public class Message {
 		ERROR_USER_INVALID_PLAT_REBATE("010011", "Invalid Platform rebate!!"),
 		ERROR_USER_FAILED_SAVE("010012", "Failed save user!!"),
 		ERROR_USER_FAILED_REGISTER("010013", "Failed register user!!"),
+		
+		ERROR_OLD_FUND_PWD_ERROR("010014", "Old fund password error!!"),
+		ERROR_OLD_LOGIN_PWD_ERROR("010015", "Old login password error!!"),
+		ERROR_MORE_UPDATE_REAL_NAME("010016", "The real name is binding and cannot be modified. If necessary, please contact customer service.!!"),
+		ERROR_MORE_UPDATE_EMAIL("010017", "The email is binding and cannot be modified. If necessary, please contact customer service.!!"),
+		ERROR_MORE_UPDATE_PHONE_NUM("010017", "The phone num is binding and cannot be modified. If necessary, please contact customer service.!!"),
 		
 		/**************third party*************************/
 		ERROR_TP_INVALID_SMS("020001", "Invalid SMS!!")

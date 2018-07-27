@@ -1,10 +1,11 @@
 package com.jll.user;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,7 +19,10 @@ import com.jll.common.constants.Constants.UserLevel;
 import com.jll.common.constants.Constants.UserState;
 import com.jll.common.constants.Constants.UserType;
 import com.jll.common.constants.Message;
+import com.jll.common.utils.SecurityUtils;
+import com.jll.common.utils.StringUtils;
 import com.jll.common.utils.Utils;
+import com.jll.dao.SupserDao;
 import com.jll.entity.UserInfo;
 import com.jll.user.wallet.WalletService;
 
@@ -31,6 +35,9 @@ public class UserInfoServiceImpl implements UserInfoService
 	
 	@Resource
 	UserInfoDao userDao;
+	
+	@Resource
+	SupserDao  supserDao; 
 
 	@Resource
 	WalletService walletServ;
@@ -47,6 +54,162 @@ public class UserInfoServiceImpl implements UserInfoService
 		return count == 0 ? false:true;
 	}
 
+	@Override
+	public boolean isUserInfoByUid(int userId) {
+		return null == supserDao.get(UserInfo.class,userId);
+	}
+
+	@Override
+	public Map<String, Object> updateFundPwd(String userName, String oldPwd, String newPwd) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+		UserInfo dbInfo = (UserInfo) supserDao.get(UserInfo.class,"userName",userName);
+		if(StringUtils.checkFundPwdFmtIsOK(newPwd)
+				|| !newPwd.equals(oldPwd)
+				|| null == dbInfo){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+			return ret;
+		}
+		BCryptPasswordEncoder bcEncoder = new  BCryptPasswordEncoder();
+		String chargePwd = bcEncoder.encode(newPwd);
+		if(!chargePwd.equals(dbInfo.getFundPwd())){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_OLD_FUND_PWD_ERROR);
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_OLD_FUND_PWD_ERROR.getErrorMes());
+			return ret;
+		}
+		dbInfo.setFundPwd(chargePwd);
+		supserDao.update(dbInfo);
+		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		return ret;
+	}
+
+	@Override
+	public Map<String, Object> updateLoginPwd(String userName, String oldPwd, String newPwd) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+		UserInfo dbInfo = (UserInfo) supserDao.get(UserInfo.class,"userName",userName);
+		if(StringUtils.checkLoginPwdFmtIsOK(newPwd)
+				|| !newPwd.equals(oldPwd)
+				|| null == dbInfo){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+			return ret;
+		}
+		BCryptPasswordEncoder bcEncoder = new  BCryptPasswordEncoder();
+		String chargePwd = bcEncoder.encode(newPwd);
+		if(!chargePwd.equals(dbInfo.getLoginPwd())){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_OLD_LOGIN_PWD_ERROR);
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_OLD_LOGIN_PWD_ERROR.getErrorMes());
+			return ret;
+		}
+		dbInfo.setLoginPwd(chargePwd);
+		supserDao.update(dbInfo);
+		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		return ret;
+	}
+
+	@Override
+	public Map<String, Object> getUserInfoByUserName(String userName) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+		UserInfo dbInfo = (UserInfo) supserDao.get(UserInfo.class,"userName",userName);
+		if(null == dbInfo){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+			return ret;
+		}
+		
+		if(!SecurityUtils.checkPermissionIsOK(SecurityContextHolder.getContext().getAuthentication(), SecurityUtils.PERMISSION_ROLE_USER_INFO)){
+			//真实姓名只显示第一个字，电话号码只显示后面三位，电子邮件只显示头三个字母以及邮箱地址，微信和qq都只显示后面三位字母
+			dbInfo.setPhoneNum(StringUtils.abbreviate(dbInfo.getPhoneNum(),3,StringUtils.MORE_ASTERISK));
+			if(!StringUtils.isEmpty(dbInfo.getEmail())){
+				String[] emails = dbInfo.getEmail().split("@");
+				dbInfo.setEmail(StringUtils.abbreviate(emails[0],3,StringUtils.MORE_ASTERISK)+"@"+emails[1]);
+			}
+			dbInfo.setWechat(StringUtils.abbreviate(dbInfo.getWechat(),3,StringUtils.MORE_ASTERISK));
+			dbInfo.setQq(StringUtils.abbreviate(dbInfo.getQq(),3,StringUtils.MORE_ASTERISK));
+			
+		}
+		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		ret.put(Message.KEY_DATA, dbInfo);
+		return ret;
+	}
+
+	@Override
+	public Map<String, Object> updateUserInfoInfo(UserInfo userInfo) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+		UserInfo dbInfo = (UserInfo) supserDao.get(UserInfo.class,"userName",userInfo.getUserName());
+		
+		if(null == dbInfo
+				|| !StringUtils.checkEmailFmtIsOK(userInfo.getEmail())
+				|| !StringUtils.checkRealNameFmtIsOK(userInfo.getRealName())
+				|| !StringUtils.checkQqFmtIsOK(userInfo.getQq())
+				|| !StringUtils.checkWercharFmtIsOK(userInfo.getWechat())
+				|| !StringUtils.checkPhoneFmtIsOK(userInfo.getPhoneNum())){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+			return ret;
+		}
+		boolean isAdmin = SecurityUtils.checkPermissionIsOK(SecurityContextHolder.getContext().getAuthentication(), SecurityUtils.PERMISSION_ROLE_ADMIN);
+		
+		if(!isAdmin 
+				&& !StringUtils.isEmpty(dbInfo.getRealName())
+				&& !StringUtils.isEmpty(userInfo.getRealName())){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_MORE_UPDATE_REAL_NAME.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_MORE_UPDATE_REAL_NAME.getErrorMes());
+			return ret;
+		}else if((!isAdmin 
+						&& StringUtils.isEmpty(dbInfo.getRealName())
+						&& !StringUtils.isEmpty(userInfo.getRealName()))
+				||(isAdmin && !StringUtils.isEmpty(userInfo.getRealName()))){
+			dbInfo.setRealName(userInfo.getRealName());
+		}
+		
+		
+		if(!isAdmin 
+				&& !StringUtils.isEmpty(dbInfo.getEmail())
+				&& !StringUtils.isEmpty(userInfo.getEmail())){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_MORE_UPDATE_EMAIL.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_MORE_UPDATE_EMAIL.getErrorMes());
+			return ret;
+		}else if((!isAdmin 
+						&& StringUtils.isEmpty(dbInfo.getEmail())
+						&& !StringUtils.isEmpty(userInfo.getEmail()))
+				||(isAdmin && !StringUtils.isEmpty(userInfo.getEmail()))){
+			dbInfo.setEmail(userInfo.getEmail());
+			dbInfo.setIsValidEmail(0);
+		}
+		
+		
+		if(!isAdmin 
+				&& !StringUtils.isEmpty(dbInfo.getPhoneNum())
+				&& !StringUtils.isEmpty(userInfo.getPhoneNum())){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_MORE_UPDATE_PHONE_NUM.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_MORE_UPDATE_PHONE_NUM.getErrorMes());
+			return ret;
+		}else if((!isAdmin 
+						&& StringUtils.isEmpty(dbInfo.getEmail())
+						&& !StringUtils.isEmpty(userInfo.getPhoneNum()))
+				||(isAdmin && !StringUtils.isEmpty(userInfo.getPhoneNum()))){
+			dbInfo.setPhoneNum(userInfo.getPhoneNum());
+			dbInfo.setIsValidPhone(0);
+		}
+		
+		dbInfo.setWechat(userInfo.getWechat());
+		dbInfo.setQq(userInfo.getQq());
+		supserDao.update(dbInfo);
+		
+		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		return ret;
+	}
+	
 	@Override
 	public UserInfo getUserByUserName(String userName) {
 		return userDao.getUserByUserName(userName);
