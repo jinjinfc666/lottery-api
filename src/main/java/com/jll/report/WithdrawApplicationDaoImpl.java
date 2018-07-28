@@ -23,10 +23,10 @@ public class WithdrawApplicationDaoImpl extends HibernateDaoSupport implements W
 	}
 	@Override
 	public WithdrawApplication queryDetails(Integer id) {
-		String sql = "from WithdrawApplication where id=?";
+		String sql = "from WithdrawApplication where id=:id";
 		WithdrawApplication dep = null;
 		Query<WithdrawApplication> query = currentSession().createQuery(sql, WithdrawApplication.class);
-		query.setParameter(0, id);
+		query.setParameter("id", id);
 		try {
 			dep = query.getSingleResult();
 		}catch(NoResultException ex) {

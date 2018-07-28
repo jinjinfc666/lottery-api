@@ -18,9 +18,9 @@ public class IssueDaoImpl extends HibernateDaoSupport implements IssueDao {
 	}
 	@Override
 	public long getCountIssue(String issueNum) {
-		String sql = "select count(*) from Issue where issueNum=?";
+		String sql = "select count(*) from Issue where issueNum=:issueNum";
 	    Query query = getSessionFactory().getCurrentSession().createQuery(sql);
-	    query.setParameter(0, issueNum);
+	    query.setParameter("issueNum", issueNum);
 	    long count = ((Number)query.iterate().next()).longValue();
 	    return count;
 	}

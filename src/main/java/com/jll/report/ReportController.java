@@ -7,7 +7,9 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -62,29 +64,12 @@ public class ReportController {
 			  @RequestParam(name = "endTime", required = true) String endTime,
 			  HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
-		if(startTime.equals("")||endTime.equals("")) {
+		if(StringUtils.isBlank(startTime)||StringUtils.isBlank(endTime)) {
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
 	    	return ret;
 		}
-//		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//		Date startTime1 = null;
-//		Date endTime1 = null;
-//		try {
-//	       startTime1=sdf.parse(startTime);
-//	       endTime1=sdf.parse(endTime);
-//		}catch(ParseException e) {
-//			
-//			
-//		}
-//		String userName1="";
-//		if(userName!=null&&!userName.equals("")) {
-//			boolean isUserInfo=userInfoService.isUserInfo(userName);
-//			if(isUserInfo) {
-//				userName1=userName;
-//			}
-//		}
 		ret.put("userName", userName);
 		ret.put("orderNum", orderNum);
 		ret.put("amountStart", amountStart);
@@ -111,29 +96,29 @@ public class ReportController {
 	 *红包明细
 	 * @author Silence
 	 */
-	@RequestMapping(value={"/redPackage"}, method={RequestMethod.POST}, produces={"application/json"})
-	public Map<String, Object> queryRedUserAccountDetails(@RequestParam(name = "userName", required = true) String userName,
-			  @RequestParam(name = "startTime", required = true) String startTime,
-			  @RequestParam(name = "endTime", required = true) String endTime,
-			  HttpServletRequest request) {
-		Map<String, Object> ret = new HashMap<>();
-		if(userName.equals("")||startTime.equals("")||endTime.equals("")) {
-			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
-			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
-	    	return ret;
-		}
-		ret.put("userName", userName);
-		ret.put("startTime", startTime);
-		ret.put("endTime", endTime);
-		logger.debug(ret+"------------------------------queryRedUserAccountDetails--------------------------------------");
-		List<?> redPackageRecord = redPackageService.queryRedUserAccountDetails(ret);
-		logger.debug(redPackageRecord+"------------------------------queryRedUserAccountDetails--------------------------------------");
-		ret.clear();
-		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-		ret.put("data", redPackageRecord);
-		return ret;
-	}
+//	@RequestMapping(value={"/redPackage"}, method={RequestMethod.POST}, produces={"application/json"})
+//	public Map<String, Object> queryRedUserAccountDetails(@RequestParam(name = "userName", required = true) String userName,
+//			  @RequestParam(name = "startTime", required = true) String startTime,
+//			  @RequestParam(name = "endTime", required = true) String endTime,
+//			  HttpServletRequest request) {
+//		Map<String, Object> ret = new HashMap<>();
+//		if(StringUtils.isBlank(userName)||StringUtils.isBlank(startTime)||StringUtils.isBlank(endTime)) {
+//			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+//			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+//			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+//	    	return ret;
+//		}
+//		ret.put("userName", userName);
+//		ret.put("startTime", startTime);
+//		ret.put("endTime", endTime);
+//		logger.debug(ret+"------------------------------queryRedUserAccountDetails--------------------------------------");
+//		List<?> redPackageRecord = redPackageService.queryRedUserAccountDetails(ret);
+//		logger.debug(redPackageRecord+"------------------------------queryRedUserAccountDetails--------------------------------------");
+//		ret.clear();
+//		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+//		ret.put("data", redPackageRecord);
+//		return ret;
+//	}
 	/**
 	 *彩票交易
 	 * @author Silence
@@ -150,39 +135,18 @@ public class ReportController {
 			  @RequestParam(name = "orderNum", required = false) String orderNum,//订单号 String
 			  HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
-		if(startTime.equals("")||endTime.equals("")) {
+		if(StringUtils.isBlank(startTime)||StringUtils.isBlank(endTime)) {
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
 	    	return ret;
 		}
-//		String issueNum1="";
-//		String userName1="";
-//		String orderNum1="";
 		ret.put("lotteryType", lotteryType);
 		ret.put("isZh", isZh);
 		ret.put("state", state);
 		ret.put("terminalType", terminalType);
 		ret.put("startTime", startTime);
 		ret.put("endTime", endTime);
-//		if(issueNum!=null&&!issueNum.equals("")) {
-//			boolean isIssue=issueService.isIssue(issueNum);
-//			if(isIssue) {
-//				issueNum1=issueNum;
-//			}
-//		}
-//		if(userName!=null&&!userName.equals("")) {
-//			boolean isUserInfo=userInfoService.isUserInfo(userName);
-//			if(isUserInfo) {
-//				userName1=userName;
-//			}
-//		}
-//		if(orderNum!=null&&!orderNum.equals("")) {
-//			boolean isOrderInfo=orderInfoService.isOrderInfo(orderNum);
-//			if(isOrderInfo) {
-//				orderNum1=orderNum;
-//			}
-//		}
 		ret.put("issueNum", issueNum);   
 		ret.put("userName", userName);
 		ret.put("orderNum", orderNum);
@@ -195,7 +159,7 @@ public class ReportController {
 		return ret;
 	}
 	//查询条件:彩种
-	@RequestMapping(value={"/lotteTypes"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/loyTstRecord/lotteTypes"}, method={RequestMethod.POST}, produces={"application/json"})
 	public Map<String, Object> queryLoyTstQueryConditions() {
 		Map<String, Object> ret = new HashMap<>();
 		List<SysCode> types = sysCodeService.queryType(SysCodeTypes.LOTTERY_TYPES.getCode());
@@ -204,7 +168,7 @@ public class ReportController {
 		return ret;
 	}
 	//查询条件:是否追号
-	@RequestMapping(value={"/loyTstIsZh"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/loyTstRecord/loyTstIsZh"}, method={RequestMethod.POST}, produces={"application/json"})
 	public Map<String, Object> queryLoyTstIsZh() {
 		Map<String, Object> ret = new HashMap<>();
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
@@ -212,7 +176,7 @@ public class ReportController {
 		return ret;
 	}
 	//查询条件:中奖情况
-	@RequestMapping(value={"/LoyTstState"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/loyTstRecord/LoyTstState"}, method={RequestMethod.POST}, produces={"application/json"})
 	public Map<String, Object> queryLoyTstState() {
 		Map<String, Object> ret = new HashMap<>();
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
@@ -220,7 +184,7 @@ public class ReportController {
 		return ret;
 	}
 	//查询条件:订单来源
-	@RequestMapping(value={"/LoyTstTerminalType"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/loyTstRecord/LoyTstTerminalType"}, method={RequestMethod.POST}, produces={"application/json"})
 	public Map<String, Object> queryLoyTstTerminalType() {
 		Map<String, Object> ret = new HashMap<>();
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
@@ -242,7 +206,7 @@ public class ReportController {
 			  @RequestParam(name = "endTime", required = true) String endTime,//时间 String
 			  HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
-		if(startTime.equals("")||endTime.equals("")||type.equals("")) {
+		if(StringUtils.isBlank(startTime)||StringUtils.isBlank(endTime)||StringUtils.isBlank(type)) {
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
@@ -265,7 +229,7 @@ public class ReportController {
 		return ret;
 	}
 	//查询条件:存取类型
-	@RequestMapping(value={"/DWType"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/DWD/DWType"}, method={RequestMethod.POST}, produces={"application/json"})
 	public Map<String, Object> queryDWDType() {
 		Map<String, Object> ret = new HashMap<>();
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
@@ -273,7 +237,7 @@ public class ReportController {
 		return ret;
 	}
 	//查询条件:存取类型
-	@RequestMapping(value={"/DWDState"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/DWD/DWDState"}, method={RequestMethod.POST}, produces={"application/json"})
 	public Map<String, Object> queryDWDState() {
 		Map<String, Object> ret = new HashMap<>();
 		Map<String, Object> ret1 = new HashMap<>();
@@ -285,12 +249,12 @@ public class ReportController {
 		return ret;
 	}
 	//存取款明细的详细信息
-	@RequestMapping(value={"/DWDetails"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/DWD/DWDetails"}, method={RequestMethod.POST}, produces={"application/json"})
 	public Map<String, Object> queryDWDetails(@RequestParam(name = "type", required = true) String type,//存款:1 取款:2
 			  @RequestParam(name = "id", required = true) Integer id,
 			  HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
-		if(type.equals("")||id==null) {
+		if(StringUtils.isBlank(type)||id==null) {
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
@@ -317,7 +281,7 @@ public class ReportController {
 			  @RequestParam(name = "endTime", required = true) String endTime,//时间 String
 			  HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
-		if(startTime.equals("")||endTime.equals("")) {
+		if(StringUtils.isBlank(startTime)||StringUtils.isBlank(endTime)) {
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
@@ -336,7 +300,7 @@ public class ReportController {
 		return ret;
 	}
 	//修改存款状态
-	@RequestMapping(value={"/UpdateDepositState"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/DepositApplication/UpdateDepositState"}, method={RequestMethod.POST}, produces={"application/json"})
 	public Map<String, Object> UpdateDepositState(@RequestParam(name = "id", required = true) Integer id,
 			  @RequestParam(name = "state", required = true) Integer state,//状态
 			  HttpServletRequest request) {
@@ -350,13 +314,17 @@ public class ReportController {
 		ret.put("id", id);
 		ret.put("state", state);
 		logger.debug(ret+"------------------------------queryDWD--------------------------------------");
-		depositApplicationService.updateState(ret);
+		
+		if(state==1||state==2) {
+			
+			
+			depositApplicationService.updateState(ret);
+		}
 //		logger.debug(list+"------------------------------queryDWD--------------------------------------");
 		ret.clear();
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 //		ret.put("data", list);
 		return ret;
 	}
-	
 	
 }

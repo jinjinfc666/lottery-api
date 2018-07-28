@@ -38,9 +38,9 @@ public class SysCodeDaoImpl extends HibernateDaoSupport implements SysCodeDao {
 
 	@Override
 	public Integer quertSysCodeId(String typeCodeName) {
-		String sql = "from SysCode where codeName=?";
+		String sql = "from SysCode where codeName=:codeName";
 	    Query query = getSessionFactory().getCurrentSession().createQuery(sql);
-	    query.setParameter(0, typeCodeName);
+	    query.setParameter("codeName", typeCodeName);
 	    List<SysCode> list = query.list();
 	    Integer id=null;
         for(SysCode sysCode : list){    
@@ -51,9 +51,9 @@ public class SysCodeDaoImpl extends HibernateDaoSupport implements SysCodeDao {
 
 	@Override
 	public Integer quertSysCodeSeq(Integer codeType) {
-		String sql = "from SysCode where codeType=? ORDER BY seq DESC";
+		String sql = "from SysCode where codeType=:codeType ORDER BY seq DESC";
 	    Query query = getSessionFactory().getCurrentSession().createQuery(sql);
-	    query.setParameter(0, codeType);
+	    query.setParameter("codeType", codeType);
 	    query.setMaxResults(1);
 	    List<SysCode> list = query.list();
 	    Integer seq=0;
@@ -67,74 +67,69 @@ public class SysCodeDaoImpl extends HibernateDaoSupport implements SysCodeDao {
 	@Override
 	public List<SysCode> quertBigType() {
 		Integer isCodeType=1;
-		String sql = "from SysCode where isCodeType=? ORDER BY id";
+		String sql = "from SysCode where isCodeType=:isCodeType ORDER BY id";
 	    Query query = getSessionFactory().getCurrentSession().createQuery(sql);
-	    query.setParameter(0, isCodeType);
+	    query.setParameter("isCodeType", isCodeType);
 	    List<SysCode> list = query.list();
 		return list;
 	}
 	@Override
 	public List<SysCode> querySmallType(Integer id) {
 		Integer isCodeType=0;
-		String sql = "from SysCode where isCodeType=? and codeType=? ORDER BY seq";
+		String sql = "from SysCode where isCodeType=:isCodeType and codeType=:codeType ORDER BY seq";
 	    Query query = getSessionFactory().getCurrentSession().createQuery(sql);
-	    query.setParameter(0, isCodeType);
-	    query.setParameter(1, id);
+	    query.setParameter("isCodeType", isCodeType);
+	    query.setParameter("codeType", id);
 	    List<SysCode> list = query.list();
 		return list;
 	}
 	@Override
 	public void updateSyscode(SysCode sysCode) {
 		Session session=getSessionFactory().getCurrentSession();
-//		session.beginTransaction();
 		String hql="";
 		if(sysCode.getSeq()!=null) {
-			hql = ("update SysCode set codeName=?,codeVal=?,seq=?,remark=? where id=?");
+			hql = ("update SysCode set codeName=:codeName,codeVal=:codeVal,seq=:seq,remark=:remark where id=:id");
 		}else {
-			hql = ("update SysCode set codeName=?,codeVal=?,remark=? where id=?");
+			hql = ("update SysCode set codeName=:codeName,codeVal=:codeVal,remark=:remark where id=:id");
 		}
 		Query query = session.createQuery(hql);
-		query.setParameter(0, sysCode.getCodeName());
-		query.setParameter(1, sysCode.getCodeVal());
+		query.setParameter("codeName", sysCode.getCodeName());
+		query.setParameter("codeVal", sysCode.getCodeVal());
 		if(sysCode.getSeq()!=null) {
-			query.setParameter(2, sysCode.getSeq());
-			query.setParameter(3, sysCode.getRemark());
-			query.setParameter(4, sysCode.getId());
+			query.setParameter("seq", sysCode.getSeq());
+			query.setParameter("remark", sysCode.getRemark());
+			query.setParameter("id", sysCode.getId());
 		}else {
-			query.setParameter(2, sysCode.getSeq());
-			query.setParameter(3, sysCode.getId());
+			query.setParameter("seq", sysCode.getSeq());
+			query.setParameter("id", sysCode.getId());
 		}
 		query.executeUpdate();
-//		session.getTransaction().commit();
 	}
 	@Override
 	public void updateBigState(Integer id, Integer state) {
 		Session session=getSessionFactory().getCurrentSession();
-		String hql = ("update SysCode set state=? where id=? or codeType=?");  
+		String hql = ("update SysCode set state=:state where id=:id or codeType=:codeType");  
 		Query query = session.createQuery(hql);
-		query.setParameter(0, state);
-		query.setParameter(1, id);
-		query.setParameter(2, id);
+		query.setParameter("state", state);
+		query.setParameter("id", id);
+		query.setParameter("codeType", id);
 		query.executeUpdate();
-//		getSessionFactory().getCurrentSession().getTransaction().commit();
 	}
 	@Override
 	public void updateSmallState(Integer id, Integer state) {
 		Session session=getSessionFactory().getCurrentSession();
-		String hql = ("update SysCode set state=? where id=?");  
+		String hql = ("update SysCode set state=:state where id=:id");  
 		Query query = session.createQuery(hql);
-		query.setParameter(0, state);
-		query.setParameter(1, id);;
+		query.setParameter("state", state);
+		query.setParameter("id", id);;
 		query.executeUpdate();
-//		getSessionFactory().getCurrentSession().getTransaction().commit();
 	}
 	@Override
 	public List<SysCode> queryType(String bigType) {
-	    String sql="select * from sys_code where code_type=(select id from sys_code where code_name=?) and state=? order by seq";
-//	    Query<SysCode> query = getSessionFactory().getCurrentSession().createQuery(sql,SysCode.class);
+	    String sql="select * from sys_code where code_type=(select id from sys_code where code_name=:code_name) and state=:state order by seq";
 	    Query<SysCode> query = getSessionFactory().getCurrentSession().createSQLQuery(sql).addEntity(SysCode.class);
-	    query.setParameter(0, bigType);
-	    query.setParameter(1, state);
+	    query.setParameter("code_name", bigType);
+	    query.setParameter("state", state);
 	    List<SysCode> types = new ArrayList<>();
 	    try {			
 	    	types = query.list();
