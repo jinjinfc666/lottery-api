@@ -9,6 +9,8 @@ public class Message {
 	
 	public final static String KEY_DATA = "data";
 	
+	public final static String KEY_REMAKE = "remake";
+	
 	public static enum status{
 		SUCCESS(1),
 		FAILED(0);
@@ -66,7 +68,8 @@ public class Message {
 		ERROR_BANK_CARD_HAS_BIND("010019", "The bank card  has been bound by other users. Please re-input the bank card.!!"),
 		ERROR_USER_INVALID_BANK_CARD("010020", "Invalid bank card!!"),
 		ERROR_USER_MORE_BIND_BANK_CARD("010021", "Users bind up to %d bank cards!!"),
-		
+		ERROR_MESSAGE_TITLE_IS_EMPTY("010022", "Message title is empty!!"),
+		ERROR_MESSAGE_CONTENT_IS_EMPTY("010023", "Message content is empty!!"),
 		/**************third party*************************/
 		ERROR_TP_INVALID_SMS("020001", "Invalid SMS!!")
 		;

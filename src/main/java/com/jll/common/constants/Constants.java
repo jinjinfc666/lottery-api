@@ -297,13 +297,120 @@ public class Constants {
 	 *SysCode 直接使用
 	 */
 	public static enum SysCodeUseLists{
-		MAX_BIND_BANK("max_bind_bank");
+		MAX_BIND_BANK("max_bind_bank"),
+		SITE_MSG_VALID_DAY("site_msg_valid_day");
 		private String value;
 		private SysCodeUseLists(String value) {
 			this.value = value;
 		}
 		public String getCode() {
 			return value;
+		}
+	}
+	
+	/**
+	 * notification type
+	 */
+	public static enum SiteMessageReadType{
+		READING(0, "已阅读"),
+		UN_READING(1, "未阅读");
+		
+		private int code;
+		
+		private String desc;
+		
+		private SiteMessageReadType(int code, String desc) {
+			this.code = code;
+			this.desc = desc;
+		}
+		
+		public int getCode() {
+			return this.code;
+		}
+		
+		public String getDesc() {
+			return this.desc;
+		}
+		
+		public static SiteMessageReadType getMessageReadType(int code) {
+			SiteMessageReadType[] walletTypes = SiteMessageReadType.values();
+			for(SiteMessageReadType walletType: walletTypes) {
+				if(walletType.getCode() == code) {
+					return walletType;
+				}
+			}
+			return null;
+		}
+	}
+	
+	/**
+	 * notification type
+	 */
+	public static enum SysNotifyType{
+		ALL_USER(0, "全部用户"),
+		ALL_AGENT(1, "全部代理用户"),
+		ALL_COM_USER(2, "全部普通用户");
+		
+		private int code;
+		
+		private String desc;
+		
+		private SysNotifyType(int code, String desc) {
+			this.code = code;
+			this.desc = desc;
+		}
+		
+		public int getCode() {
+			return this.code;
+		}
+		
+		public String getDesc() {
+			return this.desc;
+		}
+		
+		public static SysNotifyType getSysNotifyTypeByCode(int code) {
+			SysNotifyType[] walletTypes = SysNotifyType.values();
+			for(SysNotifyType walletType: walletTypes) {
+				if(walletType.getCode() == code) {
+					return walletType;
+				}
+			}
+			return null;
+		}
+	}
+	
+	/**
+	 * notification receiver type
+	 */
+	public static enum SysNotifyReceiverType{
+		LEVEL(0, "按层级关系"),
+		TYPE(1, "按类型");
+		
+		private int code;
+		
+		private String desc;
+		
+		private SysNotifyReceiverType(int code, String desc) {
+			this.code = code;
+			this.desc = desc;
+		}
+		
+		public int getCode() {
+			return this.code;
+		}
+		
+		public String getDesc() {
+			return this.desc;
+		}
+		
+		public static SysNotifyReceiverType getSysNotifyReceiverTypeByCode(int code) {
+			SysNotifyReceiverType[] walletTypes = SysNotifyReceiverType.values();
+			for(SysNotifyReceiverType walletType: walletTypes) {
+				if(walletType.getCode() == code) {
+					return walletType;
+				}
+			}
+			return null;
 		}
 	}
 	/**

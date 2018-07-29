@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.jll.common.constants.Constants.UserType;
 import com.jll.common.constants.Message;
 import com.jll.common.utils.StringUtils;
+import com.jll.entity.SiteMessFeedback;
+import com.jll.entity.SiteMessage;
 import com.jll.entity.UserInfo;
 import com.jll.user.tp.SMSService;
 import com.terran4j.commons.api2doc.annotations.Api2Doc;
@@ -35,9 +37,6 @@ public class UserController {
 	
 	@Resource
 	UserInfoService userInfoService;
-
-	@Resource
-	UserInfoService userServ;
 	
 	@Resource
 	SMSService smsServ;
@@ -88,7 +87,7 @@ public class UserController {
 		}
 		
 		try {
-			superior = userServ.getUserByUserName(auth.getName());
+			superior = userInfoService.getUserByUserName(auth.getName());
 			
 			if(superior == null) {
 				throw new Exception("No superior!");
@@ -102,7 +101,7 @@ public class UserController {
 		
 		user.setSuperior(superior.getId()+","+superior.getSuperior());
 		user.setUserType(UserType.PLAYER.getCode());
-		String ret = userServ.validUserInfo(user, superior);
+		String ret = userInfoService.validUserInfo(user, superior);
 		if(StringUtils.isBlank(ret) ) {
 			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
@@ -122,7 +121,7 @@ public class UserController {
 		}
 		
 		try {
-			isExisting = userServ.isUserExisting(user);
+			isExisting = userInfoService.isUserExisting(user);
 		}catch(Exception ex) {
 			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
@@ -139,7 +138,7 @@ public class UserController {
 		
 		user.setRebate(superior.getPlatRebate().subtract(user.getPlatRebate()));
 		try {
-			userServ.regUser(user);
+			userInfoService.regUser(user);
 		}catch(Exception ex) {
 			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_FAILED_REGISTER.getCode());
@@ -160,7 +159,7 @@ public class UserController {
 	public Map<String, Object> regAgent(@RequestBody UserInfo user) {
 		Map<String, Object> resp = new HashMap<String, Object>();
 				
-		UserInfo generalAgency = userServ.getGeneralAgency();
+		UserInfo generalAgency = userInfoService.getGeneralAgency();
 		if(generalAgency == null) {
 			resp.put(Message.KEY_STATUS, Message.status.FAILED);
 			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_NO_GENERAL_AGENCY.getCode());
@@ -170,7 +169,7 @@ public class UserController {
 		
 		user.setSuperior(Integer.toString(generalAgency.getId()));
 		user.setUserType(UserType.AGENCY.getCode());
-		String ret = userServ.validUserInfo(user, generalAgency);
+		String ret = userInfoService.validUserInfo(user, generalAgency);
 		if(StringUtils.isBlank(ret) ) {
 			resp.put(Message.KEY_STATUS, Message.status.FAILED);
 			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
@@ -189,7 +188,7 @@ public class UserController {
 			user.setFundPwd(user.getLoginPwd());
 		}
 		
-		boolean isExisting = userServ.isUserExisting(user);
+		boolean isExisting = userInfoService.isUserExisting(user);
 		if(isExisting) {
 			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_EXISTING.getCode());
@@ -199,7 +198,7 @@ public class UserController {
 		
 		user.setRebate(generalAgency.getPlatRebate().subtract(user.getPlatRebate()));
 		try {
-			userServ.regUser(user);
+			userInfoService.regUser(user);
 		}catch(Exception ex) {
 			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_FAILED_REGISTER.getCode());
@@ -221,7 +220,7 @@ public class UserController {
 		Map<String, Object> resp = new HashMap<String, Object>();
 		
 		user.setUserType(UserType.SYS_ADMIN.getCode());
-		String ret = userServ.validUserInfo(user, null);
+		String ret = userInfoService.validUserInfo(user, null);
 		if(StringUtils.isBlank(ret) ) {
 			resp.put(Message.KEY_STATUS, Message.status.FAILED);
 			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
@@ -237,7 +236,7 @@ public class UserController {
 		}
 		
 		
-		boolean isExisting = userServ.isUserExisting(user);
+		boolean isExisting = userInfoService.isUserExisting(user);
 		if(isExisting) {
 			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_EXISTING.getCode());
@@ -246,7 +245,7 @@ public class UserController {
 		}		
 		
 		try {
-			userServ.regUser(user);
+			userInfoService.regUser(user);
 		}catch(Exception ex) {
 			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_FAILED_REGISTER.getCode());
@@ -390,7 +389,7 @@ public class UserController {
 		UserInfo user = new UserInfo();
 		user.setUserName(userName);
 		
-		boolean isExisting = userServ.isUserExisting(user);
+		boolean isExisting = userInfoService.isUserExisting(user);
 		if(!isExisting) {
 			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_NO_VALID_USER.getCode());
@@ -398,7 +397,7 @@ public class UserController {
 			return resp;
 		}
 		
-		user = userServ.getUserByUserName(userName);
+		user = userInfoService.getUserByUserName(userName);
 		
 		boolean ifPhoneValid = (user.getIsValidPhone() != null && user.getIsValidPhone() == 1)?true:false;
 		if(!ifPhoneValid) {
@@ -437,7 +436,7 @@ public class UserController {
 		UserInfo user = new UserInfo();
 		user.setUserName(userName);
 		
-		boolean isExisting = userServ.isUserExisting(user);
+		boolean isExisting = userInfoService.isUserExisting(user);
 		if(!isExisting) {
 			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_NO_VALID_USER.getCode());
@@ -445,7 +444,7 @@ public class UserController {
 			return resp;
 		}
 		
-		user = userServ.getUserByUserName(userName);
+		user = userInfoService.getUserByUserName(userName);
 		
 		boolean isSmsValid = smsServ.isSmsValid(user, sms);
 		
@@ -456,7 +455,7 @@ public class UserController {
 			return resp;
 		}
 		
-		String ret = userServ.resetLoginPwd();
+		String ret = userInfoService.resetLoginPwd();
 		if(!Integer.toString(Message.status.SUCCESS.getCode()).equals(ret)) {
 			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			resp.put(Message.KEY_ERROR_CODE, ret);
@@ -508,4 +507,54 @@ public class UserController {
 		
 		return null;
 	}
+	
+	@ApiComment("Get User notify lists")
+	@RequestMapping(value="/{userId}/notify", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> getUserNotifyLists(@PathVariable("userId") int userId) {
+		return userInfoService.getUserNotifyLists(userId);
+	}
+	
+	@ApiComment("Get User Site Message lists")
+	@RequestMapping(value="/{userId}/site-message/list", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> getUserSiteMessageLists(@PathVariable("userId") int userId) {
+		return userInfoService.getUserSiteMessageLists(userId);
+	}
+	
+	@ApiComment("Show Site Message History Feedback")
+	@RequestMapping(value="/{userId}/site-message/history-feedback", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> showSiteMessageFeedback(@PathVariable("userId") int userId,
+			 @RequestParam(name = "msgId", required = true) int msgId) {
+		return userInfoService.showSiteMessageFeedback(userId,msgId);
+	}
+	
+	@ApiComment("Feedback Site Message ")
+	@RequestMapping(value="/{userId}/site-message/feedback", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> siteMessageFeedback(@PathVariable("userId") int userId,
+			@RequestBody SiteMessFeedback back,
+			@RequestParam(name = "msgId", required = true) int msgId) {
+		return userInfoService.siteMessageFeedback(userId,msgId,back);
+	}
+	
+	/**
+	 * 
+	 * Add Site Message 
+	 * 
+	 * @param userId
+	 * @param msg
+	 * @param sendIds value is ALL, if user type is agent,then send all agent low user or agent, if user type is system user ,then send all user
+	 *  value is 0001,then send user id value is 0001 user,
+	 *  value is 0001,002 ,then send  user id value is 0001 or 0002 user
+	 *  value is empty ,then send to system
+	 *  
+	 * @return
+	 */
+	
+	@ApiComment("Add Site Message ")
+	@RequestMapping(value="/{userId}/site-message/add", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> addSiteMessage(@PathVariable("userId") int userId,
+			@RequestBody SiteMessage msg,
+			@RequestParam("sendIds") String sendIds) {
+		return userInfoService.addSiteMessage(userId,sendIds,msg);
+	}
+	
 }

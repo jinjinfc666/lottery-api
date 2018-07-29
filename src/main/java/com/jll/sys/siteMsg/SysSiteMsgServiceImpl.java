@@ -1,4 +1,4 @@
-package com.jll.user;
+package com.jll.sys.siteMsg;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,6 +37,7 @@ import com.jll.common.constants.Message;
 import com.jll.common.utils.SecurityUtils;
 import com.jll.common.utils.StringUtils;
 import com.jll.common.utils.Utils;
+import com.jll.dao.PageQueryDao;
 import com.jll.dao.SupserDao;
 import com.jll.entity.SiteMessFeedback;
 import com.jll.entity.SiteMessage;
@@ -45,14 +46,15 @@ import com.jll.entity.SysNotification;
 import com.jll.entity.UserBankCard;
 import com.jll.entity.UserInfo;
 import com.jll.sysSettings.codeManagement.SysCodeService;
+import com.jll.user.UserInfoDao;
 import com.jll.user.wallet.WalletService;
 
 
 @Service
 @Transactional
-public class UserInfoServiceImpl implements UserInfoService
+public class SysSiteMsgServiceImpl implements SysSiteMsgService
 {
-	private Logger logger = Logger.getLogger(UserInfoServiceImpl.class);
+	private Logger logger = Logger.getLogger(SysSiteMsgServiceImpl.class);
 	
 	@Resource
 	UserInfoDao userDao;
@@ -658,6 +660,12 @@ public class UserInfoServiceImpl implements UserInfoService
 		}
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		return ret;
+	}
+
+	@Override
+	public Map<String, Object> getSiteMessageLists(String userName, PageQueryDao page) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }

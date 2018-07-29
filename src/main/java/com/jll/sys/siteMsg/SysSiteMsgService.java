@@ -1,13 +1,14 @@
-package com.jll.user;
+package com.jll.sys.siteMsg;
 
 import java.util.Map;
 
+import com.jll.dao.PageQueryDao;
 import com.jll.entity.SiteMessFeedback;
 import com.jll.entity.SiteMessage;
 import com.jll.entity.UserBankCard;
 import com.jll.entity.UserInfo;
 
-public interface UserInfoService
+public interface SysSiteMsgService
 {
 	int getUserId(String userName);
 	boolean isUserInfo(String userName);
@@ -77,4 +78,5 @@ public interface UserInfoService
 	Map<String, Object> showSiteMessageFeedback(int userId, int msgId);
 	Map<String, Object> addSiteMessage(int userId, String sendIds, SiteMessage msg);
 	Map<String, Object> siteMessageFeedback(int userId, int msgId, SiteMessFeedback back);
+	Map<String, Object> getSiteMessageLists(String userName, PageQueryDao page);
 }

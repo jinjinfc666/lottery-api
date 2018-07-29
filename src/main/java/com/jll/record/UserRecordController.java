@@ -18,7 +18,7 @@ import com.jll.entity.UserInfo;
 import com.terran4j.commons.api2doc.annotations.Api2Doc;
 import com.terran4j.commons.api2doc.annotations.ApiComment;
 
-@Api2Doc(id = "UserBetRecord", name = "User Bet Record")
+@Api2Doc(id = "UserRecord", name = "User Record")
 @ApiComment(seeClass = UserInfo.class)
 @RestController
 @RequestMapping({ "/record" })
@@ -46,7 +46,7 @@ public class UserRecordController {
 	
 	
 	@ApiComment("Get User Credit Record")
-	@RequestMapping(value="/{userId}/account-flow", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value="/{userId}/credit-record", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> getUserBetOrder(
 			@PathVariable("userId") int userId,
 			@RequestBody UserAccountDetails query,

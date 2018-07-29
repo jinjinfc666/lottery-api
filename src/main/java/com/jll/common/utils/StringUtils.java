@@ -6,6 +6,11 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
 	
 	public  final static String MORE_ASTERISK = "****";
 	
+	public  final static String ALL = "ALL";
+	
+	public  final static String COMMA = ",";
+	public  final static String EMPTY = "";
+	
 	/**
      * 正则表达式：验证手机号
      */
@@ -67,5 +72,12 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
         }
         return str.substring(str.length()-length,str.length())+abrevMarker;
     }
+	
+	public static String[] getUserSupersId(String userPaath){
+		if(isEmpty(userPaath)){
+			return new String[]{};
+		}
+		return userPaath.split(",");
+	}
 	
 }
