@@ -18,7 +18,7 @@ public class DWDetailsServiceImpl implements DWDetailsService {
 	@Resource
 	DWDetailsDao dWDetailsDao;
 	@Override
-	public List<?> queryDetails(Map<String, Object> ret) {
+	public Map<String,Object> queryDetails(Map<String, Object> ret) {
 		String type=(String)ret.get("type");
 		Integer state=(Integer) ret.get("state");
 		String userName=(String) ret.get("userName");

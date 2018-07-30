@@ -1,6 +1,5 @@
 package com.jll.report;
 
-import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -8,7 +7,6 @@ import javax.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.jll.entity.SysCode;
 
 
 @Service
@@ -17,7 +15,7 @@ public class FlowDetailServiceImpl implements FlowDetailService {
 	@Resource
 	FlowDetailDao flowDetailDao;
 	@Override
-	public List<?> queryUserAccountDetails(Map<String, Object> ret) {
+	public Map<String,Object> queryUserAccountDetails(Map<String, Object> ret) {
 		String userName=(String)ret.get("userName");
 		String orderNum=(String)ret.get("orderNum");
 		Float amountStart=(Float)ret.get("amountStart");

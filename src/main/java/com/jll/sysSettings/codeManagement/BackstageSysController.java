@@ -37,7 +37,7 @@ public class BackstageSysController {
 			  @RequestParam(name = "remark", required = true) String remark,
 			  HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
-		if(type==null||StringUtils.isBlank(codeName)||StringUtils.isBlank(codeVal)||StringUtils.isBlank(remark)||(type==2 && StringUtils.isBlank(typeCodeName))) {
+		if(type==null||StringUtils.isBlank(codeName)||StringUtils.isBlank(codeVal)||StringUtils.isBlank(remark)||(type==2 && StringUtils.isBlank(typeCodeName))||(type!=null&&type!=1&&type!=2)) {
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
@@ -47,40 +47,55 @@ public class BackstageSysController {
 		ret.put("codeName", codeName);
 		ret.put("codeVal", codeVal);
 		ret.put("remark", remark);
-		if(type==1) {
-			sysCodeService.saveBigSysCode(ret);
-		}else if(type==2){
-			sysCodeService.saveSmallSysCode(ret);
-		}else {
+		try {
+			if(type==1) {
+				sysCodeService.saveBigSysCode(ret);
+			}else if(type==2){
+				sysCodeService.saveSmallSysCode(ret);
+			}
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		}catch(Exception e){
+			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
-			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
-	    	return ret;
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
 		}
-		
 //		logger.debug(flowDetailRecord+"------------------------------addSysCode--------------------------------------");
-		ret.clear();
-		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 //		ret.put("data", flowDetailRecord);
 		return ret;
 	}
 	@RequestMapping(value={"/bigType"}, method={RequestMethod.POST}, produces={"application/json"})
 	public Map<String, Object> quertBigType() {
 		Map<String, Object> ret = new HashMap<>();
-		List<SysCode> sysCode=sysCodeService.quertBigType();
-		ret.clear();
-		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-		ret.put("data", sysCode);
+		try {
+			List<SysCode> sysCode=sysCodeService.quertBigType();
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+			ret.put("data", sysCode);
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+		}
 		return ret;
 	}
 	@RequestMapping(value={"/smallType"}, method={RequestMethod.POST}, produces={"application/json"})
 	public Map<String, Object> querySmallType(@RequestParam(name = "id", required = true) Integer id,//此处的id为大类的id因为需要通过大类的id查找出这个大类下对应的所有小类
 			  HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
-		List<SysCode> sysCode=sysCodeService.querySmallType(id);
-		ret.clear();
-		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-		ret.put("data", sysCode);
+		try {
+			List<SysCode> sysCode=sysCodeService.querySmallType(id);
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+			ret.put("data", sysCode);
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+		}
 		return ret;
 	}
 	@RequestMapping(value={"/updateBigType"}, method={RequestMethod.POST}, produces={"application/json"})
@@ -111,9 +126,16 @@ public class BackstageSysController {
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
 	    	return ret;
 		}
-		sysCodeService.updateSyscode(ret);
-		ret.clear();
-		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		try {
+			sysCodeService.updateSyscode(ret);
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+		}
 //		ret.put("data", sysCode);
 		return ret;
 	}
@@ -123,12 +145,19 @@ public class BackstageSysController {
 			  @RequestParam(name = "state", required = true) Integer state,//1为有效0为无效
 			  HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
-		ret.put("id", id);
-		ret.put("type", type);
-		ret.put("state", state);
-		sysCodeService.updateState(ret);
-		ret.clear();
-		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		try {
+			ret.put("id", id);
+			ret.put("type", type);
+			ret.put("state", state);
+			sysCodeService.updateState(ret);
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+		}
 //		ret.put("data", sysCode);
 		return ret;
 	}
