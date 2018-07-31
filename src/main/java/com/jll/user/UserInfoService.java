@@ -63,11 +63,11 @@ public interface UserInfoService
 	 * @return
 	 */
 	UserInfo getGeneralAgency();
-	
-	String resetLoginPwd();
-	
+		
 	Map<String, Object> getUserBankLists(int userId);
 	Map<String, Object> addUserBank(int userId, UserBankCard bank);
 	Map<String, Object> getBankCodeList();
 	Map<String, Object> verifyUserBankInfo(int userId, UserBankCard bank);
+	
+	void resetLoginPwd(UserInfo user);
 }

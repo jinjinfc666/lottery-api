@@ -34,9 +34,9 @@ public class UserRecordServiceImpl implements UserRecordService{
 		DetachedCriteria dc = DetachedCriteria.forClass(OrderInfo.class);
 		dc.add(Restrictions.eq("userId",pramsInfo.getUserId()));
 		
-		if(!StringUtils.isEmpty(pramsInfo.getPlayType())){
+		/*if(!StringUtils.isEmpty(pramsInfo.getPlayType())){
 			dc.add(Restrictions.eq("playType",pramsInfo.getPlayType()));
-		}
+		}*/
 		dc.add(Restrictions.eq("isZh",pramsInfo.getIsZh()));
 		dc.add(Restrictions.le("createTime",page.getEndDate()));
 		dc.add(Restrictions.ge("createTime",page.getStartDate()));

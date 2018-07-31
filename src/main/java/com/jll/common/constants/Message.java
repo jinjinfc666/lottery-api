@@ -9,6 +9,10 @@ public class Message {
 	
 	public final static String KEY_DATA = "data";
 	
+	public final static String KEY_EXPIRED_TIME = "expired_time";
+	
+	public final static String KEY_DEFAULT_PASSWORD = "default_password";
+	
 	public static enum status{
 		SUCCESS(1),
 		FAILED(0);
@@ -66,7 +70,8 @@ public class Message {
 		ERROR_BANK_CARD_HAS_BIND("010019", "The bank card  has been bound by other users. Please re-input the bank card.!!"),
 		ERROR_USER_INVALID_BANK_CARD("010020", "Invalid bank card!!"),
 		ERROR_USER_MORE_BIND_BANK_CARD("010021", "Users bind up to %d bank cards!!"),
-		
+		ERROR_USER_FAILED_RESET_LOGIN_PWD_SMS("010022", "Failed Reset login password by SMS!!"),
+		ERROR_USER_FAILED_RESET_LOGIN_PWD_EMAIL("010022", "Failed Reset login password by Email!!"),
 		/**************third party*************************/
 		ERROR_TP_INVALID_SMS("020001", "Invalid SMS!!"),
 		ERROR_TP_INVALID_SMS_URL("020002", "Invalid SMS URL!!"),

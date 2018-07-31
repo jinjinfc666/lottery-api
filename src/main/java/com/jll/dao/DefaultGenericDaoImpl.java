@@ -21,7 +21,7 @@ public class DefaultGenericDaoImpl<T> extends HibernateDaoSupport implements Gen
 	}
 
 	@Override
-	public void remove(T entity) {
+	public void delete(T entity) {
 		getSessionFactory().getCurrentSession().delete(entity);
 	}
 
@@ -58,6 +58,24 @@ public class DefaultGenericDaoImpl<T> extends HibernateDaoSupport implements Gen
 	    }
 	    
 	    return query.getSingleResult();
+	}
+
+	@Override
+	public boolean add(List<T> entities) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean delete(String id) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public T get(String id) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
