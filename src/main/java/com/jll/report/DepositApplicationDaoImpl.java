@@ -1,9 +1,12 @@
 package com.jll.report;
 
 
+import java.sql.Date;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.persistence.NoResultException;
 
@@ -11,9 +14,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
+import org.hibernate.type.DateType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.support.HibernateDaoSupport;
 import org.springframework.stereotype.Repository;
+
 
 
 
@@ -29,29 +34,40 @@ public class DepositApplicationDaoImpl extends HibernateDaoSupport implements De
 	}
 	@Override
 	public List<?> queryDetails(String userName,String orderNum,String startTime,String endTime) {
-		List<Object> list=new ArrayList<Object>();
 		String userNameSql="";
 		String orderNumSql="";
 		String timeSql="";
+		Map<String,Object> map=new HashMap();
 		if(!StringUtils.isBlank(userName)) {
-			userNameSql=" and b.userName=?";
-			list.add(userName);
+			userNameSql=" and b.userName=:userName";
+			map.put("userName", userName);
 		}
 		if(!StringUtils.isBlank(orderNum)) {
-			orderNumSql=" and a.orderNum=?";
-			list.add(orderNum);
+			orderNumSql=" and d.orderNum=:orderNum";
+			map.put("orderNum", orderNum);
 		}
 		if(!StringUtils.isBlank(startTime)&&!StringUtils.isBlank(endTime)) {
-			timeSql=" and a.createTime >'"+startTime+"' and a.createTime <='"+endTime+"'";
+			timeSql=" and a.createTime >:startTime and a.createTime <=:endTime";
+			Date beginDate = java.sql.Date.valueOf(startTime);
+		    Date endDate = java.sql.Date.valueOf(endTime);
+			map.put("startTime", beginDate);
+			map.put("endTime", endDate);
 		}
 		String sql = "from DepositApplication a,UserInfo b,PayChannel c,PayType d where a.userId=b.id and a.payType=d.id and a.payChannel=c.id "+userNameSql+orderNumSql+timeSql+" order by a.id";
 		logger.debug(sql+"-----------------------------queryLoyTst----SQL--------------------------------");
 		Query<?> query = getSessionFactory().getCurrentSession().createQuery(sql);
-		Iterator<Object> it = list.iterator();
-		int a=0;
-        while(it.hasNext()){
-        	query.setParameter(a, it.next());
-        	a++;
+		if (map != null) {  
+            Set<String> keySet = map.keySet();  
+            for (String string : keySet) {  
+                Object obj = map.get(string);  
+            	if(obj instanceof Date){  
+                	query.setParameter(string, (Date)obj,DateType.INSTANCE); //query.setParameter(string, (Date)obj,DateType.INSTANCE);   此方法为setDate的替代方法 
+                }else if(obj instanceof Object[]){  
+                    query.setParameterList(string, (Object[])obj);  
+                }else{  
+                    query.setParameter(string, obj);  
+                }  
+            }  
         }
 		List<?> list1 = new ArrayList<>();
 		try {			
@@ -64,10 +80,10 @@ public class DepositApplicationDaoImpl extends HibernateDaoSupport implements De
 	@Override
 	public void updateState(Integer id, Integer state) {
 		Session session=getSessionFactory().getCurrentSession();
-		String hql = ("update DepositApplication set state=? where id=?");  
+		String hql = ("update DepositApplication set state=:state where id=:id");  
 		Query query = session.createQuery(hql);
-		query.setParameter(0, state);
-		query.setParameter(1, id);;
+		query.setParameter("state", state);
+		query.setParameter("id", id);;
 		query.executeUpdate();
 	}
 	
