@@ -1,5 +1,7 @@
 package com.jll.common.cache;
 
+import java.util.Map;
+
 public interface CacheRedisDao {
 
 	/**
@@ -9,5 +11,9 @@ public interface CacheRedisDao {
 	void setCaptchaCode(CacheObject<String> cacheObj);
 
 	CacheObject<String> getCaptchaCode(String sms);
-
+	
+	void setSysCode(CacheObject<Map> cacheObj);
+	
+	CacheObject<Map> getSysCode(String codeName);
+	
 }

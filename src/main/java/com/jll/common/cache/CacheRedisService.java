@@ -1,5 +1,7 @@
 package com.jll.common.cache;
 
+import java.util.Map;
+
 public interface CacheRedisService {
 
 	/**
@@ -10,5 +12,9 @@ public interface CacheRedisService {
 	void setCaptchaCode(String captchaCode, int captchaCodeExpiredTime);
 
 	CacheObject<String> getCaptchaCode(String sms);
-
+	
+	void setSysCode(String codeName);
+	
+	CacheObject<Map> getSysCode(String sms);
+	
 }
