@@ -67,7 +67,7 @@ public abstract class AbstractBaseRedisDao implements GenericDaoIf<CacheObject>{
 					oos.writeObject(entity);
 					connection.set(serializer.serialize(key), boos.toByteArray());
 					
-					if(entity.getExpired() != null || entity.getExpired().intValue() != 0) {
+					if(entity.getExpired() != null && entity.getExpired().intValue() != 0) {
 						redisTemplate.expire(key, entity.getExpired().intValue(), TimeUnit.SECONDS);
 					}
 					

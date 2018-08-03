@@ -3,6 +3,7 @@ package com.jll.common.cache;
 import java.util.List;
 
 import com.jll.entity.Issue;
+import java.util.Map;
 
 public interface CacheRedisDao {
 
@@ -27,5 +28,8 @@ public interface CacheRedisDao {
 	 * @return
 	 */
 	List<Issue> getPlan(String cacheKey);
-
+	
+	void setSysCode(CacheObject<Map> cacheObj);
+	
+	CacheObject<Map> getSysCode(String codeName);
 }

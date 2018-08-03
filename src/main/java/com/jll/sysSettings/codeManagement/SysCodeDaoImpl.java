@@ -1,13 +1,19 @@
 package com.jll.sysSettings.codeManagement;
 
+import java.sql.Date;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.persistence.NoResultException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
+import org.hibernate.type.DateType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.support.HibernateDaoSupport;
 import org.springframework.stereotype.Repository;
@@ -87,22 +93,50 @@ public class SysCodeDaoImpl extends HibernateDaoSupport implements SysCodeDao {
 	public void updateSyscode(SysCode sysCode) {
 		Session session=getSessionFactory().getCurrentSession();
 		String hql="";
-		if(sysCode.getSeq()!=null) {
-			hql = ("update SysCode set codeName=:codeName,codeVal=:codeVal,seq=:seq,remark=:remark where id=:id");
-		}else {
-			hql = ("update SysCode set codeName=:codeName,codeVal=:codeVal,remark=:remark where id=:id");
+		String codeNameSql="";
+		String codeValSql="";
+		String remarkSql="";
+		String seqSql="";
+		String codeName=sysCode.getCodeName();
+		String codeVal=sysCode.getCodeVal();
+		String remark=sysCode.getRemark();
+		Integer seq=sysCode.getSeq();
+		Map<String,Object> map=new HashMap();
+		if(!StringUtils.isBlank(codeName)) {
+			codeNameSql="codeName=:codeName,";
+			map.put("codeName", codeName);
 		}
+		if(!StringUtils.isBlank(codeVal)) {
+			codeValSql="codeVal=:codeVal,";
+			map.put("codeVal", codeVal);
+		}
+		if(!StringUtils.isBlank(remark)) {
+			remarkSql="remark=:remark,";
+			map.put("remark", remark);
+		}
+		if(seq!=null) {
+			seqSql="seq=:seq,";
+			map.put("seq", seq);
+		}
+		String sumSql=codeNameSql+codeValSql+seqSql+remarkSql;
+		String sumSql1=sumSql.substring(0, sumSql.length()-1);
+		hql = "update SysCode set "+sumSql1+" where id=:id";
+		
 		Query query = session.createQuery(hql);
-		query.setParameter("codeName", sysCode.getCodeName());
-		query.setParameter("codeVal", sysCode.getCodeVal());
-		if(sysCode.getSeq()!=null) {
-			query.setParameter("seq", sysCode.getSeq());
-			query.setParameter("remark", sysCode.getRemark());
-			query.setParameter("id", sysCode.getId());
-		}else {
-			query.setParameter("seq", sysCode.getSeq());
-			query.setParameter("id", sysCode.getId());
-		}
+		if (map != null) {  
+            Set<String> keySet = map.keySet();  
+            for (String string : keySet) {  
+                Object obj = map.get(string);  
+            	if(obj instanceof Date){  
+                	query.setParameter(string, (Date)obj,DateType.INSTANCE); //query.setParameter(string, (Date)obj,DateType.INSTANCE);   此方法为setDate的替代方法 
+                }else if(obj instanceof Object[]){  
+                    query.setParameterList(string, (Object[])obj);  
+                }else{  
+                    query.setParameter(string, obj);  
+                }  
+            }  
+        }
+		query.setParameter("id", sysCode.getId());
 		query.executeUpdate();
 	}
 	@Override
@@ -121,7 +155,7 @@ public class SysCodeDaoImpl extends HibernateDaoSupport implements SysCodeDao {
 		String hql = ("update SysCode set state=:state where id=:id");  
 		Query query = session.createQuery(hql);
 		query.setParameter("state", state);
-		query.setParameter("id", id);;
+		query.setParameter("id", id);
 		query.executeUpdate();
 	}
 	@Override
@@ -138,4 +172,54 @@ public class SysCodeDaoImpl extends HibernateDaoSupport implements SysCodeDao {
 		}
 		return types;
 	}
+	@Override
+	public List<SysCode> queryBigCodeName(Integer id) {
+		String sql = "from SysCode where id=:id";
+	    Query query = getSessionFactory().getCurrentSession().createQuery(sql);
+	    query.setParameter("id", id);
+	    List<SysCode> list = query.list();
+		return list;
+	}
+	@Override
+	public List<SysCode> querySmallCodeName(Integer id) {
+		String sql = "from SysCode where id=:id";
+	    Query query = getSessionFactory().getCurrentSession().createQuery(sql);
+	    query.setParameter("id", id);
+	    List<SysCode> list = query.list();
+	    String sql1 = "from SysCode where id=:id";
+	    Query query1 = getSessionFactory().getCurrentSession().createQuery(sql1);
+	    query1.setParameter("id", list.get(0).getCodeType());
+	    List<SysCode> list1 = query1.list();
+		return list1;
+	}
+	@Override
+	public long getCount(String codeName) {
+		String sql = "select count(*) from SysCode where codeType=(select id from SysCode where codeName=:codeName) order by seq";
+		Query query = getSessionFactory().getCurrentSession().createQuery(sql);
+	    query.setParameter("codeName", codeName);
+	    long count = ((Number)query.iterate().next()).longValue();
+	    return count;
+	}
+	@Override
+	public List<SysCode> queryCacheType(String codeName) {
+	    String sql="select * from sys_code where code_type=(select id from sys_code where code_name=:code_name) order by seq";
+	    Query<SysCode> query = getSessionFactory().getCurrentSession().createSQLQuery(sql).addEntity(SysCode.class);
+	    query.setParameter("code_name", codeName);
+	    List<SysCode> types = new ArrayList<>();
+	    try {			
+	    	types = query.list();
+		}catch(NoResultException ex) {
+			
+		}
+		return types;
+	}
+	@Override
+	public List<SysCode> queryCacheTypeOnly(String codeName) {
+		String sql = "from SysCode where codeName=:codeName";
+	    Query query = getSessionFactory().getCurrentSession().createQuery(sql);
+	    query.setParameter("codeName", codeName);
+	    List<SysCode> list = query.list();
+		return list;
+	}
+	
 }

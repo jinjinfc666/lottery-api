@@ -5,6 +5,8 @@ import java.util.List;
 import com.jll.common.constants.Constants.SysCodeTypes;
 import com.jll.entity.Issue;
 import com.jll.game.BulletinBoard;
+import java.util.Map;
+
 
 public interface CacheRedisService {
 
@@ -40,4 +42,8 @@ public interface CacheRedisService {
 	 * @return
 	 */
 	boolean isCodeExisting(SysCodeTypes lotteryTypes, String lotteryType);
+	
+	void setSysCode(String codeName);
+	
+	CacheObject<Map> getSysCode(String sms);
 }

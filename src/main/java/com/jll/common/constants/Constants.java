@@ -281,8 +281,10 @@ public class Constants {
 	 */
 	public static enum SysCodeTypes{
 		LOTTERY_TYPES("caizhongleixing"),
-		BANK_LIST("bank_list"),
-		FLOW_TYPES("acc_ope_type");
+		BANK_LIST("number_of_bank_cards"),
+		FLOW_TYPES("acc_ope_type"),
+		PAYMENT_PLATFORM("payment_platform"),
+		LUCKY_DRAW("lucky_draw");
 		private String value;
 		
 		private SysCodeTypes(String value) {

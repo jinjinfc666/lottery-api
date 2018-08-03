@@ -1,7 +1,7 @@
 package com.jll.common.cache;
 
 import java.util.List;
-
+import java.util.Map;
 import org.springframework.stereotype.Repository;
 
 import com.jll.entity.Issue;
@@ -33,6 +33,18 @@ public class CacheRedisDaoImpl  extends AbstractBaseRedisDao implements CacheRed
 		CacheObject<List<Issue>> cache = this.get(cacheKey);
 		
 		return cache.getContent();
+	}
+	
+	@Override
+	public void setSysCode(CacheObject<Map> cacheObj) {
+		this.saveOrUpdate(cacheObj);
+	}
+
+	
+	@Override
+	public CacheObject<Map> getSysCode(String codeName) {
+		CacheObject<Map> cacheObject = get(codeName);
+		return cacheObject;
 	}
 
 }

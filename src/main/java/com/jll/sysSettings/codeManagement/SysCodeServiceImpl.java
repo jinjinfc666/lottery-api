@@ -38,7 +38,6 @@ public class SysCodeServiceImpl implements SysCodeService {
 		Integer isCodeType=0;
 		Integer state=Constants.SysCodeState.VALID_STATE.getCode();
 		sysCodeDao.saveSysCode(codeType, isCodeType, codeName, codeVal, seq, state, remark);
-		
 	}
 
 	@Override
@@ -71,20 +70,44 @@ public class SysCodeServiceImpl implements SysCodeService {
 		}
 		sysCodeDao.updateSyscode(sysCode);
 	}
-
-	@Override
-	public void updateState(Map<String,Object> ret) {
-		Integer id=(Integer)ret.get("id");
-		Integer type=(Integer)ret.get("type");
-		Integer state=(Integer)ret.get("state");
-		if(type==1) {
-			sysCodeDao.updateBigState(id, state);
-		}else if(type==2){
-			sysCodeDao.updateSmallState(id, state);
-		}
-	}
 	@Override
 	public List<SysCode> queryType(String bigType) {
 		return sysCodeDao.queryType(bigType);
+	}
+
+	@Override
+	public void updateBigState(Integer id, Integer state) {
+		sysCodeDao.updateBigState(id, state);
+	}
+
+	@Override
+	public void updateSmallState(Integer id, Integer state) {
+		sysCodeDao.updateSmallState(id, state);
+	}
+
+	@Override
+	public List<SysCode> queryBigCodeName(Integer id) {
+		return sysCodeDao.queryBigCodeName(id);
+	}
+
+	@Override
+	public List<SysCode> querySmallCodeName(Integer id) {
+		return sysCodeDao.querySmallCodeName(id);
+	}
+
+	@Override
+	public boolean isNull(String codeName) {
+		long count=sysCodeDao.getCount(codeName);
+		return count == 0 ? false:true;
+	}
+
+	@Override
+	public List<SysCode> queryCacheType(String codeName) {
+		return sysCodeDao.queryCacheType(codeName);
+	}
+
+	@Override
+	public List<SysCode> queryCacheTypeOnly(String codeName) {
+		return sysCodeDao.queryCacheTypeOnly(codeName);
 	}
 }
