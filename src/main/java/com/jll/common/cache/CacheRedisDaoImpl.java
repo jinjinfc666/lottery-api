@@ -1,13 +1,13 @@
 package com.jll.common.cache;
 
+import java.util.List;
 import java.util.Map;
-
 import org.springframework.stereotype.Repository;
 
+import com.jll.entity.Issue;
+
 @Repository
-public class CacheRedisDaoImpl 
-	extends AbstractBaseRedisDao
-		implements CacheRedisDao{
+public class CacheRedisDaoImpl  extends AbstractBaseRedisDao implements CacheRedisDao{
 
 	@Override
 	public void setCaptchaCode(CacheObject<String> cacheObj) {
@@ -21,10 +21,26 @@ public class CacheRedisDaoImpl
 	}
 
 	@Override
+	public void setPlan(String cacheKey, List<Issue> issues) {
+		CacheObject<List<Issue>> cache = new CacheObject<>();
+		cache.setContent(issues);
+		cache.setKey(cacheKey);
+		this.saveOrUpdate(cache);
+	}
+
+	@Override
+	public List<Issue> getPlan(String cacheKey) {
+		CacheObject<List<Issue>> cache = this.get(cacheKey);
+		
+		return cache.getContent();
+	}
+	
+	@Override
 	public void setSysCode(CacheObject<Map> cacheObj) {
 		this.saveOrUpdate(cacheObj);
 	}
 
+	
 	@Override
 	public CacheObject<Map> getSysCode(String codeName) {
 		CacheObject<Map> cacheObject = get(codeName);
