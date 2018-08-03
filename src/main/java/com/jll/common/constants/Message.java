@@ -75,7 +75,11 @@ public class Message {
 		/**************third party*************************/
 		ERROR_TP_INVALID_SMS("020001", "Invalid SMS!!"),
 		ERROR_TP_INVALID_SMS_URL("020002", "Invalid SMS URL!!"),
-		ERROR_TP_SENDING_EMAIL("020003", "Failed sending Email!!")
+		ERROR_TP_SENDING_EMAIL("020003", "Failed sending Email!!"),
+		
+		/************************game module*******************************/
+		ERROR_GAME_LOTTERY_TYPE_INVALID("030001", "Invalid lottery type!!"),
+		ERROR_GAME_END("030002", "The game is over today!!")
 		;
 		
 		

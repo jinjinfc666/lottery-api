@@ -4,7 +4,11 @@ package com.jll.common.constants;
 import java.util.HashMap;
 import java.util.Map;
 
+
+
 public class Constants {	
+	public final static String KEY_PRE_PLAN = "plan_issues_";
+	
 	public static enum DepositOrderState{
 		INIT_OR_PUSHED(0),
 		FAILED_PUSH(10),
@@ -511,6 +515,47 @@ public class Constants {
 				map.put(name.getCode(), name.getNames());
 			}
 			return map;
+		}
+	}
+	
+	/**
+	 *存取款明细：类别
+	 * @author Silence
+	 */
+	public static enum IssueState{
+		INIT(0, "初始状态"),
+		BETTING(1, "投注状态"),
+		END_BETTING(2, "结束投注"),
+		END_ISSUE(3, "期次结束"),
+		LOTTO_DARW(4, "已开奖"),
+		PAYOUT(5, "已派奖");
+		
+		private int code;
+		
+		private String names;
+		
+		private IssueState(int code, String names) {
+			this.code = code;
+			this.names = names;
+		}
+		
+		public int getCode() {
+			return this.code;
+		}
+		
+		public String getNames() {
+			return this.names;
+		}
+		
+		public static IssueState getStateByCode(int code) {
+			IssueState[] names = IssueState.values();
+			for(IssueState name: names) {
+				if(name.getCode() == code) {
+					return name;
+				}
+			}
+			
+			return null;
 		}
 	}
 }

@@ -1,5 +1,7 @@
 package com.jll.common.cache;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
@@ -15,9 +17,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.jll.common.cache.CacheRedisService;
+import com.jll.common.constants.Constants.SysCodeTypes;
+import com.jll.common.constants.Constants;
 import com.jll.common.constants.Message;
 import com.jll.common.utils.Utils;
+import com.jll.entity.Issue;
 import com.jll.entity.UserInfo;
+import com.jll.game.BulletinBoard;
 
 @Configuration
 @PropertySource("classpath:email-sender.properties")
@@ -61,6 +67,43 @@ public class CacheRedisServiceImpl implements CacheRedisService
 	@Override
 	public CacheObject<String> getCaptchaCode(String sms) {
 		return cacheDao.getCaptchaCode(sms);
+	}
+
+	@Override
+	public void setPlan(String cacheKey, List<Issue> issues) {
+		cacheDao.setPlan(cacheKey, issues);
+	}
+
+
+
+	@Override
+	public List<Issue> getPlan(String cacheKey) {
+		return cacheDao.getPlan(cacheKey);
+	}
+
+
+
+	@Override
+	public boolean isPlanExisting(String lotteryType) {
+		String cacheKey = Constants.KEY_PRE_PLAN + lotteryType;
+		List<Issue> issues = this.getPlan(cacheKey);
+		return (issues == null || issues.size() == 0)?false : true;
+	}
+
+
+
+	@Override
+	public BulletinBoard getBulletinBoard(String lotteryType) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+
+	@Override
+	public boolean isCodeExisting(SysCodeTypes lotteryTypes, String lotteryType) {
+		//cacheDao.get
+		return false;
 	}
 	
 }
