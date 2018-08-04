@@ -13,7 +13,7 @@ public class OrderInfo implements java.io.Serializable {
 	private String orderNum;
 	private Integer userId;
 	private Integer issueId;
-	private String playType;
+	private Integer playType;
 	private String betNum;
 	private Integer betTotal;
 	private Float betAmount;
@@ -30,7 +30,7 @@ public class OrderInfo implements java.io.Serializable {
 	public OrderInfo() {
 	}
 
-	public OrderInfo(String orderNum, Integer userId, Integer issueId, String playType, String betNum, Integer betTotal,
+	public OrderInfo(String orderNum, Integer userId, Integer issueId, Integer playType, String betNum, Integer betTotal,
 			Float betAmount, Integer times, BigDecimal pattern, BigDecimal prizeRate, Integer state,
 			Integer delayPayoutFlag, Integer isZh, Integer isZhBlock, Integer terminalType, Date createTime) {
 		this.orderNum = orderNum;
@@ -83,11 +83,11 @@ public class OrderInfo implements java.io.Serializable {
 		this.issueId = issueId;
 	}
 
-	public String getPlayType() {
+	public Integer getPlayType() {
 		return this.playType;
 	}
 
-	public void setPlayType(String playType) {
+	public void setPlayType(Integer playType) {
 		this.playType = playType;
 	}
 

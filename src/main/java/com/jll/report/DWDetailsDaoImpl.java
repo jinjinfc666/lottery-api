@@ -1,14 +1,20 @@
 package com.jll.report;
 
+import java.sql.Date;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.persistence.NoResultException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
+import org.hibernate.type.DateType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.support.HibernateDaoSupport;
 import org.springframework.stereotype.Repository;
@@ -32,29 +38,33 @@ public class DWDetailsDaoImpl extends HibernateDaoSupport implements DWDetailsDa
 		String amountStartSql="";
 		String amountEndSql="";
 		String timeSql="";
-		List<Object> list=new ArrayList<Object>();
+		Map<String,Object> map=new HashMap();
 		if(state!=null) {
-			stateSql=" and a.state=?";
-			list.add(state);
+			stateSql=" and a.state=:state";
+			map.put("state", state);
 		}
-		if(!userName.equals("")) {
-			userNameSql=" and b.userName=?";
-			list.add(userName);
+		if(!StringUtils.isBlank(userName)) {
+			userNameSql=" and b.userName=:userName";
+			map.put("userName", userName);
 		}
-		if(!orderNum.equals("")) {
-			orderNumSql=" and a.orderNum=?";
-			list.add(orderNum);
+		if(!StringUtils.isBlank(orderNum)) {
+			orderNumSql=" and d.orderNum=:orderNum";
+			map.put("orderNum", orderNum);
 		}
 		if(amountStart!=null) {
-			amountStartSql=" and a.amount>?";
-			list.add(amountStart);
+			amountStartSql=" and a.amount>:amountStart";
+			map.put("amountStart", amountStart);
 		}
 		if(amountEnd!=null) {
-			amountEndSql=" and a.amount<=?";
-			list.add(amountEnd);
+			amountEndSql=" and a.amount<=:amountEnd";
+			map.put("amountEnd", amountEnd);
 		}
-		if(!startTime.equals("")&&!endTime.equals("")) {
-			timeSql=" and a.createTime >'"+startTime+"' and a.createTime <='"+endTime+"'";
+		if(!StringUtils.isBlank(startTime)&&!StringUtils.isBlank(endTime)) {
+			timeSql=" and a.createTime >:startTime and a.createTime <=:endTime";
+			Date beginDate = java.sql.Date.valueOf(startTime);
+		    Date endDate = java.sql.Date.valueOf(endTime);
+			map.put("startTime", beginDate);
+			map.put("endTime", endDate);
 		}
 		String sql="";
 		if(type.equals("1")) {
@@ -65,11 +75,18 @@ public class DWDetailsDaoImpl extends HibernateDaoSupport implements DWDetailsDa
 		
 		logger.debug(sql+"-----------------------------queryLoyTst----SQL--------------------------------");
 		Query<?> query = getSessionFactory().getCurrentSession().createQuery(sql);
-		Iterator<Object> it = list.iterator();
-		int a=0;
-        while(it.hasNext()){
-        	query.setParameter(a, it.next());
-        	a++;
+		if (map != null) {  
+            Set<String> keySet = map.keySet();  
+            for (String string : keySet) {  
+                Object obj = map.get(string);  
+            	if(obj instanceof Date){  
+                	query.setParameter(string, (Date)obj,DateType.INSTANCE); //query.setParameter(string, (Date)obj,DateType.INSTANCE);   此方法为setDate的替代方法 
+                }else if(obj instanceof Object[]){  
+                    query.setParameterList(string, (Object[])obj);  
+                }else{  
+                    query.setParameter(string, obj);  
+                }  
+            }  
         }
 		List<?> list1 = new ArrayList<>();
 		try {			
@@ -83,13 +100,13 @@ public class DWDetailsDaoImpl extends HibernateDaoSupport implements DWDetailsDa
 	public List<?> queryDWDetails(String type, Integer id) {
 		String sql="";
 		if(type.equals("1")) {
-			sql="from DepositApplication a,UserInfo b where a.userId=b.id and a.id=?";
+			sql="from DepositApplication a,UserInfo b where a.userId=b.id and a.id=:id";
 		}else if(type.equals("2")){
-			sql="from WithdrawApplication a,UserInfo b where a.userId=b.id and a.id=?";
+			sql="from WithdrawApplication a,UserInfo b where a.userId=b.id and a.id=:id";
 		}
 		logger.debug(sql+"-----------------------------queryLoyTst----SQL--------------------------------");
 		Query<?> query = getSessionFactory().getCurrentSession().createQuery(sql);
-        query.setParameter(0, id);
+        query.setParameter("id", id);
 		List<?> list1 = new ArrayList<>();
 		try {			
 			list1 = query.list();

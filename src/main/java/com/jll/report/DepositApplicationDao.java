@@ -1,8 +1,9 @@
 package com.jll.report;
 
-import com.jll.entity.DepositApplication;
+import java.util.List;
+
 
 public interface DepositApplicationDao {
-	public DepositApplication queryDetails(Integer id);
-
+	public List<?> queryDetails(String userName,String orderNum,String startTime,String endTime) ;
+	public void updateState(Integer id,Integer state);
 }

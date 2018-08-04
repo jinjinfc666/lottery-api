@@ -71,7 +71,9 @@ public class Message {
 		ERROR_MESSAGE_TITLE_IS_EMPTY("010022", "Message title is empty!!"),
 		ERROR_MESSAGE_CONTENT_IS_EMPTY("010023", "Message content is empty!!"),
 		/**************third party*************************/
-		ERROR_TP_INVALID_SMS("020001", "Invalid SMS!!")
+		ERROR_TP_INVALID_SMS("020001", "Invalid SMS!!"),
+		ERROR_TP_INVALID_SMS_URL("020002", "Invalid SMS URL!!"),
+		ERROR_TP_SENDING_EMAIL("020003", "Failed sending Email!!")
 		;
 		
 		

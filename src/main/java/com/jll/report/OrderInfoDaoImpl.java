@@ -18,9 +18,9 @@ public class OrderInfoDaoImpl extends HibernateDaoSupport implements OrderInfoDa
 	}
 	@Override
 	public long getCountOrderInfo(String orderNum) {
-		String sql = "select count(*) from OrderInfo where orderNum=?";
+		String sql = "select count(*) from OrderInfo where orderNum=:orderNum";
 	    Query query = getSessionFactory().getCurrentSession().createQuery(sql);
-	    query.setParameter(0, orderNum);
+	    query.setParameter("orderNum", orderNum);
 	    long count = ((Number)query.iterate().next()).longValue();
 	    return count;
 	}

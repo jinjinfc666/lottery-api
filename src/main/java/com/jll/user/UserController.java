@@ -4,9 +4,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Resource;
-
+import javax.mail.MessagingException;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,6 +27,7 @@ import com.jll.common.utils.StringUtils;
 import com.jll.entity.SiteMessFeedback;
 import com.jll.entity.SiteMessage;
 import com.jll.entity.UserInfo;
+import com.jll.user.tp.EmailService;
 import com.jll.user.tp.SMSService;
 import com.terran4j.commons.api2doc.annotations.Api2Doc;
 import com.terran4j.commons.api2doc.annotations.ApiComment;
@@ -31,15 +36,26 @@ import com.terran4j.commons.api2doc.annotations.ApiComment;
 @ApiComment(seeClass = UserInfo.class)
 @RestController
 @RequestMapping({ "/users" })
+@Configuration
+@PropertySource("classpath:sys-setting.properties")
 public class UserController {
 	
 	private Logger logger = Logger.getLogger(UserController.class);
+	
+	@Value("${sys_reset_pwd_default_pwd}")
+	String defaultPwd;
 	
 	@Resource
 	UserInfoService userInfoService;
 	
 	@Resource
 	SMSService smsServ;
+	
+	@Resource
+	EmailService emailServ;
+	
+	@Resource
+	HttpServletRequest request;
 	
 	/**
 	 * query the specified user by userName, only the operator with userName or operator with role:role_bus_manager
@@ -433,6 +449,8 @@ public class UserController {
 	public Map<String, Object> resetLoginPwdBySMS(@PathVariable(name="userName", required = true) String userName,
 			@RequestParam("sms") String sms) {
 		Map<String, Object> resp = new HashMap<String, Object>();
+		Map<String,Object> data = new HashMap<>();
+		
 		UserInfo user = new UserInfo();
 		user.setUserName(userName);
 		
@@ -464,6 +482,10 @@ public class UserController {
 		}
 		
 		resp.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		
+		data.put("default_password", defaultPwd);
+		resp.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		resp.put(Message.KEY_DATA, data);
 		return resp;
 	}
 	
@@ -476,8 +498,46 @@ public class UserController {
 	@RequestMapping(value="/{userName}/attrs/login-pwd/pre-reset/email", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> applyResetLoginPwdByEmail(@PathVariable("userName") String userName) {
 		Map<String, Object> resp = new HashMap<String, Object>();
-				
-		return null;
+		UserInfo user = new UserInfo();
+		user.setUserName(userName);
+		
+		boolean isExisting = userServ.isUserExisting(user);
+		if(!isExisting) {
+			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_NO_VALID_USER.getCode());
+			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_NO_VALID_USER.getErrorMes());
+			return resp;
+		}
+		
+		user = userServ.getUserByUserName(userName);
+		boolean ifEmailValid = (user.getIsValidEmail() != null && user.getIsValidEmail() == 1)?true:false;
+		if(!ifEmailValid) {
+			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_INVALID_EMAIL.getCode());
+			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_INVALID_EMAIL.getErrorMes());
+			return resp;
+		}
+		
+		try {
+			String ret = emailServ.sendingEmail(user, request.getServerName());
+			if(!Integer.toString(Message.status.SUCCESS.getCode()).equals(ret)) {
+				resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+				resp.put(Message.KEY_ERROR_CODE, ret);
+				resp.put(Message.KEY_ERROR_MES, Message.Error.getErrorByCode(ret).getErrorMes());
+				return resp;
+			}
+		} catch (MessagingException e) {
+			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_TP_SENDING_EMAIL.getCode());
+			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_TP_SENDING_EMAIL.getErrorMes());
+			return resp;
+		}
+
+		Map<String,Object> data = new HashMap<>();
+		data.put("expired_time", 120);
+		resp.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		resp.put(Message.KEY_DATA, data);
+		return resp;
 	}
 	
 	/**
@@ -487,11 +547,46 @@ public class UserController {
 	 * @return
 	 */
 	@RequestMapping(value="/{userName}/attrs/login-pwd/reset/email", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> resetLoginPwdByEmail(@PathVariable("userName") String userName,
-			@RequestParam("verifyCode") String verifyCode) {
+	public Map<String, Object> resetLoginPwdByEmail(@PathVariable(name = "userName", required = true) String userName,
+			@RequestParam(name = "verifyCode", required = true) String verifyCode) {
 		Map<String, Object> resp = new HashMap<String, Object>();
+		Map<String, Object> data = new HashMap<String, Object>();
 		
-		return null;
+		UserInfo user = new UserInfo();
+		user.setUserName(userName);
+		
+		boolean isExisting = userServ.isUserExisting(user);
+		if(!isExisting) {
+			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_NO_VALID_USER.getCode());
+			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_NO_VALID_USER.getErrorMes());
+			return resp;
+		}
+		
+		user = userServ.getUserByUserName(userName);
+		
+		boolean isEmailValid = smsServ.isSmsValid(user, verifyCode);
+		
+		if(!isEmailValid) {
+			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_TP_INVALID_SMS.getCode());
+			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_TP_INVALID_SMS.getErrorMes());
+			return resp;
+		}
+		
+		String ret = userServ.resetLoginPwd();
+		if(!Integer.toString(Message.status.SUCCESS.getCode()).equals(ret)) {
+			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			resp.put(Message.KEY_ERROR_CODE, ret);
+			resp.put(Message.KEY_ERROR_MES, Message.Error.getErrorByCode(ret).getErrorMes());
+			return resp;
+		}
+		
+		resp.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		data.put("default_password", defaultPwd);
+		resp.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		resp.put(Message.KEY_DATA, data);
+		return resp;
 	}
 	
 	/**

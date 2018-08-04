@@ -28,6 +28,17 @@ public class Utils {
 				
 	}
 	
+	public static String produce6DigitsCaptchaCodeNumber() {
+		StringBuffer ret = new StringBuffer();
+		Random random = new Random();
+		for(int i = 0; i < 6; i++) {
+			int currIndex = random.nextInt(10);
+			ret.append(Integer.toString(currIndex));
+		}
+		return ret.toString();
+				
+	}
+	
 	public static boolean validUserName(String userName) {		
 		String regex = "[a-zA-Z0-9_]{6,20}";
 		return Pattern.matches(regex, userName);

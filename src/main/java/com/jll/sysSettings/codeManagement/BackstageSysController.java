@@ -7,6 +7,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -36,7 +37,7 @@ public class BackstageSysController {
 			  @RequestParam(name = "remark", required = true) String remark,
 			  HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
-		if(type==null||codeName.equals("")||codeVal.equals("")||remark.equals("")||(type==2 && typeCodeName.equals(""))) {
+		if(type==null||StringUtils.isBlank(codeName)||StringUtils.isBlank(codeVal)||StringUtils.isBlank(remark)||(type==2 && StringUtils.isBlank(typeCodeName))) {
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
@@ -91,7 +92,7 @@ public class BackstageSysController {
 			  @RequestParam(name = "remark", required = false) String remark,
 			  HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
-		if(codeName.equals("")||codeVal.equals("")||seq==null||remark.equals("")) {
+		if(StringUtils.isBlank(codeName)||StringUtils.isBlank(codeVal)||seq==null||StringUtils.isBlank(remark)) {
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());

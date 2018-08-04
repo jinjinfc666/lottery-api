@@ -1,14 +1,20 @@
 package com.jll.report;
 
+import java.sql.Date;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.persistence.NoResultException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
+import org.hibernate.type.DateType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.support.HibernateDaoSupport;
 import org.springframework.stereotype.Repository;
@@ -28,26 +34,37 @@ public class RedPackageDaoImpl extends HibernateDaoSupport implements RedPackage
 	public List<?> queryRedUserAccountDetails(String userName,String startTime,String endTime) {
 		String userNameSql="";
 		String timeSql="";
-		List<Object> list=new ArrayList<Object>();
-		if(!userName.equals("")) {
-			userNameSql=" and c.userName=?";
-			list.add(userName);
+		Map<String,Object> map=new HashMap();
+		if(!StringUtils.isBlank(userName)) {
+			userNameSql=" and c.userName=:userName";
+			map.put("userName", userName);
 		}
-		if(!startTime.equals("")&&!endTime.equals("")) {
-			timeSql=" and a.createTime >'"+startTime+"' and a.createTime <='"+endTime+"'";
+		if(!StringUtils.isBlank(startTime)&&!StringUtils.isBlank(endTime)) {
+			timeSql=" and a.createTime >:startTime and a.createTime <=:endTime";
+			Date beginDate = java.sql.Date.valueOf(startTime);
+		    Date endDate = java.sql.Date.valueOf(endTime);
+			map.put("startTime", beginDate);
+			map.put("endTime", endDate);
 		}
 		Integer userType=2;
 		Integer accType=2;
-		String sql="from UserAccountDetails a,UserAccount b,UserInfo c,SysCode d where a.walletId=b.id and a.userId=c.id and a.operationType=d.codeName  and c.userType !=? and b.accType=?  "+userNameSql+timeSql+" order by a.id";
+		String sql="from UserAccountDetails a,UserAccount b,UserInfo c,SysCode d where a.walletId=b.id and a.userId=c.id and a.operationType=d.codeName  and c.userType !=:userType and b.accType=:accType  "+userNameSql+timeSql+" order by a.id";
 		logger.debug(sql+"-----------------------------RedPackageDaoImpl----SQL--------------------------------");
 		Query<?> query = getSessionFactory().getCurrentSession().createQuery(sql);
-		query.setParameter(0, userType);
-		query.setParameter(1, accType);
-		Iterator<Object> it = list.iterator();
-		int a=2;
-        while(it.hasNext()){
-        	query.setParameter(a, it.next());
-        	a++;
+		query.setParameter("userType", userType);
+		query.setParameter("accType", accType);
+		if (map != null) {  
+            Set<String> keySet = map.keySet();  
+            for (String string : keySet) {  
+                Object obj = map.get(string);  
+            	if(obj instanceof Date){  
+                	query.setParameter(string, (Date)obj,DateType.INSTANCE); //query.setParameter(string, (Date)obj,DateType.INSTANCE);   此方法为setDate的替代方法 
+                }else if(obj instanceof Object[]){  
+                    query.setParameterList(string, (Object[])obj);  
+                }else{  
+                    query.setParameter(string, obj);  
+                }  
+            }  
         }
 		List<?> cards = new ArrayList<>();
 		try {			
