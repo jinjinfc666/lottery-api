@@ -25,7 +25,7 @@ public class FlowDetailDaoImpl extends HibernateDaoSupport implements FlowDetail
 		super.setSessionFactory(sessionFactory);
 	}
 	@Override
-	public List<?> queryUserAccountDetails(String userName,String orderNum,Float amountStart,Float amountEnd,String operationType,String startTime,String endTime) {
+	public Map<String,Object> queryUserAccountDetails(String userName,String orderNum,Float amountStart,Float amountEnd,String operationType,String startTime,String endTime) {
 		String userNameSql="";
 		String orderNumSql="";
 		String amountStartSql="";
@@ -67,28 +67,39 @@ public class FlowDetailDaoImpl extends HibernateDaoSupport implements FlowDetail
 		}
 		Integer userType=2;
 		String sql="from UserAccountDetails a,UserInfo b,SysCode c,OrderInfo d where a.userId=b.id and a.operationType=c.codeName and a.orderId=d.id and b.userType !=:userType"+userNameSql+orderNumSql+amountStartSql+amountEndSql+operationTypeSql+timeSql+" order by a.id";
+		String sql1="select coalesce(SUM(a.amount),0) from UserAccountDetails a,UserInfo b,SysCode c,OrderInfo d where a.userId=b.id and a.operationType=c.codeName and a.orderId=d.id and b.userType !=:userType"+userNameSql+orderNumSql+amountStartSql+amountEndSql+operationTypeSql+timeSql+" order by a.id";
 		Query<?> query = getSessionFactory().getCurrentSession().createQuery(sql);
+		Query<?> query1 = getSessionFactory().getCurrentSession().createQuery(sql1);
 		query.setParameter("userType", userType);
+		query1.setParameter("userType", userType);
 		if (map != null) {  
             Set<String> keySet = map.keySet();  
             for (String string : keySet) {  
                 Object obj = map.get(string);  
             	if(obj instanceof Date){  
                 	query.setParameter(string, (Date)obj,DateType.INSTANCE); //query.setParameter(string, (Date)obj,DateType.INSTANCE);   此方法为setDate的替代方法 
+                	query1.setParameter(string, (Date)obj,DateType.INSTANCE);
                 }else if(obj instanceof Object[]){  
                     query.setParameterList(string, (Object[])obj);  
+                    query1.setParameterList(string, (Object[])obj);
                 }else{  
-                    query.setParameter(string, obj);  
+                    query.setParameter(string, obj); 
+                    query1.setParameter(string, obj); 
                 }  
             }  
         }
+		map.clear();
 		List<?> cards = new ArrayList<>();
+		Float sumAmount=null;
 		try {			
 			cards = query.list();
+			sumAmount = ((Number)query1.iterate().next()).floatValue();
+			map.put("record", cards);
+			map.put("sumAmount", sumAmount);
 		}catch(NoResultException ex) {
 			
 		}
-		return cards;
+		return map;
 	}
 	
 }

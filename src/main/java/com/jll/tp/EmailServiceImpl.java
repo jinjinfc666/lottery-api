@@ -1,5 +1,6 @@
-package com.jll.user.tp;
+package com.jll.tp;
 
+import javax.annotation.Resource;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
@@ -13,6 +14,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.jll.common.cache.CacheRedisService;
 import com.jll.common.constants.Message;
 import com.jll.common.utils.Utils;
 import com.jll.entity.UserInfo;
@@ -25,6 +27,9 @@ public class EmailServiceImpl implements EmailService
 {
 	private Logger logger = Logger.getLogger(EmailServiceImpl.class);
 
+	@Resource
+	CacheRedisService cacheService;
+	
 	@Value("${email.qq.server}")
 	private String qqServer;
 	
@@ -37,6 +42,8 @@ public class EmailServiceImpl implements EmailService
 	@Value("${email.reset.pwd.url}")
 	private String resetUrl;
 	
+	@Value("${sys_captcha_code_expired_time}")
+	private int captchaCodeExpiredTime;
 
 	@Override
 	public boolean isSmsValid(UserInfo user, String sms) {
@@ -49,8 +56,10 @@ public class EmailServiceImpl implements EmailService
 		JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
 		StringBuffer content = new StringBuffer();
 		
-		content.append(host).append(resetUrl.replace("{userName}", user.getUserName()))
-		.append("?verifyCode=").append(Utils.produce6DigitsCaptchaCodeNumber());
+		String captchaCode = Utils.produce6DigitsCaptchaCodeNumber();
+		
+		content.append("http://").append(host).append(resetUrl.replace("{userName}", user.getUserName()))
+		.append("?verifyCode=").append(captchaCode);
 				
 		mailSender.setHost(qqServer);  
 		mailSender.setUsername(qqSender);  
@@ -65,14 +74,13 @@ public class EmailServiceImpl implements EmailService
 		MimeMessageHelper helper = new MimeMessageHelper(msg, true);  
 		//使用辅助类MimeMessage设定参数  
 		helper.setFrom(mailSender.getUsername());  
-		helper.setTo(qqSender);  
+		helper.setTo(user.getEmail());  
 		helper.setSubject("Reset password");  
 		helper.setText(content.toString(), true);
 		// 发送邮件  
 		mailSender.send(smm);
 		
-		//TODO save the verify code 
-		
+		cacheService.setCaptchaCode(captchaCode, captchaCodeExpiredTime);
 		return Integer.toString(Message.status.SUCCESS.getCode());
 	}
 	

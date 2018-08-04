@@ -27,8 +27,8 @@ import com.jll.common.utils.StringUtils;
 import com.jll.entity.SiteMessFeedback;
 import com.jll.entity.SiteMessage;
 import com.jll.entity.UserInfo;
-import com.jll.user.tp.EmailService;
-import com.jll.user.tp.SMSService;
+import com.jll.tp.EmailService;
+import com.jll.tp.SMSService;
 import com.terran4j.commons.api2doc.annotations.Api2Doc;
 import com.terran4j.commons.api2doc.annotations.ApiComment;
 
@@ -56,6 +56,9 @@ public class UserController {
 	
 	@Resource
 	HttpServletRequest request;
+	
+	@Value("${sys_captcha_code_expired_time}")
+	private int captchaCodeExpiredTime;
 	
 	/**
 	 * query the specified user by userName, only the operator with userName or operator with role:role_bus_manager
@@ -432,7 +435,7 @@ public class UserController {
 		}
 		
 		Map<String,Object> data = new HashMap<>();
-		data.put("expired_time", 120);
+		data.put(Message.KEY_EXPIRED_TIME, captchaCodeExpiredTime);
 		resp.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		resp.put(Message.KEY_DATA, data);
 		return resp;
@@ -447,10 +450,10 @@ public class UserController {
 	 */
 	@RequestMapping(value="/{userName}/attrs/login-pwd/reset/sms", method = { RequestMethod.PUT}, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> resetLoginPwdBySMS(@PathVariable(name="userName", required = true) String userName,
-			@RequestParam("sms") String sms) {
+			@RequestBody Map<String, String> params) {
 		Map<String, Object> resp = new HashMap<String, Object>();
 		Map<String,Object> data = new HashMap<>();
-		
+		String sms = params.get("sms");
 		UserInfo user = new UserInfo();
 		user.setUserName(userName);
 		
@@ -473,17 +476,23 @@ public class UserController {
 			return resp;
 		}
 		
+<<<<<<< HEAD
 		String ret = userInfoService.resetLoginPwd();
 		if(!Integer.toString(Message.status.SUCCESS.getCode()).equals(ret)) {
+=======
+		try {
+			userServ.resetLoginPwd(user);			
+		}catch(Exception ex) {
+>>>>>>> e44d83bd405c6ca9b81ca264ceb4aa172cf042a6
 			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			resp.put(Message.KEY_ERROR_CODE, ret);
-			resp.put(Message.KEY_ERROR_MES, Message.Error.getErrorByCode(ret).getErrorMes());
-			return resp;
+			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_FAILED_RESET_LOGIN_PWD_SMS.getCode());
+			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_FAILED_RESET_LOGIN_PWD_SMS.getErrorMes());
+			return resp;		
 		}
 		
 		resp.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		
-		data.put("default_password", defaultPwd);
+		data.put(Message.KEY_DEFAULT_PASSWORD, defaultPwd);
 		resp.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		resp.put(Message.KEY_DATA, data);
 		return resp;
@@ -526,7 +535,7 @@ public class UserController {
 				resp.put(Message.KEY_ERROR_MES, Message.Error.getErrorByCode(ret).getErrorMes());
 				return resp;
 			}
-		} catch (MessagingException e) {
+		} catch (Exception e) {
 			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_TP_SENDING_EMAIL.getCode());
 			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_TP_SENDING_EMAIL.getErrorMes());
@@ -534,7 +543,8 @@ public class UserController {
 		}
 
 		Map<String,Object> data = new HashMap<>();
-		data.put("expired_time", 120);
+		data.put(Message.KEY_EXPIRED_TIME, captchaCodeExpiredTime);
+		
 		resp.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		resp.put(Message.KEY_DATA, data);
 		return resp;
@@ -574,12 +584,13 @@ public class UserController {
 			return resp;
 		}
 		
-		String ret = userServ.resetLoginPwd();
-		if(!Integer.toString(Message.status.SUCCESS.getCode()).equals(ret)) {
+		try {
+			userServ.resetLoginPwd(user);			
+		}catch(Exception ex) {
 			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			resp.put(Message.KEY_ERROR_CODE, ret);
-			resp.put(Message.KEY_ERROR_MES, Message.Error.getErrorByCode(ret).getErrorMes());
-			return resp;
+			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_FAILED_RESET_LOGIN_PWD_EMAIL.getCode());
+			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_FAILED_RESET_LOGIN_PWD_EMAIL.getErrorMes());
+			return resp;		
 		}
 		
 		resp.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());

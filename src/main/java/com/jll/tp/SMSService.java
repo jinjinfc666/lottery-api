@@ -1,10 +1,8 @@
-package com.jll.user.tp;
-
-import javax.mail.MessagingException;
+package com.jll.tp;
 
 import com.jll.entity.UserInfo;
 
-public interface EmailService
+public interface SMSService
 {
 	/**
 	 * send a 6 digits number to the phone number 
@@ -12,7 +10,7 @@ public interface EmailService
 	 * @param phoneNum
 	 * @return
 	 */
-	String sendingEmail(UserInfo user, String host) throws MessagingException;
+	String sending6digitsNumbers(String phoneNum);
 
 	boolean isSmsValid(UserInfo user, String sms);
 }

@@ -1,10 +1,9 @@
 package com.jll.report;
 
-import java.util.List;
+import java.util.Map;
 
-import com.jll.entity.SysCode;
 
 public interface FlowDetailDao {
 	
-	public List<?> queryUserAccountDetails(String userName,String orderNum,Float amountStart,Float amountEnd,String operationType,String startTime,String endTime);
+	public Map<String,Object> queryUserAccountDetails(String userName,String orderNum,Float amountStart,Float amountEnd,String operationType,String startTime,String endTime);
 }

@@ -15,7 +15,14 @@ import org.apache.log4j.Logger;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+<<<<<<< HEAD
 import org.springframework.beans.BeanUtils;
+=======
+import org.hibernate.event.spi.SaveOrUpdateEvent;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+>>>>>>> e44d83bd405c6ca9b81ca264ceb4aa172cf042a6
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -47,7 +54,8 @@ import com.jll.entity.UserInfo;
 import com.jll.sysSettings.codeManagement.SysCodeService;
 import com.jll.user.wallet.WalletService;
 
-
+@Configuration
+@PropertySource("classpath:sys-setting.properties")
 @Service
 @Transactional
 public class UserInfoServiceImpl implements UserInfoService
@@ -66,6 +74,8 @@ public class UserInfoServiceImpl implements UserInfoService
 	@Resource
 	SysCodeService sysCodeService;
 	
+	@Value("${sys_reset_pwd_default_pwd}")
+	String defaultPwd;
 	
 	@Override
 	public int getUserId(String userName) {
@@ -397,9 +407,11 @@ public class UserInfoServiceImpl implements UserInfoService
 		return ret;
 	}
 	
-	public String resetLoginPwd() {
-		// TODO Auto-generated method stub
-		return null;
+	public void resetLoginPwd(UserInfo user) {
+		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();		
+		user.setLoginPwd(encoder.encode(defaultPwd));
+		
+		userDao.saveUser(user);
 	}
 
 	@Override

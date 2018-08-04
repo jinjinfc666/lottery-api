@@ -52,7 +52,7 @@ public class ReportController {
 	DepositApplicationService depositApplicationService;
 	/**
 	 *流水明细
-	 * @author Silence
+	 * @author Silence 
 	 */
 	@RequestMapping(value={"/userFlowDetail"}, method={RequestMethod.POST}, produces={"application/json"})
 	public Map<String, Object> queryUserAccountDetails(@RequestParam(name = "userName", required = false) String userName,
@@ -64,6 +64,7 @@ public class ReportController {
 			  @RequestParam(name = "endTime", required = true) String endTime,
 			  HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
+		Map<String, Object> map = new HashMap<>();
 		if(StringUtils.isBlank(startTime)||StringUtils.isBlank(endTime)) {
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
@@ -77,19 +78,32 @@ public class ReportController {
 		ret.put("operationType", operationType);
 		ret.put("startTime", startTime);
 		ret.put("endTime", endTime);
-		List<?> flowDetailRecord = flowDetailService.queryUserAccountDetails(ret);
-		logger.debug(flowDetailRecord+"------------------------------queryUserAccountDetails--------------------------------------");
-		ret.clear();
-		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-		ret.put("data", flowDetailRecord);
+		try {
+			map= flowDetailService.queryUserAccountDetails(ret);
+			logger.debug(map+"------------------------------queryUserAccountDetails--------------------------------------");
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+			ret.put("data", map);
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+		}
 		return ret;
 	}
 	@RequestMapping(value={"/userFlowDetail/type"}, method={RequestMethod.POST}, produces={"application/json"})
 	public Map<String, Object> queryType(){
 		Map<String, Object> ret = new HashMap<>();
-		List<SysCode> types = sysCodeService.queryType(SysCodeTypes.FLOW_TYPES.getCode());
-		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-		ret.put("data", types);
+		try {
+			List<SysCode> types = sysCodeService.queryType(SysCodeTypes.FLOW_TYPES.getCode());
+			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+			ret.put("data", types);
+		}catch(Exception e){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+		}
 		return ret;
 	}
 	/**
@@ -151,44 +165,75 @@ public class ReportController {
 		ret.put("userName", userName);
 		ret.put("orderNum", orderNum);
 		logger.debug(ret+"------------------------------queryLoyTst--------------------------------------");
-		List<?> list = loyTstService.queryLoyTst(ret);
-		logger.debug(list+"------------------------------queryLoyTst--------------------------------------");
-		ret.clear();
-		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-		ret.put("data", list);
+		try {
+			List<?> list = loyTstService.queryLoyTst(ret);
+			logger.debug(list+"------------------------------queryLoyTst--------------------------------------");
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+			ret.put("data", list);
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+		}
 		return ret;
 	}
 	//查询条件:彩种
 	@RequestMapping(value={"/loyTstRecord/lotteTypes"}, method={RequestMethod.POST}, produces={"application/json"})
 	public Map<String, Object> queryLoyTstQueryConditions() {
 		Map<String, Object> ret = new HashMap<>();
-		List<SysCode> types = sysCodeService.queryType(SysCodeTypes.LOTTERY_TYPES.getCode());
-		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-		ret.put("data", types);
+		try {
+			List<SysCode> types = sysCodeService.queryType(SysCodeTypes.LOTTERY_TYPES.getCode());
+			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+			ret.put("data", types);
+		}catch(Exception e){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+		}
 		return ret;
 	}
 	//查询条件:是否追号
 	@RequestMapping(value={"/loyTstRecord/loyTstIsZh"}, method={RequestMethod.POST}, produces={"application/json"})
 	public Map<String, Object> queryLoyTstIsZh() {
 		Map<String, Object> ret = new HashMap<>();
-		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-		ret.put("data", Constants.IsZh.getIsZhByCode());
+		try {
+			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+			ret.put("data", Constants.IsZh.getIsZhByCode());
+		}catch(Exception e){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+		}
 		return ret;
 	}
 	//查询条件:中奖情况
 	@RequestMapping(value={"/loyTstRecord/LoyTstState"}, method={RequestMethod.POST}, produces={"application/json"})
 	public Map<String, Object> queryLoyTstState() {
 		Map<String, Object> ret = new HashMap<>();
-		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-		ret.put("data", Constants.State.getStateByCode());
+		try {
+			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+			ret.put("data", Constants.State.getStateByCode());
+		}catch(Exception e){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+		}
 		return ret;
 	}
 	//查询条件:订单来源
 	@RequestMapping(value={"/loyTstRecord/LoyTstTerminalType"}, method={RequestMethod.POST}, produces={"application/json"})
 	public Map<String, Object> queryLoyTstTerminalType() {
 		Map<String, Object> ret = new HashMap<>();
-		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-		ret.put("data", Constants.TerminalType.getTerminalTypeByCode());
+		try {
+			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+			ret.put("data", Constants.TerminalType.getTerminalTypeByCode());
+		}catch(Exception e){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+		}
 		return ret;
 	}
 	/**
@@ -206,6 +251,7 @@ public class ReportController {
 			  @RequestParam(name = "endTime", required = true) String endTime,//时间 String
 			  HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
+		Map<String, Object> map = new HashMap<>();
 		if(StringUtils.isBlank(startTime)||StringUtils.isBlank(endTime)||StringUtils.isBlank(type)) {
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
@@ -221,19 +267,33 @@ public class ReportController {
 		ret.put("startTime", startTime);   
 		ret.put("endTime", endTime);
 		logger.debug(ret+"------------------------------queryDWD--------------------------------------");
-		List<?> list = dWDetailsService.queryDetails(ret);
-		logger.debug(list+"------------------------------queryDWD--------------------------------------");
-		ret.clear();
-		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-		ret.put("data", list);
+		try {
+			map = dWDetailsService.queryDetails(ret);
+			logger.debug(map+"------------------------------queryDWD--------------------------------------");
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+			ret.put("data", map);
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+		}
 		return ret;
 	}
+	
 	//查询条件:存取类型
 	@RequestMapping(value={"/DWD/DWType"}, method={RequestMethod.POST}, produces={"application/json"})
 	public Map<String, Object> queryDWDType() {
 		Map<String, Object> ret = new HashMap<>();
-		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-		ret.put("data", Constants.DWType.getDWTypeByCode());
+		try {
+			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+			ret.put("data", Constants.DWType.getDWTypeByCode());
+		}catch(Exception e){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+		}
 		return ret;
 	}
 	//查询条件:存取类型
@@ -241,11 +301,17 @@ public class ReportController {
 	public Map<String, Object> queryDWDState() {
 		Map<String, Object> ret = new HashMap<>();
 		Map<String, Object> ret1 = new HashMap<>();
-		ret1.put("存款状态", Constants.DepositType.getDepositTypeByCode());
-		ret1.put("取款状态", Constants.WithdrawType.getWithdrawTypeByCode());
-		
-		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-		ret.put("data", ret1);
+		try {
+			ret1.put("存款状态", Constants.DepositType.getDepositTypeByCode());
+			ret1.put("取款状态", Constants.WithdrawType.getWithdrawTypeByCode());
+			
+			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+			ret.put("data", ret1);
+		}catch(Exception e){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+		}
 		return ret;
 	}
 	//存取款明细的详细信息
@@ -263,11 +329,18 @@ public class ReportController {
 		ret.put("type", type);
 		ret.put("id", id);
 		logger.debug(ret+"------------------------------queryDWD--------------------------------------");
-		List<?> list = dWDetailsService.queryDWDetails(ret);
-		logger.debug(list+"------------------------------queryDWD--------------------------------------");
-		ret.clear();
-		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-		ret.put("data", list);
+		try {
+			List<?> list = dWDetailsService.queryDWDetails(ret);
+			logger.debug(list+"------------------------------queryDWD--------------------------------------");
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+			ret.put("data", list);
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+		}
 		return ret;
 	}
 	/**
@@ -292,11 +365,18 @@ public class ReportController {
 		ret.put("startTime", startTime);
 		ret.put("endTime", endTime);
 		logger.debug(ret+"------------------------------queryDWD--------------------------------------");
-		List<?> list = depositApplicationService.queryDetails(ret);
-		logger.debug(list+"------------------------------queryDWD--------------------------------------");
-		ret.clear();
-		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-		ret.put("data", list);
+		try {
+			List<?> list = depositApplicationService.queryDetails(ret);
+			logger.debug(list+"------------------------------queryDWD--------------------------------------");
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+			ret.put("data", list);
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+		}
 		return ret;
 	}
 	//修改存款状态
@@ -305,7 +385,7 @@ public class ReportController {
 			  @RequestParam(name = "state", required = true) Integer state,//状态
 			  HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
-		if(id==null||state==null) {
+		if(id==null||state==null||state!=1||state!=2) {
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
@@ -314,16 +394,16 @@ public class ReportController {
 		ret.put("id", id);
 		ret.put("state", state);
 		logger.debug(ret+"------------------------------queryDWD--------------------------------------");
-		
-		if(state==1||state==2) {
-			
-			
+		try {
 			depositApplicationService.updateState(ret);
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
 		}
-//		logger.debug(list+"------------------------------queryDWD--------------------------------------");
-		ret.clear();
-		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-//		ret.put("data", list);
 		return ret;
 	}
 	

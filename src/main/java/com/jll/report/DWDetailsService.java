@@ -6,6 +6,6 @@ import java.util.Map;
 
 
 public interface DWDetailsService {
-	List<?> queryDetails(Map<String,Object> ret);
+	Map<String,Object> queryDetails(Map<String,Object> ret);
 	List<?> queryDWDetails(Map<String,Object> ret);
 }

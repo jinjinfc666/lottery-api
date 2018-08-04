@@ -11,6 +11,12 @@ public interface SysCodeService {
 	List<SysCode> quertBigType();
 	List<SysCode> querySmallType(Integer id);
 	void updateSyscode(Map<String,Object> ret);
-	void updateState(Map<String,Object> ret);
 	List<SysCode> queryType(String bigType);
+	void updateBigState(Integer id,Integer state);
+	void updateSmallState(Integer id,Integer state);
+	List<SysCode> queryBigCodeName(Integer id);
+	List<SysCode> querySmallCodeName(Integer id);
+	boolean isNull(String codeName);
+	List<SysCode> queryCacheType(String codeName);
+	List<SysCode> queryCacheTypeOnly(String codeName);
 }

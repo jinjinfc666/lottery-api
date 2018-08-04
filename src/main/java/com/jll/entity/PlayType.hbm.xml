@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Generated 2018-7-25 12:24:23 by Hibernate Tools 5.2.10.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 2018-8-1 12:18:26 by Hibernate Tools 5.2.10.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping auto-import="true" default-access="property" default-cascade="none" default-lazy="true">
     <class catalog="lottery" dynamic-insert="false" dynamic-update="false" mutable="true" name="com.jll.entity.PlayType" optimistic-lock="version" polymorphism="implicit" select-before-update="false" table="play_type">
-        <id name="id" type="java.lang.Integer">
+        <id name="id" type="int">
             <column name="id"/>
-            <generator class="identity"/>
+            <generator class="assigned"/>
         </id>
         <property generated="never" lazy="false" name="lotteryType" optimistic-lock="true" type="string" unique="false">
             <column length="30" name="lottery_type">
@@ -12,18 +12,22 @@
         </property>
         <property generated="never" lazy="false" name="name" optimistic-lock="true" type="string" unique="false">
             <column length="50" name="name">
+                <comment>����</comment>
             </column>
         </property>
         <property generated="never" lazy="false" name="desc" optimistic-lock="true" type="string" unique="false">
             <column length="250" name="desc">
+                <comment>����</comment>
             </column>
         </property>
         <property generated="never" lazy="false" name="state" optimistic-lock="true" type="java.lang.Integer" unique="false">
             <column name="state">
+                <comment>0:��Ч;1,��Ч</comment>
             </column>
         </property>
         <property generated="never" lazy="false" name="seq" optimistic-lock="true" type="java.lang.Integer" unique="false">
             <column name="seq">
+                <comment>˳��</comment>
             </column>
         </property>
         <property generated="never" lazy="false" name="createTime" optimistic-lock="true" type="timestamp" unique="false">
