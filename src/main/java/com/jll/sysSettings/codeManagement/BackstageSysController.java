@@ -128,13 +128,13 @@ public class BackstageSysController {
 	@RequestMapping(value={"/updateBigType"}, method={RequestMethod.POST}, produces={"application/json"})
 	public Map<String, Object> updateSyscode(@RequestParam(name = "id", required = true) Integer id,
 			  @RequestParam(name = "type", required = true) Integer type,//选择的类型  是大类还是小类  大类为1小类为2
-			  @RequestParam(name = "codeName", required = false) String codeName,
+//			  @RequestParam(name = "codeName", required = false) String codeName,
 			  @RequestParam(name = "codeVal", required = false) String codeVal,
 			  @RequestParam(name = "seq", required = false) Integer seq,
 			  @RequestParam(name = "remark", required = false) String remark,
 			  HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
-		if(StringUtils.isBlank(codeName)&&StringUtils.isBlank(codeVal)&&seq==null&&StringUtils.isBlank(remark)) {
+		if(StringUtils.isBlank(codeVal)&&seq==null&&StringUtils.isBlank(remark)) {
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
@@ -142,7 +142,7 @@ public class BackstageSysController {
 		}
 		ret.put("id", id);
 		ret.put("type", type);
-		ret.put("codeName", codeName);
+//		ret.put("codeName", codeName);
 		ret.put("codeVal", codeVal);
 		ret.put("remark", remark);
 		ret.put("seq", seq);

@@ -93,19 +93,19 @@ public class SysCodeDaoImpl extends HibernateDaoSupport implements SysCodeDao {
 	public void updateSyscode(SysCode sysCode) {
 		Session session=getSessionFactory().getCurrentSession();
 		String hql="";
-		String codeNameSql="";
+//		String codeNameSql="";
 		String codeValSql="";
 		String remarkSql="";
 		String seqSql="";
-		String codeName=sysCode.getCodeName();
+//		String codeName=sysCode.getCodeName();
 		String codeVal=sysCode.getCodeVal();
 		String remark=sysCode.getRemark();
 		Integer seq=sysCode.getSeq();
 		Map<String,Object> map=new HashMap();
-		if(!StringUtils.isBlank(codeName)) {
-			codeNameSql="codeName=:codeName,";
-			map.put("codeName", codeName);
-		}
+//		if(!StringUtils.isBlank(codeName)) {
+//			codeNameSql="codeName=:codeName,";
+//			map.put("codeName", codeName);
+//		}
 		if(!StringUtils.isBlank(codeVal)) {
 			codeValSql="codeVal=:codeVal,";
 			map.put("codeVal", codeVal);
@@ -118,7 +118,7 @@ public class SysCodeDaoImpl extends HibernateDaoSupport implements SysCodeDao {
 			seqSql="seq=:seq,";
 			map.put("seq", seq);
 		}
-		String sumSql=codeNameSql+codeValSql+seqSql+remarkSql;
+		String sumSql=codeValSql+seqSql+remarkSql;
 		String sumSql1=sumSql.substring(0, sumSql.length()-1);
 		hql = "update SysCode set "+sumSql1+" where id=:id";
 		

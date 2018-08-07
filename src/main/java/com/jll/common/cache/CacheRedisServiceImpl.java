@@ -104,30 +104,38 @@ public class CacheRedisServiceImpl implements CacheRedisService
 	
 	public void setSysCode(String codeName) {
 		CacheObject<Map> cacheObj = new CacheObject<Map>();
-		Map<String,Object> map=new HashMap<String,Object>();
-		
 		boolean isNull=sysCodeService.isNull(codeName);
 		if(isNull) {
+			//保存大类
+			Map<String,Object> map=new HashMap<String,Object>();
+			List<SysCode> sysCode1=sysCodeService.queryCacheTypeOnly(codeName);
+			map.put(codeName, sysCode1);
+			cacheObj.setContent(map);
+			cacheObj.setKey(codeName);
+			cacheDao.setSysCode(cacheObj);
+			
+			Map<String,Object> map1=new HashMap<String,Object>();
 			List<SysCode> sysCode=sysCodeService.queryCacheType(codeName);
 			logger.debug(sysCode.toString()+"@@@@@@@@@@@@@@@@@@@@@@@@@@@setSysCode  测试@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
 			Iterator<SysCode> it = sysCode.iterator();
 			while (it.hasNext()) {
 				SysCode syscode1=it.next();
-				map.put(syscode1.getCodeName(), syscode1);
+				map1.put(syscode1.getCodeName(), syscode1);
 			}
-			logger.debug(map+"@@@@@@@@@@@@@@@@@@@@@@@@@@@setSysCode  测试@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-			cacheObj.setContent(map);
+			logger.debug(map1+"@@@@@@@@@@@@@@@@@@@@@@@@@@@setSysCode  测试@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+			cacheObj.setContent(map1);
 			cacheObj.setKey(codeName);
 			cacheDao.setSysCode(cacheObj);
 		}else {
+			Map<String,Object> map3=new HashMap<String,Object>();
 			List<SysCode> sysCode=sysCodeService.queryCacheTypeOnly(codeName);
 //			logger.debug(sysCode.toString()+"@@@@@@@@@@@@@@@@@@@@@@@@@@@setSysCode  测试  如果此大类下面没有节点@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
 //			Iterator<SysCode> it = sysCode.iterator();
 ////			while (it.hasNext()) {
-			map.put(codeName, sysCode);
+			map3.put(codeName, sysCode);
 //			}
-			logger.debug(map+"@@@@@@@@@@@@@@@@@@@@@@@@@@@setSysCode  测试  如果此大类下面没有节点@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-			cacheObj.setContent(map);
+			logger.debug(map3+"@@@@@@@@@@@@@@@@@@@@@@@@@@@setSysCode  测试  如果此大类下面没有节点@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+			cacheObj.setContent(map3);
 			cacheObj.setKey(codeName);
 			cacheDao.setSysCode(cacheObj);
 		}
