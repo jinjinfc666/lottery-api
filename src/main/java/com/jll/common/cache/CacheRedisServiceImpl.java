@@ -137,15 +137,14 @@ public class CacheRedisServiceImpl implements CacheRedisService
 	}
 	
 	public void setSysCode(String codeTypeName, List<SysCode> sysCodes) {
-		CacheObject<Map<String, Map<String, SysCode>>> cacheObj = new CacheObject<>();
-		Map<String, Map<String, SysCode>> container = new HashMap<>();
+		CacheObject<Map<String, SysCode>> cacheObj = new CacheObject<>();
 		Map<String, SysCode> sysCodesTemp = new HashMap<>();
 		for(SysCode sysCode : sysCodes) {
 			sysCodesTemp.put(sysCode.getCodeName(), sysCode);
 		}
-		
-		container.put(codeTypeName, sysCodesTemp);
-		cacheObj.setContent(container);
+		//container.put(codeTypeName, sysCodesTemp);
+		cacheObj.setContent(sysCodesTemp);
+		cacheObj.setKey(codeTypeName);
 		cacheDao.setSysCode(cacheObj);
 		
 	}
@@ -153,19 +152,20 @@ public class CacheRedisServiceImpl implements CacheRedisService
 	@Override
 	public Map<String, SysCode> getSysCode(String codeName) {
 		CacheObject<Map<String, SysCode>>  cache = cacheDao.getSysCode(codeName);
+		if(cache == null) {
+			return null;
+		}
+		
 		return cache.getContent();
 	}
 
 	@Override
 	public void setSysCode(String codeTypeName, SysCode sysCode) {
-		CacheObject<Map<String, Map<String, SysCode>>> cacheObj = new CacheObject<>();
-		Map<String, Map<String, SysCode>> container = new HashMap<>();
+		CacheObject<Map<String, SysCode>> cacheObj = new CacheObject<>();
 		Map<String, SysCode> sysCodesTemp = new HashMap<>();
-		
 		sysCodesTemp.put(sysCode.getCodeName(), sysCode);
-		container.put(codeTypeName, sysCodesTemp);
-		cacheObj.setContent(container);
-		cacheObj.setKey(sysCode.getCodeName());
+		cacheObj.setContent(sysCodesTemp);
+		cacheObj.setKey(codeTypeName);
 		cacheDao.setSysCode(cacheObj);
 	}
 

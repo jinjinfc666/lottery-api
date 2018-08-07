@@ -41,7 +41,7 @@ public class CacheRedisDaoImpl  extends AbstractBaseRedisDao implements CacheRed
 	}
 	
 	@Override
-	public void setSysCode(CacheObject<Map<String, Map<String, SysCode>>> cacheObj) {
+	public void setSysCode(CacheObject<Map<String, SysCode>> cacheObj) {
 		this.saveOrUpdate(cacheObj);
 	}
 
