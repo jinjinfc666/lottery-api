@@ -38,4 +38,6 @@ public interface CacheRedisDao {
 	CacheObject<BulletinBoard> getBulletinBoard(String string);
 
 	void setBulletinBoard(CacheObject<BulletinBoard> cache);
+	
+	SysCode getSysCode(String codeTypeName, String codeName);
 }

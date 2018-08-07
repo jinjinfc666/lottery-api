@@ -142,7 +142,6 @@ public class CacheRedisServiceImpl implements CacheRedisService
 		for(SysCode sysCode : sysCodes) {
 			sysCodesTemp.put(sysCode.getCodeName(), sysCode);
 		}
-		
 		//container.put(codeTypeName, sysCodesTemp);
 		cacheObj.setContent(sysCodesTemp);
 		cacheObj.setKey(codeTypeName);
@@ -162,14 +161,17 @@ public class CacheRedisServiceImpl implements CacheRedisService
 
 	@Override
 	public void setSysCode(String codeTypeName, SysCode sysCode) {
-		// TODO Auto-generated method stub
-		
+		CacheObject<Map<String, SysCode>> cacheObj = new CacheObject<>();
+		Map<String, SysCode> sysCodesTemp = new HashMap<>();
+		sysCodesTemp.put(sysCode.getCodeName(), sysCode);
+		cacheObj.setContent(sysCodesTemp);
+		cacheObj.setKey(codeTypeName);
+		cacheDao.setSysCode(cacheObj);
 	}
 
 	@Override
 	public SysCode getSysCode(String codeTypeName, String codeName) {
-		// TODO Auto-generated method stub
-		return null;
+		return cacheDao.getSysCode(codeTypeName, codeName);
 	}
 
 }

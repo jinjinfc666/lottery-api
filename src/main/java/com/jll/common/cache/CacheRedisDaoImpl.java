@@ -62,4 +62,15 @@ public class CacheRedisDaoImpl  extends AbstractBaseRedisDao implements CacheRed
 		this.saveOrUpdate(cache);
 	}
 
+	@Override
+	public SysCode getSysCode(String codeTypeName, String codeName) {
+		CacheObject<Map<String, SysCode>> cacheObject=get(codeTypeName);
+		if(cacheObject==null) {
+			return null;
+		}
+		Map<String,SysCode> map=cacheObject.getContent();
+		SysCode sysCode=map.get(codeName); 
+		return sysCode;
+	}
+
 }
