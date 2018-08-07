@@ -3,7 +3,7 @@ package com.jll.game;
 public class LotteryTypeFactory {
 	
 	private static LotteryTypeFactory factory;
-	
+		
 	private LotteryTypeFactory() {
 		
 	}

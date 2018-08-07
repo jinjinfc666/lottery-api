@@ -7,8 +7,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import javax.annotation.Resource;
-
 import org.apache.log4j.Logger;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
@@ -17,19 +15,20 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.jll.common.constants.Constants;
 import com.jll.entity.Issue;
+import com.jll.spring.extend.SpringContextUtil;
 
-@Configuration
-@PropertySource("classpath:sys-setting.properties")
-@Service
-@Transactional
+/*@Configuration
+@PropertySource("classpath:sys-setting.properties")*/
+//@Service
+//@Transactional
 public class CqsscServiceImpl implements LotteryTypeService
 {
 	private Logger logger = Logger.getLogger(CqsscServiceImpl.class);
 
 	private final String lotteryType = "cqssc";
 	
-	@Resource
-	IssueService issueServ;
+	//@Resource
+	IssueService issueServ = (IssueService)SpringContextUtil.getBean("issueServiceImpl");
 	
 	@Override
 	public List<Issue> makeAPlan() {
@@ -38,16 +37,17 @@ public class CqsscServiceImpl implements LotteryTypeService
 		int maxAmount = 120;
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(new Date());
-		calendar.set(Calendar.HOUR, 10);
+		calendar.set(Calendar.HOUR_OF_DAY, 10);
 		calendar.set(Calendar.MINUTE, 0);
 		calendar.set(Calendar.SECOND, 0);
+		calendar.set(Calendar.MILLISECOND, 0);
 		for(int i = 0; i < maxAmount; i++) {
 			if(i < 72) {
 				Issue issue = new Issue();
 				issue.setStartTime(calendar.getTime());
 				calendar.add(Calendar.MINUTE, 10);
 				issue.setEndTime(calendar.getTime());
-				issue.setIssueNum(generateLottoNumber(++i));
+				issue.setIssueNum(generateLottoNumber(i + 1));
 				issue.setLotteryType(lotteryType);
 				issue.setState(Constants.IssueState.INIT.getCode());
 				
@@ -57,7 +57,7 @@ public class CqsscServiceImpl implements LotteryTypeService
 				issue.setStartTime(calendar.getTime());
 				calendar.add(Calendar.MINUTE, 5);
 				issue.setEndTime(calendar.getTime());
-				issue.setIssueNum(generateLottoNumber(++i));
+				issue.setIssueNum(generateLottoNumber(i + 1));
 				issue.setLotteryType(lotteryType);
 				issue.setState(Constants.IssueState.INIT.getCode());
 				

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jll.common.cache.CacheRedisService;
+import com.jll.common.constants.Constants;
 import com.jll.common.constants.Message;
 import com.jll.entity.SysCode;
 import com.jll.entity.UserAccountDetails;
@@ -35,30 +36,60 @@ public class BackstageSysController {
 	//添加
 	@RequestMapping(value={"/codeManagement"}, method={RequestMethod.POST}, produces={"application/json"})
 	public Map<String, Object> addSysCode(@RequestParam(name = "type", required = true) Integer type,//新增时选择的类型  是大类还是小类  大类为1小类为2
-			  @RequestParam(name = "typeCodeName", required = false) String typeCodeName,//如果是小类  此处请填写大类的code_name 因为要通过code_name查找对应的大类的id 而去添加小类
+			  @RequestParam(name = "sysCodeTypeId", required = false) Integer sysCodeTypeId,//如果是小类  此处请填写大类的code_name 因为要通过code_name查找对应的大类的id 而去添加小类
 			  @RequestParam(name = "codeName", required = true) String codeName,
 			  @RequestParam(name = "codeVal", required = true) String codeVal,
 			  @RequestParam(name = "remark", required = true) String remark,
 			  HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
-		if(type==null||StringUtils.isBlank(codeName)||StringUtils.isBlank(codeVal)||StringUtils.isBlank(remark)||(type==2 && StringUtils.isBlank(typeCodeName))||(type!=null&&type!=1&&type!=2)) {
+		String codeTypeName = null;
+		SysCode sysCodeType = null;
+		
+		if(type==null
+				|| StringUtils.isBlank(codeName) 
+				|| StringUtils.isBlank(codeVal) 
+				|| (type != 1 && type != 0)
+				|| (type == 0 && sysCodeTypeId == null)) {
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
 	    	return ret;
 		}
-		ret.put("typeCodeName", typeCodeName);
+		
+		if(type == 0) {
+			sysCodeType = sysCodeService.querySysCodeById(sysCodeTypeId);
+			if(sysCodeType == null) {
+				ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+				ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+				ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+		    	return ret;
+			}
+		}
+		/*ret.put("typeCodeName", typeCodeName);
 		ret.put("codeName", codeName);
 		ret.put("codeVal", codeVal);
-		ret.put("remark", remark);
+		ret.put("remark", remark);*/
+		
+		SysCode sysCode = new SysCode();
+		sysCode.setCodeName(codeName);
+		sysCode.setCodeVal(codeVal);
+		sysCode.setState(Constants.SysCodeState.VALID_STATE.getCode());
+		
 		try {
 			if(type==1) {
-				sysCodeService.saveBigSysCode(ret);
-				cacheRedisService.setSysCode(codeName);
-			}else if(type==2){
-				sysCodeService.saveSmallSysCode(ret);
-				cacheRedisService.setSysCode(typeCodeName);
+				sysCode.setIsCodeType(1);
+				//sysCodeService.saveBigSysCode(ret);
+				//cacheRedisService.setSysCode(codeName);
+				codeTypeName = codeName;
+			}else if(type==0){
+				sysCode.setIsCodeType(0);
+				sysCode.setCodeType(sysCodeTypeId);
+				//sysCodeService.saveSmallSysCode(ret);				
+				codeTypeName = sysCodeType.getCodeName();
 			}
+			//TODO 保存代码到数据库
+			sysCodeService.saveSysCode(sysCode);
+			cacheRedisService.setSysCode(codeTypeName, sysCode);
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		}catch(Exception e){
@@ -128,13 +159,13 @@ public class BackstageSysController {
 	@RequestMapping(value={"/updateBigType"}, method={RequestMethod.POST}, produces={"application/json"})
 	public Map<String, Object> updateSyscode(@RequestParam(name = "id", required = true) Integer id,
 			  @RequestParam(name = "type", required = true) Integer type,//选择的类型  是大类还是小类  大类为1小类为2
-			  @RequestParam(name = "codeName", required = false) String codeName,
+//			  @RequestParam(name = "codeName", required = false) String codeName,
 			  @RequestParam(name = "codeVal", required = false) String codeVal,
 			  @RequestParam(name = "seq", required = false) Integer seq,
 			  @RequestParam(name = "remark", required = false) String remark,
 			  HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
-		if(StringUtils.isBlank(codeName)&&StringUtils.isBlank(codeVal)&&seq==null&&StringUtils.isBlank(remark)) {
+		if(StringUtils.isBlank(codeVal)&&seq==null&&StringUtils.isBlank(remark)) {
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
@@ -142,7 +173,7 @@ public class BackstageSysController {
 		}
 		ret.put("id", id);
 		ret.put("type", type);
-		ret.put("codeName", codeName);
+//		ret.put("codeName", codeName);
 		ret.put("codeVal", codeVal);
 		ret.put("remark", remark);
 		ret.put("seq", seq);
@@ -151,11 +182,13 @@ public class BackstageSysController {
 			if(type==1) {
 				List<SysCode> bigList=sysCodeService.queryBigCodeName(id);
 				String bigCodeName=bigList.get(0).getCodeName();
-				cacheRedisService.setSysCode(bigCodeName);
+				//TODO 
+				//cacheRedisService.setSysCode(bigCodeName);
 			}else if(type==2) {
 				List<SysCode> smallList=sysCodeService.querySmallCodeName(id);
 				String smallCodeName=smallList.get(0).getCodeName();
-				cacheRedisService.setSysCode(smallCodeName);
+				//TODO 
+				//cacheRedisService.setSysCode(smallCodeName);
 			}
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
@@ -183,12 +216,14 @@ public class BackstageSysController {
 				sysCodeService.updateBigState(id, state);
 				List<SysCode> bigList=sysCodeService.queryBigCodeName(id);
 				String bigCodeName=bigList.get(0).getCodeName();
-				cacheRedisService.setSysCode(bigCodeName);
+				//TODO 
+				//cacheRedisService.setSysCode(bigCodeName);
 			}else if(type==2){
 				sysCodeService.updateSmallState(id, state);
 				List<SysCode> smallList=sysCodeService.querySmallCodeName(id);
 				String smallCodeName=smallList.get(0).getCodeName();
-				cacheRedisService.setSysCode(smallCodeName);
+				//TODO 
+				//cacheRedisService.setSysCode(smallCodeName);
 			}			
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());

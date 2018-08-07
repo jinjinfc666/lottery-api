@@ -127,56 +127,45 @@ public class CacheRedisServiceImpl implements CacheRedisService
 
 	@Override
 	public boolean isCodeExisting(SysCodeTypes lotteryTypes, String lotteryType) {
-		CacheObject<Map> cache = getSysCode(lotteryTypes.getCode());
-		if(cache == null) {
-			return false;
-		}
-		
-		Map<String, SysCode> sysCodes = cache.getContent();
-		
-		if(sysCodes == null || sysCodes.size() == 0) {
-			return false;
-		}
-		
-		SysCode sysCode = sysCodes.get(lotteryType);
-		
+		SysCode sysCode = getSysCode(lotteryTypes.getCode(), lotteryType);
 		if(sysCode == null) {
 			return false;
-		}
-		
+		}		
+				
 		return true;
 
 	}
 	
-	public void setSysCode(String codeName) {
-		CacheObject<Map<String, Object>> cacheObj = new CacheObject<>();
-		Map<String,Object> map=new HashMap<String,Object>();
-		
-		boolean isNull=sysCodeService.isNull(codeName);
-		if(isNull) {
-			List<SysCode> sysCode=sysCodeService.queryCacheType(codeName);
-			Iterator<SysCode> it = sysCode.iterator();
-			while (it.hasNext()) {
-				SysCode syscode1=it.next();
-				map.put(syscode1.getCodeName(), syscode1);
-			}
-			cacheObj.setContent(map);
-			cacheObj.setKey(codeName);
-			cacheDao.setSysCode(cacheObj);
-		}else {
-			List<SysCode> sysCode=sysCodeService.queryCacheTypeOnly(codeName);
-			map.put(codeName, sysCode);
-			cacheObj.setContent(map);
-			cacheObj.setKey(codeName);
-			cacheDao.setSysCode(cacheObj);
+	public void setSysCode(String codeTypeName, List<SysCode> sysCodes) {
+		CacheObject<Map<String, Map<String, SysCode>>> cacheObj = new CacheObject<>();
+		Map<String, Map<String, SysCode>> container = new HashMap<>();
+		Map<String, SysCode> sysCodesTemp = new HashMap<>();
+		for(SysCode sysCode : sysCodes) {
+			sysCodesTemp.put(sysCode.getCodeName(), sysCode);
 		}
+		
+		container.put(codeTypeName, sysCodesTemp);
+		
+		cacheDao.setSysCode(cacheObj);
+		
 	}
 
 	@Override
-	public CacheObject<Map> getSysCode(String codeName) {
-		return cacheDao.getSysCode(codeName);
+	public Map<String, SysCode> getSysCode(String codeName) {
+		CacheObject<Map<String, SysCode>>  cache = cacheDao.getSysCode(codeName);
+		return cache.getContent();
 	}
 
-	
-	
+	@Override
+	public void setSysCode(String codeTypeName, SysCode sysCode) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public SysCode getSysCode(String codeTypeName, String codeName) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

@@ -19,4 +19,8 @@ public interface SysCodeService {
 	boolean isNull(String codeName);
 	List<SysCode> queryCacheType(String codeName);
 	List<SysCode> queryCacheTypeOnly(String codeName);
+	
+	SysCode querySysCodeById(Integer sysCodeTypeId);
+	
+	void saveSysCode(SysCode sysCode);
 }

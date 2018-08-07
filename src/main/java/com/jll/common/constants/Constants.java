@@ -277,6 +277,7 @@ public class Constants {
 			return null;
 		}
 	}
+	
 	/**
 	 *SysCode大类类型
 	 * @author Silence
@@ -298,7 +299,24 @@ public class Constants {
 		}
 	}
 	
-	
+	/**
+	 *SysCode大类类型
+	 * @author Silence
+	 */
+	public static enum SysCodeTypesFlag{
+		code_type(1),
+		code_val(0);
+		
+		private int value;
+		
+		private SysCodeTypesFlag(int value) {
+			this.value = value;
+		}
+		
+		public int getCode() {
+			return value;
+		}
+	}
 	
 	
 	/**
@@ -560,6 +578,33 @@ public class Constants {
 			}
 			
 			return null;
+		}
+	}
+	/**
+	 *用户类型
+	 * @author Silence
+	 */
+	public static enum UserTypes{
+		PLATFORM_USER(0,"平台客户"),
+		PROXY(1,"代理"),
+		SYSTEM_USER(2,"系统用户"),
+		GENERAL_AGENT(3,"总代");
+		
+		private Integer code;
+		
+		private String names;
+		
+		private UserTypes(Integer code, String names) {
+			this.code = code;
+			this.names = names;
+		}
+		
+		public Integer getCode() {
+			return this.code;
+		}
+		
+		public String getNames() {
+			return this.names;
 		}
 	}
 }

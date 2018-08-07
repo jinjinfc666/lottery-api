@@ -56,13 +56,13 @@ public class SysCodeServiceImpl implements SysCodeService {
 	public void updateSyscode(Map<String, Object> ret) {
 		Integer id=(Integer)ret.get("id");
 		Integer type=(Integer)ret.get("type");
-		String codeName=(String)ret.get("codeName");
+//		String codeName=(String)ret.get("codeName");
 		String codeVal=(String)ret.get("codeVal");
 		String remark=(String)ret.get("remark");
 		Integer seq=(Integer) ret.get("seq");
 		SysCode sysCode=new SysCode();
 		sysCode.setId(id);
-		sysCode.setCodeName(codeName);
+//		sysCode.setCodeName(codeName);
 		sysCode.setCodeVal(codeVal);
 		sysCode.setRemark(remark);
 		if(type==2) {
@@ -109,5 +109,17 @@ public class SysCodeServiceImpl implements SysCodeService {
 	@Override
 	public List<SysCode> queryCacheTypeOnly(String codeName) {
 		return sysCodeDao.queryCacheTypeOnly(codeName);
+	}
+
+	@Override
+	public SysCode querySysCodeById(Integer sysCodeTypeId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void saveSysCode(SysCode sysCode) {
+		// TODO Auto-generated method stub
+		
 	}
 }

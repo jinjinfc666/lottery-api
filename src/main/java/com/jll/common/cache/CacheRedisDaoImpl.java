@@ -2,9 +2,11 @@ package com.jll.common.cache;
 
 import java.util.List;
 import java.util.Map;
+
 import org.springframework.stereotype.Repository;
 
 import com.jll.entity.Issue;
+import com.jll.entity.SysCode;
 import com.jll.game.BulletinBoard;
 
 @Repository
@@ -39,14 +41,14 @@ public class CacheRedisDaoImpl  extends AbstractBaseRedisDao implements CacheRed
 	}
 	
 	@Override
-	public void setSysCode(CacheObject<Map> cacheObj) {
+	public void setSysCode(CacheObject<Map<String, Map<String, SysCode>>> cacheObj) {
 		this.saveOrUpdate(cacheObj);
 	}
 
 	
 	@Override
-	public CacheObject<Map> getSysCode(String codeName) {
-		CacheObject<Map> cacheObject = get(codeName);
+	public CacheObject<Map<String, SysCode>> getSysCode(String codeName) {
+		CacheObject<Map<String, SysCode>> cacheObject = get(codeName);
 		return cacheObject;
 	}
 

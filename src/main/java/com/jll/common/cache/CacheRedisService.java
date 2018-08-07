@@ -1,11 +1,12 @@
 package com.jll.common.cache;
 
 import java.util.List;
+import java.util.Map;
 
 import com.jll.common.constants.Constants.SysCodeTypes;
 import com.jll.entity.Issue;
+import com.jll.entity.SysCode;
 import com.jll.game.BulletinBoard;
-import java.util.Map;
 
 
 public interface CacheRedisService {
@@ -43,9 +44,23 @@ public interface CacheRedisService {
 	 */
 	boolean isCodeExisting(SysCodeTypes lotteryTypes, String lotteryType);
 	
-	void setSysCode(String codeName);
+	/**
+	 * 将代码类型对象和代码值对象保存到缓存
+	 * @param codeTypeName
+	 * @param sysCode       
+	 */
+	void setSysCode(String codeTypeName, SysCode sysCode);
 	
-	CacheObject<Map> getSysCode(String codeType);
+	/**
+	 * 将一个代码值集合保存到缓存
+	 * @param codeTypeName
+	 * @param sysCodes
+	 */
+	void setSysCode(String codeTypeName, List<SysCode> sysCodes);
+	
+	Map<String, SysCode> getSysCode(String codeTypeName);
+	
+	SysCode getSysCode(String codeTypeName, String codeName);
 
 	void setBulletinBoard(String lottoType, BulletinBoard bulletinBoard);
 }

@@ -8,4 +8,6 @@ public interface IssueDao
 {
 		
 	void savePlan(List<Issue> issues);
+
+	void saveIssue(Issue currIssue);
 }
