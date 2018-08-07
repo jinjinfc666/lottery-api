@@ -1,9 +1,16 @@
 package com.jll.game;
 
+import java.io.Serializable;
+
 import com.jll.entity.Issue;
 
-public class BulletinBoard {
+public class BulletinBoard implements Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private Issue lastIssue;
 	
 	private Issue currIssue;

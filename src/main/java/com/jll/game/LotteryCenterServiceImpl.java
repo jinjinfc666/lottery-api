@@ -133,8 +133,9 @@ public class LotteryCenterServiceImpl implements LotteryCenterService
 		Iterator<String> ite = lottoTypes.keySet().iterator();
 		while(ite.hasNext()) {
 			String key = ite.next();
-			SysCode sysCode = lottoTypes.get(key);			
-			if(sysCode.getCodeType().intValue() == Constants.SysCodeTypesFlag.code_val.getCode()) {
+			Object obj = lottoTypes.get(key);
+			SysCode sysCode = lottoTypes.get(key);
+			if(sysCode.getIsCodeType().intValue() == Constants.SysCodeTypesFlag.code_val.getCode()) {
 				processBulletinBoard(sysCode);
 			}
 		}

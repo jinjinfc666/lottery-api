@@ -17,7 +17,9 @@ public interface SysCodeService {
 	List<SysCode> queryBigCodeName(Integer id);
 	List<SysCode> querySmallCodeName(Integer id);
 	boolean isNull(String codeName);
+	
 	List<SysCode> queryCacheType(String codeName);
+	
 	List<SysCode> queryCacheTypeOnly(String codeName);
 	
 	SysCode querySysCodeById(Integer sysCodeTypeId);
