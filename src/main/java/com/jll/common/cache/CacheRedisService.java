@@ -45,5 +45,7 @@ public interface CacheRedisService {
 	
 	void setSysCode(String codeName);
 	
-	CacheObject<Map> getSysCode(String sms);
+	CacheObject<Map> getSysCode(String codeType);
+
+	void setBulletinBoard(String lottoType, BulletinBoard bulletinBoard);
 }

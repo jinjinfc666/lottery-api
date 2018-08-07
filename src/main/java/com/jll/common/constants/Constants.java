@@ -9,6 +9,8 @@ import java.util.Map;
 public class Constants {	
 	public final static String KEY_PRE_PLAN = "plan_issues_";
 	
+	public final static String KEY_PRE_BULLETINBOARD = "bulletin_board";
+	
 	public static enum DepositOrderState{
 		INIT_OR_PUSHED(0),
 		FAILED_PUSH(10),

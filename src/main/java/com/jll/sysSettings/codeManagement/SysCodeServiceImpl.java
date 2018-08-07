@@ -102,8 +102,8 @@ public class SysCodeServiceImpl implements SysCodeService {
 	}
 
 	@Override
-	public List<SysCode> queryCacheType(String codeName) {
-		return sysCodeDao.queryCacheType(codeName);
+	public List<SysCode> queryCacheType(String codeTypeName) {
+		return sysCodeDao.queryCacheType(codeTypeName);
 	}
 
 	@Override

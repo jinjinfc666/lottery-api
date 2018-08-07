@@ -3,6 +3,8 @@ package com.jll.common.cache;
 import java.util.List;
 
 import com.jll.entity.Issue;
+import com.jll.game.BulletinBoard;
+
 import java.util.Map;
 
 public interface CacheRedisDao {
@@ -32,4 +34,8 @@ public interface CacheRedisDao {
 	void setSysCode(CacheObject<Map> cacheObj);
 	
 	CacheObject<Map> getSysCode(String codeName);
+
+	CacheObject<BulletinBoard> getBulletinBoard(String string);
+
+	void setBulletinBoard(CacheObject<BulletinBoard> cache);
 }
