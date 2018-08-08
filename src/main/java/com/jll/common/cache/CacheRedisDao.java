@@ -31,7 +31,7 @@ public interface CacheRedisDao {
 	 */
 	List<Issue> getPlan(String cacheKey);
 	
-	void setSysCode(CacheObject<Map<String, SysCode>> cacheObj);
+	void setSysCode(CacheObject<Map<String, Map<String, SysCode>>> cacheObj);
 	
 	CacheObject<Map<String, SysCode>> getSysCode(String codeTypeName);
 

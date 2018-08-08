@@ -42,8 +42,6 @@ public class ReportController {
 	@Resource
 	IssueService issueService;
 	@Resource
-	OrderInfoService orderInfoService;
-	@Resource
 	SysCodeService sysCodeService;
 	@Resource
 	DWDetailsService dWDetailsService;
