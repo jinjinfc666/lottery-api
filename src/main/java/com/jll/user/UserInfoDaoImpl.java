@@ -4,11 +4,12 @@ package com.jll.user;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.query.Query;
 import org.springframework.stereotype.Repository;
 
+import com.jll.common.constants.Constants.UserType;
+import com.jll.common.utils.StringUtils;
 import com.jll.dao.DefaultGenericDaoImpl;
 import com.jll.entity.UserInfo;
 
@@ -107,6 +108,24 @@ public class UserInfoDaoImpl extends DefaultGenericDaoImpl<UserInfo> implements 
 		}
 		
 		return generalAgencys.get(0);
+	}
+
+	@Override
+	public String queryUnSystemUsers() {
+		String sql = "select group_concat(id) from UserInfo where userType <> ?";
+	    Query query = getSessionFactory().getCurrentSession().createQuery(sql);
+	    query.setParameter(0, UserType.SYS_ADMIN.getCode());
+	    return query.iterate().next().toString();
+	}
+
+	@Override
+	public boolean checkUserIds(String userIds) {
+		String sql = "select count(*) from UserInfo userType <> ? and id in(?)";
+	    Query query = getSessionFactory().getCurrentSession().createQuery(sql);
+	    query.setParameter(0, UserType.SYS_ADMIN.getCode());
+	    query.setParameter(1, userIds);
+	    long count = ((Number)query.iterate().next()).longValue();
+		return count ==  userIds.split(StringUtils.COMMA).length;
 	}
   
   

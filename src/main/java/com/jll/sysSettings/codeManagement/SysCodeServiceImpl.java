@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.jll.common.cache.CacheRedisService;
+import com.jll.common.constants.Constants;
 import com.jll.entity.SysCode;
 @Service
 @Transactional
@@ -61,13 +62,13 @@ public class SysCodeServiceImpl implements SysCodeService {
 	public void updateSyscode(Map<String, Object> ret) {
 		Integer id=(Integer)ret.get("id");
 		Integer type=(Integer)ret.get("type");
-//		String codeName=(String)ret.get("codeName");
+		String codeName=(String)ret.get("codeName");
 		String codeVal=(String)ret.get("codeVal");
 		String remark=(String)ret.get("remark");
 //		Integer seq=(Integer) ret.get("seq");
 		SysCode sysCode=new SysCode();
 		sysCode.setId(id);
-//		sysCode.setCodeName(codeName);
+		sysCode.setCodeName(codeName);
 		sysCode.setCodeVal(codeVal);
 		sysCode.setRemark(remark);
 		sysCodeDao.updateSyscode(sysCode);
@@ -117,13 +118,8 @@ public class SysCodeServiceImpl implements SysCodeService {
 	}
 
 	@Override
-	public SysCode querySysCodeById(Integer id) {
-		List<SysCode> list=sysCodeDao.queryBigCodeName(id);
-		SysCode sysCode =new SysCode();
-		if(list==null||list.size()==0) {
-			return null;
-		}
-		return list.get(0);
+	public List<SysCode> queryBigCodeName(Integer id) {
+		return sysCodeDao.queryBigCodeName(id);
 	}
 
 	@Override
@@ -147,6 +143,11 @@ public class SysCodeServiceImpl implements SysCodeService {
 		return sysCodeDao.queryCacheTypeOnly(codeName);
 	}
 
+	@Override
+	public SysCode querySysCodeById(Integer sysCodeTypeId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 	@Override
 	public void saveSysCode(Integer type,String codeTypeName,SysCode sysCode) {

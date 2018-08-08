@@ -34,4 +34,8 @@ public interface UserInfoDao
 	 * @return
 	 */
 	UserInfo getGeneralAgency();
+	
+	String queryUnSystemUsers();
+	
+	boolean checkUserIds(String UserIds);
 }
