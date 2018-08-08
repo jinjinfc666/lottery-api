@@ -22,5 +22,5 @@ public interface SysCodeService {
 	
 	List<SysCode> queryCacheTypeOnly(String codeName);
 	
-	void saveSysCode(SysCode sysCode);
+	void saveSysCode(Integer type,String codeTypeName,SysCode sysCode);
 }
