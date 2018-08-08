@@ -21,5 +21,10 @@ public class IssueDaoImpl extends DefaultGenericDaoImpl<Issue> implements IssueD
 		}
 	}
 
+	@Override
+	public void saveIssue(Issue currIssue) {
+		this.saveOrUpdate(currIssue);
+	}
+
 
 }

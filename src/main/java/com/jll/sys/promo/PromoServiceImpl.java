@@ -191,8 +191,7 @@ public class PromoServiceImpl implements PromoService
 	@Override
 	public Map<String, Object> accedeToLuckyDrwPromo(Promo dbPro,UserInfo userInfo) {
 		Map<String, Object> ret = new HashMap<String, Object>(); 
-		Map<String,SysCode> maps =  cacheRedisService.getSysCode(SysCodeTypes.LOTTERY_TYPES.getCode()).getContent();
-		
+		Map<String,SysCode> maps =  cacheRedisService.getSysCode(SysCodeTypes.LOTTERY_TYPES.getCode());
 		double curDepAmt = userInfoService.getUserTotalDepostAmt(dbPro.getCreateTime(),new Date(),userInfo),
 				checkDepAmt = Double.valueOf(maps.get("minimum_recharge").getCodeVal());
 		

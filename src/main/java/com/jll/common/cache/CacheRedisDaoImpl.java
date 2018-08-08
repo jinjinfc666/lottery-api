@@ -2,9 +2,12 @@ package com.jll.common.cache;
 
 import java.util.List;
 import java.util.Map;
+
 import org.springframework.stereotype.Repository;
 
 import com.jll.entity.Issue;
+import com.jll.entity.SysCode;
+import com.jll.game.BulletinBoard;
 
 @Repository
 public class CacheRedisDaoImpl  extends AbstractBaseRedisDao implements CacheRedisDao{
@@ -31,20 +34,43 @@ public class CacheRedisDaoImpl  extends AbstractBaseRedisDao implements CacheRed
 	@Override
 	public List<Issue> getPlan(String cacheKey) {
 		CacheObject<List<Issue>> cache = this.get(cacheKey);
-		
+		if(cache == null) {
+			return null;
+		}
 		return cache.getContent();
 	}
 	
 	@Override
-	public void setSysCode(CacheObject<Map> cacheObj) {
+	public void setSysCode(CacheObject<Map<String, SysCode>> cacheObj) {
 		this.saveOrUpdate(cacheObj);
 	}
 
 	
 	@Override
-	public CacheObject<Map> getSysCode(String codeName) {
-		CacheObject<Map> cacheObject = get(codeName);
+	public CacheObject<Map<String, SysCode>> getSysCode(String codeName) {
+		CacheObject<Map<String, SysCode>> cacheObject = get(codeName);
 		return cacheObject;
+	}
+
+	@Override
+	public CacheObject<BulletinBoard> getBulletinBoard(String keyBulletinBoard) {
+		return get(keyBulletinBoard);
+	}
+
+	@Override
+	public void setBulletinBoard(CacheObject<BulletinBoard> cache) {
+		this.saveOrUpdate(cache);
+	}
+
+	@Override
+	public SysCode getSysCode(String codeTypeName, String codeName) {
+		CacheObject<Map<String, SysCode>> cacheObject=get(codeTypeName);
+		if(cacheObject==null) {
+			return null;
+		}
+		Map<String,SysCode> map=cacheObject.getContent();
+		SysCode sysCode=map.get(codeName); 
+		return sysCode;
 	}
 
 }

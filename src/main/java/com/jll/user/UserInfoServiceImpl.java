@@ -389,7 +389,7 @@ public class UserInfoServiceImpl implements UserInfoService
 		Map<String, Object> bankInfo =  getUserBankLists(userId);
 		List<?> bankList = (List<?>) bankInfo.get(Message.KEY_DATA);
 		
-		int maxCardNum = Integer.valueOf(((SysCode)cacheRedisService.getSysCode(SysCodeTypes.BANK_LIST.getCode()).getContent().get(SysCodeTypes.BANK_LIST.getCode())).getCodeVal());
+		int maxCardNum = Integer.valueOf(((SysCode)cacheRedisService.getSysCode(SysCodeTypes.BANK_LIST.getCode()).get(SysCodeTypes.BANK_LIST.getCode())).getCodeVal());
 		if(bankList.size() == maxCardNum){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_MORE_BIND_BANK_CARD.getCode());
@@ -592,7 +592,7 @@ public class UserInfoServiceImpl implements UserInfoService
 			back.setFbUserId(dbMsg.getUserId());
 		}
 		
-		int validDay = Integer.valueOf(((SysCode)cacheRedisService.getSysCode(SysCodeTypes.SITE_MSG_VALID_DAY.getCode()).getContent().get(SysCodeTypes.SITE_MSG_VALID_DAY.getCode())).getCodeVal());
+		int validDay = Integer.valueOf(((SysCode)cacheRedisService.getSysCode(SysCodeTypes.SITE_MSG_VALID_DAY.getCode()).get(SysCodeTypes.SITE_MSG_VALID_DAY.getCode())).getCodeVal());
 		dbMsg.setExpireTime(DateUtils.addDays(new Date(), validDay));
 		dbMsg.setIsRead(SiteMessageReadType.UN_READING.getCode());
 		
@@ -649,7 +649,7 @@ public class UserInfoServiceImpl implements UserInfoService
 					return ret;
 				}
 			}
-			int validDay = Integer.valueOf(((SysCode)cacheRedisService.getSysCode(SysCodeTypes.SITE_MSG_VALID_DAY.getCode()).getContent().get(SysCodeTypes.SITE_MSG_VALID_DAY.getCode())).getCodeVal());
+			int validDay = Integer.valueOf(((SysCode)cacheRedisService.getSysCode(SysCodeTypes.SITE_MSG_VALID_DAY.getCode()).get(SysCodeTypes.SITE_MSG_VALID_DAY.getCode())).getCodeVal());
 			msg.setExpireTime(DateUtils.addDays(new Date(), validDay));
 			List<SiteMessage> addList = new ArrayList<>();
 			for(String id:sendIds.split(StringUtils.COMMA)){

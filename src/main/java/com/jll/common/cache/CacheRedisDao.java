@@ -1,9 +1,11 @@
 package com.jll.common.cache;
 
 import java.util.List;
+import java.util.Map;
 
 import com.jll.entity.Issue;
-import java.util.Map;
+import com.jll.entity.SysCode;
+import com.jll.game.BulletinBoard;
 
 public interface CacheRedisDao {
 
@@ -29,7 +31,13 @@ public interface CacheRedisDao {
 	 */
 	List<Issue> getPlan(String cacheKey);
 	
-	void setSysCode(CacheObject<Map> cacheObj);
+	void setSysCode(CacheObject<Map<String, SysCode>> cacheObj);
 	
-	CacheObject<Map> getSysCode(String codeName);
+	CacheObject<Map<String, SysCode>> getSysCode(String codeTypeName);
+
+	CacheObject<BulletinBoard> getBulletinBoard(String string);
+
+	void setBulletinBoard(CacheObject<BulletinBoard> cache);
+	
+	SysCode getSysCode(String codeTypeName, String codeName);
 }

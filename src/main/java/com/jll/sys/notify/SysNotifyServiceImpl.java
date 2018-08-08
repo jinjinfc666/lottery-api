@@ -154,7 +154,7 @@ public class SysNotifyServiceImpl implements SysNotifyService
 		
 		notify.setCreator(loginUser.getId());
 		notify.setCreateTime(new Date());
-		notify.setExpireTime(DateUtils.addDays(new Date(), Integer.valueOf(((SysCode)cacheRedisService.getSysCode(SysCodeTypes.NOTIFY_MSG_VALID_DAY.getCode()).getContent().get(SysCodeTypes.NOTIFY_MSG_VALID_DAY.getCode())).getCodeVal())));
+		notify.setExpireTime(DateUtils.addDays(new Date(), Integer.valueOf(cacheRedisService.getSysCode(SysCodeTypes.NOTIFY_MSG_VALID_DAY.getCode()).get(SysCodeTypes.NOTIFY_MSG_VALID_DAY.getCode()).getCodeVal())));
 		
 		if(SysNotifyReceiverType.LEVEL.getCode() == notify.getReceiverType() 
 				&& !StringUtils.isEmpty(sendIds)){

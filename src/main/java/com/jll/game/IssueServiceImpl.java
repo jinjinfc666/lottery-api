@@ -31,6 +31,11 @@ public class IssueServiceImpl implements IssueService
 		
 		issueDao.savePlan(issues);
 	}
+
+	@Override
+	public void saveIssue(Issue currIssue) {
+		issueDao.saveIssue(currIssue);
+	}
 	
 	
 }

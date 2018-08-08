@@ -1,5 +1,6 @@
 package com.jll.common.cache;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -31,8 +32,10 @@ public class CacheRedisServiceImpl implements CacheRedisService
 
 	@Resource
 	CacheRedisDao cacheDao;
+	
 	@Resource
 	SysCodeService sysCodeService;
+	
 	@Value("${email.qq.server}")
 	private String qqServer;
 	
@@ -80,62 +83,95 @@ public class CacheRedisServiceImpl implements CacheRedisService
 
 	@Override
 	public boolean isPlanExisting(String lotteryType) {
+		Date today = new Date();
 		String cacheKey = Constants.KEY_PRE_PLAN + lotteryType;
 		List<Issue> issues = this.getPlan(cacheKey);
-		return (issues == null || issues.size() == 0)?false : true;
+		if(issues == null || issues.size() == 0) {
+			return false;
+		}
+		
+		Issue lastIssue = issues.get(issues.size() -1);
+		if(lastIssue.getEndTime().getTime() < today.getTime() ) {
+			return false;
+		}
+		
+		return true;
 	}
 
 
 
 	@Override
 	public BulletinBoard getBulletinBoard(String lotteryType) {
-		// TODO Auto-generated method stub
-		return null;
+		StringBuffer buffer = new StringBuffer();
+		buffer.append(Constants.KEY_PRE_BULLETINBOARD).append("_").append(lotteryType);
+		CacheObject<BulletinBoard> cache = cacheDao.getBulletinBoard(buffer.toString());
+		
+		if(cache == null) {
+			return null;
+		}
+		
+		return cache.getContent();
 	}
 
-
+	@Override
+	public void setBulletinBoard(String lottoType, BulletinBoard bulletinBoard) {
+		StringBuffer buffer = new StringBuffer();
+		buffer.append(Constants.KEY_PRE_BULLETINBOARD).append("_").append(lottoType);
+		
+		CacheObject<BulletinBoard> cache = new CacheObject<>();
+		cache.setContent(bulletinBoard);
+		cache.setKey(buffer.toString());
+		
+		cacheDao.setBulletinBoard(cache);
+	}
 
 	@Override
 	public boolean isCodeExisting(SysCodeTypes lotteryTypes, String lotteryType) {
-		//cacheDao.get
-		return false;
+		SysCode sysCode = getSysCode(lotteryTypes.getCode(), lotteryType);
+		if(sysCode == null) {
+			return false;
+		}		
+				
+		return true;
 
 	}
 	
-	public void setSysCode(String codeName) {
-		CacheObject<Map> cacheObj = new CacheObject<Map>();
-		Map<String,Object> map=new HashMap<String,Object>();
-		
-		boolean isNull=sysCodeService.isNull(codeName);
-		if(isNull) {
-			List<SysCode> sysCode=sysCodeService.queryCacheType(codeName);
-			logger.debug(sysCode.toString()+"@@@@@@@@@@@@@@@@@@@@@@@@@@@setSysCode  测试@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-			Iterator<SysCode> it = sysCode.iterator();
-			while (it.hasNext()) {
-				SysCode syscode1=it.next();
-				map.put(syscode1.getCodeName(), syscode1);
-			}
-			logger.debug(map+"@@@@@@@@@@@@@@@@@@@@@@@@@@@setSysCode  测试@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-			cacheObj.setContent(map);
-			cacheObj.setKey(codeName);
-			cacheDao.setSysCode(cacheObj);
-		}else {
-			List<SysCode> sysCode=sysCodeService.queryCacheTypeOnly(codeName);
-//			logger.debug(sysCode.toString()+"@@@@@@@@@@@@@@@@@@@@@@@@@@@setSysCode  测试  如果此大类下面没有节点@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-//			Iterator<SysCode> it = sysCode.iterator();
-////			while (it.hasNext()) {
-			map.put(codeName, sysCode);
-//			}
-			logger.debug(map+"@@@@@@@@@@@@@@@@@@@@@@@@@@@setSysCode  测试  如果此大类下面没有节点@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-			cacheObj.setContent(map);
-			cacheObj.setKey(codeName);
-			cacheDao.setSysCode(cacheObj);
+	public void setSysCode(String codeTypeName, List<SysCode> sysCodes) {
+		CacheObject<Map<String, SysCode>> cacheObj = new CacheObject<>();
+		Map<String, SysCode> sysCodesTemp = new HashMap<>();
+		for(SysCode sysCode : sysCodes) {
+			sysCodesTemp.put(sysCode.getCodeName(), sysCode);
 		}
+		//container.put(codeTypeName, sysCodesTemp);
+		cacheObj.setContent(sysCodesTemp);
+		cacheObj.setKey(codeTypeName);
+		cacheDao.setSysCode(cacheObj);
+		
 	}
 
 	@Override
-	public CacheObject<Map> getSysCode(String codeName) {
-		return cacheDao.getSysCode(codeName);
+	public Map<String, SysCode> getSysCode(String codeName) {
+		CacheObject<Map<String, SysCode>>  cache = cacheDao.getSysCode(codeName);
+		if(cache == null) {
+			return null;
+		}
+		
+		return cache.getContent();
 	}
-	
+
+	@Override
+	public void setSysCode(String codeTypeName, SysCode sysCode) {
+		CacheObject<Map<String, SysCode>> cacheObj = new CacheObject<>();
+		Map<String, SysCode> sysCodesTemp = new HashMap<>();
+		sysCodesTemp.put(sysCode.getCodeName(), sysCode);
+		cacheObj.setContent(sysCodesTemp);
+		cacheObj.setKey(codeTypeName);
+		cacheDao.setSysCode(cacheObj);
+	}
+
+	@Override
+	public SysCode getSysCode(String codeTypeName, String codeName) {
+		return cacheDao.getSysCode(codeTypeName, codeName);
+	}
+
 }
