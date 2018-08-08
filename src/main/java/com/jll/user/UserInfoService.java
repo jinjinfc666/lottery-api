@@ -1,5 +1,6 @@
 package com.jll.user;
 
+import java.util.Date;
 import java.util.Map;
 
 import com.jll.entity.SiteMessFeedback;
@@ -70,14 +71,14 @@ public interface UserInfoService
 	Map<String, Object> addUserBank(int userId, UserBankCard bank);
 	Map<String, Object> getBankCodeList();
 	Map<String, Object> verifyUserBankInfo(int userId, UserBankCard bank);
-<<<<<<< HEAD
 	Map<String, Object> getUserNotifyLists(int userId);
 	Map<String, Object> getUserSiteMessageLists(int userId);
 	Map<String, Object> showSiteMessageFeedback(int userId, int msgId);
 	Map<String, Object> addSiteMessage(int userId, String sendIds, SiteMessage msg);
 	Map<String, Object> siteMessageFeedback(int userId, int msgId, SiteMessFeedback back);
-=======
-	
 	void resetLoginPwd(UserInfo user);
->>>>>>> e44d83bd405c6ca9b81ca264ceb4aa172cf042a6
+	
+	
+	double getUserTotalDepostAmt(Date startDate,Date endDate,UserInfo user);
+	double getUserTotalBetAmt(Date startDate,Date endDate,UserInfo user);
 }

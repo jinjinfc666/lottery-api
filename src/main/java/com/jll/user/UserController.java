@@ -476,14 +476,9 @@ public class UserController {
 			return resp;
 		}
 		
-<<<<<<< HEAD
-		String ret = userInfoService.resetLoginPwd();
-		if(!Integer.toString(Message.status.SUCCESS.getCode()).equals(ret)) {
-=======
 		try {
-			userServ.resetLoginPwd(user);			
+			userInfoService.resetLoginPwd(user);			
 		}catch(Exception ex) {
->>>>>>> e44d83bd405c6ca9b81ca264ceb4aa172cf042a6
 			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_FAILED_RESET_LOGIN_PWD_SMS.getCode());
 			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_FAILED_RESET_LOGIN_PWD_SMS.getErrorMes());
@@ -510,7 +505,7 @@ public class UserController {
 		UserInfo user = new UserInfo();
 		user.setUserName(userName);
 		
-		boolean isExisting = userServ.isUserExisting(user);
+		boolean isExisting = userInfoService.isUserExisting(user);
 		if(!isExisting) {
 			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_NO_VALID_USER.getCode());
@@ -518,7 +513,7 @@ public class UserController {
 			return resp;
 		}
 		
-		user = userServ.getUserByUserName(userName);
+		user = userInfoService.getUserByUserName(userName);
 		boolean ifEmailValid = (user.getIsValidEmail() != null && user.getIsValidEmail() == 1)?true:false;
 		if(!ifEmailValid) {
 			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
@@ -565,7 +560,7 @@ public class UserController {
 		UserInfo user = new UserInfo();
 		user.setUserName(userName);
 		
-		boolean isExisting = userServ.isUserExisting(user);
+		boolean isExisting = userInfoService.isUserExisting(user);
 		if(!isExisting) {
 			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_NO_VALID_USER.getCode());
@@ -573,7 +568,7 @@ public class UserController {
 			return resp;
 		}
 		
-		user = userServ.getUserByUserName(userName);
+		user = userInfoService.getUserByUserName(userName);
 		
 		boolean isEmailValid = smsServ.isSmsValid(user, verifyCode);
 		
@@ -585,7 +580,7 @@ public class UserController {
 		}
 		
 		try {
-			userServ.resetLoginPwd(user);			
+			userInfoService.resetLoginPwd(user);			
 		}catch(Exception ex) {
 			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_FAILED_RESET_LOGIN_PWD_EMAIL.getCode());

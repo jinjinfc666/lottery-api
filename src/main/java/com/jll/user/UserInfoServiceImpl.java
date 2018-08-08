@@ -15,26 +15,22 @@ import org.apache.log4j.Logger;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
-<<<<<<< HEAD
 import org.springframework.beans.BeanUtils;
-=======
-import org.hibernate.event.spi.SaveOrUpdateEvent;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
->>>>>>> e44d83bd405c6ca9b81ca264ceb4aa172cf042a6
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.jll.common.cache.CacheRedisService;
 import com.jll.common.constants.Constants;
 import com.jll.common.constants.Constants.EmailValidState;
 import com.jll.common.constants.Constants.PhoneValidState;
 import com.jll.common.constants.Constants.SiteMessageReadType;
 import com.jll.common.constants.Constants.SysCodeTypes;
-import com.jll.common.constants.Constants.SysCodeUseLists;
 import com.jll.common.constants.Constants.SysNotifyReceiverType;
 import com.jll.common.constants.Constants.SysNotifyType;
 import com.jll.common.constants.Constants.UserLevel;
@@ -73,6 +69,9 @@ public class UserInfoServiceImpl implements UserInfoService
 	
 	@Resource
 	SysCodeService sysCodeService;
+	
+	@Resource
+	CacheRedisService cacheRedisService;
 	
 	@Value("${sys_reset_pwd_default_pwd}")
 	String defaultPwd;
@@ -389,7 +388,8 @@ public class UserInfoServiceImpl implements UserInfoService
 		Map<String, Object> ret = new HashMap<String, Object>();
 		Map<String, Object> bankInfo =  getUserBankLists(userId);
 		List<?> bankList = (List<?>) bankInfo.get(Message.KEY_DATA);
-		int maxCardNum = Integer.valueOf(((SysCode)supserDao.get(SysCode.class, "codeName", SysCodeUseLists.MAX_BIND_BANK)).getCodeVal());
+		
+		int maxCardNum = Integer.valueOf(((SysCode)cacheRedisService.getSysCode(SysCodeTypes.BANK_LIST.getCode()).getContent().get(SysCodeTypes.BANK_LIST.getCode())).getCodeVal());
 		if(bankList.size() == maxCardNum){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_MORE_BIND_BANK_CARD.getCode());
@@ -533,11 +533,6 @@ public class UserInfoServiceImpl implements UserInfoService
 		List<SiteMessFeedback> retList = new ArrayList<>();
 		
 		getAllSiteMessageFeedback(retList, userId, msgId);
-		if(dbMsg.getIsRead() == SiteMessageReadType.UN_READING.getCode()){
-			dbMsg.setIsRead(SiteMessageReadType.READING.getCode());
-			supserDao.update(dbMsg);
-		}
-		
 		Collections.sort(retList, new Comparator<SiteMessFeedback>() {
 			@Override
 			public int compare(SiteMessFeedback b1, SiteMessFeedback b2) {
@@ -547,9 +542,12 @@ public class UserInfoServiceImpl implements UserInfoService
 		
 		if(!retList.isEmpty()){
 			SiteMessFeedback lastBack = retList.get(retList.size()-1);
-			if(lastBack.getIsRead() == SiteMessageReadType.UN_READING.getCode()){
+			if(lastBack.getIsRead() == SiteMessageReadType.UN_READING.getCode()
+					&& dbMsg.getReceiver()>0){
 				lastBack.setIsRead(SiteMessageReadType.READING.getCode());
 				supserDao.update(lastBack);
+				dbMsg.setIsRead(SiteMessageReadType.READING.getCode());
+				supserDao.update(dbMsg);
 			}
 		}
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
@@ -594,7 +592,7 @@ public class UserInfoServiceImpl implements UserInfoService
 			back.setFbUserId(dbMsg.getUserId());
 		}
 		
-		int validDay = Integer.valueOf(((SysCode)supserDao.get(SysCode.class, "codeName", SysCodeUseLists.SITE_MSG_VALID_DAY)).getCodeVal());
+		int validDay = Integer.valueOf(((SysCode)cacheRedisService.getSysCode(SysCodeTypes.SITE_MSG_VALID_DAY.getCode()).getContent().get(SysCodeTypes.SITE_MSG_VALID_DAY.getCode())).getCodeVal());
 		dbMsg.setExpireTime(DateUtils.addDays(new Date(), validDay));
 		dbMsg.setIsRead(SiteMessageReadType.UN_READING.getCode());
 		
@@ -651,14 +649,14 @@ public class UserInfoServiceImpl implements UserInfoService
 					return ret;
 				}
 			}
-			int validDay = Integer.valueOf(((SysCode)supserDao.get(SysCode.class, "codeName", SysCodeUseLists.SITE_MSG_VALID_DAY)).getCodeVal());
+			int validDay = Integer.valueOf(((SysCode)cacheRedisService.getSysCode(SysCodeTypes.SITE_MSG_VALID_DAY.getCode()).getContent().get(SysCodeTypes.SITE_MSG_VALID_DAY.getCode())).getCodeVal());
 			msg.setExpireTime(DateUtils.addDays(new Date(), validDay));
 			List<SiteMessage> addList = new ArrayList<>();
 			for(String id:sendIds.split(StringUtils.COMMA)){
 				SiteMessage addMsg = new SiteMessage();
 				BeanUtils.copyProperties(msg, addMsg);
-				msg.setUserId(Integer.valueOf(id));
-				msg.setReceiver(Integer.valueOf(id));
+				addMsg.setUserId(Integer.valueOf(id));
+				addMsg.setReceiver(Integer.valueOf(id));
 				addList.add(addMsg);
 			}
 			supserDao.saveList(addList);
@@ -670,6 +668,18 @@ public class UserInfoServiceImpl implements UserInfoService
 		}
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		return ret;
+	}
+
+	@Override
+	public double getUserTotalDepostAmt(Date startDate,Date endDate,UserInfo user) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public double getUserTotalBetAmt(Date startDate,Date endDate,UserInfo user) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 	
 }

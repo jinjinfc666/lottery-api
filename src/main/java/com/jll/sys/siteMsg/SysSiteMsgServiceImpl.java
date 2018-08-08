@@ -3,48 +3,26 @@ package com.jll.sys.siteMsg;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
 
-import org.apache.commons.lang3.time.DateUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.criterion.DetachedCriteria;
-import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
-import org.springframework.beans.BeanUtils;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.jll.common.constants.Constants;
-import com.jll.common.constants.Constants.EmailValidState;
-import com.jll.common.constants.Constants.PhoneValidState;
 import com.jll.common.constants.Constants.SiteMessageReadType;
-import com.jll.common.constants.Constants.SysCodeTypes;
-import com.jll.common.constants.Constants.SysCodeUseLists;
-import com.jll.common.constants.Constants.SysNotifyReceiverType;
-import com.jll.common.constants.Constants.SysNotifyType;
-import com.jll.common.constants.Constants.UserLevel;
-import com.jll.common.constants.Constants.UserState;
-import com.jll.common.constants.Constants.UserType;
 import com.jll.common.constants.Message;
-import com.jll.common.utils.SecurityUtils;
+import com.jll.common.utils.PageQuery;
 import com.jll.common.utils.StringUtils;
-import com.jll.common.utils.Utils;
 import com.jll.dao.PageQueryDao;
 import com.jll.dao.SupserDao;
 import com.jll.entity.SiteMessFeedback;
 import com.jll.entity.SiteMessage;
-import com.jll.entity.SysCode;
-import com.jll.entity.SysNotification;
-import com.jll.entity.UserBankCard;
-import com.jll.entity.UserInfo;
 import com.jll.sysSettings.codeManagement.SysCodeService;
 import com.jll.user.UserInfoDao;
 import com.jll.user.wallet.WalletService;
@@ -69,426 +47,6 @@ public class SysSiteMsgServiceImpl implements SysSiteMsgService
 	SysCodeService sysCodeService;
 	
 	
-	@Override
-	public int getUserId(String userName) {
-		return userDao.getUserId(userName);
-	}
-
-	@Override
-	public boolean isUserInfo(String userName) {
-		long count=userDao.getCountUser(userName);
-		return count == 0 ? false:true;
-	}
-
-	@Override
-	public boolean isUserInfoByUid(int userId) {
-		return null == supserDao.get(UserInfo.class,userId);
-	}
-
-	@Override
-	public Map<String, Object> updateFundPwd(String userName, String oldPwd, String newPwd) {
-		Map<String, Object> ret = new HashMap<String, Object>();
-		UserInfo dbInfo = (UserInfo) supserDao.get(UserInfo.class,"userName",userName);
-		if(StringUtils.checkFundPwdFmtIsOK(newPwd)
-				|| !newPwd.equals(oldPwd)
-				|| null == dbInfo){
-			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
-			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
-			return ret;
-		}
-		BCryptPasswordEncoder bcEncoder = new  BCryptPasswordEncoder();
-		String chargePwd = bcEncoder.encode(newPwd);
-		if(!chargePwd.equals(dbInfo.getFundPwd())){
-			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_OLD_FUND_PWD_ERROR);
-			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_OLD_FUND_PWD_ERROR.getErrorMes());
-			return ret;
-		}
-		dbInfo.setFundPwd(chargePwd);
-		supserDao.update(dbInfo);
-		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-		return ret;
-	}
-
-	@Override
-	public Map<String, Object> updateLoginPwd(String userName, String oldPwd, String newPwd) {
-		Map<String, Object> ret = new HashMap<String, Object>();
-		UserInfo dbInfo = (UserInfo) supserDao.get(UserInfo.class,"userName",userName);
-		if(StringUtils.checkLoginPwdFmtIsOK(newPwd)
-				|| !newPwd.equals(oldPwd)
-				|| null == dbInfo){
-			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
-			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
-			return ret;
-		}
-		BCryptPasswordEncoder bcEncoder = new  BCryptPasswordEncoder();
-		String chargePwd = bcEncoder.encode(newPwd);
-		if(!chargePwd.equals(dbInfo.getLoginPwd())){
-			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_OLD_LOGIN_PWD_ERROR);
-			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_OLD_LOGIN_PWD_ERROR.getErrorMes());
-			return ret;
-		}
-		dbInfo.setLoginPwd(chargePwd);
-		supserDao.update(dbInfo);
-		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-		return ret;
-	}
-
-	@Override
-	public Map<String, Object> getUserInfoByUserName(String userName) {
-		Map<String, Object> ret = new HashMap<String, Object>();
-		UserInfo dbInfo = (UserInfo) supserDao.get(UserInfo.class,"userName",userName);
-		if(null == dbInfo){
-			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
-			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
-			return ret;
-		}
-		
-		if(!SecurityUtils.checkPermissionIsOK(SecurityContextHolder.getContext().getAuthentication(), SecurityUtils.PERMISSION_ROLE_USER_INFO)){
-			//真实姓名只显示第一个字，电话号码只显示后面三位，电子邮件只显示头三个字母以及邮箱地址，微信和qq都只显示后面三位字母
-			dbInfo.setPhoneNum(StringUtils.abbreviate(dbInfo.getPhoneNum(),3,StringUtils.MORE_ASTERISK));
-			if(!StringUtils.isEmpty(dbInfo.getEmail())){
-				String[] emails = dbInfo.getEmail().split("@");
-				dbInfo.setEmail(StringUtils.abbreviate(emails[0],3,StringUtils.MORE_ASTERISK)+"@"+emails[1]);
-			}
-			dbInfo.setWechat(StringUtils.abbreviate(dbInfo.getWechat(),3,StringUtils.MORE_ASTERISK));
-			dbInfo.setQq(StringUtils.abbreviate(dbInfo.getQq(),3,StringUtils.MORE_ASTERISK));
-			
-		}
-		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-		ret.put(Message.KEY_DATA, dbInfo);
-		return ret;
-	}
-
-	@Override
-	public Map<String, Object> updateUserInfoInfo(UserInfo userInfo) {
-		Map<String, Object> ret = new HashMap<String, Object>();
-		UserInfo dbInfo = (UserInfo) supserDao.get(UserInfo.class,"userName",userInfo.getUserName());
-		
-		if(null == dbInfo
-				|| !StringUtils.checkEmailFmtIsOK(userInfo.getEmail())
-				|| !StringUtils.checkRealNameFmtIsOK(userInfo.getRealName())
-				|| !StringUtils.checkQqFmtIsOK(userInfo.getQq())
-				|| !StringUtils.checkWercharFmtIsOK(userInfo.getWechat())
-				|| !StringUtils.checkPhoneFmtIsOK(userInfo.getPhoneNum())){
-			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
-			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
-			return ret;
-		}
-		boolean isAdmin = SecurityUtils.checkPermissionIsOK(SecurityContextHolder.getContext().getAuthentication(), SecurityUtils.PERMISSION_ROLE_ADMIN);
-		
-		if(!isAdmin 
-				&& !StringUtils.isEmpty(dbInfo.getRealName())
-				&& !StringUtils.isEmpty(userInfo.getRealName())){
-			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_MORE_UPDATE_REAL_NAME.getCode());
-			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_MORE_UPDATE_REAL_NAME.getErrorMes());
-			return ret;
-		}else if((!isAdmin 
-						&& StringUtils.isEmpty(dbInfo.getRealName())
-						&& !StringUtils.isEmpty(userInfo.getRealName()))
-				||(isAdmin && !StringUtils.isEmpty(userInfo.getRealName()))){
-			dbInfo.setRealName(userInfo.getRealName());
-		}
-		
-		
-		if(!isAdmin 
-				&& !StringUtils.isEmpty(dbInfo.getEmail())
-				&& !StringUtils.isEmpty(userInfo.getEmail())){
-			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_MORE_UPDATE_EMAIL.getCode());
-			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_MORE_UPDATE_EMAIL.getErrorMes());
-			return ret;
-		}else if((!isAdmin 
-						&& StringUtils.isEmpty(dbInfo.getEmail())
-						&& !StringUtils.isEmpty(userInfo.getEmail()))
-				||(isAdmin && !StringUtils.isEmpty(userInfo.getEmail()))){
-			dbInfo.setEmail(userInfo.getEmail());
-			dbInfo.setIsValidEmail(Constants.EmailValidState.UNVERIFIED.getCode());
-		}
-		
-		if(!isAdmin 
-				&& !StringUtils.isEmpty(dbInfo.getPhoneNum())
-				&& !StringUtils.isEmpty(userInfo.getPhoneNum())){
-			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_MORE_UPDATE_PHONE_NUM.getCode());
-			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_MORE_UPDATE_PHONE_NUM.getErrorMes());
-			return ret;
-		}else if((!isAdmin 
-						&& StringUtils.isEmpty(dbInfo.getEmail())
-						&& !StringUtils.isEmpty(userInfo.getPhoneNum()))
-				||(isAdmin && !StringUtils.isEmpty(userInfo.getPhoneNum()))){
-			dbInfo.setPhoneNum(userInfo.getPhoneNum());
-			dbInfo.setIsValidPhone(Constants.PhoneValidState.UNVERIFIED.getCode());
-		}
-		
-		dbInfo.setWechat(userInfo.getWechat());
-		dbInfo.setQq(userInfo.getQq());
-		supserDao.update(dbInfo);
-		
-		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-		return ret;
-	}
-	
-	@Override
-	public UserInfo getUserByUserName(String userName) {
-		return userDao.getUserByUserName(userName);
-	}
-
-	@Override
-	public String validUserInfo(UserInfo user, UserInfo superior) {
-		if(user == null) {
-			return Message.Error.ERROR_USER_NO_VALID_USER.getCode();
-		}
-		
-		if(StringUtils.isBlank(user.getUserName())
-				|| !Utils.validUserName(user.getUserName())) {
-			return Message.Error.ERROR_USER_INVALID_USER_NAME.getCode();
-		}
-		
-		if(StringUtils.isBlank(user.getLoginPwd())
-				|| !Utils.validPwd(user.getLoginPwd())) {
-			return Message.Error.ERROR_USER_INVALID_USER_LOGIN_PWD.getCode();
-		}
-		
-		if(!StringUtils.isBlank(user.getFundPwd())
-				&& !Utils.validPwd(user.getFundPwd())) {
-			return Message.Error.ERROR_USER_INVALID_USER_FUND_PWD.getCode();
-		}
-		
-		if(!StringUtils.isBlank(user.getEmail())
-				&& !Utils.validEmail(user.getEmail())) {
-			return Message.Error.ERROR_USER_INVALID_EMAIL.getCode();
-		}
-		
-		if(!StringUtils.isBlank(user.getPhoneNum())
-				&& !Utils.validPhone(user.getPhoneNum())) {
-			return Message.Error.ERROR_USER_INVALID_PHONE_NUMBER.getCode();
-		}
-		
-		if(!StringUtils.isBlank(user.getRealName())
-				&& !Utils.validRealName(user.getRealName())) {
-			return Message.Error.ERROR_USER_INVALID_REAL_NAME.getCode();
-		}
-		
-		if(user.getUserType() != null
-				&& user.getUserType().intValue() != 0
-				&& user.getUserType().intValue() != 1
-				&& user.getUserType().intValue() != 2
-				&& user.getUserType().intValue() != 3) {
-			return Message.Error.ERROR_USER_INVALID_USER_TYPE.getCode();
-		}
-		
-		if(user.getUserType() != UserType.SYS_ADMIN.getCode()) {
-			if(user.getPlatRebate() == null
-					|| (user.getPlatRebate().compareTo(superior.getPlatRebate())) == 1) {
-				return Message.Error.ERROR_USER_INVALID_PLAT_REBATE.getCode();
-			}			
-		}
-		
-		
-		return Integer.toString(Message.status.SUCCESS.getCode());
-	}
-
-	@Override
-	public boolean isUserExisting(UserInfo user) {		
-		
-		return userDao.isUserExisting(user);
-	}
-
-	@Override
-	public void regUser(UserInfo user) {
-		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		String loginUserName = null;
-		
-		user.setLoginPwd(encoder.encode(user.getLoginPwd()));
-		
-		if(user.getUserType() != UserType.SYS_ADMIN.getCode()) {
-			user.setFundPwd(encoder.encode(user.getFundPwd()));
-		}
-		user.setCreateTime(new Date());
-		user.setIsValidEmail(EmailValidState.UNVERIFIED.getCode());
-		user.setIsValidPhone(PhoneValidState.UNVERIFIED.getCode());
-		user.setLoginCount(0);
-		user.setState(UserState.NORMAL.getCode());
-		user.setLevel(UserLevel.LEVEL_0.getCode());
-		
-		if(auth == null) {
-			logger.error(Message.Error.ERROR_COMMON_ERROR_LOGIN.getErrorMes());
-			throw new RuntimeException(Message.Error.ERROR_COMMON_ERROR_LOGIN.getErrorMes());
-		}
-		
-		loginUserName = auth.getName();
-		
-		UserInfo loginUser = userDao.getUserByUserName(loginUserName);
-		
-		if(loginUser == null) {
-			logger.error(Message.Error.ERROR_USER_NO_VALID_USER.getErrorMes());
-			throw new RuntimeException(Message.Error.ERROR_USER_NO_VALID_USER.getErrorMes());
-		}
-		
-		user.setCreator(loginUser.getId());
-		
-		userDao.saveUser(user);
-		walletServ.createWallet(user);
-	}
-
-	@Override
-	public UserInfo getGeneralAgency() {
-		return userDao.getGeneralAgency();
-	}
-
-	@Override
-	public Map<String, Object> getUserBankLists(int userId) {
-		Map<String, Object> ret = new HashMap<String, Object>();
-		DetachedCriteria dc = DetachedCriteria.forClass(UserBankCard.class);
-		dc.add(Restrictions.eq("userId",userId));
-		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-		ret.put(Message.KEY_DATA,supserDao.findByCriteria(dc));
-		return ret;
-	}
-
-	@Override
-	public Map<String, Object> addUserBank(int userId, UserBankCard bank) {
-		Map<String, Object> bankInfo = verifyUserBankInfo(userId, bank);
-		if(null == bankInfo.get(Message.KEY_DATA)){
-			return bankInfo;
-		}
-		bank.setBankCode(bankInfo.get(Message.KEY_DATA).toString());
-		bank.setCreateTime(new Date());
-		bank.setCreator(userId);
-		bank.setState(Constants.BankCardState.ENABLED.getCode());
-		return null;
-	}
-
-	@Override
-	public Map<String, Object> getBankCodeList() {
-		Map<String, Object> ret = new HashMap<>();
-		List<SysCode> types = sysCodeService.queryType(SysCodeTypes.LOTTERY_TYPES.getCode());
-		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-		ret.put("data", types);
-		return ret;
-	}
-
-	@Override
-	public Map<String, Object> verifyUserBankInfo(int userId, UserBankCard bank) {
-		Map<String, Object> ret = new HashMap<String, Object>();
-		Map<String, Object> bankInfo =  getUserBankLists(userId);
-		List<?> bankList = (List<?>) bankInfo.get(Message.KEY_DATA);
-		int maxCardNum = Integer.valueOf(((SysCode)supserDao.get(SysCode.class, "codeName", SysCodeUseLists.MAX_BIND_BANK)).getCodeVal());
-		if(bankList.size() == maxCardNum){
-			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_MORE_BIND_BANK_CARD.getCode());
-			ret.put(Message.KEY_ERROR_MES, String.format(Message.Error.ERROR_USER_MORE_BIND_BANK_CARD.getErrorMes(),maxCardNum));
-			return ret;
-		}
-		List<?> checkList = supserDao.findByName(UserBankCard.class,"cardNum",bank.getCardNum());
-		if(!checkList.isEmpty()){
-			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_BANK_CARD_HAS_BIND.getCode());
-			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_BANK_CARD_HAS_BIND.getErrorMes());
-			return ret;
-		}
-		ret =  Utils.validBankInfo(bank.getCardNum());
-		return ret;
-	}
-	
-	public String resetLoginPwd() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Map<String, Object> getUserNotifyLists(int userId) {
-		Map<String, Object> ret = new HashMap<String, Object>();
-		UserInfo dbInfo = (UserInfo) supserDao.get(UserInfo.class,userId);
-		if(null == dbInfo){
-			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
-			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
-			return ret;
-		}
-		Object[] upUserId = StringUtils.getUserSupersId(dbInfo.getSuperior());
-		
-		Object[] query = {SysNotifyType.ALL_USER.getCode()};
-		query[1] = SysNotifyType.ALL_COM_USER.getCode();
-		if(UserType.AGENCY.getCode() == dbInfo.getUserType()){
-			query[1] = SysNotifyType.ALL_AGENT.getCode();
-		}
-		DetachedCriteria dc = DetachedCriteria.forClass(SysNotification.class);
-		dc.add(Restrictions.le("expireTime",new Date()));
-		dc.add(Restrictions.or(
-				Restrictions.and(
-		                Restrictions.eq("receiverType", SysNotifyReceiverType.TYPE.getCode()),
-		                Restrictions.in("receiver", query)
-		            ),
-				Restrictions.and(
-		                Restrictions.eq("receiverType", SysNotifyReceiverType.LEVEL.getCode()),
-		                Restrictions.in("receiver", upUserId)
-		            )
-        ));
-		dc.addOrder(Order.desc("id"));
-		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-		ret.put(Message.KEY_DATA,supserDao.findByCriteria(dc));
-		return ret;
-	}
-	
-	public static void main(String[] args) {
-		List<SiteMessFeedback> retList = new ArrayList<>();
-		
-		SiteMessFeedback bs1 = new SiteMessFeedback();
-		bs1.setId(2);
-		
-		SiteMessFeedback bs2 = new SiteMessFeedback();
-		bs2.setId(4);
-		
-		SiteMessFeedback bs3 = new SiteMessFeedback();
-		bs3.setId(1);
-		
-		retList.add(bs1);
-		retList.add(bs2);
-		retList.add(bs3);
-		
-		Collections.sort(retList, new Comparator<SiteMessFeedback>() {
-			@Override
-			public int compare(SiteMessFeedback b1, SiteMessFeedback b2) {
-				return b2.getId()-b1.getId();
-			}
-		});
-		
-		for (SiteMessFeedback siteMessFeedback : retList) {
-			System.out.println(siteMessFeedback.getId());
-		}
-		
-		System.out.println();
-	}
-
-	@Override
-	public Map<String, Object> getUserSiteMessageLists(int userId) {
-		Map<String, Object> ret = new HashMap<String, Object>();
-		UserInfo dbInfo = (UserInfo) supserDao.get(UserInfo.class,userId);
-		if(null == dbInfo){
-			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
-			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
-			return ret;
-		}
-		DetachedCriteria dc = DetachedCriteria.forClass(SiteMessage.class);
-		dc.add(Restrictions.eq("userId",userId));
-		dc.add(Restrictions.le("expireTime",new Date()));
-		dc.addOrder(Order.desc("expireTime"));
-		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-		ret.put(Message.KEY_DATA,supserDao.findByCriteria(dc));
-		return ret;
-		
-	}
-	
 	private void getAllSiteMessageFeedback(List<SiteMessFeedback> backList , int userId, int msgId){
 		DetachedCriteria dc = DetachedCriteria.forClass(SiteMessFeedback.class);
 		dc.add(Restrictions.eq("mesId",msgId));
@@ -498,174 +56,67 @@ public class SysSiteMsgServiceImpl implements SysSiteMsgService
 			backList.add(dbBacks.get(0));
 			getAllSiteMessageFeedback(backList, dbBacks.get(0).getFbUserId(), dbBacks.get(0).getId());
 		}
-		
 	}
 
 	@Override
-	public Map<String, Object> showSiteMessageFeedback(int userId, int msgId) {
+	public Map<String, Object> showSiteMessageFeedback(int msgId) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		UserInfo dbInfo = (UserInfo) supserDao.get(UserInfo.class,userId);
 		SiteMessage dbMsg = (SiteMessage) supserDao.get(SiteMessage.class,msgId);
-		if(null == dbInfo
-				|| null == dbMsg){
+		if(null == dbMsg){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
 			return ret;
 		}
 		
-		dbMsg.setIsRead(SiteMessageReadType.READING.getCode());
-		
 		DetachedCriteria dc = DetachedCriteria.forClass(SiteMessFeedback.class);
 		dc.add(Restrictions.eq("mesId",msgId));
-		dc.add(Restrictions.eq("fbUserId",userId));
+		dc.add(Restrictions.eq("fbUserId",dbMsg.getUserId()));
 		
 		List<SiteMessFeedback> retList = new ArrayList<>();
 		
-		getAllSiteMessageFeedback(retList, userId, msgId);
-		if(dbMsg.getIsRead() == SiteMessageReadType.UN_READING.getCode()){
-			dbMsg.setIsRead(SiteMessageReadType.READING.getCode());
-			supserDao.update(dbMsg);
-		}
-		
+		getAllSiteMessageFeedback(retList, dbMsg.getUserId(), msgId);
 		Collections.sort(retList, new Comparator<SiteMessFeedback>() {
 			@Override
 			public int compare(SiteMessFeedback b1, SiteMessFeedback b2) {
 				return b2.getId()-b1.getId();
 			}
 		});
-		
 		if(!retList.isEmpty()){
 			SiteMessFeedback lastBack = retList.get(retList.size()-1);
-			if(lastBack.getIsRead() == SiteMessageReadType.UN_READING.getCode()){
+			if(lastBack.getIsRead() == SiteMessageReadType.UN_READING.getCode()
+					&& dbMsg.getReceiver() ==0 ){
 				lastBack.setIsRead(SiteMessageReadType.READING.getCode());
+				dbMsg.setIsRead(SiteMessageReadType.READING.getCode());
 				supserDao.update(lastBack);
+				supserDao.update(dbMsg);
 			}
 		}
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		ret.put(Message.KEY_DATA,dbMsg);
 		ret.put(Message.KEY_REMAKE,retList);
 		return ret;
-	
-	}
-
-	@Override
-	public Map<String, Object> siteMessageFeedback(int userId, int msgId, SiteMessFeedback back) {
-		Map<String, Object> ret = new HashMap<String, Object>();
-		UserInfo dbInfo = (UserInfo) supserDao.get(UserInfo.class,userId);
-		SiteMessage dbMsg = (SiteMessage) supserDao.get(SiteMessage.class,msgId);
-		SiteMessFeedback dbBack = new SiteMessFeedback();
-		
-		if(back.getMesId() > 0){
-			dbBack = (SiteMessFeedback) supserDao.get(SiteMessFeedback.class,back.getMesId());;
-		}
-		if(null == dbInfo
-				|| null == dbMsg
-				|| null == dbBack){
-			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
-			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
-			return ret;
-		}
-		if(StringUtils.isEmpty(back.getContent()) ){
-			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_MESSAGE_CONTENT_IS_EMPTY.getCode());
-			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_MESSAGE_CONTENT_IS_EMPTY.getErrorMes());
-			return ret;
-		}
-		
-		// 不是首次回复...
-		if(dbBack.getMesId() > 0){
-			back.setMesId(dbMsg.getId());
-			back.setFbUserId(dbBack.getFbUserId());
-		}else{
-			//该信息是的类型是 system => user, 回复： user => system
-			back.setMesId(msgId);
-			back.setFbUserId(dbMsg.getUserId());
-		}
-		
-		int validDay = Integer.valueOf(((SysCode)supserDao.get(SysCode.class, "codeName", SysCodeUseLists.SITE_MSG_VALID_DAY)).getCodeVal());
-		dbMsg.setExpireTime(DateUtils.addDays(new Date(), validDay));
-		dbMsg.setIsRead(SiteMessageReadType.UN_READING.getCode());
-		
-		back.setFbTime(new Date());
-		back.setIsRead(SiteMessageReadType.UN_READING.getCode());
-		
-		supserDao.save(back);
-		supserDao.update(dbMsg);
-		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-		return ret;
-	}
-
-	@Override
-	public Map<String, Object> addSiteMessage(int userId, String sendIds, SiteMessage msg) {
-		Map<String, Object> ret = new HashMap<String, Object>();
-		UserInfo dbInfo = (UserInfo) supserDao.get(UserInfo.class,userId);
-		if(null == dbInfo
-				||(UserType.SYS_ADMIN.getCode() == dbInfo.getUserType()
-						&& sendIds.equals(StringUtils.ALL))
-				||(UserType.SYS_ADMIN.getCode() != dbInfo.getUserType()
-				&& !StringUtils.isEmpty(sendIds))
-				){
-			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
-			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
-			return ret;
-		}
-		if(StringUtils.isEmpty(msg.getTitle()) ){
-			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_MESSAGE_TITLE_IS_EMPTY.getCode());
-			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_MESSAGE_TITLE_IS_EMPTY.getErrorMes());
-			return ret;
-		}
-		
-		if(StringUtils.isEmpty(msg.getContent()) ){
-			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_MESSAGE_CONTENT_IS_EMPTY.getCode());
-			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_MESSAGE_CONTENT_IS_EMPTY.getErrorMes());
-			return ret;
-		}
-		
-		msg.setCreateTime(new Date());
-		msg.setCreator(userId);
-		msg.setIsRead(Constants.SiteMessageReadType.UN_READING.getCode());
-		//system to user
-		if(StringUtils.isEmpty(sendIds)){
-			if(sendIds.equals(StringUtils.ALL)){
-				sendIds = userDao.queryUnSystemUsers();
-			}else{
-				if(!userDao.checkUserIds(sendIds)){
-					ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-					ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
-					ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
-					return ret;
-				}
-			}
-			int validDay = Integer.valueOf(((SysCode)supserDao.get(SysCode.class, "codeName", SysCodeUseLists.SITE_MSG_VALID_DAY)).getCodeVal());
-			msg.setExpireTime(DateUtils.addDays(new Date(), validDay));
-			List<SiteMessage> addList = new ArrayList<>();
-			for(String id:sendIds.split(StringUtils.COMMA)){
-				SiteMessage addMsg = new SiteMessage();
-				BeanUtils.copyProperties(msg, addMsg);
-				msg.setUserId(Integer.valueOf(id));
-				msg.setReceiver(Integer.valueOf(id));
-				addList.add(addMsg);
-			}
-			supserDao.saveList(addList);
-		}else{
-			//user to system
-			msg.setUserId(userId);
-			msg.setReceiver(0);
-			supserDao.save(msg);
-		}
-		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-		return ret;
 	}
 
 	@Override
 	public Map<String, Object> getSiteMessageLists(String userName, PageQueryDao page) {
-		// TODO Auto-generated method stub
-		return null;
+		 Map<String, Object> ret = new HashMap<String, Object>(); 
+		 DetachedCriteria criteria = DetachedCriteria.forClass(SiteMessage.class);
+	     
+		 if(null != page.getEndDate()){
+			 criteria.add(Restrictions.le("createTime",page.getEndDate()));
+		 }
+		 if(null != page.getStartDate()){
+			 criteria.add(Restrictions.ge("createTime",page.getStartDate()));
+		 }
+		 
+		 if(!StringUtils.isEmpty(userName)){
+			 criteria = criteria.createCriteria("UserInfo");
+	         criteria.add(Restrictions.eq("userName",userName));
+		 }
+		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		ret.put(Message.KEY_DATA,PageQuery.queryForPagenation(supserDao.getHibernateTemplate(), criteria, page.getPageIndex(), page.getPageSize()));
+		return ret;
 	}
 	
 }

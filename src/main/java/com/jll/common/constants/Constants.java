@@ -77,6 +77,38 @@ public class Constants {
 		}
 	}
 	
+	public static enum PromoValueType{
+		CASH(1, "现金"),
+		POINT(2, "积分");
+		
+		private int code;
+		
+		private String desc;
+		
+		private PromoValueType(int code, String desc) {
+			this.code = code;
+			this.desc = desc;
+		}
+		
+		public int getCode() {
+			return this.code;
+		}
+		
+		public String getDesc() {
+			return this.desc;
+		}
+		
+		public static PromoValueType getValueByCode(int code) {
+			PromoValueType[] walletTypes = PromoValueType.values();
+			for(PromoValueType walletType: walletTypes) {
+				if(walletType.getCode() == code) {
+					return walletType;
+				}
+			}
+			return null;
+		}
+	}
+	
 	public static enum EmailValidState{
 		UNVERIFIED(0, "未验证"),
 		VERIFIED(1, "已验证");
@@ -101,6 +133,38 @@ public class Constants {
 		public static EmailValidState getStateByCode(int code) {
 			EmailValidState[] states = EmailValidState.values();
 			for(EmailValidState state: states) {
+				if(state.getCode() == code) {
+					return state;
+				}
+			}
+			return null;
+		}
+	}
+	
+	public static enum PromoMultipleType{
+		ONCE(0, "单次领取"),
+		MANY(1, "多次领取");
+		
+		private int code;
+		
+		private String desc;
+		
+		private PromoMultipleType(int code, String desc) {
+			this.code = code;
+			this.desc = desc;
+		}
+		
+		public int getCode() {
+			return this.code;
+		}
+		
+		public String getDesc() {
+			return this.desc;
+		}
+		
+		public static PromoMultipleType getValueByCode(int code) {
+			PromoMultipleType[] states = PromoMultipleType.values();
+			for(PromoMultipleType state: states) {
 				if(state.getCode() == code) {
 					return state;
 				}
@@ -284,6 +348,8 @@ public class Constants {
 		BANK_LIST("number_of_bank_cards"),
 		FLOW_TYPES("acc_ope_type"),
 		PAYMENT_PLATFORM("payment_platform"),
+		SITE_MSG_VALID_DAY("site_msg_valid_day"),
+		NOTIFY_MSG_VALID_DAY("notify_msg_valid_day"),
 		LUCKY_DRAW("lucky_draw");
 		private String value;
 		
@@ -296,23 +362,6 @@ public class Constants {
 		}
 	}
 	
-	
-	
-	
-	/**
-	 *SysCode 直接使用
-	 */
-	public static enum SysCodeUseLists{
-		MAX_BIND_BANK("max_bind_bank"),
-		SITE_MSG_VALID_DAY("site_msg_valid_day");
-		private String value;
-		private SysCodeUseLists(String value) {
-			this.value = value;
-		}
-		public String getCode() {
-			return value;
-		}
-	}
 	
 	/**
 	 * notification type

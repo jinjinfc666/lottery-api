@@ -9,13 +9,11 @@ public class Message {
 	
 	public final static String KEY_DATA = "data";
 	
-<<<<<<< HEAD
 	public final static String KEY_REMAKE = "remake";
-=======
 	public final static String KEY_EXPIRED_TIME = "expired_time";
-	
 	public final static String KEY_DEFAULT_PASSWORD = "default_password";
->>>>>>> e44d83bd405c6ca9b81ca264ceb4aa172cf042a6
+	
+	
 	
 	public static enum status{
 		SUCCESS(1),
@@ -74,13 +72,13 @@ public class Message {
 		ERROR_BANK_CARD_HAS_BIND("010019", "The bank card  has been bound by other users. Please re-input the bank card.!!"),
 		ERROR_USER_INVALID_BANK_CARD("010020", "Invalid bank card!!"),
 		ERROR_USER_MORE_BIND_BANK_CARD("010021", "Users bind up to %d bank cards!!"),
-<<<<<<< HEAD
-		ERROR_MESSAGE_TITLE_IS_EMPTY("010022", "Message title is empty!!"),
-		ERROR_MESSAGE_CONTENT_IS_EMPTY("010023", "Message content is empty!!"),
-=======
 		ERROR_USER_FAILED_RESET_LOGIN_PWD_SMS("010022", "Failed Reset login password by SMS!!"),
-		ERROR_USER_FAILED_RESET_LOGIN_PWD_EMAIL("010022", "Failed Reset login password by Email!!"),
->>>>>>> e44d83bd405c6ca9b81ca264ceb4aa172cf042a6
+		ERROR_USER_FAILED_RESET_LOGIN_PWD_EMAIL("010023", "Failed Reset login password by Email!!"),
+		ERROR_PROMS_OTHER_CONDITION_DEPOSIT_DISSATISFY("010024", "Participation in activities must meet the minimum deposit amount of %s, your current deposit amount of %s !!"),
+		ERROR_PROMS_OTHER_CONDITION_FLOWING_DISSATISFY("010025", "Participation in activities must meet the minimum flowing water rate of %s times, your current flowing water rate of %s times!!"),
+		ERROR_PROMS_ONLY_ONCE_DISSATISFY("010026", "The activity can only take part in one time!!"),
+		ERROR_PROMS_OTHER_CONDITION_BET_AMT_DISSATISFY("010025", "Participation in activities must meet the minimum bet amount of %s times, your current bet amount of %s times!!"),
+		
 		/**************third party*************************/
 		ERROR_TP_INVALID_SMS("020001", "Invalid SMS!!"),
 		ERROR_TP_INVALID_SMS_URL("020002", "Invalid SMS URL!!"),
@@ -88,10 +86,15 @@ public class Message {
 		
 		/************************game module*******************************/
 		ERROR_GAME_LOTTERY_TYPE_INVALID("030001", "Invalid lottery type!!"),
-		ERROR_GAME_END("030002", "The game is over today!!")
+		ERROR_GAME_END("030002", "The game is over today!!"),
+		
+		/*** system model****/
+		ERROR_MESSAGE_TITLE_IS_EMPTY("040001", "Message title is empty!!"),
+		ERROR_MESSAGE_CONTENT_IS_EMPTY("040002", "Message content is empty!!"),
+		ERROR_NOTIFY_RECEIVER_TYPE_ERROR("040003", "Notify receiver type error!!"),
+		ERROR_NOTIFY_RECEIVER_ERROR("040003", "Notify receiver error!!"),
+		
 		;
-		
-		
 		
 		private String code;
 		
