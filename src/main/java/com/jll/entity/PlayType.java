@@ -1,5 +1,5 @@
 package com.jll.entity;
-// Generated 2018-8-1 12:18:26 by Hibernate Tools 5.2.10.Final
+// Generated 2018-8-8 15:26:50 by Hibernate Tools 5.2.10.Final
 
 import java.util.Date;
 
@@ -8,7 +8,7 @@ import java.util.Date;
  */
 public class PlayType implements java.io.Serializable {
 
-	private int id;
+	private Integer id;
 	private String lotteryType;
 	private String name;
 	private String desc;
@@ -19,12 +19,7 @@ public class PlayType implements java.io.Serializable {
 	public PlayType() {
 	}
 
-	public PlayType(int id) {
-		this.id = id;
-	}
-
-	public PlayType(int id, String lotteryType, String name, String desc, Integer state, Integer seq, Date createTime) {
-		this.id = id;
+	public PlayType(String lotteryType, String name, String desc, Integer state, Integer seq, Date createTime) {
 		this.lotteryType = lotteryType;
 		this.name = name;
 		this.desc = desc;
@@ -33,11 +28,11 @@ public class PlayType implements java.io.Serializable {
 		this.createTime = createTime;
 	}
 
-	public int getId() {
+	public Integer getId() {
 		return this.id;
 	}
 
-	public void setId(int id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 

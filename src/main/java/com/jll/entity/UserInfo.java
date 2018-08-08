@@ -1,5 +1,5 @@
 package com.jll.entity;
-// Generated 2018-7-25 12:24:23 by Hibernate Tools 5.2.10.Final
+// Generated 2018-8-8 15:26:50 by Hibernate Tools 5.2.10.Final
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -36,9 +36,9 @@ public class UserInfo implements java.io.Serializable {
 	}
 
 	public UserInfo(String realName, String userName, String loginPwd, String fundPwd, Integer state, Integer level,
-			Integer loginCount, Date unlockTime, Integer userType, String superior, BigDecimal rebate,BigDecimal platRebate, String phoneNum,
-			String qq, String wechat, String email, Integer isValidPhone, Integer isValidEmail, String regIp,
-			Date createTime, Integer creator) {
+			Integer loginCount, Date unlockTime, Integer userType, String superior, BigDecimal rebate,
+			BigDecimal platRebate, String phoneNum, String qq, String wechat, String email, Integer isValidPhone,
+			Integer isValidEmail, String regIp, Date createTime, Integer creator) {
 		this.realName = realName;
 		this.userName = userName;
 		this.loginPwd = loginPwd;
@@ -158,6 +158,14 @@ public class UserInfo implements java.io.Serializable {
 		this.rebate = rebate;
 	}
 
+	public BigDecimal getPlatRebate() {
+		return this.platRebate;
+	}
+
+	public void setPlatRebate(BigDecimal platRebate) {
+		this.platRebate = platRebate;
+	}
+
 	public String getPhoneNum() {
 		return this.phoneNum;
 	}
@@ -228,14 +236,6 @@ public class UserInfo implements java.io.Serializable {
 
 	public void setCreator(Integer creator) {
 		this.creator = creator;
-	}
-
-	public BigDecimal getPlatRebate() {
-		return platRebate;
-	}
-
-	public void setPlatRebate(BigDecimal platRebate) {
-		this.platRebate = platRebate;
 	}
 
 }

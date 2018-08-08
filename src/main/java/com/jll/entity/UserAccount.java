@@ -1,5 +1,5 @@
 package com.jll.entity;
-// Generated 2018-7-26 11:57:20 by Hibernate Tools 5.2.10.Final
+// Generated 2018-8-8 15:26:50 by Hibernate Tools 5.2.10.Final
 
 import java.math.BigDecimal;
 
@@ -8,10 +8,6 @@ import java.math.BigDecimal;
  */
 public class UserAccount implements java.io.Serializable {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private Integer id;
 	private Integer userId;
 	private String accName;
