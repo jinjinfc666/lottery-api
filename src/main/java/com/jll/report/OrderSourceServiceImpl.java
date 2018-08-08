@@ -24,11 +24,5 @@ public class OrderSourceServiceImpl implements OrderSourceService {
 		String endTime=(String) ret.get("endTime");
 		return orderSourceDao.queryOrderSource(codeName,startTime, endTime);
 	}
-	//添加
-	@Override
-	public void addOrderSource() {
-		
-		
-	}
 }
 

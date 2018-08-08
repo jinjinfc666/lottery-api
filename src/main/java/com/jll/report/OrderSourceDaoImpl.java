@@ -78,11 +78,5 @@ public class OrderSourceDaoImpl extends HibernateDaoSupport implements OrderSour
 		}
 		return map;
 	}
-	//添加
-	@Override
-	public void addOrderSource(OrderSource orderSource) {
-		
-		
-	}
 }
 

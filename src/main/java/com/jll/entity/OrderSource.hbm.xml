@@ -15,11 +15,6 @@
                 <comment>��������</comment>
             </column>
         </property>
-        <property generated="never" lazy="false" name="lotteryType" optimistic-lock="true" type="string" unique="false">
-            <column length="50" name="lottery_type">
-                <comment>����</comment>
-            </column>
-        </property>
         <property generated="never" lazy="false" name="mobileAmount" optimistic-lock="true" type="big_decimal" unique="false">
             <column name="mobile_amount">
                 <comment>�ֻ���Ͷע��</comment>

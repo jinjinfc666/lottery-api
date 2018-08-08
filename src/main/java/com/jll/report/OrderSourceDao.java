@@ -12,7 +12,5 @@ import com.jll.entity.OrderSource;
 public interface OrderSourceDao {
 	//查询
 	public Map<String,Object> queryOrderSource(String codeName,String startTime,String endTime);
-	//添加
-	public void addOrderSource(OrderSource orderSource);
 	
 }

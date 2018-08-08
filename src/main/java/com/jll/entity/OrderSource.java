@@ -12,7 +12,6 @@ public class OrderSource implements java.io.Serializable {
 	private Integer id;
 	private Date createTime;
 	private String codeName;
-	private String lotteryType;
 	private BigDecimal mobileAmount;
 	private BigDecimal pcAmount;
 	private BigDecimal sumAmount;
@@ -24,11 +23,10 @@ public class OrderSource implements java.io.Serializable {
 		this.createTime = createTime;
 	}
 
-	public OrderSource(Date createTime, String codeName, String lotteryType, BigDecimal mobileAmount,
+	public OrderSource(Date createTime, String codeName, BigDecimal mobileAmount,
 			BigDecimal pcAmount, BigDecimal sumAmount) {
 		this.createTime = createTime;
 		this.codeName = codeName;
-		this.lotteryType = lotteryType;
 		this.mobileAmount = mobileAmount;
 		this.pcAmount = pcAmount;
 		this.sumAmount = sumAmount;
@@ -56,14 +54,6 @@ public class OrderSource implements java.io.Serializable {
 
 	public void setCodeName(String codeName) {
 		this.codeName = codeName;
-	}
-
-	public String getLotteryType() {
-		return this.lotteryType;
-	}
-
-	public void setLotteryType(String lotteryType) {
-		this.lotteryType = lotteryType;
 	}
 
 	public BigDecimal getMobileAmount() {
