@@ -48,7 +48,7 @@ public class OrderSourceDaoImpl extends HibernateDaoSupport implements OrderSour
 			map.put("startTime", beginDate);
 			map.put("endTime", endDate);
 		}
-		String sql = "select mobile_amount,ROUND(ROUND(mobile_amount/sum_amount,4)*100,2) as mobile_proportion,pc_amount,ROUND(ROUND(pc_amount/sum_amount,4)*100,2) as pc_proportion,sum_amount from (select sum(mobile_amount) as mobile_amount,sum(pc_amount) as pc_amount,sum(sum_amount) as sum_amount from order_source where "+timeSql+codeNameSql+")a";
+		String sql = "select IFNULL(mobile_amount,0) as mobile_amount,IFNULL(mobile_proportion,0) as mobile_proportion,IFNULL(pc_amount,0) as pc_amount,IFNULL(pc_proportion,0) as pc_proportion,IFNULL(sum_amount,0) as sum_amount from(select mobile_amount,ROUND(ROUND(mobile_amount/sum_amount,4)*100,2) as mobile_proportion,pc_amount,ROUND(ROUND(pc_amount/sum_amount,4)*100,2) as pc_proportion,sum_amount from (select sum(mobile_amount) as mobile_amount,sum(pc_amount) as pc_amount,sum(sum_amount) as sum_amount from order_source where "+timeSql+codeNameSql+")a)aa";
 		logger.debug(sql+"-----------------------------queryLoyTst----SQL--------------------------------");
 		Query<?> query = getSessionFactory().getCurrentSession().createSQLQuery(sql);
 		if (map != null) {  
