@@ -1,7 +1,9 @@
 package com.jll.common.constants;
 
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -761,6 +763,321 @@ public class Constants {
 		
 		public String getNames() {
 			return this.names;
+		}
+	}
+	/**
+	 *报表统计 需要的类型：扣除
+	 * @author Silence
+	 */
+	public static enum Deduction{
+		RECHARGE_DEDUCTION("recharge_deduction","充值扣除"),//充值扣除
+		SYS_DEDUCTION("sys_deduction","系统扣除");//系统扣除
+		
+		private String code;
+		private String name;
+		
+		private Deduction(String code,String name) {
+			this.code = code;
+			this.name = name;
+		}
+		
+		public String getCode() {
+			return this.code;
+		}
+		public String getName() {
+			return this.name;
+		}
+		
+		public static List<String> getList() {
+			List<String> map=new ArrayList<String>();
+			Deduction[] names = Deduction.values();
+			for(Deduction name: names) {
+				map.add(name.getCode());
+			}
+			return map;
+		}
+		public static Map<String,Object> getMap() {
+			Map<String,Object> map=new HashMap<String,Object>();
+			Deduction[] names = Deduction.values();
+			for(Deduction name: names) {
+				map.put(name.getCode(), name.getName());
+			}
+			return map;
+		}
+	}
+	/**
+	 *报表统计 需要的类型：用户存款
+	 * @author Silence
+	 */
+	public static enum UserDeposit{
+		USER_DEPOSIT("user_deposit","用户存款");
+		
+		private String code;
+		private String name;
+		
+		private UserDeposit(String code,String name) {
+			this.code = code;
+			this.name = name;
+		}
+		
+		public String getCode() {
+			return this.code;
+		}
+		public String getName() {
+			return this.name;
+		}
+		
+		public static List<String> getList() {
+			List<String> map=new ArrayList<String>();
+			UserDeposit[] names = UserDeposit.values();
+			for(UserDeposit name: names) {
+				map.add(name.getCode());
+			}
+			return map;
+		}
+		public static Map<String,Object> getMap() {
+			Map<String,Object> map=new HashMap<String,Object>();
+			UserDeposit[] names = UserDeposit.values();
+			for(UserDeposit name: names) {
+				map.put(name.getCode(), name.getName());
+			}
+			return map;
+		}
+	}
+	/**
+	 *报表统计 需要的类型：系统充值
+	 * @author Silence
+	 */
+	public static enum SystemRecharge{
+		SYSTEM_RECHARGE("system_recharge","系统充值"),
+		AGENT_RECHARGE("agent_recharge","代理充值");
+		
+		
+		private String code;
+		private String name;
+		
+		private SystemRecharge(String code,String name) {
+			this.code = code;
+			this.name = name;
+		}
+		
+		public String getCode() {
+			return this.code;
+		}
+		public String getName() {
+			return this.name;
+		}
+		
+		public static List<String> getList() {
+			List<String> map=new ArrayList<String>();
+			SystemRecharge[] names = SystemRecharge.values();
+			for(SystemRecharge name: names) {
+				map.add(name.getCode());
+			}
+			return map;
+		}
+		public static Map<String,Object> getMap() {
+			Map<String,Object> map=new HashMap<String,Object>();
+			SystemRecharge[] names = SystemRecharge.values();
+			for(SystemRecharge name: names) {
+				map.put(name.getCode(), name.getName());
+			}
+			return map;
+		}
+	}
+	/**
+	 *报表统计 需要的类型：用户取款
+	 * @author Silence
+	 */
+	public static enum UserWithdrawal{
+		USER_WITHDRAWAL("user_withdrawal","用户取款");
+		
+		private String code;
+		private String name;
+		
+		private UserWithdrawal(String code,String name) {
+			this.code = code;
+			this.name = name;
+		}
+		
+		public String getCode() {
+			return this.code;
+		}
+		public String getName() {
+			return this.name;
+		}
+		
+		public static List<String> getList() {
+			List<String> map=new ArrayList<String>();
+			UserWithdrawal[] names = UserWithdrawal.values();
+			for(UserWithdrawal name: names) {
+				map.add(name.getCode());
+			}
+			return map;
+		}
+		public static Map<String,Object> getMap() {
+			Map<String,Object> map=new HashMap<String,Object>();
+			UserWithdrawal[] names = UserWithdrawal.values();
+			for(UserWithdrawal name: names) {
+				map.put(name.getCode(), name.getName());
+			}
+			return map;
+		}
+	}
+	/**
+	 *报表统计 需要的类型：消费
+	 * @author Silence
+	 */
+	public static enum Consumption{
+		INITIATE_PURCHASING("initiate_purchasing","发起代购");
+		
+		private String code;
+		private String name;
+		
+		private Consumption(String code,String name) {
+			this.code = code;
+			this.name = name;
+		}
+		
+		public String getCode() {
+			return this.code;
+		}
+		public String getName() {
+			return this.name;
+		}
+		
+		public static List<String> getList() {
+			List<String> map=new ArrayList<String>();
+			Consumption[] names = Consumption.values();
+			for(Consumption name: names) {
+				map.add(name.getCode());
+			}
+			return map;
+		}
+		public static Map<String,Object> getMap() {
+			Map<String,Object> map=new HashMap<String,Object>();
+			Consumption[] names = Consumption.values();
+			for(Consumption name: names) {
+				map.put(name.getCode(), name.getName());
+			}
+			return map;
+		}
+	}
+	/**
+	 *报表统计 需要的类型：撤单
+	 * @author Silence
+	 */
+	public static enum Withdrawal{
+		SYSTEM_WITHDRAWAL("system_withdrawal","系统撤单");
+		
+		private String code;
+		private String name;
+		
+		private Withdrawal(String code,String name) {
+			this.code = code;
+			this.name = name;
+		}
+		
+		public String getCode() {
+			return this.code;
+		}
+		public String getName() {
+			return this.name;
+		}
+		
+		public static List<String> getList() {
+			List<String> map=new ArrayList<String>();
+			Withdrawal[] names = Withdrawal.values();
+			for(Withdrawal name: names) {
+				map.add(name.getCode());
+			}
+			return map;
+		}
+		public static Map<String,Object> getMap() {
+			Map<String,Object> map=new HashMap<String,Object>();
+			Withdrawal[] names = Withdrawal.values();
+			for(Withdrawal name: names) {
+				map.put(name.getCode(), name.getName());
+			}
+			return map;
+		}
+	}
+	/**
+	 *报表统计 需要的类型：返奖
+	 * @author Silence
+	 */
+	public static enum ReturnPrize{
+		SYSTEM_AWARD("system_award","系统派奖");
+		
+		private String code;
+		private String name;
+		
+		private ReturnPrize(String code,String name) {
+			this.code = code;
+			this.name = name;
+		}
+		
+		public String getCode() {
+			return this.code;
+		}
+		public String getName() {
+			return this.name;
+		}
+		
+		public static List<String> getList() {
+			List<String> map=new ArrayList<String>();
+			ReturnPrize[] names = ReturnPrize.values();
+			for(ReturnPrize name: names) {
+				map.add(name.getCode());
+			}
+			return map;
+		}
+		public static Map<String,Object> getMap() {
+			Map<String,Object> map=new HashMap<String,Object>();
+			ReturnPrize[] names = ReturnPrize.values();
+			for(ReturnPrize name: names) {
+				map.put(name.getCode(), name.getName());
+			}
+			return map;
+		}
+	}
+	/**
+	 *报表统计 需要的类型：返点
+	 * @author Silence
+	 */
+	public static enum Rebate{
+		SYSTEM_REBATE("system_rebate","系统派奖");
+		
+		private String code;
+		private String name;
+		
+		private Rebate(String code,String name) {
+			this.code = code;
+			this.name = name;
+		}
+		
+		public String getCode() {
+			return this.code;
+		}
+		public String getName() {
+			return this.name;
+		}
+		
+		public static List<String> getList() {
+			List<String> map=new ArrayList<String>();
+			Rebate[] names = Rebate.values();
+			for(Rebate name: names) {
+				map.add(name.getCode());
+			}
+			return map;
+		}
+		public static Map<String,Object> getMap() {
+			Map<String,Object> map=new HashMap<String,Object>();
+			Rebate[] names = Rebate.values();
+			for(Rebate name: names) {
+				map.put(name.getCode(), name.getName());
+			}
+			return map;
 		}
 	}
 }
