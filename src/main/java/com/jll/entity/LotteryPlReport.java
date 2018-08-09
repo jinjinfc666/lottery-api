@@ -12,7 +12,6 @@ public class LotteryPlReport implements java.io.Serializable {
 	private Integer id;
 	private Date createTime;
 	private String codeName;
-	private String lotteryType;
 	private String userName;
 	private BigDecimal consumption;
 	private BigDecimal cancelAmount;
@@ -28,12 +27,11 @@ public class LotteryPlReport implements java.io.Serializable {
 		this.createTime = createTime;
 	}
 
-	public LotteryPlReport(Date createTime, String codeName, String lotteryType, String userName,
+	public LotteryPlReport(Date createTime, String codeName, String userName,
 			BigDecimal consumption, BigDecimal cancelAmount, BigDecimal returnPrize, BigDecimal rebate,
 			BigDecimal profit, Integer userType) {
 		this.createTime = createTime;
 		this.codeName = codeName;
-		this.lotteryType = lotteryType;
 		this.userName = userName;
 		this.consumption = consumption;
 		this.cancelAmount = cancelAmount;
@@ -65,14 +63,6 @@ public class LotteryPlReport implements java.io.Serializable {
 
 	public void setCodeName(String codeName) {
 		this.codeName = codeName;
-	}
-
-	public String getLotteryType() {
-		return this.lotteryType;
-	}
-
-	public void setLotteryType(String lotteryType) {
-		this.lotteryType = lotteryType;
 	}
 
 	public String getUserName() {

@@ -12,7 +12,6 @@ public class LotteryPlatformProfit implements java.io.Serializable {
 	private Integer id;
 	private Date createTime;
 	private String codeName;
-	private String lotteryType;
 	private String issueNum;
 	private Integer playTypeid;
 	private String playType;
@@ -25,12 +24,11 @@ public class LotteryPlatformProfit implements java.io.Serializable {
 	public LotteryPlatformProfit() {
 	}
 
-	public LotteryPlatformProfit(Date createTime, String codeName, String lotteryType, String issueNum,
+	public LotteryPlatformProfit(Date createTime, String codeName, String issueNum,
 			Integer playTypeid, String playType, BigDecimal betting, BigDecimal cancelAmount, BigDecimal winning,
 			BigDecimal rebate, BigDecimal platformProfit) {
 		this.createTime = createTime;
 		this.codeName = codeName;
-		this.lotteryType = lotteryType;
 		this.issueNum = issueNum;
 		this.playTypeid = playTypeid;
 		this.playType = playType;
@@ -63,14 +61,6 @@ public class LotteryPlatformProfit implements java.io.Serializable {
 
 	public void setCodeName(String codeName) {
 		this.codeName = codeName;
-	}
-
-	public String getLotteryType() {
-		return this.lotteryType;
-	}
-
-	public void setLotteryType(String lotteryType) {
-		this.lotteryType = lotteryType;
 	}
 
 	public String getIssueNum() {
