@@ -1082,4 +1082,50 @@ public class Constants {
 			return map;
 		}
 	}
+	/**
+	 *彩种的属性
+	 * @author Silence
+	 */
+	public static enum LotteryAttributes{
+		LOTTERY_CONFIG_CQSSC("lottery_config_cqssc","重庆时时彩属性"),
+		LOTTERY_CONFIG_GD11X5("lottery_config_gd11x5","广东11选5属性"),
+		LOTTERY_CONFIG_TXFFC("lottery_config_txffc","腾讯分分彩属性"),
+		LOTTERY_CONFIG_5CC("lottery_config_5cc","5分彩属性"),
+		LOTTERY_CONFIG_SFC("lottery_config_sfc","双分彩属性"),
+		LOTTERY_CONFIG_FFC("lottery_config_ffc","分分彩属性"),
+		LOTTERY_CONFIG_MMC("lottery_config_mmc","秒秒彩属性"),
+		LOTTERY_CONFIG_BJPK10("lottery_config_bjpk10","PK10属性");
+		
+		private String code;
+		private String name;
+		
+		private LotteryAttributes(String code,String name) {
+			this.code = code;
+			this.name = name;
+		}
+		
+		public String getCode() {
+			return this.code;
+		}
+		public String getName() {
+			return this.name;
+		}
+		
+		public static List<String> getList() {
+			List<String> map=new ArrayList<String>();
+			LotteryAttributes[] names = LotteryAttributes.values();
+			for(LotteryAttributes name: names) {
+				map.add(name.getCode());
+			}
+			return map;
+		}
+		public static Map<String,Object> getMap() {
+			Map<String,Object> map=new HashMap<String,Object>();
+			LotteryAttributes[] names = LotteryAttributes.values();
+			for(LotteryAttributes name: names) {
+				map.put(name.getCode(), name.getName());
+			}
+			return map;
+		}
+	}
 }

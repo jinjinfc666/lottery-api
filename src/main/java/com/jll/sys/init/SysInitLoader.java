@@ -37,6 +37,7 @@ public class SysInitLoader {
 
 	private void initSysCode() {
 		initLotteryType();
+		initLotteryAttributes();
 	}
 	
 	private void initLotteryType() {
@@ -57,6 +58,32 @@ public class SysInitLoader {
 			sysCodes.add(sysCodeTypes.get(0));
 			
 			cacheServ.setSysCode(codeTypeName, sysCodes);
+		}
+	}
+	
+	private void initLotteryAttributes() {
+		List<String> lotteryAttributesList=Constants.LotteryAttributes.getList();
+		if(lotteryAttributesList!=null&&lotteryAttributesList.size()>0) {
+			for(int a=0;a<lotteryAttributesList.size();a++) {
+				String codeTypeName = lotteryAttributesList.get(a);
+				Map<String, SysCode> lottoTypes = cacheServ.getSysCode(codeTypeName);
+				List<SysCode> sysCodes = null;
+				
+				if(lottoTypes == null || lottoTypes.size() == 0) {
+					sysCodes = sysCodeServ.queryCacheType(codeTypeName);
+					List<SysCode> sysCodeTypes = sysCodeServ.queryCacheTypeOnly(codeTypeName);
+					
+					if(sysCodes == null || sysCodes.size() == 0
+							|| sysCodeTypes == null
+							|| sysCodeTypes.size() == 0) {
+						return ;
+					}
+					
+					sysCodes.add(sysCodeTypes.get(0));
+					
+					cacheServ.setSysCode(codeTypeName, sysCodes);
+				}
+			}
 		}
 	}
 	
