@@ -10,4 +10,6 @@ public interface IssueDao
 	void savePlan(List<Issue> issues);
 
 	void saveIssue(Issue currIssue);
+
+	Issue getIssueById(Integer id);
 }

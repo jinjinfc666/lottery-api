@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.stereotype.Repository;
 
 import com.jll.entity.Issue;
+import com.jll.entity.PlayType;
 import com.jll.entity.SysCode;
 import com.jll.game.BulletinBoard;
 
@@ -71,6 +72,22 @@ public class CacheRedisDaoImpl  extends AbstractBaseRedisDao implements CacheRed
 		Map<String,SysCode> map=cacheObject.getContent();
 		SysCode sysCode=map.get(codeName); 
 		return sysCode;
+	}
+
+	@Override
+	public void setPlayType(CacheObject<List<PlayType>> cache) {
+		this.saveOrUpdate(cache);
+	}
+
+	@Override
+	public List<PlayType> getPlayType(String cacheKey) {
+		CacheObject<List<PlayType>> cacheObject = this.get(cacheKey);
+		
+		if(cacheObject == null) {
+			return null;
+		}
+		
+		return cacheObject.getContent();
 	}
 
 }

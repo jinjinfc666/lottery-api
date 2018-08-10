@@ -41,10 +41,5 @@ public interface LotteryCenterService
 	 */
 	Issue queryLastIssue(String lotteryType);
 
-	/**
-	 * query the play type 
-	 * @param lotteryType
-	 * @return
-	 */
-	PlayType queryPlayType(String lotteryType);
+	
 }

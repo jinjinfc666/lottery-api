@@ -13,6 +13,8 @@ public class Constants {
 	
 	public final static String KEY_PRE_BULLETINBOARD = "bulletin_board";
 	
+	public final static String KEY_PLAY_TYPE = "play_type_";
+	
 	public static enum DepositOrderState{
 		INIT_OR_PUSHED(0),
 		FAILED_PUSH(10),

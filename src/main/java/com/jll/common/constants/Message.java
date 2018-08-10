@@ -77,7 +77,7 @@ public class Message {
 		ERROR_PROMS_OTHER_CONDITION_DEPOSIT_DISSATISFY("010024", "Participation in activities must meet the minimum deposit amount of %s, your current deposit amount of %s !!"),
 		ERROR_PROMS_OTHER_CONDITION_FLOWING_DISSATISFY("010025", "Participation in activities must meet the minimum flowing water rate of %s times, your current flowing water rate of %s times!!"),
 		ERROR_PROMS_ONLY_ONCE_DISSATISFY("010026", "The activity can only take part in one time!!"),
-		ERROR_PROMS_OTHER_CONDITION_BET_AMT_DISSATISFY("010025", "Participation in activities must meet the minimum bet amount of %s times, your current bet amount of %s times!!"),
+		ERROR_PROMS_OTHER_CONDITION_BET_AMT_DISSATISFY("010027", "Participation in activities must meet the minimum bet amount of %s times, your current bet amount of %s times!!"),
 		
 		/**************third party*************************/
 		ERROR_TP_INVALID_SMS("020001", "Invalid SMS!!"),
@@ -87,6 +87,8 @@ public class Message {
 		/************************game module*******************************/
 		ERROR_GAME_LOTTERY_TYPE_INVALID("030001", "Invalid lottery type!!"),
 		ERROR_GAME_END("030002", "The game is over today!!"),
+		ERROR_GAME_NO_START("030003", "The game does not yet start!!"),
+		ERROR_GAME_MISSTING_PLAY_TYPE("030004", "Please first configure the play type!!"),		
 		
 		/*** system model****/
 		ERROR_MESSAGE_TITLE_IS_EMPTY("040001", "Message title is empty!!"),

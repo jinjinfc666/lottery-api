@@ -1,6 +1,7 @@
 package com.jll.game;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -19,7 +20,9 @@ import com.jll.common.constants.Message;
 import com.jll.entity.Issue;
 import com.jll.entity.OrderInfo;
 import com.jll.entity.PlayType;
+import com.jll.entity.SysCode;
 import com.jll.entity.UserInfo;
+import com.jll.game.playtype.PlayTypeService;
 import com.jll.sysSettings.codeManagement.SysCodeService;
 import com.terran4j.commons.api2doc.annotations.Api2Doc;
 import com.terran4j.commons.api2doc.annotations.ApiComment;
@@ -30,7 +33,7 @@ import com.terran4j.commons.api2doc.annotations.ApiComment;
 @RequestMapping({ "/lotteries" })
 public class LotteryCenterController {
 	
-	private Logger logger = Logger.getLogger(LotteryCenterController.class);
+	private Logger logger = Logger.getLogger(LotteryCenterController.class); 
 	
 	@Resource
 	IssueService issueServ;
@@ -43,6 +46,9 @@ public class LotteryCenterController {
 	
 	@Resource
 	CacheRedisService cacheServ;
+	
+	@Resource
+	PlayTypeService playTypeServ;
 	
 	@RequestMapping(value="/pre-bet", method = { RequestMethod.POST }, consumes=MediaType.APPLICATION_JSON_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> PreBet(@RequestBody OrderInfo order){
@@ -58,13 +64,19 @@ public class LotteryCenterController {
 		return null;
 	}
 	
-	@RequestMapping(value="/{lottery-type}/betting-issue", method = { RequestMethod.GET }, consumes=MediaType.APPLICATION_JSON_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value="/{lottery-type}/betting-issue", method = { RequestMethod.GET }, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> queryBettingIssue(@PathVariable(name = "lottery-type", required = true) String lotteryType){
 		Map<String, Object> resp = new HashMap<String, Object>();
 		
 		Map<String, Object> data = new HashMap<>();
+		List<PlayType> playTypes = null;
+		boolean isExisting = false;
+		boolean hasMoreIssue = false;
+		Issue currentIssue = null;
+		Issue lastIssue = null;
+		SysCode lotteryTypeObj = null;
 		
-		boolean isExisting = cacheServ.isCodeExisting(SysCodeTypes.LOTTERY_TYPES, lotteryType);
+		isExisting = cacheServ.isCodeExisting(SysCodeTypes.LOTTERY_TYPES, lotteryType);
 		if(!isExisting) {
 			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_GAME_LOTTERY_TYPE_INVALID.getCode());
@@ -72,7 +84,7 @@ public class LotteryCenterController {
 			return resp;
 		}
 		
-		boolean hasMoreIssue = lotCenServ.hasMoreIssue(lotteryType);
+		hasMoreIssue = lotCenServ.hasMoreIssue(lotteryType);
 		if(!hasMoreIssue) {
 			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_GAME_END.getCode());
@@ -80,15 +92,32 @@ public class LotteryCenterController {
 			return resp;
 		}
 		
-		Issue currentIssue = lotCenServ.queryBettingIssue(lotteryType);
+		currentIssue = lotCenServ.queryBettingIssue(lotteryType);
+		if(currentIssue == null) {
+			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_GAME_NO_START.getCode());
+			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_GAME_NO_START.getErrorMes());
+			return resp;
+		}
 		
-		Issue lastIssue = lotCenServ.queryLastIssue(lotteryType);
+		lastIssue = lotCenServ.queryLastIssue(lotteryType);
 		
-		PlayType playType = lotCenServ.queryPlayType(lotteryType);
+		lotteryTypeObj = cacheServ.getSysCode(SysCodeTypes.LOTTERY_TYPES.getCode(), lotteryType);
 		
-		data.put("lastIssue", lastIssue);
+		playTypes = cacheServ.getPlayType(lotteryTypeObj);
+		if(playTypes == null || playTypes.size() == 0) {
+			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_GAME_MISSTING_PLAY_TYPE.getCode());
+			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_GAME_MISSTING_PLAY_TYPE.getErrorMes());
+			return resp;
+		}
+		
+		if(lastIssue != null) {
+			data.put("lastIssue", lastIssue);
+		}
+		
 		data.put("currIssue", currentIssue);
-		data.put("playType", playType);
+		data.put("playType", playTypes);
 		
 		resp.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		resp.put(Message.KEY_DATA, data);

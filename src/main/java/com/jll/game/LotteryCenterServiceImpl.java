@@ -79,44 +79,54 @@ public class LotteryCenterServiceImpl implements LotteryCenterService
 	public boolean hasMoreIssue(String lotteryType) {
 		String cacheKey = Constants.KEY_PRE_PLAN + lotteryType;
 		List<Issue> issues = cacheServ.getPlan(cacheKey);
-		if(issues == null || issues.size() == 0) {
-			return false;
-		}
-		
+		Date nowTime = new Date();
+		Issue currIssue = null;
 		BulletinBoard bulletinBoard = cacheServ.getBulletinBoard(lotteryType);
+		
 		if(bulletinBoard == null 
-				|| bulletinBoard.getCurrIssue() == null) {
+				|| issues == null
+				|| issues.size() == 0) {
 			return false;
 		}
 		
-		Issue currIssue = bulletinBoard.getCurrIssue();
-		for(int i = 0; i < issues.size(); i++) {
-			Issue issueTemp = issues.get(i);
-			if(issueTemp.getId().intValue() == currIssue.getId().intValue()
-					&& i < issues.size() -1) {
+		currIssue = bulletinBoard.getCurrIssue();
+				
+		for(Issue issueTemp : issues) {
+			if(currIssue != null) {
+				if(currIssue.getStartTime().getTime() > issueTemp.getStartTime().getTime()) {
+					continue;
+				}
+			}
+			if(issueTemp.getStartTime().getTime() > nowTime.getTime()
+					&& issueTemp.getState() == Constants.IssueState.INIT.getCode()) {
 				return true;
 			}
 		}
+		
 		return false;
 	}
 
 
 	@Override
 	public Issue queryBettingIssue(String lotteryType) {
+		BulletinBoard bulletinBoard = cacheServ.getBulletinBoard(lotteryType);
 		
-		return null;
+		if(bulletinBoard == null) {
+			return null;
+		}
+		
+		return bulletinBoard.getCurrIssue();
 	}
 
 	@Override
 	public Issue queryLastIssue(String lotteryType) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public PlayType queryPlayType(String lotteryType) {
-		// TODO Auto-generated method stub
-		return null;
+		BulletinBoard bulletinBoard = cacheServ.getBulletinBoard(lotteryType);
+		
+		if(bulletinBoard == null) {
+			return null;
+		}
+		
+		return bulletinBoard.getLastIssue();
 	}
 	
 	
@@ -124,7 +134,7 @@ public class LotteryCenterServiceImpl implements LotteryCenterService
 	 * 定时遍历期次，修改状态
 	 */
 	
-	public void processScheduleIssue() {
+	public synchronized void processScheduleIssue() {
 		Map<String, SysCode> lottoTypes = cacheServ.getSysCode(Constants.SysCodeTypes.LOTTERY_TYPES.getCode());
 		if(lottoTypes == null || lottoTypes.size() == 0) {
 			return ;
@@ -133,7 +143,6 @@ public class LotteryCenterServiceImpl implements LotteryCenterService
 		Iterator<String> ite = lottoTypes.keySet().iterator();
 		while(ite.hasNext()) {
 			String key = ite.next();
-			Object obj = lottoTypes.get(key);
 			SysCode sysCode = lottoTypes.get(key);
 			if(sysCode.getIsCodeType().intValue() == Constants.SysCodeTypesFlag.code_val.getCode()) {
 				processBulletinBoard(sysCode);
@@ -142,109 +151,88 @@ public class LotteryCenterServiceImpl implements LotteryCenterService
 	}
 
 	private void processBulletinBoard(SysCode lottoType) {
-		
-		BulletinBoard bulletinBoard = initBulletinBoard(lottoType);
+		Issue currIssue = null;
+		initBulletinBoard(lottoType);
 		
 		if(!isPlanExisting(lottoType.getCodeName())) {
 			return ;
 		}
+						
+		currIssue = changeIssueState(lottoType.getCodeName());
 		
-		Issue currIssue = bulletinBoard.getCurrIssue();
-		
-		if(currIssue == null) {
-			currIssue = moveToNext(currIssue, lottoType.getCodeName());
-			
-			/*
-			Issue firstPlan = plans.get(0);
-			if(firstPlan.getStartTime().getTime() > currDay.getTime()) {
-				return;
-			}
-			
-			currIssue = firstPlan;
-			
-			currIssue.setState(Constants.IssueState.BETTING.getCode());
-			issueServ.saveIssue(currIssue);
-			
-			plans.remove(0);
-			plans.add(0, currIssue);
-			cacheServ.setPlan(cacheKey, plans);
-			
-			return;*/
-		}
-		
-		if(currIssue == null) {
-			return;
-		}
-		
-		currIssue = changeIssueState(currIssue, lottoType.getCodeName());
-		
-		if(currIssue.getState() == Constants.IssueState.END_ISSUE.getCode()
+		if(currIssue != null && 
+				currIssue.getState() == Constants.IssueState.END_ISSUE.getCode()
 				&& hasMoreIssue(lottoType.getCodeName())) {
 			currIssue = moveToNext(currIssue, lottoType.getCodeName());
 		}
-		
-		/*Date endTime = currIssue.getEndTime();
-		Date endBettingTime = DateUtils.addSeconds(endTime, -45);
-		if(currDay.getTime() < endBettingTime.getTime()) {
-			return;
-		}
-		
-		if(currIssue.getState() == Constants.IssueState.BETTING.getCode()) {
-			//TODO change the state to end betting
-			return;
-			
-		}
-		
-		if(currDay.getTime() < endTime.getTime()) {
-			return;
-		}
-		
-		if(currIssue.getState() == Constants.IssueState.END_BETTING.getCode()) {
-			//TODO change the state to end 
-			//TODO try to obtain the result of draw
-			bulletinBoard.setLastIssue(currIssue);
-			Issue nextIssue = getNextPlan(currIssue, plans);
-			bulletinBoard.setCurrIssue(nextIssue);
-			return;
-			
-		}*/
-		
 	}
 
-	private Issue changeIssueState(Issue currIssue, String lottoType) {
+	private Issue changeIssueState(String lottoType) {
+		BulletinBoard bulletinBoard = cacheServ.getBulletinBoard(lottoType);
+		Issue currIssue = null;
 		Date currTime = new Date();
-		Date endTime = currIssue.getEndTime();
-		Date endBettingTime = DateUtils.addSeconds(endTime, -45);
-		Issue ret = currIssue;
+		Date startTime = null;
+		Date endTime = null;
+		Date endBettingTime = null;
+		Issue temp = null;
 		String cacheKey = Constants.KEY_PRE_PLAN + lottoType;
 		List<Issue> plans = cacheServ.getPlan(cacheKey);
 		Integer indx = 0;
+		boolean hasChanged = false;
 		
-		if(currIssue.getState() == Constants.IssueState.BETTING.getCode()
-				&& endBettingTime.getTime() <= currTime.getTime()) {
-			ret.setState(Constants.IssueState.END_BETTING.getCode());
-		}else if(currIssue.getState() == Constants.IssueState.END_BETTING.getCode()
-				&& endTime.getTime() <= currTime.getTime()) {
-			ret.setState(Constants.IssueState.END_ISSUE.getCode());
+		if(bulletinBoard == null) {
+			return null;
 		}
+		currIssue = bulletinBoard.getCurrIssue();
 		
-		indx = getIndexOfIssue(currIssue, plans);
-		if(indx == null) {
+		if(currIssue == null) {
 			return null;
 		}
 		
-		indx++;
-		ret = plans.get(indx);
-		plans.remove(indx.intValue());
-		plans.add(indx, currIssue);
-		cacheServ.setPlan(cacheKey, plans);
+		startTime = currIssue.getStartTime();
+		endTime = currIssue.getEndTime();
+		endBettingTime = DateUtils.addSeconds(endTime, -45);
+		endTime = DateUtils.addSeconds(endTime, -5);
+		temp = issueServ.getIssueById(currIssue.getId());
+		
+		if(temp == null) {
+			return null;
+		}
+		
+		if(currIssue.getState() == Constants.IssueState.BETTING.getCode()
+				&& endBettingTime.getTime() <= currTime.getTime()) {
+			currIssue.setState(Constants.IssueState.END_BETTING.getCode());
+			temp.setState(Constants.IssueState.END_BETTING.getCode());
+			hasChanged = true;
+		}else if(currIssue.getState() == Constants.IssueState.END_BETTING.getCode()
+				&& endTime.getTime() <= currTime.getTime()) {
+			currIssue.setState(Constants.IssueState.END_ISSUE.getCode());
+			temp.setState(Constants.IssueState.END_ISSUE.getCode());
+			hasChanged = true;
+		}else if(currIssue.getState() == Constants.IssueState.INIT.getCode()
+				&& startTime.getTime() <= currTime.getTime()) {
+			currIssue.setState(Constants.IssueState.BETTING.getCode());
+			temp.setState(Constants.IssueState.BETTING.getCode());
+			hasChanged = true;
+		}
+		
+		if(hasChanged) {
+			indx = getIndexOfIssue(currIssue, plans);
+			if(indx == null) {
+				return null;
+			}
+			plans.set(indx, currIssue);
+			bulletinBoard.setCurrIssue(currIssue);
+			
+			issueServ.saveIssue(temp);
+			cacheServ.setPlan(cacheKey, plans);
+			cacheServ.setBulletinBoard(lottoType, bulletinBoard);
+		}
 
-		issueServ.saveIssue(currIssue);
-		return ret;
+		return currIssue;
 	}
 
 	private Issue moveToNext(Issue currIssue, String lotteryType) {
-		//move to first issue of plans		
 		Issue nextIssue = null;
 		Integer indx = 0;
 		String cacheKey = Constants.KEY_PRE_PLAN + lotteryType;		
@@ -255,56 +243,78 @@ public class LotteryCenterServiceImpl implements LotteryCenterService
 			return null;
 		}
 		
-		indx = getIndexOfIssue(currIssue, plans);
+		indx = getIndexOfNextIssue(currIssue, plans);
 		if(indx == null) {
 			return null;
 		}
 		
-		indx++;
+		//indx++;
 		nextIssue = plans.get(indx);
 		nextIssue.setState(Constants.IssueState.BETTING.getCode());
-		plans.remove(indx.intValue());
-		plans.add(indx, currIssue);
-		cacheServ.setPlan(cacheKey, plans);
+		plans.set(indx, nextIssue);
 		issueServ.saveIssue(nextIssue);
+		cacheServ.setPlan(cacheKey, plans);
 		
-		bulletinBoard.setLastIssue(currIssue);
 		bulletinBoard.setCurrIssue(nextIssue);
 		cacheServ.setBulletinBoard(lotteryType, bulletinBoard);
 		
 		return nextIssue;
 	}
 
+	private Integer getIndexOfNextIssue(Issue currIssue, List<Issue> plans) {
+		int indx = 0;
+		Date nowTime = new Date();
+				
+		for(Issue issueTemp : plans) {
+			if(currIssue != null) {
+				if(currIssue.getStartTime().getTime() > issueTemp.getStartTime().getTime()) {
+					indx++;
+					continue;
+				}
+			}
+			if(issueTemp.getStartTime().getTime() <= nowTime.getTime()
+					&& issueTemp.getEndTime().getTime() > nowTime.getTime()
+					&& issueTemp.getState() == Constants.IssueState.INIT.getCode()) {
+				return indx;
+			}
+			
+			indx++;
+		}
+		
+		return null;
+	}
+	
 	private Integer getIndexOfIssue(Issue currIssue, List<Issue> plans) {
 		int indx = 0;
 		
-		if(currIssue == null) {
-			return -1;
+		if(currIssue == null || plans == null || plans.size() == 0) {
+			return null;
 		}
-		
-		for(Issue issue : plans) {
-			if(issue.getId().intValue() == currIssue.getId().intValue()) {
+				
+		for(Issue issueTemp : plans) {
+			if(issueTemp.getId().intValue() == currIssue.getId().intValue()) {
 				return indx;
 			}
+			
 			indx++;
 		}
 		
 		return null;
 	}
 
-	private BulletinBoard initBulletinBoard(SysCode lottoType) {
+	private void initBulletinBoard(SysCode lottoType) {
 		BulletinBoard bulletinBoard = cacheServ.getBulletinBoard(lottoType.getCodeName());
 		if(bulletinBoard == null) {
 			bulletinBoard = new BulletinBoard();
+			cacheServ.setBulletinBoard(lottoType.getCodeName(), bulletinBoard);
 		}
 		
 		if(!isPlanExisting(lottoType.getCodeName())) {
 			bulletinBoard.setCurrIssue(null);
+			cacheServ.setBulletinBoard(lottoType.getCodeName(), bulletinBoard);
+		}else {
+			moveToNext(bulletinBoard.getCurrIssue(), lottoType.getCodeName());
 		}
-		
-		cacheServ.setBulletinBoard(lottoType.getCodeName(), bulletinBoard);
-		
-		return bulletinBoard;
 	}
 
 	
