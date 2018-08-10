@@ -10,6 +10,10 @@
             <column length="30" name="lottery_type">
             </column>
         </property>
+        <property generated="never" lazy="false" name="classification" optimistic-lock="true" type="string" unique="false">
+            <column length="100" name="classification">
+            </column>
+        </property>
         <property generated="never" lazy="false" name="name" optimistic-lock="true" type="string" unique="false">
             <column length="50" name="name">
                 <comment>����</comment>
@@ -22,6 +26,11 @@
         </property>
         <property generated="never" lazy="false" name="state" optimistic-lock="true" type="java.lang.Integer" unique="false">
             <column name="state">
+                <comment>0:��Ч;1,��Ч</comment>
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="mulSinFlag" optimistic-lock="true" type="java.lang.Integer" unique="false">
+            <column name="mul_sin_flag">
                 <comment>0:��Ч;1,��Ч</comment>
             </column>
         </property>

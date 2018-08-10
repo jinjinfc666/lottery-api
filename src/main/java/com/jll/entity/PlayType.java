@@ -10,22 +10,42 @@ public class PlayType implements java.io.Serializable {
 
 	private Integer id;
 	private String lotteryType;
+	private String classification;
 	private String name;
 	private String desc;
 	private Integer state;
+	private Integer mulSinFlag;
 	private Integer seq;
 	private Date createTime;
 
 	public PlayType() {
 	}
 
-	public PlayType(String lotteryType, String name, String desc, Integer state, Integer seq, Date createTime) {
+	public PlayType(String lotteryType, String classification,String name, String desc, Integer state, Integer mulSinFlag ,Integer seq, Date createTime) {
 		this.lotteryType = lotteryType;
+		this.classification=classification;
 		this.name = name;
 		this.desc = desc;
 		this.state = state;
+		this.mulSinFlag = mulSinFlag;
 		this.seq = seq;
 		this.createTime = createTime;
+	}
+	
+	public Integer getMulSinFlag() {
+		return mulSinFlag;
+	}
+
+	public void setMulSinFlag(Integer mulSinFlag) {
+		this.mulSinFlag = mulSinFlag;
+	}
+
+	public String getClassification() {
+		return classification;
+	}
+
+	public void setClassification(String classification) {
+		this.classification = classification;
 	}
 
 	public Integer getId() {
