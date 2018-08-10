@@ -27,7 +27,7 @@ public class FlowDetailDaoImpl extends HibernateDaoSupport implements FlowDetail
 		super.setSessionFactory(sessionFactory);
 	}
 	@Override
-	public Map<String,Object> queryUserAccountDetails(String userName,String orderNum,Float amountStart,Float amountEnd,String operationType,String startTime,String endTime) {
+	public Map<String,Object> queryUserAccountDetails(Integer codeTypeNameId,String userName,String orderNum,Float amountStart,Float amountEnd,String operationType,String startTime,String endTime) {
 		String userNameSql="";
 		String orderNumSql="";
 		String amountStartSql="";
@@ -68,12 +68,14 @@ public class FlowDetailDaoImpl extends HibernateDaoSupport implements FlowDetail
 			map.put("endTime", endDate);
 		}
 		Integer userType=Constants.UserTypes.SYSTEM_USER.getCode();
-		String sql="from UserAccountDetails a,UserInfo b,SysCode c,OrderInfo d where a.userId=b.id and a.operationType=c.codeName and a.orderId=d.id and b.userType !=:userType"+userNameSql+orderNumSql+amountStartSql+amountEndSql+operationTypeSql+timeSql+" order by a.id";
-		String sql1="select coalesce(SUM(a.amount),0) from UserAccountDetails a,UserInfo b,SysCode c,OrderInfo d where a.userId=b.id and a.operationType=c.codeName and a.orderId=d.id and b.userType !=:userType"+userNameSql+orderNumSql+amountStartSql+amountEndSql+operationTypeSql+timeSql+" order by a.id";
+		String sql="from UserAccountDetails a,UserInfo b,SysCode c,OrderInfo d where a.userId=b.id and a.operationType=c.codeName and a.orderId=d.id and c.codeType=:codeTypeNameId and b.userType !=:userType"+userNameSql+orderNumSql+amountStartSql+amountEndSql+operationTypeSql+timeSql+" order by a.id";
+		String sql1="select coalesce(SUM(a.amount),0) from UserAccountDetails a,UserInfo b,SysCode c,OrderInfo d where a.userId=b.id and a.operationType=c.codeName and a.orderId=d.id and c.codeType=:codeTypeNameId and b.userType !=:userType"+userNameSql+orderNumSql+amountStartSql+amountEndSql+operationTypeSql+timeSql+" order by a.id";
 		Query<?> query = getSessionFactory().getCurrentSession().createQuery(sql);
 		Query<?> query1 = getSessionFactory().getCurrentSession().createQuery(sql1);
 		query.setParameter("userType", userType);
 		query1.setParameter("userType", userType);
+		query.setParameter("codeTypeNameId", codeTypeNameId);
+		query1.setParameter("codeTypeNameId", codeTypeNameId);
 		if (map != null) {  
             Set<String> keySet = map.keySet();  
             for (String string : keySet) {  

@@ -13,7 +13,7 @@ public interface SysCodeDao {
 	public void updateSyscode(SysCode sysCode);
 	public void updateBigState(Integer id,Integer state);
 	public void updateSmallState(Integer id,Integer state);
-	public List<SysCode> queryType(String bigType);
+	public List<SysCode> queryType(String codeTypeName);
 	public List<SysCode> queryBigCodeName(Integer id);
 	public List<SysCode> querySmallCodeName(Integer id);
 	public long getCount(String codeName);

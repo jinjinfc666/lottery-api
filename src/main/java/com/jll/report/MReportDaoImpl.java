@@ -3,7 +3,6 @@ package com.jll.report;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -22,7 +21,6 @@ import org.springframework.stereotype.Repository;
 
 import com.jll.common.constants.Constants;
 import com.jll.entity.MemberPlReport;
-import com.jll.entity.SysCode;
 import com.jll.entity.UserInfo;
 
 @Repository

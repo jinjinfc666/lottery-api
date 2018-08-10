@@ -62,8 +62,8 @@ public class SysCodeServiceImpl implements SysCodeService {
 		}
 	}
 	@Override
-	public List<SysCode> queryType(String bigType) {
-		return sysCodeDao.queryType(bigType);
+	public List<SysCode> queryType(String codeTypeName) {
+		return sysCodeDao.queryType(codeTypeName);
 	}
 
 	@Override

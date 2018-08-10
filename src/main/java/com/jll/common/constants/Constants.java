@@ -353,7 +353,7 @@ public class Constants {
 	public static enum SysCodeTypes{
 		LOTTERY_TYPES("lottery_type"),
 		BANK_LIST("number_of_bank_cards"),
-		FLOW_TYPES("acc_ope_type"),
+		FLOW_TYPES("flow_type"),
 		PAYMENT_PLATFORM("payment_platform"),
 		SITE_MSG_VALID_DAY("site_msg_valid_day"),
 		NOTIFY_MSG_VALID_DAY("notify_msg_valid_day"),
