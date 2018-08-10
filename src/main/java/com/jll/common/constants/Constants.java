@@ -210,6 +210,14 @@ public class Constants {
 			}
 			return null;
 		}
+		public static Map<Integer,String> getIsOrNo() {
+			Map<Integer,String> map=new HashMap<Integer,String>();
+			BankCardState[] descs = BankCardState.values();
+			for(BankCardState desc: descs) {
+				map.put(desc.getCode(), desc.getDesc());
+			}
+			return map;
+		}
 	}
 	
 	public static enum PhoneValidState{
@@ -1123,6 +1131,125 @@ public class Constants {
 			Map<String,Object> map=new HashMap<String,Object>();
 			LotteryAttributes[] names = LotteryAttributes.values();
 			for(LotteryAttributes name: names) {
+				map.put(name.getCode(), name.getName());
+			}
+			return map;
+		}
+	}
+	/**
+	 *彩种的属性
+	 * @author Silence
+	 */
+	public static enum SysCodePlayType{
+		CT_PLAY_TYPE_CLASSICFICATION("ct_play_type_classicfication","玩法类型");
+		
+		private String code;
+		private String name;
+		
+		private SysCodePlayType(String code,String name) {
+			this.code = code;
+			this.name = name;
+		}
+		
+		public String getCode() {
+			return this.code;
+		}
+		public String getName() {
+			return this.name;
+		}
+		
+		public static List<String> getList() {
+			List<String> map=new ArrayList<String>();
+			SysCodePlayType[] names = SysCodePlayType.values();
+			for(SysCodePlayType name: names) {
+				map.add(name.getCode());
+			}
+			return map;
+		}
+		public static Map<String,Object> getMap() {
+			Map<String,Object> map=new HashMap<String,Object>();
+			SysCodePlayType[] names = SysCodePlayType.values();
+			for(SysCodePlayType name: names) {
+				map.put(name.getCode(), name.getName());
+			}
+			return map;
+		}
+	}
+	/**
+	 *玩法是单式还是复式
+	 * @author Silence
+	 */
+	public static enum SingleOrDouble{
+		SINGLE("0","单式"),
+		Double("1","复式");
+		
+		private String code;
+		private String name;
+		
+		private SingleOrDouble(String code,String name) {
+			this.code = code;
+			this.name = name;
+		}
+		
+		public String getCode() {
+			return this.code;
+		}
+		public String getName() {
+			return this.name;
+		}
+		
+		public static List<String> getList() {
+			List<String> map=new ArrayList<String>();
+			SingleOrDouble[] names = SingleOrDouble.values();
+			for(SingleOrDouble name: names) {
+				map.add(name.getCode());
+			}
+			return map;
+		}
+		public static Map<String,Object> getMap() {
+			Map<String,Object> map=new HashMap<String,Object>();
+			SingleOrDouble[] names = SingleOrDouble.values();
+			for(SingleOrDouble name: names) {
+				map.put(name.getCode(), name.getName());
+			}
+			return map;
+		}
+	}
+	/**
+	 *玩法名称是否隐藏
+	 * @author Silence
+	 */
+	public static enum HidePlayName{
+		SHOW("0","显示"),
+		HIDE("1","隐藏");
+		
+		private String code;
+		private String name;
+		
+		private HidePlayName(String code,String name) {
+			this.code = code;
+			this.name = name;
+		}
+		
+		public String getCode() {
+			return this.code;
+		}
+		public String getName() {
+			return this.name;
+		}
+		
+		public static List<String> getList() {
+			List<String> map=new ArrayList<String>();
+			HidePlayName[] names = HidePlayName.values();
+			for(HidePlayName name: names) {
+				map.add(name.getCode());
+			}
+			return map;
+		}
+		public static Map<String,Object> getMap() {
+			Map<String,Object> map=new HashMap<String,Object>();
+			HidePlayName[] names = HidePlayName.values();
+			for(HidePlayName name: names) {
 				map.put(name.getCode(), name.getName());
 			}
 			return map;
