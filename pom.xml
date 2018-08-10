@@ -215,6 +215,24 @@
 		    <groupId>com.github.terran4j</groupId>
 		    <artifactId>terran4j-commons-api2doc</artifactId>
 		    <version>1.0.2</version>
+		    <exclusions>
+		    	<exclusion>
+		    		<groupId>ch.qos.logback</groupId>
+		    		<artifactId>logback-core</artifactId>
+		    	</exclusion>
+		    	<exclusion>
+		    		<groupId>ch.qos.logback</groupId>
+		    		<artifactId>logback-parent</artifactId>
+		    	</exclusion>
+		    	<exclusion>
+		    		<groupId>ch.qos.logback</groupId>
+		    		<artifactId>logback-classic</artifactId>
+		    	</exclusion>
+		    	<exclusion>
+		    		<groupId>org.slf4j</groupId>
+		    		<artifactId>log4j-over-slf4j</artifactId>
+		    	</exclusion>
+		    </exclusions>
 		</dependency>
         
 		<!-- <dependency>

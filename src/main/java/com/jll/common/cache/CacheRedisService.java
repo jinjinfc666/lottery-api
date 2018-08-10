@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.jll.common.constants.Constants.SysCodeTypes;
 import com.jll.entity.Issue;
+import com.jll.entity.PlayType;
 import com.jll.entity.SysCode;
 import com.jll.game.BulletinBoard;
 
@@ -63,4 +64,18 @@ public interface CacheRedisService {
 	SysCode getSysCode(String codeTypeName, String codeName);
 
 	void setBulletinBoard(String lottoType, BulletinBoard bulletinBoard);
+
+	/**通过彩票类型查询玩法
+	 * @param lotteryType
+	 * @return
+	 */
+	List<PlayType> getPlayType(SysCode lotteryType);
+	
+	
+	/**
+	 * 将彩票玩法保存到缓存，以彩种作为key:play_type_ + lotteryType
+	 * @param lotteryType
+	 * @param playTypes
+	 */
+	void setPlayType(String lotteryType, List<PlayType> playTypes);
 }

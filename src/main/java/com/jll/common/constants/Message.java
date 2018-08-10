@@ -79,7 +79,9 @@ public class Message {
 		
 		/************************game module*******************************/
 		ERROR_GAME_LOTTERY_TYPE_INVALID("030001", "Invalid lottery type!!"),
-		ERROR_GAME_END("030002", "The game is over today!!")
+		ERROR_GAME_END("030002", "The game is over today!!"),
+		ERROR_GAME_NO_START("030003", "The game does not yet start!!"),
+		ERROR_GAME_MISSTING_PLAY_TYPE("030004", "Please first configure the play type!!")
 		;
 		
 		

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.jll.entity.Issue;
+import com.jll.entity.PlayType;
 import com.jll.entity.SysCode;
 import com.jll.game.BulletinBoard;
 
@@ -40,4 +41,15 @@ public interface CacheRedisDao {
 	void setBulletinBoard(CacheObject<BulletinBoard> cache);
 	
 	SysCode getSysCode(String codeTypeName, String codeName);
+
+	/**保存玩法到缓存
+	 * @param cache
+	 */
+	void setPlayType(CacheObject<List<PlayType>> cache);
+
+	/**从缓存读取玩法
+	 * @param cacheKey
+	 * @return
+	 */
+	List<PlayType> getPlayType(String cacheKey);
 }

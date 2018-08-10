@@ -6,6 +6,12 @@ package com.jll.entity;
  */
 public class SysCode implements java.io.Serializable {
 
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8379121389012195917L;
+	
 	private Integer id;
 	private Integer codeType;
 	private Integer isCodeType;

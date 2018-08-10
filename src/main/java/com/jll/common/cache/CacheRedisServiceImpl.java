@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.jll.common.constants.Constants;
 import com.jll.common.constants.Constants.SysCodeTypes;
 import com.jll.entity.Issue;
+import com.jll.entity.PlayType;
 import com.jll.entity.SysCode;
 import com.jll.game.BulletinBoard;
 import com.jll.sysSettings.codeManagement.SysCodeService;
@@ -142,6 +143,7 @@ public class CacheRedisServiceImpl implements CacheRedisService
 		for(SysCode sysCode : sysCodes) {
 			sysCodesTemp.put(sysCode.getCodeName(), sysCode);
 		}
+		
 		//container.put(codeTypeName, sysCodesTemp);
 		cacheObj.setContent(sysCodesTemp);
 		cacheObj.setKey(codeTypeName);
@@ -161,17 +163,31 @@ public class CacheRedisServiceImpl implements CacheRedisService
 
 	@Override
 	public void setSysCode(String codeTypeName, SysCode sysCode) {
-		CacheObject<Map<String, SysCode>> cacheObj = new CacheObject<>();
-		Map<String, SysCode> sysCodesTemp = new HashMap<>();
-		sysCodesTemp.put(sysCode.getCodeName(), sysCode);
-		cacheObj.setContent(sysCodesTemp);
-		cacheObj.setKey(codeTypeName);
-		cacheDao.setSysCode(cacheObj);
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
 	public SysCode getSysCode(String codeTypeName, String codeName) {
-		return cacheDao.getSysCode(codeTypeName, codeName);
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<PlayType> getPlayType(SysCode lotteryType) {
+		String cacheKey = Constants.KEY_PLAY_TYPE + lotteryType.getCodeName();
+		List<PlayType> playTypes = cacheDao.getPlayType(cacheKey);
+		return playTypes;
+	}
+
+	@Override
+	public void setPlayType(String lotteryType, List<PlayType> playTypes) {
+		String cacheKey = Constants.KEY_PLAY_TYPE + lotteryType;
+		CacheObject<List<PlayType>> cache = new CacheObject<>();
+		cache.setContent(playTypes);
+		cache.setKey(cacheKey);
+		
+		cacheDao.setPlayType(cache);
 	}
 
 }
