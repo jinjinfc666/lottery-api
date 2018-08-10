@@ -14,7 +14,7 @@ import com.jll.entity.PlayType;
 import com.jll.entity.SysCode;
 import com.jll.game.LotteryCenterServiceImpl;
 import com.jll.game.playtype.PlayTypeService;
-import com.jll.sysSettings.codeManagement.SysCodeService;
+import com.jll.sysSettings.syscode.SysCodeService;
 
 public class SysInitLoader {
 	
