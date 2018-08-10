@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated 2018-8-8 15:26:51 by Hibernate Tools 5.2.10.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping auto-import="true" default-access="property" default-cascade="none" default-lazy="true">
+    <class catalog="lottery" dynamic-insert="false" dynamic-update="false" mutable="true" name="com.jll.entity.MemberPlReport" optimistic-lock="version" polymorphism="implicit" select-before-update="false" table="member_pl_report">
+        <id name="id" type="java.lang.Integer">
+            <column name="id"/>
+            <generator class="identity"/>
+        </id>
+        <property generated="never" lazy="false" name="createTime" optimistic-lock="true" type="date" unique="false">
+            <column length="10" name="create_time" not-null="true">
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="userName" optimistic-lock="true" type="string" unique="false">
+            <column length="50" name="user_name">
+                <comment>�û���</comment>
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="deposit" optimistic-lock="true" type="big_decimal" unique="false">
+            <column name="deposit">
+                <comment>�û����</comment>
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="systemRecharge" optimistic-lock="true" type="big_decimal" unique="false">
+            <column name="system_recharge">
+                <comment>ϵͳ��ֵ</comment>
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="withdrawal" optimistic-lock="true" type="big_decimal" unique="false">
+            <column name="withdrawal">
+                <comment>�û�ȡ��</comment>
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="deduction" optimistic-lock="true" type="big_decimal" unique="false">
+            <column name="deduction">
+                <comment>�۳�</comment>
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="consumption" optimistic-lock="true" type="big_decimal" unique="false">
+            <column name="consumption">
+                <comment>����</comment>
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="cancelAmount" optimistic-lock="true" type="big_decimal" unique="false">
+            <column name="cancel_amount">
+                <comment>����</comment>
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="returnPrize" optimistic-lock="true" type="big_decimal" unique="false">
+            <column name="return_prize">
+                <comment>����</comment>
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="rebate" optimistic-lock="true" type="big_decimal" unique="false">
+            <column name="rebate">
+                <comment>����</comment>
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="currentBalance" optimistic-lock="true" type="big_decimal" unique="false">
+            <column name="current_balance">
+                <comment>��ǰ���</comment>
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="rechargeMember" optimistic-lock="true" type="java.lang.Integer" unique="false">
+            <column name="recharge_member">
+                <comment>��ֵ��Ա����</comment>
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="newMembers" optimistic-lock="true" type="java.lang.Integer" unique="false">
+            <column name="new_members">
+                <comment>������Ա����</comment>
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="profit" optimistic-lock="true" type="big_decimal" unique="false">
+            <column name="profit">
+                <comment>ӯ��</comment>
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="userType" optimistic-lock="true" type="java.lang.Integer" unique="false">
+            <column name="user_type">
+                <comment>�û�����:0,ƽ̨�ͻ�;1,����;3,�ܴ�</comment>
+            </column>
+        </property>
+    </class>
+</hibernate-mapping>

@@ -29,16 +29,7 @@ public class SysCodeDaoImpl extends HibernateDaoSupport implements SysCodeDao {
 		super.setSessionFactory(sessionFactory);
 	}
 	@Override
-	public void saveSysCode(Integer codeType, Integer isCodeType, String codeName, String codeVal, Integer seq,
-			Integer state, String remark) {
-		SysCode sysCode=new SysCode();
-		sysCode.setCodeType(codeType);
-		sysCode.setIsCodeType(isCodeType);
-		sysCode.setCodeName(codeName);
-		sysCode.setCodeVal(codeVal);
-		sysCode.setSeq(seq);
-		sysCode.setState(Constants.SysCodeState.VALID_STATE.getCode());
-		sysCode.setRemark(remark);
+	public void saveSysCode(SysCode sysCode) {
 		currentSession().save(sysCode);
 	}
 
@@ -96,11 +87,11 @@ public class SysCodeDaoImpl extends HibernateDaoSupport implements SysCodeDao {
 //		String codeNameSql="";
 		String codeValSql="";
 		String remarkSql="";
-		String seqSql="";
+//		String seqSql="";
 //		String codeName=sysCode.getCodeName();
 		String codeVal=sysCode.getCodeVal();
 		String remark=sysCode.getRemark();
-		Integer seq=sysCode.getSeq();
+//		Integer seq=sysCode.getSeq();
 		Map<String,Object> map=new HashMap();
 //		if(!StringUtils.isBlank(codeName)) {
 //			codeNameSql="codeName=:codeName,";
@@ -114,11 +105,11 @@ public class SysCodeDaoImpl extends HibernateDaoSupport implements SysCodeDao {
 			remarkSql="remark=:remark,";
 			map.put("remark", remark);
 		}
-		if(seq!=null) {
-			seqSql="seq=:seq,";
-			map.put("seq", seq);
-		}
-		String sumSql=codeValSql+seqSql+remarkSql;
+//		if(seq!=null) {
+//			seqSql="seq=:seq,";
+//			map.put("seq", seq);
+//		}
+		String sumSql=codeValSql+remarkSql;
 		String sumSql1=sumSql.substring(0, sumSql.length()-1);
 		hql = "update SysCode set "+sumSql1+" where id=:id";
 		

@@ -5,7 +5,7 @@ import java.util.List;
 import com.jll.entity.SysCode;
 
 public interface SysCodeDao {
-	public void saveSysCode(Integer codeType,Integer isCodeType,String codeName,String codeVal,Integer seq,Integer state,String remark);
+	public void saveSysCode(SysCode sysCode);
 	public Integer quertSysCodeId(String typeCodeName);
 	public Integer quertSysCodeSeq(Integer codeType);
 	public List<SysCode> quertBigType();

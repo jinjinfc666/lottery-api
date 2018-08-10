@@ -163,8 +163,19 @@ public class CacheRedisServiceImpl implements CacheRedisService
 
 	@Override
 	public void setSysCode(String codeTypeName, SysCode sysCode) {
-		// TODO Auto-generated method stub
-		
+		//CacheObject<Map<String, SysCode>> cacheObj = new CacheObject<>();
+		CacheObject<Map<String, SysCode>> cacheObject=cacheDao.getSysCode(codeTypeName);
+		Map<String, SysCode> sysCodesTemp=null;
+		if(cacheObject==null) {
+			sysCodesTemp = new HashMap<>();
+			cacheObject= new CacheObject<>();
+		}else {
+			sysCodesTemp=cacheObject.getContent();
+		}
+		sysCodesTemp.put(sysCode.getCodeName(), sysCode);
+		cacheObject.setContent(sysCodesTemp);
+		cacheObject.setKey(codeTypeName);
+		cacheDao.setSysCode(cacheObject);
 	}
 
 	@Override

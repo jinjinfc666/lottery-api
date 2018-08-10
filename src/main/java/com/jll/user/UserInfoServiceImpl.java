@@ -1,5 +1,8 @@
 package com.jll.user;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -7,10 +10,12 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang3.time.DateUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
-import org.hibernate.event.spi.SaveOrUpdateEvent;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
@@ -20,11 +25,14 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.jll.common.cache.CacheRedisService;
 import com.jll.common.constants.Constants;
 import com.jll.common.constants.Constants.EmailValidState;
 import com.jll.common.constants.Constants.PhoneValidState;
+import com.jll.common.constants.Constants.SiteMessageReadType;
 import com.jll.common.constants.Constants.SysCodeTypes;
-import com.jll.common.constants.Constants.SysCodeUseLists;
+import com.jll.common.constants.Constants.SysNotifyReceiverType;
+import com.jll.common.constants.Constants.SysNotifyType;
 import com.jll.common.constants.Constants.UserLevel;
 import com.jll.common.constants.Constants.UserState;
 import com.jll.common.constants.Constants.UserType;
@@ -33,7 +41,10 @@ import com.jll.common.utils.SecurityUtils;
 import com.jll.common.utils.StringUtils;
 import com.jll.common.utils.Utils;
 import com.jll.dao.SupserDao;
+import com.jll.entity.SiteMessFeedback;
+import com.jll.entity.SiteMessage;
 import com.jll.entity.SysCode;
+import com.jll.entity.SysNotification;
 import com.jll.entity.UserBankCard;
 import com.jll.entity.UserInfo;
 import com.jll.sysSettings.codeManagement.SysCodeService;
@@ -58,6 +69,9 @@ public class UserInfoServiceImpl implements UserInfoService
 	
 	@Resource
 	SysCodeService sysCodeService;
+	
+	@Resource
+	CacheRedisService cacheRedisService;
 	
 	@Value("${sys_reset_pwd_default_pwd}")
 	String defaultPwd;
@@ -374,7 +388,8 @@ public class UserInfoServiceImpl implements UserInfoService
 		Map<String, Object> ret = new HashMap<String, Object>();
 		Map<String, Object> bankInfo =  getUserBankLists(userId);
 		List<?> bankList = (List<?>) bankInfo.get(Message.KEY_DATA);
-		int maxCardNum = Integer.valueOf(((SysCode)supserDao.get(SysCode.class, "codeName", SysCodeUseLists.MAX_BIND_BANK)).getCodeVal());
+		
+		int maxCardNum = Integer.valueOf(((SysCode)cacheRedisService.getSysCode(SysCodeTypes.BANK_LIST.getCode()).get(SysCodeTypes.BANK_LIST.getCode())).getCodeVal());
 		if(bankList.size() == maxCardNum){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_MORE_BIND_BANK_CARD.getCode());
@@ -398,4 +413,273 @@ public class UserInfoServiceImpl implements UserInfoService
 		
 		userDao.saveUser(user);
 	}
+
+	@Override
+	public Map<String, Object> getUserNotifyLists(int userId) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+		UserInfo dbInfo = (UserInfo) supserDao.get(UserInfo.class,userId);
+		if(null == dbInfo){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+			return ret;
+		}
+		Object[] upUserId = StringUtils.getUserSupersId(dbInfo.getSuperior());
+		
+		Object[] query = {SysNotifyType.ALL_USER.getCode()};
+		query[1] = SysNotifyType.ALL_COM_USER.getCode();
+		if(UserType.AGENCY.getCode() == dbInfo.getUserType()){
+			query[1] = SysNotifyType.ALL_AGENT.getCode();
+		}
+		DetachedCriteria dc = DetachedCriteria.forClass(SysNotification.class);
+		dc.add(Restrictions.le("expireTime",new Date()));
+		dc.add(Restrictions.or(
+				Restrictions.and(
+		                Restrictions.eq("receiverType", SysNotifyReceiverType.TYPE.getCode()),
+		                Restrictions.in("receiver", query)
+		            ),
+				Restrictions.and(
+		                Restrictions.eq("receiverType", SysNotifyReceiverType.LEVEL.getCode()),
+		                Restrictions.in("receiver", upUserId)
+		            )
+        ));
+		dc.addOrder(Order.desc("id"));
+		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		ret.put(Message.KEY_DATA,supserDao.findByCriteria(dc));
+		return ret;
+	}
+	
+	public static void main(String[] args) {
+		List<SiteMessFeedback> retList = new ArrayList<>();
+		
+		SiteMessFeedback bs1 = new SiteMessFeedback();
+		bs1.setId(2);
+		
+		SiteMessFeedback bs2 = new SiteMessFeedback();
+		bs2.setId(4);
+		
+		SiteMessFeedback bs3 = new SiteMessFeedback();
+		bs3.setId(1);
+		
+		retList.add(bs1);
+		retList.add(bs2);
+		retList.add(bs3);
+		
+		Collections.sort(retList, new Comparator<SiteMessFeedback>() {
+			@Override
+			public int compare(SiteMessFeedback b1, SiteMessFeedback b2) {
+				return b2.getId()-b1.getId();
+			}
+		});
+		
+		for (SiteMessFeedback siteMessFeedback : retList) {
+			System.out.println(siteMessFeedback.getId());
+		}
+		
+		System.out.println();
+	}
+
+	@Override
+	public Map<String, Object> getUserSiteMessageLists(int userId) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+		UserInfo dbInfo = (UserInfo) supserDao.get(UserInfo.class,userId);
+		if(null == dbInfo){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+			return ret;
+		}
+		DetachedCriteria dc = DetachedCriteria.forClass(SiteMessage.class);
+		dc.add(Restrictions.eq("userId",userId));
+		dc.add(Restrictions.le("expireTime",new Date()));
+		dc.addOrder(Order.desc("expireTime"));
+		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		ret.put(Message.KEY_DATA,supserDao.findByCriteria(dc));
+		return ret;
+		
+	}
+	
+	private void getAllSiteMessageFeedback(List<SiteMessFeedback> backList , int userId, int msgId){
+		DetachedCriteria dc = DetachedCriteria.forClass(SiteMessFeedback.class);
+		dc.add(Restrictions.eq("mesId",msgId));
+		dc.add(Restrictions.eq("fbUserId",userId));
+		List<SiteMessFeedback> dbBacks = supserDao.findByCriteria(dc);
+		if(null!= dbBacks && !dbBacks.isEmpty()){
+			backList.add(dbBacks.get(0));
+			getAllSiteMessageFeedback(backList, dbBacks.get(0).getFbUserId(), dbBacks.get(0).getId());
+		}
+		
+	}
+
+	@Override
+	public Map<String, Object> showSiteMessageFeedback(int userId, int msgId) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+		UserInfo dbInfo = (UserInfo) supserDao.get(UserInfo.class,userId);
+		SiteMessage dbMsg = (SiteMessage) supserDao.get(SiteMessage.class,msgId);
+		if(null == dbInfo
+				|| null == dbMsg){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+			return ret;
+		}
+		
+		dbMsg.setIsRead(SiteMessageReadType.READING.getCode());
+		
+		DetachedCriteria dc = DetachedCriteria.forClass(SiteMessFeedback.class);
+		dc.add(Restrictions.eq("mesId",msgId));
+		dc.add(Restrictions.eq("fbUserId",userId));
+		
+		List<SiteMessFeedback> retList = new ArrayList<>();
+		
+		getAllSiteMessageFeedback(retList, userId, msgId);
+		Collections.sort(retList, new Comparator<SiteMessFeedback>() {
+			@Override
+			public int compare(SiteMessFeedback b1, SiteMessFeedback b2) {
+				return b2.getId()-b1.getId();
+			}
+		});
+		
+		if(!retList.isEmpty()){
+			SiteMessFeedback lastBack = retList.get(retList.size()-1);
+			if(lastBack.getIsRead() == SiteMessageReadType.UN_READING.getCode()
+					&& dbMsg.getReceiver()>0){
+				lastBack.setIsRead(SiteMessageReadType.READING.getCode());
+				supserDao.update(lastBack);
+				dbMsg.setIsRead(SiteMessageReadType.READING.getCode());
+				supserDao.update(dbMsg);
+			}
+		}
+		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		ret.put(Message.KEY_DATA,dbMsg);
+		ret.put(Message.KEY_REMAKE,retList);
+		return ret;
+	
+	}
+
+	@Override
+	public Map<String, Object> siteMessageFeedback(int userId, int msgId, SiteMessFeedback back) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+		UserInfo dbInfo = (UserInfo) supserDao.get(UserInfo.class,userId);
+		SiteMessage dbMsg = (SiteMessage) supserDao.get(SiteMessage.class,msgId);
+		SiteMessFeedback dbBack = new SiteMessFeedback();
+		
+		if(back.getMesId() > 0){
+			dbBack = (SiteMessFeedback) supserDao.get(SiteMessFeedback.class,back.getMesId());;
+		}
+		if(null == dbInfo
+				|| null == dbMsg
+				|| null == dbBack){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+			return ret;
+		}
+		if(StringUtils.isEmpty(back.getContent()) ){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_MESSAGE_CONTENT_IS_EMPTY.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_MESSAGE_CONTENT_IS_EMPTY.getErrorMes());
+			return ret;
+		}
+		
+		// 不是首次回复...
+		if(dbBack.getMesId() > 0){
+			back.setMesId(dbMsg.getId());
+			back.setFbUserId(dbBack.getFbUserId());
+		}else{
+			//该信息是的类型是 system => user, 回复： user => system
+			back.setMesId(msgId);
+			back.setFbUserId(dbMsg.getUserId());
+		}
+		
+		int validDay = Integer.valueOf(((SysCode)cacheRedisService.getSysCode(SysCodeTypes.SITE_MSG_VALID_DAY.getCode()).get(SysCodeTypes.SITE_MSG_VALID_DAY.getCode())).getCodeVal());
+		dbMsg.setExpireTime(DateUtils.addDays(new Date(), validDay));
+		dbMsg.setIsRead(SiteMessageReadType.UN_READING.getCode());
+		
+		back.setFbTime(new Date());
+		back.setIsRead(SiteMessageReadType.UN_READING.getCode());
+		
+		supserDao.save(back);
+		supserDao.update(dbMsg);
+		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		return ret;
+	}
+
+	@Override
+	public Map<String, Object> addSiteMessage(int userId, String sendIds, SiteMessage msg) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+		UserInfo dbInfo = (UserInfo) supserDao.get(UserInfo.class,userId);
+		if(null == dbInfo
+				||(UserType.SYS_ADMIN.getCode() == dbInfo.getUserType()
+						&& sendIds.equals(StringUtils.ALL))
+				||(UserType.SYS_ADMIN.getCode() != dbInfo.getUserType()
+				&& !StringUtils.isEmpty(sendIds))
+				){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+			return ret;
+		}
+		if(StringUtils.isEmpty(msg.getTitle()) ){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_MESSAGE_TITLE_IS_EMPTY.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_MESSAGE_TITLE_IS_EMPTY.getErrorMes());
+			return ret;
+		}
+		
+		if(StringUtils.isEmpty(msg.getContent()) ){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_MESSAGE_CONTENT_IS_EMPTY.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_MESSAGE_CONTENT_IS_EMPTY.getErrorMes());
+			return ret;
+		}
+		
+		msg.setCreateTime(new Date());
+		msg.setCreator(userId);
+		msg.setIsRead(Constants.SiteMessageReadType.UN_READING.getCode());
+		//system to user
+		if(StringUtils.isEmpty(sendIds)){
+			if(sendIds.equals(StringUtils.ALL)){
+				sendIds = userDao.queryUnSystemUsers();
+			}else{
+				if(!userDao.checkUserIds(sendIds)){
+					ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+					ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+					ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+					return ret;
+				}
+			}
+			int validDay = Integer.valueOf(((SysCode)cacheRedisService.getSysCode(SysCodeTypes.SITE_MSG_VALID_DAY.getCode()).get(SysCodeTypes.SITE_MSG_VALID_DAY.getCode())).getCodeVal());
+			msg.setExpireTime(DateUtils.addDays(new Date(), validDay));
+			List<SiteMessage> addList = new ArrayList<>();
+			for(String id:sendIds.split(StringUtils.COMMA)){
+				SiteMessage addMsg = new SiteMessage();
+				BeanUtils.copyProperties(msg, addMsg);
+				addMsg.setUserId(Integer.valueOf(id));
+				addMsg.setReceiver(Integer.valueOf(id));
+				addList.add(addMsg);
+			}
+			supserDao.saveList(addList);
+		}else{
+			//user to system
+			msg.setUserId(userId);
+			msg.setReceiver(0);
+			supserDao.save(msg);
+		}
+		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		return ret;
+	}
+
+	@Override
+	public double getUserTotalDepostAmt(Date startDate,Date endDate,UserInfo user) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public double getUserTotalBetAmt(Date startDate,Date endDate,UserInfo user) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	
 }

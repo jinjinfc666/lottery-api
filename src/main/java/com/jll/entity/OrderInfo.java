@@ -1,5 +1,5 @@
 package com.jll.entity;
-// Generated 2018-7-25 12:24:23 by Hibernate Tools 5.2.10.Final
+// Generated 2018-8-8 15:26:50 by Hibernate Tools 5.2.10.Final
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -30,8 +30,8 @@ public class OrderInfo implements java.io.Serializable {
 	public OrderInfo() {
 	}
 
-	public OrderInfo(String orderNum, Integer userId, Integer issueId, Integer playType, String betNum, Integer betTotal,
-			Float betAmount, Integer times, BigDecimal pattern, BigDecimal prizeRate, Integer state,
+	public OrderInfo(String orderNum, Integer userId, Integer issueId, Integer playType, String betNum,
+			Integer betTotal, Float betAmount, Integer times, BigDecimal pattern, BigDecimal prizeRate, Integer state,
 			Integer delayPayoutFlag, Integer isZh, Integer isZhBlock, Integer terminalType, Date createTime) {
 		this.orderNum = orderNum;
 		this.userId = userId;

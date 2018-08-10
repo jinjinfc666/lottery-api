@@ -17,6 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.support.HibernateDaoSupport;
 import org.springframework.stereotype.Repository;
 
+import com.jll.common.constants.Constants;
+
 
 @Repository
 public class FlowDetailDaoImpl extends HibernateDaoSupport implements FlowDetailDao {
@@ -65,7 +67,7 @@ public class FlowDetailDaoImpl extends HibernateDaoSupport implements FlowDetail
 			map.put("startTime", beginDate);
 			map.put("endTime", endDate);
 		}
-		Integer userType=2;
+		Integer userType=Constants.UserTypes.SYSTEM_USER.getCode();
 		String sql="from UserAccountDetails a,UserInfo b,SysCode c,OrderInfo d where a.userId=b.id and a.operationType=c.codeName and a.orderId=d.id and b.userType !=:userType"+userNameSql+orderNumSql+amountStartSql+amountEndSql+operationTypeSql+timeSql+" order by a.id";
 		String sql1="select coalesce(SUM(a.amount),0) from UserAccountDetails a,UserInfo b,SysCode c,OrderInfo d where a.userId=b.id and a.operationType=c.codeName and a.orderId=d.id and b.userType !=:userType"+userNameSql+orderNumSql+amountStartSql+amountEndSql+operationTypeSql+timeSql+" order by a.id";
 		Query<?> query = getSessionFactory().getCurrentSession().createQuery(sql);

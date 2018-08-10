@@ -9,36 +9,18 @@ import javax.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.jll.common.cache.CacheRedisService;
+import com.jll.common.constants.Constants;
 import com.jll.entity.SysCode;
 @Service
 @Transactional
 public class SysCodeServiceImpl implements SysCodeService {
 	@Resource
 	SysCodeDao sysCodeDao;
-//	@Override
-//	public void saveBigSysCode(Map<String, Object> ret) {
-//		String codeName=(String) ret.get("codeName");
-//		String codeVal=(String) ret.get("codeVal");
-//		String remark=(String) ret.get("remark");
-//		Integer codeType=null;
-//		Integer isCodeType=1;
-//		Integer seq=null;
-//		Integer state=Constants.SysCodeState.VALID_STATE.getCode();
-//		sysCodeDao.saveSysCode(codeType, isCodeType, codeName, codeVal, seq, state, remark);
-//	}
-
-//	@Override
-//	public void saveSmallSysCode(Map<String, Object> ret) {
-//		String typeCodeName=(String) ret.get("typeCodeName");
-//		String codeName=(String) ret.get("codeName");
-//		String codeVal=(String) ret.get("codeVal");
-//		String remark=(String) ret.get("remark");
-//		Integer codeType=sysCodeDao.quertSysCodeId(typeCodeName);
-//		Integer seq=sysCodeDao.quertSysCodeSeq(codeType)+1;
-//		Integer isCodeType=0;
-//		Integer state=Constants.SysCodeState.VALID_STATE.getCode();
-//		sysCodeDao.saveSysCode(codeType, isCodeType, codeName, codeVal, seq, state, remark);
-//	}
+	@Resource
+	SysCodeService sysCodeService;
+	@Resource
+	CacheRedisService cacheRedisService;
 
 	@Override
 	public List<SysCode> quertBigType() {
@@ -56,19 +38,28 @@ public class SysCodeServiceImpl implements SysCodeService {
 	public void updateSyscode(Map<String, Object> ret) {
 		Integer id=(Integer)ret.get("id");
 		Integer type=(Integer)ret.get("type");
-//		String codeName=(String)ret.get("codeName");
+		String codeName=(String)ret.get("codeName");
 		String codeVal=(String)ret.get("codeVal");
 		String remark=(String)ret.get("remark");
-		Integer seq=(Integer) ret.get("seq");
+//		Integer seq=(Integer) ret.get("seq");
 		SysCode sysCode=new SysCode();
 		sysCode.setId(id);
-//		sysCode.setCodeName(codeName);
+		sysCode.setCodeName(codeName);
 		sysCode.setCodeVal(codeVal);
 		sysCode.setRemark(remark);
-		if(type==2) {
-			sysCode.setSeq(seq);
-		}
 		sysCodeDao.updateSyscode(sysCode);
+		if(type==1) {
+			SysCode sysCode1=sysCodeService.querySysCodeById(id);
+			String codeTypeName=sysCode1.getCodeName();
+			// //TODO 
+			cacheRedisService.setSysCode(codeTypeName, sysCode1);
+		}else if(type==0) {
+			List<SysCode> smallList=sysCodeService.querySmallCodeName(id);
+			String codeTypeName=smallList.get(0).getCodeName();
+			SysCode sysCode2=sysCodeService.querySysCodeById(id);
+			// //TODO 
+			cacheRedisService.setSysCode(codeTypeName, sysCode2);
+		}
 	}
 	@Override
 	public List<SysCode> queryType(String bigType) {
@@ -78,21 +69,33 @@ public class SysCodeServiceImpl implements SysCodeService {
 	@Override
 	public void updateBigState(Integer id, Integer state) {
 		sysCodeDao.updateBigState(id, state);
+		SysCode sysCode=sysCodeService.querySysCodeById(id);
+		String codeTypeName=sysCode.getCodeName();
+		// //TODO 
+		cacheRedisService.setSysCode(codeTypeName, sysCode);
+		List<SysCode> list=sysCodeService.queryCacheType(sysCode.getCodeName());
+		if(list!=null&&list.size()>0) {
+			Iterator<SysCode> it=list.iterator();
+			while(it.hasNext()) {
+				SysCode sysCode1=it.next();
+				cacheRedisService.setSysCode(codeTypeName, sysCode1);
+			}
+		}
 	}
 
 	@Override
 	public void updateSmallState(Integer id, Integer state) {
 		sysCodeDao.updateSmallState(id, state);
+		List<SysCode> smallList=sysCodeService.querySmallCodeName(id);
+		String codeTypeName=smallList.get(0).getCodeName();
+		SysCode sysCode=sysCodeService.querySysCodeById(id);
+		// //TODO 
+		cacheRedisService.setSysCode(codeTypeName, sysCode);
 	}
 
 	@Override
-	public SysCode querySysCodeById(Integer id) {
-		List<SysCode> list=sysCodeDao.queryBigCodeName(id);
-		SysCode sysCode =new SysCode();
-		if(list==null||list.size()==0) {
-			return null;
-		}
-		return list.get(0);
+	public List<SysCode> queryBigCodeName(Integer id) {
+		return sysCodeDao.queryBigCodeName(id);
 	}
 
 	@Override
@@ -116,14 +119,29 @@ public class SysCodeServiceImpl implements SysCodeService {
 		return sysCodeDao.queryCacheTypeOnly(codeName);
 	}
 
+	@Override
+	public SysCode querySysCodeById(Integer id) {
+		List<SysCode> list=sysCodeDao.queryBigCodeName(id);
+		if(list==null||list.size()==0) {
+			return null;
+		}
+		return list.get(0);
+	}
 
 	@Override
-	public void saveSysCode(SysCode sysCode) {
+	public void saveSysCode(Integer type,String codeTypeName,SysCode sysCode) {
 		if(sysCode.getIsCodeType()==0) {
 			Integer codeType=sysCode.getCodeType();
 			Integer seq=sysCodeDao.quertSysCodeSeq(codeType)+1;
 			sysCode.setSeq(seq);
 		}
 		sysCodeDao.saveSysCode(sysCode);
+		if(type==1) {
+			cacheRedisService.setSysCode(codeTypeName, sysCode);
+		}else if(type==0){
+			List<SysCode> sysCode1=sysCodeService.queryCacheTypeOnly(sysCode.getCodeName());
+			SysCode sysCode2=sysCode1.get(0);
+			cacheRedisService.setSysCode(codeTypeName, sysCode2);
+		}
 	}
 }
