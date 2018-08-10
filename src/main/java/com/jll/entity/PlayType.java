@@ -15,23 +15,33 @@ public class PlayType implements java.io.Serializable {
 	private String desc;
 	private Integer state;
 	private Integer mulSinFlag;
+	private Integer isHidden;
 	private Integer seq;
 	private Date createTime;
 
 	public PlayType() {
 	}
 
-	public PlayType(String lotteryType, String classification,String name, String desc, Integer state, Integer mulSinFlag ,Integer seq, Date createTime) {
+	public PlayType(String lotteryType, String classification,String name, String desc, Integer state, Integer mulSinFlag ,Integer isHidden,Integer seq, Date createTime) {
 		this.lotteryType = lotteryType;
 		this.classification=classification;
 		this.name = name;
 		this.desc = desc;
 		this.state = state;
 		this.mulSinFlag = mulSinFlag;
+		this.isHidden = isHidden;
 		this.seq = seq;
 		this.createTime = createTime;
 	}
 	
+	public Integer getIsHidden() {
+		return isHidden;
+	}
+
+	public void setIsHidden(Integer isHidden) {
+		this.isHidden = isHidden;
+	}
+
 	public Integer getMulSinFlag() {
 		return mulSinFlag;
 	}

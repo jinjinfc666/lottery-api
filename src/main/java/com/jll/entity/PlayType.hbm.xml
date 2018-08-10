@@ -34,6 +34,11 @@
                 <comment>0:��Ч;1,��Ч</comment>
             </column>
         </property>
+        <property generated="never" lazy="false" name="isHidden" optimistic-lock="true" type="java.lang.Integer" unique="false">
+            <column name="is_hidden">
+                <comment>0:��Ч;1,��Ч</comment>
+            </column>
+        </property>
         <property generated="never" lazy="false" name="seq" optimistic-lock="true" type="java.lang.Integer" unique="false">
             <column name="seq">
                 <comment>˳��</comment>
