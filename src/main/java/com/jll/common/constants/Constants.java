@@ -1048,7 +1048,7 @@ public class Constants {
 	 * @author Silence
 	 */
 	public static enum Rebate{
-		SYSTEM_REBATE("system_rebate","系统派奖");
+		SYSTEM_REBATE("system_rebate","系统返点");
 		
 		private String code;
 		private String name;

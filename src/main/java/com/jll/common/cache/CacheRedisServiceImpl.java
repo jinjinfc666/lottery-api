@@ -2,7 +2,6 @@ package com.jll.common.cache;
 
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -180,8 +179,7 @@ public class CacheRedisServiceImpl implements CacheRedisService
 
 	@Override
 	public SysCode getSysCode(String codeTypeName, String codeName) {
-		// TODO Auto-generated method stub
-		return null;
+		return cacheDao.getSysCode(codeTypeName, codeName);
 	}
 
 	@Override
