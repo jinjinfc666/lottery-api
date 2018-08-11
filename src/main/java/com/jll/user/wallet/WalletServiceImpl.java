@@ -46,4 +46,10 @@ public class WalletServiceImpl implements WalletService
 		
 		walletDao.createWallet(wallet);
 	}
+
+	@Override
+	public void updateWallet(UserAccount wallet) {
+		// TODO Auto-generated method stub
+		
+	}
 }

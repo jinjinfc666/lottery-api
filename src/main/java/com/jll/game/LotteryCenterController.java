@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jll.common.cache.CacheRedisService;
+import com.jll.common.constants.Constants;
 import com.jll.common.constants.Constants.SysCodeTypes;
 import com.jll.common.constants.Message;
 import com.jll.entity.Issue;
@@ -22,6 +23,7 @@ import com.jll.entity.OrderInfo;
 import com.jll.entity.PlayType;
 import com.jll.entity.SysCode;
 import com.jll.entity.UserInfo;
+import com.jll.game.order.OrderService;
 import com.jll.game.playtype.PlayTypeService;
 import com.jll.sysSettings.codeManagement.SysCodeService;
 import com.terran4j.commons.api2doc.annotations.Api2Doc;
@@ -50,6 +52,9 @@ public class LotteryCenterController {
 	@Resource
 	PlayTypeService playTypeServ;
 	
+	@Resource
+	OrderService orderServ;
+	
 	@RequestMapping(value="/pre-bet", method = { RequestMethod.POST }, consumes=MediaType.APPLICATION_JSON_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> PreBet(@RequestBody OrderInfo order){
 		
@@ -57,12 +62,59 @@ public class LotteryCenterController {
 		return null;
 	}
 	
-	@RequestMapping(value="/bet", method = { RequestMethod.POST }, consumes=MediaType.APPLICATION_JSON_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> bet(@RequestBody OrderInfo order){
+	@RequestMapping(value="/{lottery-type}/bet/zh/{zhFlag}/wallet/{walletId}", method = { RequestMethod.POST }, consumes=MediaType.APPLICATION_JSON_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> bet(@PathVariable(name = "lottery-type", required = true) String lotteryType,
+			@PathVariable(name = "zhFlag", required = true) int zhFlag,
+			@PathVariable(name = "walletId", required = true) int walletId,
+			@RequestBody List<OrderInfo> orders){
+		Map<String, Object> resp = new HashMap<String, Object>();
+		boolean isLotteryTypeExisting = false;
+		String retCode = null;
 		
+		isLotteryTypeExisting = cacheServ.isCodeExisting(SysCodeTypes.LOTTERY_TYPES, lotteryType);
+		if(!isLotteryTypeExisting) {
+			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_GAME_LOTTERY_TYPE_INVALID.getCode());
+			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_GAME_LOTTERY_TYPE_INVALID.getErrorMes());
+			return resp;
+		}
 		
-		return null;
+		Constants.ZhState zh = Constants.ZhState.getByCode(zhFlag);
+		if(zh == null) {
+			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_GAME_INVALID_ZH_FLAG.getCode());
+			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_GAME_INVALID_ZH_FLAG.getErrorMes());
+			return resp;
+		}
+		
+		if(orders == null || orders.size() == 0) {
+			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_GAME_NO_ORDER.getCode());
+			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_GAME_NO_ORDER.getErrorMes());
+			return resp;
+		}
+		
+		if(zh.getCode() == Constants.ZhState.NON_ZH.getCode()
+				&& orders.size() > 1) {
+			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_GAME_MULTIPLE_ORDERS_NOT_ALLOWED.getCode());
+			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_GAME_MULTIPLE_ORDERS_NOT_ALLOWED.getErrorMes());
+			return resp;
+		}
+		
+		retCode = orderServ.saveOrders(orders, walletId, zhFlag,lotteryType);
+		if(!String.valueOf(Message.status.SUCCESS.getCode()).equals(retCode)) {
+			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			resp.put(Message.KEY_ERROR_CODE, Message.Error.getErrorByCode(retCode));
+			resp.put(Message.KEY_ERROR_MES, Message.Error.getErrorByCode(retCode).getErrorMes());
+			return resp;
+		}
+		
+		resp.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		
+		return resp;
 	}
+	
 	
 	@RequestMapping(value="/{lottery-type}/betting-issue", method = { RequestMethod.GET }, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> queryBettingIssue(@PathVariable(name = "lottery-type", required = true) String lotteryType){

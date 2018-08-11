@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.jll.common.constants.Constants.SysCodeTypes;
 import com.jll.entity.Issue;
+import com.jll.entity.OrderInfo;
 import com.jll.entity.PlayType;
 import com.jll.entity.SysCode;
 import com.jll.game.BulletinBoard;
@@ -78,4 +79,17 @@ public interface CacheRedisService {
 	 * @param playTypes
 	 */
 	void setPlayType(String lotteryType, List<PlayType> playTypes);
+
+	/**
+	 * 按照所选彩种的当前期次的所选号码进行投注金额以及投注注数的统计数据
+	 * @param order
+	 */
+	void statGroupByBettingNum(OrderInfo order);
+
+	/**
+	 * 检查指定的期次是否有效
+	 * 
+	 * @return
+	 */
+	boolean isIssueBetting(String lotteryType, int issueId);
 }

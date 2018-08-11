@@ -1,5 +1,6 @@
 package com.jll.user.wallet;
 
+import com.jll.entity.UserAccount;
 import com.jll.entity.UserInfo;
 
 public interface WalletService
@@ -11,4 +12,8 @@ public interface WalletService
 	 * @return
 	 */
 	void createWallet(UserInfo user);
+
+	void updateWallet(UserAccount wallet);
+
+	UserAccount queryById(int walletId);
 }

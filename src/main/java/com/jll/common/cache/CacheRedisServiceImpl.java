@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.jll.common.constants.Constants;
 import com.jll.common.constants.Constants.SysCodeTypes;
 import com.jll.entity.Issue;
+import com.jll.entity.OrderInfo;
 import com.jll.entity.PlayType;
 import com.jll.entity.SysCode;
 import com.jll.game.BulletinBoard;
@@ -197,6 +198,29 @@ public class CacheRedisServiceImpl implements CacheRedisService
 		cache.setKey(cacheKey);
 		
 		cacheDao.setPlayType(cache);
+	}
+
+	@Override
+	public void statGroupByBettingNum(OrderInfo order) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean isIssueBetting(String lotteryType, int issueId) {
+		BulletinBoard bulletinBoard = getBulletinBoard(lotteryType);
+		if(bulletinBoard == null) {
+			return false;
+		}
+		
+		Issue currIssue = bulletinBoard.getCurrIssue();
+		if(currIssue == null 
+				|| currIssue.getId().intValue() != issueId
+				|| currIssue.getState() != Constants.IssueState.BETTING.getCode()) {
+			return false;
+		}
+		
+		return true;
 	}
 
 }

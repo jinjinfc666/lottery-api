@@ -78,6 +78,7 @@ public class Message {
 		ERROR_PROMS_OTHER_CONDITION_FLOWING_DISSATISFY("010025", "Participation in activities must meet the minimum flowing water rate of %s times, your current flowing water rate of %s times!!"),
 		ERROR_PROMS_ONLY_ONCE_DISSATISFY("010026", "The activity can only take part in one time!!"),
 		ERROR_PROMS_OTHER_CONDITION_BET_AMT_DISSATISFY("010027", "Participation in activities must meet the minimum bet amount of %s times, your current bet amount of %s times!!"),
+		ERROR_USER__WALLET_INVALID("010028", "Wallet is invalid!!"),
 		
 		/**************third party*************************/
 		ERROR_TP_INVALID_SMS("020001", "Invalid SMS!!"),
@@ -88,7 +89,14 @@ public class Message {
 		ERROR_GAME_LOTTERY_TYPE_INVALID("030001", "Invalid lottery type!!"),
 		ERROR_GAME_END("030002", "The game is over today!!"),
 		ERROR_GAME_NO_START("030003", "The game does not yet start!!"),
-		ERROR_GAME_MISSTING_PLAY_TYPE("030004", "Please first configure the play type!!"),		
+		ERROR_GAME_MISSTING_PLAY_TYPE("030004", "Please first configure the play type!!"),
+		ERROR_GAME_INVALID_ZH_FLAG("030005", "Invalid zh flag!!"),
+		ERROR_GAME_NO_ORDER("030006", "At least one order is required!!"),
+		ERROR_GAME_MULTIPLE_ORDERS_NOT_ALLOWED("030007", "Only one order is allowed under non zhui hao!!"),
+		ERROR_GAME_EXPIRED_ISSUE("030008", "The issue is expired!!"),
+		ERROR_GAME_BAL_INSUFFICIENT("030009", "Balance is insufficient!!"),
+		
+		
 		
 		/*** system model****/
 		ERROR_MESSAGE_TITLE_IS_EMPTY("040001", "Message title is empty!!"),

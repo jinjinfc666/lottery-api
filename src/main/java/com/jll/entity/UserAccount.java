@@ -8,6 +8,11 @@ import java.math.BigDecimal;
  */
 public class UserAccount implements java.io.Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4413435954571834313L;
+	
 	private Integer id;
 	private Integer userId;
 	private String accName;
@@ -16,13 +21,14 @@ public class UserAccount implements java.io.Serializable {
 	private BigDecimal prize;
 	private Long rewardPoints;
 	private Integer accType;
+	private Integer state;
 	private String remark;
 
 	public UserAccount() {
 	}
 
 	public UserAccount(Integer userId, String accName, BigDecimal balance, BigDecimal freeze, BigDecimal prize,
-			Long rewardPoints, Integer accType, String remark) {
+			Long rewardPoints, Integer accType, Integer state, String remark) {
 		this.userId = userId;
 		this.accName = accName;
 		this.balance = balance;
@@ -30,6 +36,7 @@ public class UserAccount implements java.io.Serializable {
 		this.prize = prize;
 		this.rewardPoints = rewardPoints;
 		this.accType = accType;
+		this.state = state;
 		this.remark = remark;
 	}
 
@@ -97,6 +104,15 @@ public class UserAccount implements java.io.Serializable {
 		this.accType = accType;
 	}
 
+	
+	public Integer getState() {
+		return state;
+	}
+
+	public void setState(Integer state) {
+		this.state = state;
+	}
+
 	public String getRemark() {
 		return this.remark;
 	}
@@ -105,4 +121,5 @@ public class UserAccount implements java.io.Serializable {
 		this.remark = remark;
 	}
 
+	
 }

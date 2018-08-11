@@ -82,7 +82,7 @@ public class SysInitLoader {
 					:lotteryType.getCodeName() + " cached play types :" + playTypes.size());
 			
 			if(playTypes == null || playTypes.size() == 0) {
-				playTypes = playTypeServ.queryPlayType(lotteryType.getCodeName());
+				playTypes = playTypeServ.queryPlayType(String.valueOf(lotteryType.getId()));
 				if(playTypes == null || playTypes.size() == 0) {
 					continue;
 				}

@@ -1,3 +1,4 @@
+
 package com.jll.common.constants;
 
 
@@ -77,6 +78,38 @@ public class Constants {
 			for(WalletType walletType: walletTypes) {
 				if(walletType.getCode() == code) {
 					return walletType;
+				}
+			}
+			return null;
+		}
+	}
+	
+	public static enum WalletState{
+		NORMAL(0, "正常"),
+		FROZEN(1, "冻结");
+		
+		private int code;
+		
+		private String desc;
+		
+		private WalletState(int code, String desc) {
+			this.code = code;
+			this.desc = desc;
+		}
+		
+		public int getCode() {
+			return this.code;
+		}
+		
+		public String getDesc() {
+			return this.desc;
+		}
+		
+		public static WalletState geByCode(int code) {
+			WalletState[] walStates = WalletState.values();
+			for(WalletState walState: walStates) {
+				if(walState.getCode() == code) {
+					return walState;
 				}
 			}
 			return null;
@@ -1082,4 +1115,36 @@ public class Constants {
 			return map;
 		}
 	}
+	
+	public static enum ZhState{
+		ZH(0, "追号"),
+		NON_ZH(1, "非追号");
+		
+		private int code;
+		private String desc;
+		
+		private ZhState(int code, String desc) {
+			this.code = code;
+			this.desc = desc;
+		}
+		
+		public int getCode() {
+			return code;
+		}
+		
+		public String getDesc() {
+			return this.desc;
+		}
+		
+		public static ZhState getByCode(int code) {
+			ZhState[] zhStates = ZhState.values();
+			for(ZhState zh : zhStates) {
+				if(zh.getCode() == code) {
+					return zh;
+				}
+			}
+			
+			return null;
+		}
+	}	
 }
