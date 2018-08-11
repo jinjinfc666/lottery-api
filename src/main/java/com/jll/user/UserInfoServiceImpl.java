@@ -47,7 +47,7 @@ import com.jll.entity.SysCode;
 import com.jll.entity.SysNotification;
 import com.jll.entity.UserBankCard;
 import com.jll.entity.UserInfo;
-import com.jll.sysSettings.codeManagement.SysCodeService;
+import com.jll.sysSettings.syscode.SysCodeService;
 import com.jll.user.wallet.WalletService;
 
 @Configuration

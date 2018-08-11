@@ -1,4 +1,4 @@
-package com.jll.sysSettings.codeManagement;
+package com.jll.sysSettings.syscode;
 
 import java.util.Iterator;
 import java.util.List;
@@ -62,8 +62,8 @@ public class SysCodeServiceImpl implements SysCodeService {
 		}
 	}
 	@Override
-	public List<SysCode> queryType(String bigType) {
-		return sysCodeDao.queryType(bigType);
+	public List<SysCode> queryType(String codeTypeName) {
+		return sysCodeDao.queryType(codeTypeName);
 	}
 
 	@Override

@@ -1,4 +1,4 @@
-package com.jll.sysSettings.codeManagement;
+package com.jll.sysSettings.syscode;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -129,7 +129,7 @@ public class BackstageSysController {
 		}
 		return ret;
 	}
-	//通过大类的codeName查询这个大类下面的所有小类
+	//通过大类的大类的codeName查询这个大类下面的所有小类
 	@RequestMapping(value={"/sysCode"}, method={RequestMethod.POST}, produces={"application/json"})
 	public Map<String, Object> querySysCode(@RequestParam(name = "codeName", required = true) String codeName,//此处的id为大类的id因为需要通过大类的id查找出这个大类下对应的所有小类
 			  HttpServletRequest request) {

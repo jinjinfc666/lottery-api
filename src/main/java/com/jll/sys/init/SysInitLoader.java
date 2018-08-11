@@ -14,7 +14,7 @@ import com.jll.entity.PlayType;
 import com.jll.entity.SysCode;
 import com.jll.game.LotteryCenterServiceImpl;
 import com.jll.game.playtype.PlayTypeService;
-import com.jll.sysSettings.codeManagement.SysCodeService;
+import com.jll.sysSettings.syscode.SysCodeService;
 
 public class SysInitLoader {
 	
@@ -37,8 +37,10 @@ public class SysInitLoader {
 
 	private void initSysCode() {
 		initLotteryType();
+		initLotteryAttributes();
+		initSysCodePlayType();
 	}
-	
+	//加载彩种类型
 	private void initLotteryType() {
 		String codeTypeName = Constants.SysCodeTypes.LOTTERY_TYPES.getCode();
 		Map<String, SysCode> lottoTypes = cacheServ.getSysCode(codeTypeName);
@@ -57,6 +59,53 @@ public class SysInitLoader {
 			sysCodes.add(sysCodeTypes.get(0));
 			
 			cacheServ.setSysCode(codeTypeName, sysCodes);
+		}
+	}
+	//加载玩法类型
+	private void initSysCodePlayType() {
+		String codeTypeName = Constants.SysCodePlayType.CT_PLAY_TYPE_CLASSICFICATION.getCode();
+		Map<String, SysCode> playTypes = cacheServ.getSysCode(codeTypeName);
+		List<SysCode> sysCodes = null;
+		
+		if(playTypes == null || playTypes.size() == 0) {
+			sysCodes = sysCodeServ.queryCacheType(codeTypeName);
+			List<SysCode> sysCodeTypes = sysCodeServ.queryCacheTypeOnly(codeTypeName);
+			
+			if(sysCodes == null || sysCodes.size() == 0
+					|| sysCodeTypes == null
+					|| sysCodeTypes.size() == 0) {
+				return ;
+			}
+			
+			sysCodes.add(sysCodeTypes.get(0));
+			
+			cacheServ.setSysCode(codeTypeName, sysCodes);
+		}
+	}
+	//加载彩种的属性
+	private void initLotteryAttributes() {
+		List<String> lotteryAttributesList=Constants.LotteryAttributes.getList();
+		if(lotteryAttributesList!=null&&lotteryAttributesList.size()>0) {
+			for(int a=0;a<lotteryAttributesList.size();a++) {
+				String codeTypeName = lotteryAttributesList.get(a);
+				Map<String, SysCode> lottoTypes = cacheServ.getSysCode(codeTypeName);
+				List<SysCode> sysCodes = null;
+				
+				if(lottoTypes == null || lottoTypes.size() == 0) {
+					sysCodes = sysCodeServ.queryCacheType(codeTypeName);
+					List<SysCode> sysCodeTypes = sysCodeServ.queryCacheTypeOnly(codeTypeName);
+					
+					if(sysCodes == null || sysCodes.size() == 0
+							|| sysCodeTypes == null
+							|| sysCodeTypes.size() == 0) {
+						return ;
+					}
+					
+					sysCodes.add(sysCodeTypes.get(0));
+					
+					cacheServ.setSysCode(codeTypeName, sysCodes);
+				}
+			}
 		}
 	}
 	

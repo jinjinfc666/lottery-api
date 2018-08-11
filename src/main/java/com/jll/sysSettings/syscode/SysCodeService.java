@@ -1,4 +1,4 @@
-package com.jll.sysSettings.codeManagement;
+package com.jll.sysSettings.syscode;
 
 import java.util.List;
 import java.util.Map;
@@ -11,7 +11,7 @@ public interface SysCodeService {
 	List<SysCode> quertBigType();
 	List<SysCode> querySmallType(Integer id);
 	void updateSyscode(Map<String,Object> ret);
-	List<SysCode> queryType(String bigType);
+	List<SysCode> queryType(String codeTypeName);
 	void updateBigState(Integer id,Integer state);
 	void updateSmallState(Integer id,Integer state);
 	List<SysCode> queryBigCodeName(Integer id);

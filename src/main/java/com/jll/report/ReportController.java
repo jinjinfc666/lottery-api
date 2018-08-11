@@ -15,7 +15,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jll.report.RedPackageService;
-import com.jll.sysSettings.codeManagement.SysCodeService;
+import com.jll.sysSettings.syscode.SysCodeService;
+import com.jll.common.cache.CacheRedisService;
 import com.jll.common.constants.Constants;
 import com.jll.common.constants.Constants.SysCodeTypes;
 import com.jll.common.constants.Message;
@@ -56,6 +57,8 @@ public class ReportController {
 	OrderSourceService orderSourceService;
 	@Resource
 	PPLService pPLService;
+	@Resource
+	CacheRedisService cacheRedisService;
 	/**
 	 *流水明细
 	 * @author Silence 
@@ -102,7 +105,7 @@ public class ReportController {
 	public Map<String, Object> queryType(){
 		Map<String, Object> ret = new HashMap<>();
 		try {
-			List<SysCode> types = sysCodeService.queryType(SysCodeTypes.FLOW_TYPES.getCode());
+			Map<String,SysCode> types = cacheRedisService.getSysCode(SysCodeTypes.FLOW_TYPES.getCode());
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 			ret.put("data", types);
 		}catch(Exception e){
@@ -190,7 +193,7 @@ public class ReportController {
 	public Map<String, Object> queryLoyTstQueryConditions() {
 		Map<String, Object> ret = new HashMap<>();
 		try {
-			List<SysCode> types = sysCodeService.queryType(SysCodeTypes.LOTTERY_TYPES.getCode());
+			Map<String,SysCode> types = cacheRedisService.getSysCode(SysCodeTypes.LOTTERY_TYPES.getCode());
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 			ret.put("data", types);
 		}catch(Exception e){
@@ -302,7 +305,7 @@ public class ReportController {
 		}
 		return ret;
 	}
-	//查询条件:存取类型
+	//查询条件:存取状态
 	@RequestMapping(value={"/DWD/DWDState"}, method={RequestMethod.POST}, produces={"application/json"})
 	public Map<String, Object> queryDWDState() {
 		Map<String, Object> ret = new HashMap<>();

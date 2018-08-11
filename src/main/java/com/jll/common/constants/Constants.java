@@ -243,6 +243,14 @@ public class Constants {
 			}
 			return null;
 		}
+		public static Map<Integer,String> getIsOrNo() {
+			Map<Integer,String> map=new HashMap<Integer,String>();
+			BankCardState[] descs = BankCardState.values();
+			for(BankCardState desc: descs) {
+				map.put(desc.getCode(), desc.getDesc());
+			}
+			return map;
+		}
 	}
 	
 	public static enum PhoneValidState{
@@ -386,7 +394,7 @@ public class Constants {
 	public static enum SysCodeTypes{
 		LOTTERY_TYPES("lottery_type"),
 		BANK_LIST("number_of_bank_cards"),
-		FLOW_TYPES("acc_ope_type"),
+		FLOW_TYPES("flow_type"),
 		PAYMENT_PLATFORM("payment_platform"),
 		SITE_MSG_VALID_DAY("site_msg_valid_day"),
 		NOTIFY_MSG_VALID_DAY("notify_msg_valid_day"),
@@ -1147,4 +1155,170 @@ public class Constants {
 			return null;
 		}
 	}	
+	
+	/**
+	 *彩种的属性
+	 * @author Silence
+	 */
+	public static enum LotteryAttributes{
+		LOTTERY_CONFIG_CQSSC("lottery_config_cqssc","重庆时时彩属性"),
+		LOTTERY_CONFIG_GD11X5("lottery_config_gd11x5","广东11选5属性"),
+		LOTTERY_CONFIG_TXFFC("lottery_config_txffc","腾讯分分彩属性"),
+		LOTTERY_CONFIG_5CC("lottery_config_5cc","5分彩属性"),
+		LOTTERY_CONFIG_SFC("lottery_config_sfc","双分彩属性"),
+		LOTTERY_CONFIG_FFC("lottery_config_ffc","分分彩属性"),
+		LOTTERY_CONFIG_MMC("lottery_config_mmc","秒秒彩属性"),
+		LOTTERY_CONFIG_BJPK10("lottery_config_bjpk10","PK10属性");
+		
+		private String code;
+		private String name;
+		
+		private LotteryAttributes(String code,String name) {
+			this.code = code;
+			this.name = name;
+		}
+		
+		public String getCode() {
+			return this.code;
+		}
+		public String getName() {
+			return this.name;
+		}
+		
+		public static List<String> getList() {
+			List<String> map=new ArrayList<String>();
+			LotteryAttributes[] names = LotteryAttributes.values();
+			for(LotteryAttributes name: names) {
+				map.add(name.getCode());
+			}
+			return map;
+		}
+		public static Map<String,Object> getMap() {
+			Map<String,Object> map=new HashMap<String,Object>();
+			LotteryAttributes[] names = LotteryAttributes.values();
+			for(LotteryAttributes name: names) {
+				map.put(name.getCode(), name.getName());
+			}
+			return map;
+		}
+	}
+	/**
+	 *彩种的属性
+	 * @author Silence
+	 */
+	public static enum SysCodePlayType{
+		CT_PLAY_TYPE_CLASSICFICATION("ct_play_type_classicfication","玩法类型");
+		
+		private String code;
+		private String name;
+		
+		private SysCodePlayType(String code,String name) {
+			this.code = code;
+			this.name = name;
+		}
+		
+		public String getCode() {
+			return this.code;
+		}
+		public String getName() {
+			return this.name;
+		}
+		
+		public static List<String> getList() {
+			List<String> map=new ArrayList<String>();
+			SysCodePlayType[] names = SysCodePlayType.values();
+			for(SysCodePlayType name: names) {
+				map.add(name.getCode());
+			}
+			return map;
+		}
+		public static Map<String,Object> getMap() {
+			Map<String,Object> map=new HashMap<String,Object>();
+			SysCodePlayType[] names = SysCodePlayType.values();
+			for(SysCodePlayType name: names) {
+				map.put(name.getCode(), name.getName());
+			}
+			return map;
+		}
+	}
+	/**
+	 *玩法是单式还是复式
+	 * @author Silence
+	 */
+	public static enum SingleOrDouble{
+		SINGLE("0","单式"),
+		Double("1","复式");
+		
+		private String code;
+		private String name;
+		
+		private SingleOrDouble(String code,String name) {
+			this.code = code;
+			this.name = name;
+		}
+		
+		public String getCode() {
+			return this.code;
+		}
+		public String getName() {
+			return this.name;
+		}
+		
+		public static List<String> getList() {
+			List<String> map=new ArrayList<String>();
+			SingleOrDouble[] names = SingleOrDouble.values();
+			for(SingleOrDouble name: names) {
+				map.add(name.getCode());
+			}
+			return map;
+		}
+		public static Map<String,Object> getMap() {
+			Map<String,Object> map=new HashMap<String,Object>();
+			SingleOrDouble[] names = SingleOrDouble.values();
+			for(SingleOrDouble name: names) {
+				map.put(name.getCode(), name.getName());
+			}
+			return map;
+		}
+	}
+	/**
+	 *玩法名称是否隐藏
+	 * @author Silence
+	 */
+	public static enum HidePlayName{
+		SHOW("0","显示"),
+		HIDE("1","隐藏");
+		
+		private String code;
+		private String name;
+		
+		private HidePlayName(String code,String name) {
+			this.code = code;
+			this.name = name;
+		}
+		
+		public String getCode() {
+			return this.code;
+		}
+		public String getName() {
+			return this.name;
+		}
+		
+		public static List<String> getList() {
+			List<String> map=new ArrayList<String>();
+			HidePlayName[] names = HidePlayName.values();
+			for(HidePlayName name: names) {
+				map.add(name.getCode());
+			}
+			return map;
+		}
+		public static Map<String,Object> getMap() {
+			Map<String,Object> map=new HashMap<String,Object>();
+			HidePlayName[] names = HidePlayName.values();
+			for(HidePlayName name: names) {
+				map.put(name.getCode(), name.getName());
+			}
+			return map;
+		}
+	}
 }

@@ -1,4 +1,4 @@
-package com.jll.sysSettings.codeManagement;
+package com.jll.sysSettings.syscode;
 
 import java.sql.Date;
 import java.util.ArrayList;
@@ -150,11 +150,10 @@ public class SysCodeDaoImpl extends HibernateDaoSupport implements SysCodeDao {
 		query.executeUpdate();
 	}
 	@Override
-	public List<SysCode> queryType(String bigType) {
-	    String sql="select * from sys_code where code_type=(select id from sys_code where code_name=:code_name) and state=:state order by seq";
-	    Query<SysCode> query = getSessionFactory().getCurrentSession().createSQLQuery(sql).addEntity(SysCode.class);
-	    query.setParameter("code_name", bigType);
-	    query.setParameter("state", state);
+	public List<SysCode> queryType(String codeTypeName) {
+	    String sql="select * from sys_code where code_type=(select id from sys_code where code_name=:codeTypeName) order by seq";
+	    Query<SysCode> query = getSessionFactory().getCurrentSession().createNativeQuery(sql).addEntity(SysCode.class);
+	    query.setParameter("codeTypeName", codeTypeName);
 	    List<SysCode> types = new ArrayList<>();
 	    try {			
 	    	types = query.list();

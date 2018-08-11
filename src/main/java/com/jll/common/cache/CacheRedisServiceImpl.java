@@ -21,7 +21,7 @@ import com.jll.entity.OrderInfo;
 import com.jll.entity.PlayType;
 import com.jll.entity.SysCode;
 import com.jll.game.BulletinBoard;
-import com.jll.sysSettings.codeManagement.SysCodeService;
+import com.jll.sysSettings.syscode.SysCodeService;
 
 @Configuration
 @PropertySource("classpath:email-sender.properties")
