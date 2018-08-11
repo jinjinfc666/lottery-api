@@ -3,7 +3,6 @@ package com.jll.report;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -18,6 +17,8 @@ import org.hibernate.type.DateType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.support.HibernateDaoSupport;
 import org.springframework.stereotype.Repository;
+
+import com.jll.common.constants.Constants;
 
 
 
@@ -46,8 +47,8 @@ public class RedPackageDaoImpl extends HibernateDaoSupport implements RedPackage
 			map.put("startTime", beginDate);
 			map.put("endTime", endDate);
 		}
-		Integer userType=2;
-		Integer accType=2;
+		Integer userType=Constants.UserTypes.SYSTEM_USER.getCode();
+		Integer accType=Constants.WalletType.RED_PACKET_WALLET.getCode();
 		String sql="from UserAccountDetails a,UserAccount b,UserInfo c,SysCode d where a.walletId=b.id and a.userId=c.id and a.operationType=d.codeName  and c.userType !=:userType and b.accType=:accType  "+userNameSql+timeSql+" order by a.id";
 		logger.debug(sql+"-----------------------------RedPackageDaoImpl----SQL--------------------------------");
 		Query<?> query = getSessionFactory().getCurrentSession().createQuery(sql);

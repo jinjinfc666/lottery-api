@@ -29,7 +29,7 @@ public class BulletinBoard implements Serializable{
 
 	public void setCurrIssue(Issue currIssue) {
 		if(currIssue == null 
-				|| (this.currIssue.getId() == currIssue.getId())) {
+				|| (this.currIssue != null && (this.currIssue.getId() == currIssue.getId()))) {
 			return ;
 		}
 		

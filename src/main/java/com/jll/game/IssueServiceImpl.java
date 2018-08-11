@@ -36,6 +36,11 @@ public class IssueServiceImpl implements IssueService
 	public void saveIssue(Issue currIssue) {
 		issueDao.saveIssue(currIssue);
 	}
+
+	@Override
+	public Issue getIssueById(Integer id) {
+		return issueDao.getIssueById(id);
+	}
 	
 	
 }

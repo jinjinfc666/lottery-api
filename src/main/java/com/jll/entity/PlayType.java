@@ -1,5 +1,5 @@
 package com.jll.entity;
-// Generated 2018-8-1 12:18:26 by Hibernate Tools 5.2.10.Final
+// Generated 2018-8-8 15:26:50 by Hibernate Tools 5.2.10.Final
 
 import java.util.Date;
 
@@ -8,36 +8,61 @@ import java.util.Date;
  */
 public class PlayType implements java.io.Serializable {
 
-	private int id;
+	private Integer id;
 	private String lotteryType;
+	private String classification;
 	private String name;
 	private String desc;
 	private Integer state;
+	private Integer mulSinFlag;
+	private Integer isHidden;
 	private Integer seq;
 	private Date createTime;
 
 	public PlayType() {
 	}
 
-	public PlayType(int id) {
-		this.id = id;
-	}
-
-	public PlayType(int id, String lotteryType, String name, String desc, Integer state, Integer seq, Date createTime) {
-		this.id = id;
+	public PlayType(String lotteryType, String classification,String name, String desc, Integer state, Integer mulSinFlag ,Integer isHidden,Integer seq, Date createTime) {
 		this.lotteryType = lotteryType;
+		this.classification=classification;
 		this.name = name;
 		this.desc = desc;
 		this.state = state;
+		this.mulSinFlag = mulSinFlag;
+		this.isHidden = isHidden;
 		this.seq = seq;
 		this.createTime = createTime;
 	}
+	
+	public Integer getIsHidden() {
+		return isHidden;
+	}
 
-	public int getId() {
+	public void setIsHidden(Integer isHidden) {
+		this.isHidden = isHidden;
+	}
+
+	public Integer getMulSinFlag() {
+		return mulSinFlag;
+	}
+
+	public void setMulSinFlag(Integer mulSinFlag) {
+		this.mulSinFlag = mulSinFlag;
+	}
+
+	public String getClassification() {
+		return classification;
+	}
+
+	public void setClassification(String classification) {
+		this.classification = classification;
+	}
+
+	public Integer getId() {
 		return this.id;
 	}
 
-	public void setId(int id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 

@@ -17,6 +17,8 @@ public interface IssueService
 	 * @param currIssue
 	 */
 	void saveIssue(Issue currIssue);
+
+	Issue getIssueById(Integer id);
 	
 	
 }

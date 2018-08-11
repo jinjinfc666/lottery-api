@@ -1,6 +1,7 @@
 package com.jll.game;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -24,6 +25,19 @@ public class IssueDaoImpl extends DefaultGenericDaoImpl<Issue> implements IssueD
 	@Override
 	public void saveIssue(Issue currIssue) {
 		this.saveOrUpdate(currIssue);
+	}
+
+	@Override
+	public Issue getIssueById(Integer id) {
+		String sql = "from Issue where id=?";
+		List<Object> params = new ArrayList<>();
+		params.add(id);
+		List<Issue> result = query(sql, params, Issue.class);
+		if(result == null || result.size() == 0) {
+			return null;
+		}
+		
+		return result.get(0);
 	}
 
 

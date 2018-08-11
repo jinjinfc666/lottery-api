@@ -20,7 +20,6 @@ import com.jll.dao.PageQueryDao;
 import com.jll.dao.SupserDao;
 import com.jll.entity.Issue;
 import com.jll.entity.PlayType;
-import com.jll.sysSettings.codeManagement.SysCodeService;
 
 @Service
 public class HelpServiceImpl implements HelpService{
@@ -28,9 +27,6 @@ public class HelpServiceImpl implements HelpService{
 	@Resource
 	SupserDao  supserDao; 
 	
-	@Resource
-	SysCodeService sysCodeService;
-
 	@Override
 	public Map<String, Object> getHistoryOpenRecord(String lotteryType, PageQueryDao page) {
 		Map<String, Object> ret = new HashMap<String, Object>();

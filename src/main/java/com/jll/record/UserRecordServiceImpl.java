@@ -18,7 +18,7 @@ import com.jll.dao.SupserDao;
 import com.jll.entity.OrderInfo;
 import com.jll.entity.SysCode;
 import com.jll.entity.UserAccountDetails;
-import com.jll.sysSettings.codeManagement.SysCodeService;
+import com.jll.sysSettings.syscode.SysCodeService;
 
 @Service
 public class UserRecordServiceImpl implements UserRecordService{

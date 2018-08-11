@@ -1,4 +1,4 @@
-package com.jll.sysSettings.codeManagement;
+package com.jll.sysSettings.syscode;
 
 import java.sql.Date;
 import java.util.ArrayList;
@@ -29,16 +29,7 @@ public class SysCodeDaoImpl extends HibernateDaoSupport implements SysCodeDao {
 		super.setSessionFactory(sessionFactory);
 	}
 	@Override
-	public void saveSysCode(Integer codeType, Integer isCodeType, String codeName, String codeVal, Integer seq,
-			Integer state, String remark) {
-		SysCode sysCode=new SysCode();
-		sysCode.setCodeType(codeType);
-		sysCode.setIsCodeType(isCodeType);
-		sysCode.setCodeName(codeName);
-		sysCode.setCodeVal(codeVal);
-		sysCode.setSeq(seq);
-		sysCode.setState(Constants.SysCodeState.VALID_STATE.getCode());
-		sysCode.setRemark(remark);
+	public void saveSysCode(SysCode sysCode) {
 		currentSession().save(sysCode);
 	}
 
@@ -96,11 +87,11 @@ public class SysCodeDaoImpl extends HibernateDaoSupport implements SysCodeDao {
 //		String codeNameSql="";
 		String codeValSql="";
 		String remarkSql="";
-		String seqSql="";
+//		String seqSql="";
 //		String codeName=sysCode.getCodeName();
 		String codeVal=sysCode.getCodeVal();
 		String remark=sysCode.getRemark();
-		Integer seq=sysCode.getSeq();
+//		Integer seq=sysCode.getSeq();
 		Map<String,Object> map=new HashMap();
 //		if(!StringUtils.isBlank(codeName)) {
 //			codeNameSql="codeName=:codeName,";
@@ -114,11 +105,11 @@ public class SysCodeDaoImpl extends HibernateDaoSupport implements SysCodeDao {
 			remarkSql="remark=:remark,";
 			map.put("remark", remark);
 		}
-		if(seq!=null) {
-			seqSql="seq=:seq,";
-			map.put("seq", seq);
-		}
-		String sumSql=codeValSql+seqSql+remarkSql;
+//		if(seq!=null) {
+//			seqSql="seq=:seq,";
+//			map.put("seq", seq);
+//		}
+		String sumSql=codeValSql+remarkSql;
 		String sumSql1=sumSql.substring(0, sumSql.length()-1);
 		hql = "update SysCode set "+sumSql1+" where id=:id";
 		
@@ -159,11 +150,10 @@ public class SysCodeDaoImpl extends HibernateDaoSupport implements SysCodeDao {
 		query.executeUpdate();
 	}
 	@Override
-	public List<SysCode> queryType(String bigType) {
-	    String sql="select * from sys_code where code_type=(select id from sys_code where code_name=:code_name) and state=:state order by seq";
-	    Query<SysCode> query = getSessionFactory().getCurrentSession().createSQLQuery(sql).addEntity(SysCode.class);
-	    query.setParameter("code_name", bigType);
-	    query.setParameter("state", state);
+	public List<SysCode> queryType(String codeTypeName) {
+	    String sql="select * from sys_code where code_type=(select id from sys_code where code_name=:codeTypeName) order by seq";
+	    Query<SysCode> query = getSessionFactory().getCurrentSession().createNativeQuery(sql).addEntity(SysCode.class);
+	    query.setParameter("codeTypeName", codeTypeName);
 	    List<SysCode> types = new ArrayList<>();
 	    try {			
 	    	types = query.list();

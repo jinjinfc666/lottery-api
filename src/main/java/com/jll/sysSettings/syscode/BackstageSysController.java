@@ -1,6 +1,7 @@
-package com.jll.sysSettings.codeManagement;
+package com.jll.sysSettings.syscode;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -18,7 +19,6 @@ import com.jll.common.cache.CacheRedisService;
 import com.jll.common.constants.Constants;
 import com.jll.common.constants.Message;
 import com.jll.entity.SysCode;
-import com.jll.entity.UserAccountDetails;
 import com.terran4j.commons.api2doc.annotations.Api2Doc;
 import com.terran4j.commons.api2doc.annotations.ApiComment;
 
@@ -35,11 +35,11 @@ public class BackstageSysController {
 	CacheRedisService cacheRedisService;
 	//添加
 	@RequestMapping(value={"/codeManagement"}, method={RequestMethod.POST}, produces={"application/json"})
-	public Map<String, Object> addSysCode(@RequestParam(name = "type", required = true) Integer type,//新增时选择的类型  是大类还是小类  大类为1小类为2
+	public Map<String, Object> addSysCode(@RequestParam(name = "type", required = true) Integer type,//新增时选择的类型  是大类还是小类  大类为1小类为0
 			  @RequestParam(name = "sysCodeTypeId", required = false) Integer sysCodeTypeId,//如果是小类  此处请填写大类的code_name 因为要通过code_name查找对应的大类的id 而去添加小类
 			  @RequestParam(name = "codeName", required = true) String codeName,
 			  @RequestParam(name = "codeVal", required = true) String codeVal,
-			  @RequestParam(name = "remark", required = true) String remark,
+			  @RequestParam(name = "remark", required = false) String remark,
 			  HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
 		String codeTypeName = null;
@@ -65,41 +65,33 @@ public class BackstageSysController {
 		    	return ret;
 			}
 		}
-		/*ret.put("typeCodeName", typeCodeName);
-		ret.put("codeName", codeName);
-		ret.put("codeVal", codeVal);
-		ret.put("remark", remark);*/
-		
 		SysCode sysCode = new SysCode();
 		sysCode.setCodeName(codeName);
 		sysCode.setCodeVal(codeVal);
 		sysCode.setState(Constants.SysCodeState.VALID_STATE.getCode());
-		
+		if(!StringUtils.isBlank(codeName)) {
+			sysCode.setRemark(remark);
+		}
 		try {
 			if(type==1) {
 				sysCode.setIsCodeType(1);
-				//sysCodeService.saveBigSysCode(ret);
-				//cacheRedisService.setSysCode(codeName);
 				codeTypeName = codeName;
 			}else if(type==0){
 				sysCode.setIsCodeType(0);
-				sysCode.setCodeType(sysCodeTypeId);
-				//sysCodeService.saveSmallSysCode(ret);				
+				sysCode.setCodeType(sysCodeTypeId);			
 				codeTypeName = sysCodeType.getCodeName();
 			}
-			//TODO 保存代码到数据库
-			sysCodeService.saveSysCode(sysCode);
-			cacheRedisService.setSysCode(codeTypeName, sysCode);
+			// //TODO 保存代码到数据库
+			sysCodeService.saveSysCode(type,codeTypeName,sysCode);
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		}catch(Exception e){
 			ret.clear();
+			e.printStackTrace();
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
 		}
-//		logger.debug(flowDetailRecord+"------------------------------addSysCode--------------------------------------");
-//		ret.put("data", flowDetailRecord);
 		return ret;
 	}
 	//查询大类
@@ -137,7 +129,7 @@ public class BackstageSysController {
 		}
 		return ret;
 	}
-	//通过大类的codeName查询这个大类下面的所有小类
+	//通过大类的大类的codeName查询这个大类下面的所有小类
 	@RequestMapping(value={"/sysCode"}, method={RequestMethod.POST}, produces={"application/json"})
 	public Map<String, Object> querySysCode(@RequestParam(name = "codeName", required = true) String codeName,//此处的id为大类的id因为需要通过大类的id查找出这个大类下对应的所有小类
 			  HttpServletRequest request) {
@@ -158,14 +150,13 @@ public class BackstageSysController {
 	//修改
 	@RequestMapping(value={"/updateBigType"}, method={RequestMethod.POST}, produces={"application/json"})
 	public Map<String, Object> updateSyscode(@RequestParam(name = "id", required = true) Integer id,
-			  @RequestParam(name = "type", required = true) Integer type,//选择的类型  是大类还是小类  大类为1小类为2
-//			  @RequestParam(name = "codeName", required = false) String codeName,
+			  @RequestParam(name = "type", required = true) Integer type,//选择的类型  是大类还是小类  大类为1小类为0
 			  @RequestParam(name = "codeVal", required = false) String codeVal,
-			  @RequestParam(name = "seq", required = false) Integer seq,
+//			  @RequestParam(name = "seq", required = false) Integer seq,
 			  @RequestParam(name = "remark", required = false) String remark,
 			  HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
-		if(StringUtils.isBlank(codeVal)&&seq==null&&StringUtils.isBlank(remark)) {
+		if(StringUtils.isBlank(codeVal)&&StringUtils.isBlank(remark)) {
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
@@ -173,23 +164,10 @@ public class BackstageSysController {
 		}
 		ret.put("id", id);
 		ret.put("type", type);
-//		ret.put("codeName", codeName);
 		ret.put("codeVal", codeVal);
 		ret.put("remark", remark);
-		ret.put("seq", seq);
 		try {
 			sysCodeService.updateSyscode(ret);
-			if(type==1) {
-				List<SysCode> bigList=sysCodeService.queryBigCodeName(id);
-				String bigCodeName=bigList.get(0).getCodeName();
-				//TODO 
-				//cacheRedisService.setSysCode(bigCodeName);
-			}else if(type==2) {
-				List<SysCode> smallList=sysCodeService.querySmallCodeName(id);
-				String smallCodeName=smallList.get(0).getCodeName();
-				//TODO 
-				//cacheRedisService.setSysCode(smallCodeName);
-			}
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		}catch(Exception e){
@@ -204,7 +182,7 @@ public class BackstageSysController {
 	//软删除
 	@RequestMapping(value={"/updateState"}, method={RequestMethod.POST}, produces={"application/json"})
 	public Map<String, Object> updateSyscodeState(@RequestParam(name = "id", required = true) Integer id,
-			  @RequestParam(name = "type", required = true) Integer type,//新增时选择的类型  是大类还是小类  大类为1小类为2
+			  @RequestParam(name = "type", required = true) Integer type,//新增时选择的类型  是大类还是小类  大类为1小类为0
 			  @RequestParam(name = "state", required = true) Integer state,//1为有效0为无效
 			  HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
@@ -214,16 +192,8 @@ public class BackstageSysController {
 			ret.put("state", state);
 			if(type==1) {
 				sysCodeService.updateBigState(id, state);
-				List<SysCode> bigList=sysCodeService.queryBigCodeName(id);
-				String bigCodeName=bigList.get(0).getCodeName();
-				//TODO 
-				//cacheRedisService.setSysCode(bigCodeName);
-			}else if(type==2){
+			}else if(type==0){
 				sysCodeService.updateSmallState(id, state);
-				List<SysCode> smallList=sysCodeService.querySmallCodeName(id);
-				String smallCodeName=smallList.get(0).getCodeName();
-				//TODO 
-				//cacheRedisService.setSysCode(smallCodeName);
 			}			
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());

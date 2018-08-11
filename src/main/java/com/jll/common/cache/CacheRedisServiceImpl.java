@@ -2,7 +2,6 @@ package com.jll.common.cache;
 
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -18,9 +17,10 @@ import org.springframework.transaction.annotation.Transactional;
 import com.jll.common.constants.Constants;
 import com.jll.common.constants.Constants.SysCodeTypes;
 import com.jll.entity.Issue;
+import com.jll.entity.PlayType;
 import com.jll.entity.SysCode;
 import com.jll.game.BulletinBoard;
-import com.jll.sysSettings.codeManagement.SysCodeService;
+import com.jll.sysSettings.syscode.SysCodeService;
 
 @Configuration
 @PropertySource("classpath:email-sender.properties")
@@ -142,6 +142,7 @@ public class CacheRedisServiceImpl implements CacheRedisService
 		for(SysCode sysCode : sysCodes) {
 			sysCodesTemp.put(sysCode.getCodeName(), sysCode);
 		}
+		
 		//container.put(codeTypeName, sysCodesTemp);
 		cacheObj.setContent(sysCodesTemp);
 		cacheObj.setKey(codeTypeName);
@@ -161,17 +162,41 @@ public class CacheRedisServiceImpl implements CacheRedisService
 
 	@Override
 	public void setSysCode(String codeTypeName, SysCode sysCode) {
-		CacheObject<Map<String, SysCode>> cacheObj = new CacheObject<>();
-		Map<String, SysCode> sysCodesTemp = new HashMap<>();
+		//CacheObject<Map<String, SysCode>> cacheObj = new CacheObject<>();asdad
+		CacheObject<Map<String, SysCode>> cacheObject=cacheDao.getSysCode(codeTypeName);
+		Map<String, SysCode> sysCodesTemp=null;
+		if(cacheObject==null) {
+			sysCodesTemp = new HashMap<>();
+			cacheObject= new CacheObject<>();
+		}else {
+			sysCodesTemp=cacheObject.getContent();
+		}
 		sysCodesTemp.put(sysCode.getCodeName(), sysCode);
-		cacheObj.setContent(sysCodesTemp);
-		cacheObj.setKey(codeTypeName);
-		cacheDao.setSysCode(cacheObj);
+		cacheObject.setContent(sysCodesTemp);
+		cacheObject.setKey(codeTypeName);
+		cacheDao.setSysCode(cacheObject);
 	}
 
 	@Override
 	public SysCode getSysCode(String codeTypeName, String codeName) {
 		return cacheDao.getSysCode(codeTypeName, codeName);
+	}
+
+	@Override
+	public List<PlayType> getPlayType(SysCode lotteryType) {
+		String cacheKey = Constants.KEY_PLAY_TYPE + lotteryType.getCodeName();
+		List<PlayType> playTypes = cacheDao.getPlayType(cacheKey);
+		return playTypes;
+	}
+
+	@Override
+	public void setPlayType(String lotteryType, List<PlayType> playTypes) {
+		String cacheKey = Constants.KEY_PLAY_TYPE + lotteryType;
+		CacheObject<List<PlayType>> cache = new CacheObject<>();
+		cache.setContent(playTypes);
+		cache.setKey(cacheKey);
+		
+		cacheDao.setPlayType(cache);
 	}
 
 }

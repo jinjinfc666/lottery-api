@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated 2018-8-8 15:26:51 by Hibernate Tools 5.2.10.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping auto-import="true" default-access="property" default-cascade="none" default-lazy="true">
+    <class catalog="lottery" dynamic-insert="false" dynamic-update="false" mutable="true" name="com.jll.entity.OrderSource" optimistic-lock="version" polymorphism="implicit" select-before-update="false" table="order_source">
+        <id name="id" type="java.lang.Integer">
+            <column name="id"/>
+            <generator class="identity"/>
+        </id>
+        <property generated="never" lazy="false" name="createTime" optimistic-lock="true" type="date" unique="false">
+            <column length="10" name="create_time" not-null="true">
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="codeName" optimistic-lock="true" type="string" unique="false">
+            <column length="50" name="code_name">
+                <comment>��������</comment>
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="mobileAmount" optimistic-lock="true" type="big_decimal" unique="false">
+            <column name="mobile_amount">
+                <comment>�ֻ���Ͷע��</comment>
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="pcAmount" optimistic-lock="true" type="big_decimal" unique="false">
+            <column name="pc_amount">
+                <comment>PC��Ͷע��</comment>
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="sumAmount" optimistic-lock="true" type="big_decimal" unique="false">
+            <column name="sum_amount">
+                <comment>��Ͷע��</comment>
+            </column>
+        </property>
+    </class>
+</hibernate-mapping>
