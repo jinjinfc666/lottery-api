@@ -1,7 +1,6 @@
 package com.jll.sys.promo;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -10,34 +9,28 @@ import java.util.Random;
 
 import javax.annotation.Resource;
 
-import org.apache.commons.lang3.time.DateUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
-import org.springframework.beans.BeanUtils;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.jll.common.cache.CacheRedisService;
+import com.jll.common.constants.Constants.CreditRecordType;
 import com.jll.common.constants.Constants.PromoMultipleType;
 import com.jll.common.constants.Constants.PromoValueType;
 import com.jll.common.constants.Constants.SysCodeTypes;
-import com.jll.common.constants.Constants.SysNotifyReceiverType;
-import com.jll.common.constants.Constants.SysNotifyType;
 import com.jll.common.constants.Constants.WalletType;
 import com.jll.common.constants.Message;
 import com.jll.common.utils.BigDecimalUtil;
-import com.jll.common.utils.MathUtil;
 import com.jll.common.utils.PageQuery;
 import com.jll.common.utils.StringUtils;
 import com.jll.dao.PageQueryDao;
 import com.jll.dao.SupserDao;
+import com.jll.entity.DepositApplication;
 import com.jll.entity.Promo;
 import com.jll.entity.PromoClaim;
 import com.jll.entity.SysCode;
-import com.jll.entity.SysNotification;
 import com.jll.entity.UserAccount;
 import com.jll.entity.UserAccountDetails;
 import com.jll.entity.UserInfo;
@@ -112,7 +105,13 @@ public class PromoServiceImpl implements PromoService
 		PromoClaim dbPci = null;
 		int calcTimes = 0;	
 		//Date calcStartDate = dbPro.getCreateTime(),calcEndDate = dbPro.getExpiredTime();
-		List<?>	dbPcis = supserDao.findByName(PromoClaim.class, "promoId", dbPro.getId(), "promoId", dbPro.getId());
+		 
+		DetachedCriteria criteria = DetachedCriteria.forClass(DepositApplication.class);
+		criteria.add(Restrictions.ge("createTime",dbPro.getCreateTime()));
+		criteria.add(Restrictions.le("createTime",new Date()));
+		criteria.add(Restrictions.eq("userId",dbInfo.getId()));
+		criteria.add(Restrictions.eq("promoId", dbPro.getId()));
+		List<?>	dbPcis = supserDao.findByCriteria(criteria);
 		if(null != dbPcis && !dbPcis.isEmpty()){
 			dbPci = (PromoClaim) dbPcis.get(dbPcis.size() -1);
 			calcTimes = dbPcis.size();
@@ -129,6 +128,8 @@ public class PromoServiceImpl implements PromoService
 			}
 			if(SysCodeTypes.LOTTERY_TYPES.getCode().equals(po.getPromoType())){
 				return accedeToLuckyDrwPromo(dbPro,dbInfo);
+			}else if(SysCodeTypes.SIGN_IN_DAY.getCode().equals(po.getPromoType())){
+				return accedeTodaySingInDayPromo(dbPro,dbInfo);
 			}
 		}
 		
@@ -150,20 +151,21 @@ public class PromoServiceImpl implements PromoService
 			ret.put(Message.KEY_ERROR_MES,String.format(Message.Error.ERROR_PROMS_OTHER_CONDITION_FLOWING_DISSATISFY.getErrorMes(),""+dbPro.getFlowTimes(),""+curMrate) );
 			return ret;
 		}
-		UserAccount dbAcc = (UserAccount) supserDao.findByName(UserAccount.class, "userId", dbInfo.getId(), "accType", WalletType.RED_PACKET_WALLET.getCode()).get(0);
+		UserAccount dbAcc = (UserAccount) supserDao.findByName(UserAccount.class, "userId", dbInfo.getId(), "accType", WalletType.MAIN_WALLET.getCode()).get(0);
 		UserAccountDetails addDtl = new UserAccountDetails();
+		addDtl.setOrderId(dbPro.getId());
 		addDtl.setUserId(dbInfo.getId());
 		addDtl.setCreateTime(new Date());
 		addDtl.setAmount(Double.valueOf(dbPro.getValue()).floatValue());
 		if(PromoValueType.CASH.getCode() == dbPro.getValueType()){
 			addDtl.setPreAmount(dbAcc.getBalance().floatValue());
 			addDtl.setWalletId(dbAcc.getId());
-			addDtl.setOperationType("activity_gift");
+			addDtl.setOperationType(CreditRecordType.ACTIVITY_GIFT_POINT.getCode());
 			dbAcc.setBalance(new BigDecimal(addDtl.getPostAmount()));
 		}else{
 			addDtl.setPreAmount(dbAcc.getRewardPoints().floatValue());
 			addDtl.setWalletId(dbAcc.getId());
-			addDtl.setOperationType("activity_gift");
+			addDtl.setOperationType(CreditRecordType.ACTIVITY_GIFT_POINT.getCode());
 			dbAcc.setBalance(new BigDecimal(addDtl.getPostAmount()));
 		}
 		addDtl.setPostAmount(Double.valueOf(BigDecimalUtil.add(addDtl.getAmount(),addDtl.getPreAmount())).floatValue());
@@ -223,13 +225,14 @@ public class PromoServiceImpl implements PromoService
 			double prizeAmt = BigDecimalUtil.mul(BigDecimalUtil.div(curBetAmt, curDepAmt), Double.valueOf(prizeAmtStr[prizeIndex]));
 			UserAccount dbAcc = (UserAccount) supserDao.findByName(UserAccount.class, "userId", userInfo.getId(), "accType", WalletType.RED_PACKET_WALLET.getCode()).get(0);
 			UserAccountDetails addDtl = new UserAccountDetails();
+			addDtl.setOrderId(dbPro.getId());
 			addDtl.setUserId(userInfo.getId());
 			addDtl.setCreateTime(new Date());
 			addDtl.setAmount(Double.valueOf(prizeAmt).floatValue());
 			addDtl.setPreAmount(dbAcc.getBalance().floatValue());
 			addDtl.setPostAmount(Double.valueOf(BigDecimalUtil.add(addDtl.getAmount(),addDtl.getPreAmount())).floatValue());
 			addDtl.setWalletId(dbAcc.getId());
-			addDtl.setOperationType("activity_gift");
+			addDtl.setOperationType(CreditRecordType.ACTIVITY_GIFT_RED.getCode());
 			supserDao.save(addDtl);
 			dbAcc.setBalance(new BigDecimal(addDtl.getPostAmount()));
 			supserDao.update(dbAcc);
@@ -243,6 +246,50 @@ public class PromoServiceImpl implements PromoService
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		ret.put(Message.KEY_DATA, Message.status.SUCCESS.getCode());
 		
+		return ret;
+	}
+
+	@Override
+	public Map<String, Object> accedeTodaySingInDayPromo(Promo dbPro, UserInfo userInfo) {
+		Map<String, Object> ret = new HashMap<String, Object>(); 
+		Map<String,SysCode> maps =  cacheRedisService.getSysCode(SysCodeTypes.SIGN_IN_DAY.getCode());
+		Random random = new Random();
+		String[] prizeAmtStr = maps.get("sign_in_point_range").getCodeVal().split(StringUtils.COMMA);
+		int prizeIndex = random.nextInt(prizeAmtStr.length);
+		double prizeAmt = BigDecimalUtil.toDouble(prizeAmtStr[prizeIndex]);
+		
+		UserAccount dbAcc = (UserAccount) supserDao.findByName(UserAccount.class, "userId", userInfo.getId(), "accType", WalletType.MAIN_WALLET.getCode()).get(0);
+		UserAccountDetails addDtl = new UserAccountDetails();
+		addDtl.setOrderId(dbPro.getId());
+		addDtl.setUserId(userInfo.getId());
+		addDtl.setCreateTime(new Date());
+		addDtl.setAmount(Double.valueOf(prizeAmt).floatValue());
+		addDtl.setPreAmount(dbAcc.getRewardPoints().floatValue());
+		addDtl.setPostAmount(Double.valueOf(BigDecimalUtil.add(addDtl.getAmount(),addDtl.getPreAmount())).floatValue());
+		addDtl.setWalletId(dbAcc.getId());
+		addDtl.setOperationType(CreditRecordType.ACTIVITY_GIFT_POINT.getCode());
+		supserDao.save(addDtl);
+		dbAcc.setRewardPoints(new BigDecimal(addDtl.getPostAmount()).longValue());
+		supserDao.update(dbAcc);
+		
+		PromoClaim addCla= new PromoClaim();
+		addCla.setUserId(userInfo.getId());
+		addCla.setPromoId(dbPro.getId());
+		addCla.setClaimTime(new Date());
+		supserDao.save(addCla);
+		
+		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		ret.put(Message.KEY_DATA, Message.status.SUCCESS.getCode());
+		return ret;
+	}
+
+	@Override
+	public Promo getPromoByCode(String pCode) {
+		List<?>	dbPcis = supserDao.findByName(Promo.class, "promoType", pCode);
+		Promo ret = new Promo();
+		if(null != dbPcis && !dbPcis.isEmpty()){
+			ret = (Promo) dbPcis.get(0);
+		}
 		return ret;
 	}
 

@@ -77,7 +77,9 @@ public class Message {
 		ERROR_PROMS_OTHER_CONDITION_DEPOSIT_DISSATISFY("010024", "Participation in activities must meet the minimum deposit amount of %s, your current deposit amount of %s !!"),
 		ERROR_PROMS_OTHER_CONDITION_FLOWING_DISSATISFY("010025", "Participation in activities must meet the minimum flowing water rate of %s times, your current flowing water rate of %s times!!"),
 		ERROR_PROMS_ONLY_ONCE_DISSATISFY("010026", "The activity can only take part in one time!!"),
-		ERROR_PROMS_OTHER_CONDITION_BET_AMT_DISSATISFY("010025", "Participation in activities must meet the minimum bet amount of %s times, your current bet amount of %s times!!"),
+		ERROR_PROMS_OTHER_CONDITION_BET_AMT_DISSATISFY("010027", "Participation in activities must meet the minimum bet amount of %s times, your current bet amount of %s times!!"),
+		ERROR_USER_POINT_NOT_ENOUGH("010028", "User point not enough!!!"),
+		ERROR_PROMS_INVALID("010029", "This promo invalid!!!"),
 		
 		/**************third party*************************/
 		ERROR_TP_INVALID_SMS("020001", "Invalid SMS!!"),

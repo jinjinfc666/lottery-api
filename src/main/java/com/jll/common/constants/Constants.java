@@ -353,7 +353,9 @@ public class Constants {
 		PAYMENT_PLATFORM("payment_platform"),
 		SITE_MSG_VALID_DAY("site_msg_valid_day"),
 		NOTIFY_MSG_VALID_DAY("notify_msg_valid_day"),
-		LUCKY_DRAW("lucky_draw");
+		LUCKY_DRAW("lucky_draw"),
+		SIGN_IN_DAY("sign_in_day"),
+		POINT_EXCHANGE_SCALE("point_exchange_scale");
 		private String value;
 		
 		private SysCodeTypes(String value) {
@@ -762,5 +764,49 @@ public class Constants {
 		public String getNames() {
 			return this.names;
 		}
+	}
+	
+	public static enum CreditRecordType{
+		INITIATE_PURCHASING("initiate_purchasing","发起代购"),
+		SYSTEM_AWARD("system_award","系统派奖"),
+		SYSTEM_REBATE("system_rebate","系统返点"),
+		SYSTEM_WITHDRAWAL("system_withdrawal","系统撤单"),
+		USER_DEPOSIT("user_deposit","用户存款"),
+		SYSTEM_RECHARGE("system_recharge","系统充值"),
+		USER_WITHDRAWAL("user_withdrawal","用户提现"),
+		RECHARGE_DEDUCTION("recharge_deduction","充值扣除"),
+		ACTIVITY_GIFT_RED("activity_gift_red","活动红包礼金"),
+		CUSTOMER_CLAIMS("customer_claims","客户理赔"),
+		PLATFORM_REWARD("platform_reward","平台奖励"),
+		RECHARGE_GIFT("recharge_gift","充值赠送"),
+		REGISTRATION_GIFT("registration_gift","注册礼金"),
+		USER_RED_ENVELOPE_WITHDRAWAL_DEDUCTION("user_red_envelope_withdrawal_deduction","用户红包提现扣除"),
+		USER_RED_BAG_WITHDRAWAL("user_red_bag_withdrawal","用户红包提现"),
+		GOLD_COINS_AGAINST_THE_RENMINBI("gold_coins_against_the_renminbi","金币兑人民币"),
+		RMB_AGAINST_GOLD_COINS("RMB_against_gold_coins","人民币兑金币"),
+		BANK_FEES("bank_fees","银行手续费"),
+		TRANSFER_OF_FUNDS("transfer_of_funds","资金转移"),
+		ACTIVITY_GIFT_CASH("activity_gift_cash","活动现金礼金"),
+		ACTIVITY_GIFT_POINT("activity_gift_point","活动积分礼金"),
+		POINT_EXCHANGE("point_exchange","积分兑换");
+
+		
+		private String code;
+		
+		private String desc;
+		
+		private CreditRecordType(String code,String desc) {
+			this.code = code;
+			this.desc = desc;
+		}
+		
+		public String getCode() {
+			return code;
+		}
+
+		public String getDesc() {
+			return desc;
+		}
+		
 	}
 }

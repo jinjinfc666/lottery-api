@@ -11,10 +11,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.jll.common.constants.Constants.SysCodeTypes;
 import com.jll.dao.PageQueryDao;
 import com.jll.entity.OrderInfo;
 import com.jll.entity.UserAccountDetails;
 import com.jll.entity.UserInfo;
+import com.jll.sys.promo.PromoService;
 import com.terran4j.commons.api2doc.annotations.Api2Doc;
 import com.terran4j.commons.api2doc.annotations.ApiComment;
 
@@ -26,6 +28,9 @@ public class UserRecordController {
 	
 	@Resource
 	UserRecordService userRecordService;
+	
+	@Resource
+	PromoService promoService;
 	
 	@ApiComment("Get User Bet Order")
 	@RequestMapping(value="/{userId}/bet-order", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
@@ -46,12 +51,23 @@ public class UserRecordController {
 	
 	
 	@ApiComment("Get User Credit Record")
-	@RequestMapping(value="/{userId}/credit-record", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value="/{userId}/credit", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> getUserBetOrder(
 			@PathVariable("userId") int userId,
 			@RequestBody UserAccountDetails query,
 			@RequestBody PageQueryDao page) {
 		query.setUserId(userId);
+		return userRecordService.getUserCreditRecord(query, page);
+	}
+	
+	@ApiComment("Get User Sing in day Record")
+	@RequestMapping(value="/{userId}/sing-in", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> getUserSingInDay(
+			@PathVariable("userId") int userId,
+			@RequestBody PageQueryDao page) {
+		UserAccountDetails query = new UserAccountDetails();
+		query.setUserId(userId);
+		query.setOrderId(promoService.getPromoByCode(SysCodeTypes.SIGN_IN_DAY.getCode()).getId());
 		return userRecordService.getUserCreditRecord(query, page);
 	}
 	

@@ -14,6 +14,14 @@ public class BigDecimalUtil {
 	// 这个类不能实例化
 	private BigDecimalUtil() {
 	}
+	
+	public static double toDouble(Object obj){
+		try{
+			return Double.valueOf(obj.toString());
+		}catch (Exception e) {
+		}
+		return 0.00;
+	}
 
 	/**
 	 * 提供精确的加法运算。

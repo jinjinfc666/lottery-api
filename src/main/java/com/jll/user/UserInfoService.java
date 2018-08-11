@@ -81,4 +81,5 @@ public interface UserInfoService
 	
 	double getUserTotalDepostAmt(Date startDate,Date endDate,UserInfo user);
 	double getUserTotalBetAmt(Date startDate,Date endDate,UserInfo user);
+	Map<String, Object> exchangePoint(int userId, double amount);
 }
