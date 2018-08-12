@@ -768,4 +768,12 @@ public class UserController {
 		}
 		return ret;
 	}
+	
+	@ApiComment("User exchange point")
+	@RequestMapping(value="/{userId}/exchange-point", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> exchangePoint(
+			@PathVariable("userId") int userId,
+			@RequestParam("amount") double amount) {
+		return userInfoService.exchangePoint(userId,amount);
+	}
 }

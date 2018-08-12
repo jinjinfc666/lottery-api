@@ -86,7 +86,7 @@ public interface UserInfoService
 	
 	double getUserTotalDepostAmt(Date startDate,Date endDate,UserInfo user);
 	double getUserTotalBetAmt(Date startDate,Date endDate,UserInfo user);
-	
 	//查询所有的用户
 	List<UserInfo> queryAllUserInfo(Map<String,Object> map);
+	Map<String, Object> exchangePoint(int userId, double amount);
 }

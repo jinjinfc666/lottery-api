@@ -15,6 +15,7 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,24 +29,36 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.jll.common.cache.CacheRedisService;
 import com.jll.common.constants.Constants;
+import com.jll.common.constants.Constants.CreditRecordType;
+import com.jll.common.constants.Constants.DepositOrderState;
 import com.jll.common.constants.Constants.EmailValidState;
 import com.jll.common.constants.Constants.PhoneValidState;
 import com.jll.common.constants.Constants.SiteMessageReadType;
+import com.jll.common.constants.Constants.State;
+import com.jll.common.constants.Constants.SysCodeState;
 import com.jll.common.constants.Constants.SysCodeTypes;
+import com.jll.common.constants.Constants.SysCodeTypesFlag;
 import com.jll.common.constants.Constants.SysNotifyReceiverType;
 import com.jll.common.constants.Constants.SysNotifyType;
 import com.jll.common.constants.Constants.UserLevel;
 import com.jll.common.constants.Constants.UserState;
 import com.jll.common.constants.Constants.UserType;
+import com.jll.common.constants.Constants.WalletType;
 import com.jll.common.constants.Message;
+import com.jll.common.utils.BigDecimalUtil;
 import com.jll.common.utils.SecurityUtils;
 import com.jll.common.utils.StringUtils;
 import com.jll.common.utils.Utils;
 import com.jll.dao.SupserDao;
+import com.jll.entity.DepositApplication;
+import com.jll.entity.OrderInfo;
+import com.jll.entity.Promo;
 import com.jll.entity.SiteMessFeedback;
 import com.jll.entity.SiteMessage;
 import com.jll.entity.SysCode;
 import com.jll.entity.SysNotification;
+import com.jll.entity.UserAccount;
+import com.jll.entity.UserAccountDetails;
 import com.jll.entity.UserBankCard;
 import com.jll.entity.UserInfo;
 import com.jll.sysSettings.syscode.SysCodeService;
@@ -679,13 +692,36 @@ public class UserInfoServiceImpl implements UserInfoService
 
 	@Override
 	public double getUserTotalDepostAmt(Date startDate,Date endDate,UserInfo user) {
-		// TODO Auto-generated method stub
+		DetachedCriteria criteria = DetachedCriteria.forClass(DepositApplication.class);
+		criteria.add(Restrictions.ge("createTime",startDate));
+		criteria.add(Restrictions.le("createTime",endDate));
+		
+		criteria.add(Restrictions.eq("userId",user.getId()));
+		criteria.add(Restrictions.eq("state",DepositOrderState.END_ORDER.getCode()));
+		criteria.setProjection(Projections.sum("amount"));
+		List<?> finds =  supserDao.findByCriteria(criteria);
+		if(null != finds && !finds.isEmpty()){
+			Object[] totalObj = (Object[]) finds.get(0);
+			return BigDecimalUtil.toDouble(totalObj[0]);
+		}
 		return 0;
 	}
 
 	@Override
 	public double getUserTotalBetAmt(Date startDate,Date endDate,UserInfo user) {
-		// TODO Auto-generated method stub
+		DetachedCriteria criteria = DetachedCriteria.forClass(OrderInfo.class);
+		criteria.add(Restrictions.ge("createTime",startDate));
+		criteria.add(Restrictions.le("createTime",endDate));
+		
+		Object[] query = {State.HAS_WON.getCode(),State.NOT_WON.getCode()};
+		criteria.add(Restrictions.eq("userId",user.getId()));
+		criteria.add(Restrictions.in("state",query));
+		criteria.setProjection(Projections.sum("betAmount"));
+		List<?> finds =  supserDao.findByCriteria(criteria);
+		if(null != finds && !finds.isEmpty()){
+			Object[] totalObj = (Object[]) finds.get(0);
+			return BigDecimalUtil.toDouble(totalObj[0]);
+		}
 		return 0;
 	}
 	//修改用户状态
@@ -710,6 +746,69 @@ public class UserInfoServiceImpl implements UserInfoService
 		}
 		List<UserInfo> userInfoList=userDao.queryAllUserInfo(id, userName, realName, proxyId, platRebate, startTime, endTime);
 		return userInfoList;
+	}
+	
+
+	@Override
+	public Map<String, Object> exchangePoint(int userId, double amount) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+		UserInfo dbInfo = (UserInfo) supserDao.get(UserInfo.class,userId);
+		
+		if(amount < 0
+				|| null == dbInfo){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+			return ret;
+		}
+		
+		UserAccount dbAcc = (UserAccount) supserDao.findByName(UserAccount.class, "userId", dbInfo.getId(), "accType", WalletType.MAIN_WALLET.getCode()).get(0);
+		if(dbAcc.getRewardPoints() < amount){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_POINT_NOT_ENOUGH.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_POINT_NOT_ENOUGH.getErrorMes());
+			return ret;
+		}
+		
+		
+		UserAccount redAcc = (UserAccount) supserDao.findByName(UserAccount.class, "userId", dbInfo.getId(), "accType", WalletType.RED_PACKET_WALLET.getCode()).get(0);
+		
+		//主钱包积分减少
+		UserAccountDetails addDtl = new UserAccountDetails();
+		addDtl.setUserId(dbInfo.getId());
+		addDtl.setCreateTime(new Date());
+		addDtl.setAmount(Double.valueOf(amount).floatValue());
+		addDtl.setPreAmount(dbAcc.getRewardPoints().floatValue());
+		addDtl.setPostAmount(Double.valueOf(BigDecimalUtil.sub(addDtl.getPreAmount(),addDtl.getAmount())).floatValue());
+		addDtl.setWalletId(dbAcc.getId());
+		addDtl.setOperationType(CreditRecordType.POINT_EXCHANGE.getCode());
+		supserDao.save(addDtl);
+		dbAcc.setRewardPoints(addDtl.getPostAmount().longValue());
+		supserDao.update(dbAcc);
+		
+		SysCode dbCode = cacheRedisService.getSysCode(SysCodeTypes.POINT_EXCHANGE_SCALE.getCode(), SysCodeTypes.POINT_EXCHANGE_SCALE.getCode());
+		if(dbCode.getState() ==  SysCodeState.INVALID_STATE.getCode()){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_PROMS_INVALID.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_PROMS_INVALID.getErrorMes());
+			return ret;
+		}
+		
+		double redAddAmt = BigDecimalUtil.mul(amount, Double.valueOf(dbCode.getCodeVal()));
+		//红包钱包金额增加
+		UserAccountDetails addRedDtl = new UserAccountDetails();
+		addRedDtl.setUserId(dbInfo.getId());
+		addRedDtl.setCreateTime(new Date());
+		addRedDtl.setAmount(Double.valueOf(redAddAmt).floatValue());
+		addRedDtl.setPreAmount(redAcc.getBalance().floatValue());
+		addRedDtl.setPostAmount(Double.valueOf(BigDecimalUtil.add(addRedDtl.getPreAmount(),addRedDtl.getAmount())).floatValue());
+		addRedDtl.setWalletId(redAcc.getId());
+		addRedDtl.setOperationType(CreditRecordType.POINT_EXCHANGE.getCode());
+		supserDao.save(addRedDtl);
+		redAcc.setRewardPoints(addRedDtl.getPostAmount().longValue());
+		supserDao.update(redAcc);
+		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		return ret;
 	}
 	
 }
