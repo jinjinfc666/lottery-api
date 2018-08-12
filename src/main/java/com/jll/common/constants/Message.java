@@ -47,7 +47,9 @@ public class Message {
 		ERROR_COMMON_NO_PERMISSION("000002", "No permission!!"),
 		ERROR_COMMON_ERROR_LOGIN("000003", "No pricipal!!"),
 		
-		ERROR_COMMON_OTHERS("000003", "Others!!"),
+		ERROR_COMMON_NO_ACCOUNT_OPERATION("000004", "Account operation is required!!"),
+		
+		ERROR_COMMON_OTHERS("009999", "Others!!"),
 		
 		/******user module**************/
 		ERROR_USER_EXISTING("010001", "The user is existing!!"),

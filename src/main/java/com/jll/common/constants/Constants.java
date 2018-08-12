@@ -16,6 +16,8 @@ public class Constants {
 	
 	public final static String KEY_PLAY_TYPE = "play_type_";
 	
+	public final static String KEY_STAT_ISSUE_BETTING = "stat_issuse_betting_";
+	
 	public static enum DepositOrderState{
 		INIT_OR_PUSHED(0),
 		FAILED_PUSH(10),
@@ -1319,6 +1321,72 @@ public class Constants {
 				map.put(name.getCode(), name.getName());
 			}
 			return map;
+		}
+	}
+	
+	/**
+	 *账户流水 数据类型
+	 */
+	public static enum DataItemType{
+		BALANCE(0, "balance"),
+		PRIZE(1, "prize"),
+		REWARD_POINTS(2, "reward_points"),
+		FREEZE(3, "freeze");
+		
+		private String desc;
+		private int code;
+		
+		private DataItemType(int code, String desc) {
+			this.code = code;
+			this.desc = desc;
+		}
+		
+		public int getCode() {
+			return this.code;
+		}
+		
+		public String getDesc() {
+			return desc;
+		}
+	}
+	
+	/**
+	 *账户流水 数据类型
+	 */
+	public static enum AccOperationType{
+		DEPOSIT("deposit"),
+		WITHDRAW("withdraw"),
+		WD_FREEZE("wd_freeze"),
+		WD_UNFREEZE("wd_unfreeze"),
+		BETTING("betting"),
+		TRANSFER("transfer"),
+		PAYOUT("payout"),
+		REBATE("rebate"),
+		REFUND("refund"),
+		CANCEL_REBATE("cancel_rebate"),
+		CUSTOMER_CLAIMS("customer_claims"),
+		PLAT_REWARD("plat_reward"),
+		DEPOSIT_CASH("deposit_cash"),
+		REG_CASH("reg_cash"),
+		BANK_FEES("bank_fees"),
+		PROMO_CASH("promo_cash"),
+		PROMO_POINTS("promo_points"),
+		ACC_FREEZE("acc_freeze"),
+		ACC_UNFREEZE("acc_unfreeze"),
+		SYS_DEDUCTION("sys_deduction"),
+		SYS_ADD("sys_add"),
+		DAILY_SIGN_IN("daily_sign_in"),
+		POINTS_EXCHANGE("points_exchange");
+		
+		private String desc;
+		
+		private AccOperationType(String desc) {
+			this.desc = desc;
+		}
+		
+		
+		public String getDesc() {
+			return desc;
 		}
 	}
 }
