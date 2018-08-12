@@ -1274,4 +1274,46 @@ public class Constants {
 			return map;
 		}
 	}
+	/**
+	 *彩种的属性
+	 * @author Silence
+	 */
+	public static enum LotteryAttributes{
+		MAX_PRIZE_AMOUNT("max_prize_amount","玩法类型"),
+		PRIZE_MODE("prize_mode","玩法类型"),
+		DT_SETTING("dt_setting","玩法类型"),
+		WINING_RATE("wining_rate","玩法类型"),
+		BETTING_END_TIME("betting_end_time","玩法类型");
+		private String code;
+		private String name;
+		
+		private LotteryAttributes(String code,String name) {
+			this.code = code;
+			this.name = name;
+		}
+		
+		public String getCode() {
+			return this.code;
+		}
+		public String getName() {
+			return this.name;
+		}
+		
+		public static List<String> getList() {
+			List<String> map=new ArrayList<String>();
+			LotteryAttributes[] names = LotteryAttributes.values();
+			for(LotteryAttributes name: names) {
+				map.add(name.getCode());
+			}
+			return map;
+		}
+		public static Map<String,Object> getMap() {
+			Map<String,Object> map=new HashMap<String,Object>();
+			LotteryAttributes[] names = LotteryAttributes.values();
+			for(LotteryAttributes name: names) {
+				map.put(name.getCode(), name.getName());
+			}
+			return map;
+		}
+	}
 }
