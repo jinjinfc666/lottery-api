@@ -1,5 +1,8 @@
 package com.jll.user;
 
+import java.math.BigDecimal;
+import java.util.List;
+
 import com.jll.entity.UserInfo;
 
 public interface UserInfoDao
@@ -38,4 +41,6 @@ public interface UserInfoDao
 	String queryUnSystemUsers();
 	
 	boolean checkUserIds(String UserIds);
+	
+	List<UserInfo> queryAllUserInfo(Integer id,String userName,String realName,Integer proxyId,BigDecimal platRebate,String startTime,String endTime);
 }

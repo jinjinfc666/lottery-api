@@ -1,5 +1,6 @@
 package com.jll.user;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -406,14 +407,20 @@ public class UserInfoServiceImpl implements UserInfoService
 		ret =  Utils.validBankInfo(bank.getCardNum());
 		return ret;
 	}
-	
+	@Override
 	public void resetLoginPwd(UserInfo user) {
 		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();		
 		user.setLoginPwd(encoder.encode(defaultPwd));
 		
 		userDao.saveUser(user);
 	}
-
+	@Override
+	public void resetFundPwd(UserInfo user) {
+		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();		
+		user.setFundPwd(encoder.encode(defaultPwd));
+		
+		userDao.saveUser(user);
+	}
 	@Override
 	public Map<String, Object> getUserNotifyLists(int userId) {
 		Map<String, Object> ret = new HashMap<String, Object>();
@@ -680,6 +687,29 @@ public class UserInfoServiceImpl implements UserInfoService
 	public double getUserTotalBetAmt(Date startDate,Date endDate,UserInfo user) {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+	//修改用户状态
+	@Override
+	public void updateUserType(UserInfo user) {
+		userDao.saveUser(user);
+	}
+	//查询所有的用户
+	@Override
+	public List<UserInfo> queryAllUserInfo(Map<String, Object> map) {
+		Integer id=(Integer) map.get("id");
+		String userName=(String) map.get("userName");
+		String realName=(String) map.get("realName");
+		String proxyName=(String) map.get("proxyName");
+		BigDecimal platRebate=(BigDecimal) map.get("platRebate");
+		String startTime=(String) map.get("startTime");
+		String endTime=(String) map.get("endTime");
+		UserInfo userInfo=userDao.getUserByUserName(proxyName);
+		Integer proxyId=null;
+		if(userInfo!=null) {
+			proxyId=userInfo.getId();
+		}
+		List<UserInfo> userInfoList=userDao.queryAllUserInfo(id, userName, realName, proxyId, platRebate, startTime, endTime);
+		return userInfoList;
 	}
 	
 }
