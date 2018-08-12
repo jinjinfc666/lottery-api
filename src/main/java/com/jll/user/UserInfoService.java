@@ -1,6 +1,7 @@
 package com.jll.user;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import com.jll.entity.SiteMessFeedback;
@@ -76,9 +77,16 @@ public interface UserInfoService
 	Map<String, Object> showSiteMessageFeedback(int userId, int msgId);
 	Map<String, Object> addSiteMessage(int userId, String sendIds, SiteMessage msg);
 	Map<String, Object> siteMessageFeedback(int userId, int msgId, SiteMessFeedback back);
+	//重置登录密码
 	void resetLoginPwd(UserInfo user);
-	
+	//重置支付密码
+	void resetFundPwd(UserInfo user);
+	//用户状态修改
+	void updateUserType(UserInfo user);
 	
 	double getUserTotalDepostAmt(Date startDate,Date endDate,UserInfo user);
 	double getUserTotalBetAmt(Date startDate,Date endDate,UserInfo user);
+	//查询所有的用户
+	List<UserInfo> queryAllUserInfo(Map<String,Object> map);
+	Map<String, Object> exchangePoint(int userId, double amount);
 }

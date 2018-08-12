@@ -1,16 +1,23 @@
 package com.jll.user;
 
 
+import java.math.BigDecimal;
+import java.sql.Date;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.hibernate.query.Query;
+import org.hibernate.type.DateType;
 import org.springframework.stereotype.Repository;
 
 import com.jll.common.constants.Constants.UserType;
 import com.jll.common.utils.StringUtils;
 import com.jll.dao.DefaultGenericDaoImpl;
+import com.jll.entity.MemberPlReport;
 import com.jll.entity.UserInfo;
 
 @Repository
@@ -126,6 +133,66 @@ public class UserInfoDaoImpl extends DefaultGenericDaoImpl<UserInfo> implements 
 	    query.setParameter(1, userIds);
 	    long count = ((Number)query.iterate().next()).longValue();
 		return count ==  userIds.split(StringUtils.COMMA).length;
+	}
+
+	@Override
+	public List<UserInfo> queryAllUserInfo(Integer id,String userName,String realName,Integer proxyId,BigDecimal platRebate,String startTime,String endTime) {
+		Map<String,Object> map=new HashMap<String,Object>();
+		Date beginDate = java.sql.Date.valueOf(startTime);
+	    Date endDate = java.sql.Date.valueOf(endTime);
+		map.put("startTime", beginDate);
+		map.put("endTime", endDate);
+		String hql="";
+		if(proxyId!=null) {
+			hql=("select a.* from (select *,FIND_IN_SET(:proxyId,superior) as aa from UserInfo)a where a.aa=1 and a.createTime>:startTime and a.createTime<=:endTime");
+			Query<UserInfo> query = getSessionFactory().getCurrentSession().createQuery(hql,UserInfo.class);
+			query.setParameter("proxyId", proxyId);  
+			query.setParameter("startTime", beginDate,DateType.INSTANCE);
+			query.setParameter("endTime", endDate,DateType.INSTANCE); 
+			List<UserInfo> list = new ArrayList<UserInfo>();	
+			list = query.list();
+			return list;
+		}else {
+			String userNameSql="";
+			String idSql="";
+			String realNameSql="";
+			String platRebateSql="";
+			if(id!=null) {
+				idSql=" and id=:id";
+				map.put("id", id);
+			}
+			if(!StringUtils.isBlank(userName)) {
+				userNameSql=" and userName=:userName";
+				map.put("userName", userName);
+			}
+			if(!StringUtils.isBlank(realName)) {
+				realNameSql=" and realName=:realName";
+				map.put("realName", realName);
+			}
+			if(platRebate!=null) {
+				platRebateSql=" and platRebate=:platRebate";
+				map.put("platRebate", platRebate);
+			}
+			String timeSql=" where create_time >:startTime and create_time <=:endTime";
+			hql=("from UserInfo"+timeSql+idSql+userNameSql+realNameSql+platRebateSql);
+			Query<UserInfo> query = getSessionFactory().getCurrentSession().createQuery(hql,UserInfo.class);
+			if (map != null) {  
+	            Set<String> keySet = map.keySet();  
+	            for (String string : keySet) {  
+	                Object obj = map.get(string);  
+	            	if(obj instanceof Date){  
+	                	query.setParameter(string, (Date)obj,DateType.INSTANCE); //query.setParameter(string, (Date)obj,DateType.INSTANCE);   此方法为setDate的替代方法 
+	                }else if(obj instanceof Object[]){  
+	                    query.setParameterList(string, (Object[])obj);  
+	                }else{  
+	                    query.setParameter(string, obj);  
+	                }  
+	            }  
+	        }
+			List<UserInfo> list = new ArrayList<UserInfo>();	
+			list = query.list();
+			return list;
+		}
 	}
   
   

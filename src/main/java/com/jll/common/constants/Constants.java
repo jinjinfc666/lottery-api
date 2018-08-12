@@ -400,7 +400,17 @@ public class Constants {
 		PAYMENT_PLATFORM("payment_platform"),
 		SITE_MSG_VALID_DAY("site_msg_valid_day"),
 		NOTIFY_MSG_VALID_DAY("notify_msg_valid_day"),
-		LUCKY_DRAW("lucky_draw");
+		LUCKY_DRAW("lucky_draw"),
+		LOTTERY_CONFIG_CQSSC("lottery_config_cqssc"),//,"重庆时时彩属性"
+		LOTTERY_CONFIG_GD11X5("lottery_config_gd11x5"),//,"广东11选5属性"
+		LOTTERY_CONFIG_TXFFC("lottery_config_txffc"),//,"腾讯分分彩属性"
+		LOTTERY_CONFIG_5CC("lottery_config_5cc"),//,"5分彩属性"
+		LOTTERY_CONFIG_SFC("lottery_config_sfc"),//,"双分彩属性"
+		LOTTERY_CONFIG_FFC("lottery_config_ffc"),//,"分分彩属性"
+		LOTTERY_CONFIG_MMC("lottery_config_mmc"),//"秒秒彩属性"
+		LOTTERY_CONFIG_BJPK10("lottery_config_bjpk10"),//"PK10属性"
+		SIGN_IN_DAY("sign_in_day"),
+		POINT_EXCHANGE_SCALE("point_exchange_scale");
 		private String value;
 		
 		private SysCodeTypes(String value) {
@@ -409,6 +419,17 @@ public class Constants {
 		
 		public String getCode() {
 			return value;
+		}
+		public static List<String> getList() {
+			List<String> map=new ArrayList<String>();
+			SysCodeTypes[] names = SysCodeTypes.values();
+			for(SysCodeTypes name: names) {
+				String nameConfig=name.getCode();
+				if(nameConfig.startsWith("LOTTERY_CONFIG_")) {
+					map.add(nameConfig);
+				}
+			}
+			return map;
 		}
 	}
 	
@@ -810,6 +831,49 @@ public class Constants {
 			return this.names;
 		}
 	}
+	
+	public static enum CreditRecordType{
+		INITIATE_PURCHASING("initiate_purchasing","发起代购"),
+		SYSTEM_AWARD("system_award","系统派奖"),
+		SYSTEM_REBATE("system_rebate","系统返点"),
+		SYSTEM_WITHDRAWAL("system_withdrawal","系统撤单"),
+		USER_DEPOSIT("user_deposit","用户存款"),
+		SYSTEM_RECHARGE("system_recharge","系统充值"),
+		USER_WITHDRAWAL("user_withdrawal","用户提现"),
+		RECHARGE_DEDUCTION("recharge_deduction","充值扣除"),
+		ACTIVITY_GIFT_RED("activity_gift_red","活动红包礼金"),
+		CUSTOMER_CLAIMS("customer_claims","客户理赔"),
+		PLATFORM_REWARD("platform_reward","平台奖励"),
+		RECHARGE_GIFT("recharge_gift","充值赠送"),
+		REGISTRATION_GIFT("registration_gift","注册礼金"),
+		USER_RED_ENVELOPE_WITHDRAWAL_DEDUCTION("user_red_envelope_withdrawal_deduction","用户红包提现扣除"),
+		USER_RED_BAG_WITHDRAWAL("user_red_bag_withdrawal","用户红包提现"),
+		GOLD_COINS_AGAINST_THE_RENMINBI("gold_coins_against_the_renminbi","金币兑人民币"),
+		RMB_AGAINST_GOLD_COINS("RMB_against_gold_coins","人民币兑金币"),
+		BANK_FEES("bank_fees","银行手续费"),
+		TRANSFER_OF_FUNDS("transfer_of_funds","资金转移"),
+		ACTIVITY_GIFT_CASH("activity_gift_cash","活动现金礼金"),
+		ACTIVITY_GIFT_POINT("activity_gift_point","活动积分礼金"),
+		POINT_EXCHANGE("point_exchange","积分兑换");
+
+		
+		private String code;
+		
+		private String desc;
+		
+		private CreditRecordType(String code,String desc) {
+			this.code = code;
+			this.desc = desc;
+		}
+		
+		public String getCode() {
+			return code;
+		}
+
+		public String getDesc() {
+			return desc;
+		}
+	}	
 	/**
 	 *报表统计 需要的类型：扣除
 	 * @author Silence
@@ -1159,53 +1223,7 @@ public class Constants {
 	}	
 	
 	/**
-	 *彩种的属性
-	 * @author Silence
-	 */
-	public static enum LotteryAttributes{
-		LOTTERY_CONFIG_CQSSC("lottery_config_cqssc","重庆时时彩属性"),
-		LOTTERY_CONFIG_GD11X5("lottery_config_gd11x5","广东11选5属性"),
-		LOTTERY_CONFIG_TXFFC("lottery_config_txffc","腾讯分分彩属性"),
-		LOTTERY_CONFIG_5CC("lottery_config_5cc","5分彩属性"),
-		LOTTERY_CONFIG_SFC("lottery_config_sfc","双分彩属性"),
-		LOTTERY_CONFIG_FFC("lottery_config_ffc","分分彩属性"),
-		LOTTERY_CONFIG_MMC("lottery_config_mmc","秒秒彩属性"),
-		LOTTERY_CONFIG_BJPK10("lottery_config_bjpk10","PK10属性");
-		
-		private String code;
-		private String name;
-		
-		private LotteryAttributes(String code,String name) {
-			this.code = code;
-			this.name = name;
-		}
-		
-		public String getCode() {
-			return this.code;
-		}
-		public String getName() {
-			return this.name;
-		}
-		
-		public static List<String> getList() {
-			List<String> map=new ArrayList<String>();
-			LotteryAttributes[] names = LotteryAttributes.values();
-			for(LotteryAttributes name: names) {
-				map.add(name.getCode());
-			}
-			return map;
-		}
-		public static Map<String,Object> getMap() {
-			Map<String,Object> map=new HashMap<String,Object>();
-			LotteryAttributes[] names = LotteryAttributes.values();
-			for(LotteryAttributes name: names) {
-				map.put(name.getCode(), name.getName());
-			}
-			return map;
-		}
-	}
-	/**
-	 *彩种的属性
+	 *彩种的玩法
 	 * @author Silence
 	 */
 	public static enum SysCodePlayType{

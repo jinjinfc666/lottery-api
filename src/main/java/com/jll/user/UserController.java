@@ -1,6 +1,8 @@
 package com.jll.user;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -657,5 +659,121 @@ public class UserController {
 			@RequestParam("sendIds") String sendIds) {
 		return userInfoService.addSiteMessage(userId,sendIds,msg);
 	}
+	//重置登录密码
+	@RequestMapping(value={"/resetLoginPwd"}, method={RequestMethod.PUT}, produces={"application/json"})
+	public Map<String, Object> resetLoginPwd(@RequestParam(name = "userId", required = true) Integer userId,
+			  HttpServletRequest request) {
+		Map<String, Object> ret = new HashMap<>();
+		UserInfo user = new UserInfo();
+		user.setId(userId);
+		try {
+			userInfoService.resetLoginPwd(user);
+			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		}catch(Exception e){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+		}
+		return ret;
+	}
+	//重置支付密码
+	@RequestMapping(value={"/resetFundPwd"}, method={RequestMethod.PUT}, produces={"application/json"})
+	public Map<String, Object> resetFundPwd(@RequestParam(name = "userId", required = true) Integer userId,
+			  HttpServletRequest request) {
+		Map<String, Object> ret = new HashMap<>();
+		UserInfo user = new UserInfo();
+		user.setId(userId);
+		try {
+			userInfoService.resetFundPwd(user);
+			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		}catch(Exception e){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+		}
+		return ret;
+	}
+	//用户状态修改
+	@RequestMapping(value={"/updateUserType"}, method={RequestMethod.PUT}, produces={"application/json"})
+	public Map<String, Object> updateUserType(@RequestParam(name = "userId", required = true) Integer userId,
+			  @RequestParam(name = "userType", required = true) Integer userType,
+			  HttpServletRequest request) {
+		Map<String, Object> ret = new HashMap<>();
+		UserInfo user = new UserInfo();
+		user.setId(userId);
+		user.setUserType(userType);
+		try {
+			userInfoService.updateUserType(user);
+			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		}catch(Exception e){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+		}
+		return ret;
+	}
+	//查询用户详细信息
+	@RequestMapping(value={"/queryUserInfo"}, method={RequestMethod.GET}, produces={"application/json"})
+	public Map<String, Object> queryUserInfo(@RequestParam(name = "userName", required = true) String userName,
+			  HttpServletRequest request) {
+		Map<String, Object> ret = new HashMap<>();
+		try {
+			UserInfo userInfo=userInfoService.getUserByUserName(userName);
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+			ret.put("data", userInfo);
+		}catch(Exception e){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+		}
+		return ret;
+	}
+	//查询所有用户
+	@RequestMapping(value={"/queryAllUserInfo"}, method={RequestMethod.GET}, produces={"application/json"})
+	public Map<String, Object> queryAllUserInfo(@RequestParam(name = "id", required = false) Integer id,
+			  @RequestParam(name = "userName", required = false) String userName,
+			  @RequestParam(name = "realName", required = false) String realName,
+			  @RequestParam(name = "proxyName", required = false) String proxyName,
+			  @RequestParam(name = "platRebate", required = false) BigDecimal platRebate,
+			  @RequestParam(name = "startTime", required = true) String startTime,
+			  @RequestParam(name = "endTime", required = true) String endTime,
+			  HttpServletRequest request) {
+		Map<String, Object> ret = new HashMap<>();
+		if(!StringUtils.isBlank(proxyName)) {
+			if(id!=null||!StringUtils.isBlank(userName)||!StringUtils.isBlank(realName)||platRebate!=null) {
+				ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+				ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+				ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+		    	return ret;
+			}
+		}
+		ret.put("id", id);
+		ret.put("userName", userName);
+		ret.put("realName", realName);
+		ret.put("proxyName", proxyName);
+		ret.put("platRebate", platRebate);
+		ret.put("startTime", startTime);
+		ret.put("endTime", endTime);
+		try {
+			List<UserInfo> userInfoList=userInfoService.queryAllUserInfo(ret);
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+			ret.put("data", userInfoList);
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+		}
+		return ret;
+	}
 	
+	@ApiComment("User exchange point")
+	@RequestMapping(value="/{userId}/exchange-point", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> exchangePoint(
+			@PathVariable("userId") int userId,
+			@RequestParam("amount") double amount) {
+		return userInfoService.exchangePoint(userId,amount);
+	}
 }
