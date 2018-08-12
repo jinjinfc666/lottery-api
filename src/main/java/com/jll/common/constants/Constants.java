@@ -375,7 +375,8 @@ public class Constants {
 		LOTTERY_CONFIG_MMC("lottery_config_mmc"),//"秒秒彩属性"
 		LOTTERY_CONFIG_BJPK10("lottery_config_bjpk10"),//"PK10属性"
 		SIGN_IN_DAY("sign_in_day"),
-		POINT_EXCHANGE_SCALE("point_exchange_scale");
+		POINT_EXCHANGE_SCALE("point_exchange_scale"),
+		CT_PLAY_TYPE_CLASSICFICATION("ct_play_type_classicfication");//"玩法类型"
 		private String value;
 		
 		private SysCodeTypes(String value) {
