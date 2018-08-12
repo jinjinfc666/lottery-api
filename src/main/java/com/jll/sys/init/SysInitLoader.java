@@ -84,7 +84,7 @@ public class SysInitLoader {
 	}
 	//加载彩种的属性
 	private void initLotteryAttributes() {
-		List<String> lotteryAttributesList=Constants.LotteryAttributes.getList();
+		List<String> lotteryAttributesList=Constants.SysCodeTypes.getList();
 		if(lotteryAttributesList!=null&&lotteryAttributesList.size()>0) {
 			for(int a=0;a<lotteryAttributesList.size();a++) {
 				String codeTypeName = lotteryAttributesList.get(a);
@@ -108,7 +108,7 @@ public class SysInitLoader {
 			}
 		}
 	}
-	
+	//加载玩法
 	private void initPlayType() {
 		String lotteryTypeName = Constants.SysCodeTypes.LOTTERY_TYPES.getCode();
 		Map<String, SysCode> lotteryTypes = cacheServ.getSysCode(lotteryTypeName);
