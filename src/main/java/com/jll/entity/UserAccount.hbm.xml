@@ -36,6 +36,10 @@
                 <comment>��ϵͳ���������ж���:1,��Ǯ��;2,���Ǯ��</comment>
             </column>
         </property>
+        <property generated="never" lazy="false" name="state" optimistic-lock="true" type="java.lang.Integer" unique="false">
+            <column name="state">
+            </column>
+        </property>
         <property generated="never" lazy="false" name="remark" optimistic-lock="true" type="string" unique="false">
             <column length="100" name="remark"/>
         </property>

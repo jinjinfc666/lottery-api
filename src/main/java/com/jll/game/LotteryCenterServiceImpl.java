@@ -178,7 +178,14 @@ public class LotteryCenterServiceImpl implements LotteryCenterService
 		String cacheKey = Constants.KEY_PRE_PLAN + lottoType;
 		List<Issue> plans = cacheServ.getPlan(cacheKey);
 		Integer indx = 0;
+		String codeTypeName = "lottery_config_" + lottoType;
+		String codeValName = Constants.LotteryAttributes.BETTING_END_TIME.getCode();
+		SysCode lottoAttri = cacheServ.getSysCode(codeTypeName, codeValName);
 		boolean hasChanged = false;
+		
+		if(lottoAttri == null) {
+			return null;
+		}
 		
 		if(bulletinBoard == null) {
 			return null;
@@ -191,7 +198,8 @@ public class LotteryCenterServiceImpl implements LotteryCenterService
 		
 		startTime = currIssue.getStartTime();
 		endTime = currIssue.getEndTime();
-		endBettingTime = DateUtils.addSeconds(endTime, -45);
+		endBettingTime = DateUtils.addSeconds(endTime, 
+				Integer.valueOf(lottoAttri.getCodeVal()));
 		endTime = DateUtils.addSeconds(endTime, -5);
 		temp = issueServ.getIssueById(currIssue.getId());
 		

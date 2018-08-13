@@ -52,4 +52,14 @@ public class WalletServiceImpl implements WalletService
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public UserAccount queryById(int walletId) {
+		return walletDao.queryById(walletId);
+	}
+
+	/*@Override
+	public UserAccount queryByUser(UserInfo user) {
+		return walletDao.queryByUser(user);
+	}*/
 }

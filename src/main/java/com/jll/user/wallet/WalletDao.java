@@ -11,4 +11,8 @@ public interface WalletDao
 	 * @param wallet UserAccount
 	 */
 	void createWallet(UserAccount wallet);
+
+	UserAccount queryByUser(UserInfo user);
+
+	UserAccount queryById(int walletId);
 }

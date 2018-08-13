@@ -1,5 +1,6 @@
 package com.jll.game;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -127,6 +128,7 @@ public class LotteryCenterController {
 		Issue currentIssue = null;
 		Issue lastIssue = null;
 		SysCode lotteryTypeObj = null;
+		Date nowTime = null;
 		
 		isExisting = cacheServ.isCodeExisting(SysCodeTypes.LOTTERY_TYPES, lotteryType);
 		if(!isExisting) {
@@ -168,6 +170,13 @@ public class LotteryCenterController {
 			data.put("lastIssue", lastIssue);
 		}
 		
+		String codeTypeName = "lottery_config_" + lotteryType;
+		String codeValName = Constants.LotteryAttributes.BETTING_END_TIME.getCode();
+		SysCode lottoAttri = cacheServ.getSysCode(codeTypeName, codeValName);
+		nowTime = new Date();
+		Long downCounter = currentIssue.getEndTime().getTime() - nowTime.getTime();
+		downCounter = downCounter/1000 - Long.valueOf(lottoAttri.getCodeVal());
+		currentIssue.setDownCounter(downCounter);
 		data.put("currIssue", currentIssue);
 		data.put("playType", playTypes);
 		

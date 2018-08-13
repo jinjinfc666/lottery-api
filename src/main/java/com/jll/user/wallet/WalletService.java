@@ -16,4 +16,6 @@ public interface WalletService
 	void updateWallet(UserAccount wallet);
 
 	UserAccount queryById(int walletId);
+
+	/*UserAccount queryByUser(UserInfo user);*/
 }

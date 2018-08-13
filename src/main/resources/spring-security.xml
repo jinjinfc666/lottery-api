@@ -39,7 +39,10 @@
 		<csrf disabled="true"/>
 		<custom-filter ref="resourceServer" before="PRE_AUTH_FILTER" />
     	<http-basic entry-point-ref="oauth2AuthenticationEntryPoint" />
-		<intercept-url pattern="/users/attrs/user-name/**" access="hasRole('ROLE_USER')" />
+    	
+    	<intercept-url pattern="/users/attrs/user-name/**" access="hasRole('ROLE_USER')" />
+    	<intercept-url pattern="/*/bet/zh/*/wallet/*" access="hasRole('ROLE_USER')" />
+		<intercept-url pattern="/*/betting-issue" access="hasRole('ROLE_USER')" />
 		<intercept-url method="POST" pattern="/users/players" access="hasRole('ROLE_AGENT')" />
 		<intercept-url method="POST" pattern="/users/agents" access="hasRole('ROLE_ADMIN')" />
 		<intercept-url method="POST" pattern="/users/sys-users" access="hasRole('ROLE_ADMIN')" />
@@ -114,6 +117,7 @@
         <user name="user" password="user" authorities="ROLE_USER" />
         <user name="marissa" password="koala" authorities="ROLE_USER,ROLE_AGENT" />
         <user name="agent001" password="agent001" authorities="ROLE_USER,ROLE_AGENT" />
+        <user name="test001" password="test001" authorities="ROLE_USER" />
       </user-service>
     </authentication-provider>
   </authentication-manager>

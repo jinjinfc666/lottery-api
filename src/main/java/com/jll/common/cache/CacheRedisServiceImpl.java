@@ -8,6 +8,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.apache.log4j.Logger;
+import org.apache.tomcat.util.bcel.classfile.Constant;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
@@ -201,9 +202,34 @@ public class CacheRedisServiceImpl implements CacheRedisService
 	}
 
 	@Override
-	public void statGroupByBettingNum(OrderInfo order) {
-		// TODO Auto-generated method stub
+	public void statGroupByBettingNum(String lotteryType, OrderInfo order) {
+		StringBuffer cacheKey = new StringBuffer();
+		cacheKey.append(Constants.KEY_STAT_ISSUE_BETTING)
+		.append(lotteryType).append(order.getIssueId());
+		Map<String, Integer> statInfo = null;
+		CacheObject<Map<String, Integer>> cacheObj = null;
 		
+		cacheObj = cacheDao.getStatGroupByBettingNum(cacheKey.toString());
+		
+		if(cacheObj == null) {
+			cacheObj = new CacheObject<>();
+			statInfo = new HashMap<>();
+			cacheObj.setKey(cacheKey.toString());
+			cacheObj.setContent(statInfo);
+			cacheObj.setExpired(1*60*60);
+		}
+		
+		statInfo = cacheObj.getContent();
+		if(statInfo.get(String.valueOf(order.getBetNum())) == null) {
+			statInfo.put(String.valueOf(order.getBetNum()), 1);
+		}else {
+			statInfo.put(String.valueOf(order.getBetNum()), 
+					statInfo.get(String.valueOf(order.getBetNum()) + 1));
+		}
+		
+		cacheObj.setContent(statInfo);
+		
+		cacheDao.setStatGroupByBettingNum(cacheObj);
 	}
 
 	@Override

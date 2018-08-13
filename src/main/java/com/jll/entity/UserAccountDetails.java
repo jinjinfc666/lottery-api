@@ -16,13 +16,14 @@ public class UserAccountDetails implements java.io.Serializable {
 	private Integer walletId;
 	private Integer orderId;
 	private String operationType;
+	private int dataItemType;
 	private Date createTime;
 
 	public UserAccountDetails() {
 	}
 
 	public UserAccountDetails(Integer userId, Float amount, Float preAmount, Float postAmount, Integer walletId,
-			Integer orderId, String operationType, Date createTime) {
+			Integer orderId, String operationType, int dataItemType, Date createTime) {
 		this.userId = userId;
 		this.amount = amount;
 		this.preAmount = preAmount;
@@ -30,6 +31,7 @@ public class UserAccountDetails implements java.io.Serializable {
 		this.walletId = walletId;
 		this.orderId = orderId;
 		this.operationType = operationType;
+		this.dataItemType = dataItemType;
 		this.createTime = createTime;
 	}
 
@@ -95,6 +97,15 @@ public class UserAccountDetails implements java.io.Serializable {
 
 	public void setOperationType(String operationType) {
 		this.operationType = operationType;
+	}
+
+	
+	public int getDataItemType() {
+		return dataItemType;
+	}
+
+	public void setDataItemType(int dataItemType) {
+		this.dataItemType = dataItemType;
 	}
 
 	public Date getCreateTime() {

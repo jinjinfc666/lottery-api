@@ -39,7 +39,31 @@ public class SysInitLoader {
 		initLotteryType();
 		initLotteryAttributes();
 		initSysCodePlayType();
+		initAccOpeType();
 	}
+	
+	private void initAccOpeType() {
+		String codeTypeName = Constants.SysCodeTypes.FLOW_TYPES.getCode();
+		Map<String, SysCode> accOpeType = cacheServ.getSysCode(codeTypeName);
+		List<SysCode> sysCodes = null;
+		
+		if(accOpeType == null || accOpeType.size() == 0) {
+			sysCodes = sysCodeServ.queryCacheType(codeTypeName);
+			List<SysCode> sysCodeTypes = sysCodeServ.queryCacheTypeOnly(codeTypeName);
+			
+			if(sysCodes == null || sysCodes.size() == 0
+					|| sysCodeTypes == null
+					|| sysCodeTypes.size() == 0) {
+				return ;
+			}
+			
+			sysCodes.add(sysCodeTypes.get(0));
+			
+			cacheServ.setSysCode(codeTypeName, sysCodes);
+		}
+	}
+
+
 	//加载彩种类型
 	private void initLotteryType() {
 		String codeTypeName = Constants.SysCodeTypes.LOTTERY_TYPES.getCode();
@@ -131,7 +155,7 @@ public class SysInitLoader {
 					:lotteryType.getCodeName() + " cached play types :" + playTypes.size());
 			
 			if(playTypes == null || playTypes.size() == 0) {
-				playTypes = playTypeServ.queryPlayType(String.valueOf(lotteryType.getId()));
+				playTypes = playTypeServ.queryPlayType(String.valueOf(lotteryType.getCodeName()));
 				if(playTypes == null || playTypes.size() == 0) {
 					continue;
 				}

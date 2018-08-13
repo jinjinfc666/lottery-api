@@ -84,7 +84,7 @@ public interface CacheRedisService {
 	 * 按照所选彩种的当前期次的所选号码进行投注金额以及投注注数的统计数据
 	 * @param order
 	 */
-	void statGroupByBettingNum(OrderInfo order);
+	void statGroupByBettingNum(String lotteryType, OrderInfo order);
 
 	/**
 	 * 检查指定的期次是否有效

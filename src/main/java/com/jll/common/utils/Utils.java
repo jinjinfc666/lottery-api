@@ -1,21 +1,30 @@
 package com.jll.common.utils;
 
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 import java.util.regex.Pattern;
 
+import javax.annotation.Resource;
 
 import org.apache.commons.lang3.StringUtils;
 
 import com.google.gson.Gson;
 import com.jll.common.constants.Message;
+import com.jll.common.utils.sequence.GenSequenceService;
+import com.jll.entity.GenSequence;
 
 public class Utils {
 	public static final char[] alphabet = {'a','b','c','d','e','f','g','h','i',
 											'j','k','l','m','n','o','p','q','r',
 											's','t','u','v','w','x','y','z','0',
 											'1','2','3','4','5','6','7','8','9'};
+	
+	@Resource
+	GenSequenceService genSeqServ;
 	
 	public static String produce6DigitsCaptchaCode() {
 		String ret = "";
@@ -25,6 +34,23 @@ public class Utils {
 			ret += alphabet[currIndex];
 		}
 		return ret;
+				
+	}
+	
+	public synchronized static String gen16DigitsSeq(Long seq) {
+		Date nowTime = new Date();
+		StringBuffer ret = new StringBuffer();
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+		DecimalFormat numFormat = new DecimalFormat("000000");
+		Random random = new Random();		
+		
+		ret.append(dateFormat.format(nowTime));
+		ret.append(numFormat.format(seq));
+		for(int i = 0; i < 4; i++) {
+			int currIndex = random.nextInt(10);
+			ret.append(Integer.toString(currIndex));
+		}
+		return ret.toString();
 				
 	}
 	
@@ -157,19 +183,5 @@ public class Utils {
 		ret.put(Message.KEY_DATA,checkResut.get("bank").toString().toUpperCase());
 		return ret;
 	}
-	
-	public static void main(String[] args) {
-		System.out.println(validBankInfo("6217002710000684874"));
-	}
-/*
-	public static boolean isChineseByName(String str) {
-		if (str == null) {
-			return false;
-		}
-		// 大小写不同：\\p 表示包含，\\P 表示不包含 
-		// \\p{Cn} 的意思为 Unicode 中未被定义字符的编码，\\P{Cn} 就表示 Unicode中已经被定义字符的编码
-		String reg = "\\p{InCJK Unified Ideographs}&&\\P{Cn}";
-		Pattern pattern = Pattern.compile(reg);
-		return pattern.matcher(str.trim()).find();
-	}*/
+
 }

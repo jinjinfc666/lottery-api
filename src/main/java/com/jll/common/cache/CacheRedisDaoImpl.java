@@ -90,4 +90,16 @@ public class CacheRedisDaoImpl  extends AbstractBaseRedisDao implements CacheRed
 		return cacheObject.getContent();
 	}
 
+	@Override
+	public CacheObject<Map<String, Integer>> getStatGroupByBettingNum(String cacheKey) {
+		CacheObject<Map<String, Integer>> cacheObj = this.get(cacheKey);
+		
+		return cacheObj;
+	}
+
+	@Override
+	public void setStatGroupByBettingNum(CacheObject<Map<String, Integer>> cacheObj) {
+		this.saveOrUpdate(cacheObj);
+	}
+
 }

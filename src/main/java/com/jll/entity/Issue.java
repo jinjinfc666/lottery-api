@@ -8,6 +8,11 @@ import java.util.Date;
  */
 public class Issue implements java.io.Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -162220270110557773L;
+	
 	private Integer id;
 	private String lotteryType;
 	private String issueNum;
@@ -15,17 +20,19 @@ public class Issue implements java.io.Serializable {
 	private Integer state;
 	private Date startTime;
 	private Date endTime;
-
+	private Long downCounter;
+	
 	public Issue() {
 	}
 
-	public Issue(String lotteryType, String issueNum, String retNum, Integer state, Date startTime, Date endTime) {
+	public Issue(String lotteryType, String issueNum, String retNum, Integer state, Date startTime, Date endTime, Long downCounter) {
 		this.lotteryType = lotteryType;
 		this.issueNum = issueNum;
 		this.retNum = retNum;
 		this.state = state;
 		this.startTime = startTime;
 		this.endTime = endTime;
+		this.downCounter = downCounter;
 	}
 
 	public Integer getId() {
@@ -84,4 +91,13 @@ public class Issue implements java.io.Serializable {
 		this.endTime = endTime;
 	}
 
+	public Long getDownCounter() {
+		return downCounter;
+	}
+
+	public void setDownCounter(Long downCounter) {
+		this.downCounter = downCounter;
+	}
+
+	
 }

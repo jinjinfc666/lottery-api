@@ -426,7 +426,7 @@ public class Constants {
 			SysCodeTypes[] names = SysCodeTypes.values();
 			for(SysCodeTypes name: names) {
 				String nameConfig=name.getCode();
-				if(nameConfig.startsWith("LOTTERY_CONFIG_")) {
+				if(nameConfig.startsWith("lottery_config_")) {
 					map.add(nameConfig);
 				}
 			}
@@ -1448,6 +1448,35 @@ public class Constants {
 				map.put(name.getCode(), name.getName());
 			}
 			return map;
+		}
+	}
+	
+	/**
+	 *账户流水 数据类型
+	 */
+	public static enum OrderState{
+		WAITTING_PAYOUT(0, "等待派奖"),
+		WINNING(1, "赢"),
+		LOSTING(2, "输"),
+		USER_CANCEL(3, "用户取消订单"),
+		SYS_CANCEL(4, "系统取消订单");
+		
+		private String desc;
+		
+		private int code;
+		
+		private OrderState(int code, String desc) {
+			this.code = code;
+			this.desc = desc;
+		}
+		
+		
+		public String getDesc() {
+			return desc;
+		}
+		
+		public int getCode() {
+			return this.code;
 		}
 	}
 }
