@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -200,18 +201,9 @@ public class SysPlayTypeController {
 	}
 	//修改
 	@RequestMapping(value={"/updatePlayType"}, method={RequestMethod.PUT}, produces={"application/json"})
-	public Map<String, Object> updatePlayType(@RequestParam(name = "id", required = true) Integer id,
-			  @RequestParam(name = "lotteryType", required = true) String lotteryType,
-			  @RequestParam(name = "classification1", required = true) String classification1,
-			  @RequestParam(name = "classification2", required = false) String classification2,
-			  @RequestParam(name = "ptName", required = true) String ptName,
-			  @RequestParam(name = "ptDesc", required = true) String ptDesc,
-			  @RequestParam(name = "state", required = true) Integer state,
-			  @RequestParam(name = "mulSinFlag", required = true) Integer mulSinFlag,
-			  @RequestParam(name = "isHidden", required = true) Integer isHidden,
-			  HttpServletRequest request) {
+	public Map<String, Object> updatePlayType(@RequestBody PlayType playType) {
 		Map<String, Object> ret = new HashMap<>();
-		PlayType playType=new PlayType();
+		/*PlayType playType=new PlayType();
 		playType.setId(id);
 		playType.setLotteryType(lotteryType);
 		String classification=null;
@@ -225,7 +217,7 @@ public class SysPlayTypeController {
 		playType.setPtDesc(ptDesc);
 		playType.setState(state);
 		playType.setMulSinFlag(mulSinFlag);
-		playType.setIsHidden(isHidden);
+		playType.setIsHidden(isHidden);*/
 		try {
 			playTypeService.updatePlayType(playType);
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
