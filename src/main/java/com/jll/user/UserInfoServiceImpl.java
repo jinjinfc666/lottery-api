@@ -260,7 +260,12 @@ public class UserInfoServiceImpl implements UserInfoService
 	public UserInfo getUserByUserName(String userName) {
 		return userDao.getUserByUserName(userName);
 	}
-
+	
+	@Override
+	public UserInfo getUserById(Integer userId) {
+		return userDao.getUserById(userId);
+	}
+	
 	@Override
 	public String validUserInfo(UserInfo user, UserInfo superior) {
 		if(user == null) {
@@ -734,9 +739,7 @@ public class UserInfoServiceImpl implements UserInfoService
 	public List<UserInfo> queryAllUserInfo(Map<String, Object> map) {
 		Integer id=(Integer) map.get("id");
 		String userName=(String) map.get("userName");
-		String realName=(String) map.get("realName");
 		String proxyName=(String) map.get("proxyName");
-		BigDecimal platRebate=(BigDecimal) map.get("platRebate");
 		String startTime=(String) map.get("startTime");
 		String endTime=(String) map.get("endTime");
 		UserInfo userInfo=userDao.getUserByUserName(proxyName);
@@ -744,7 +747,7 @@ public class UserInfoServiceImpl implements UserInfoService
 		if(userInfo!=null) {
 			proxyId=userInfo.getId();
 		}
-		List<UserInfo> userInfoList=userDao.queryAllUserInfo(id, userName, realName, proxyId, platRebate, startTime, endTime);
+		List<UserInfo> userInfoList=userDao.queryAllUserInfo(id, userName, proxyId, startTime, endTime);
 		return userInfoList;
 	}
 	

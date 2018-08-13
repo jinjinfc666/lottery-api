@@ -1224,7 +1224,7 @@ public class Constants {
 	}	
 	
 	/**
-	 *彩种的玩法
+	 *彩种的玩法类型
 	 * @author Silence
 	 */
 	public static enum SysCodePlayType{

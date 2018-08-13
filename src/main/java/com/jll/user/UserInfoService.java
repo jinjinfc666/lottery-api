@@ -25,6 +25,8 @@ public interface UserInfoService
 	 * @return
 	 */
 	UserInfo getUserByUserName(String userName);
+	
+	UserInfo getUserById(Integer userId);
 
 	/**
 	 * valid the user information

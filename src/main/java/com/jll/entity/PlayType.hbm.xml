@@ -14,13 +14,13 @@
             <column length="100" name="classification">
             </column>
         </property>
-        <property generated="never" lazy="false" name="name" optimistic-lock="true" type="string" unique="false">
-            <column length="50" name="name">
+        <property generated="never" lazy="false" name="ptName" optimistic-lock="true" type="string" unique="false">
+            <column length="50" name="pt_name">
                 <comment>����</comment>
             </column>
         </property>
-        <property generated="never" lazy="false" name="desc" optimistic-lock="true" type="string" unique="false">
-            <column length="250" name="desc">
+        <property generated="never" lazy="false" name="ptDesc" optimistic-lock="true" type="string" unique="false">
+            <column length="250" name="pt_desc">
                 <comment>����</comment>
             </column>
         </property>

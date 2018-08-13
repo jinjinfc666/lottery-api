@@ -248,5 +248,4 @@ public class CacheRedisServiceImpl implements CacheRedisService
 		
 		return true;
 	}
-
 }

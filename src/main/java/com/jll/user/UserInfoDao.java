@@ -19,6 +19,8 @@ public interface UserInfoDao
 	
 	UserInfo getUserByUserName(String userName);
 	
+	UserInfo getUserById(Integer userId);
+	
 	/**
 	 * if the user is existing in database
 	 * @param user
@@ -42,5 +44,5 @@ public interface UserInfoDao
 	
 	boolean checkUserIds(String UserIds);
 	
-	List<UserInfo> queryAllUserInfo(Integer id,String userName,String realName,Integer proxyId,BigDecimal platRebate,String startTime,String endTime);
+	List<UserInfo> queryAllUserInfo(Integer id,String userName,Integer proxyId,String startTime,String endTime);
 }
