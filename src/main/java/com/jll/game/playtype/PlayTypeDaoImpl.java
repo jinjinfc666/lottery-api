@@ -5,12 +5,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.hibernate.Session;
+import org.hibernate.query.Query;
 import org.springframework.stereotype.Repository;
 
 import com.jll.dao.DefaultGenericDaoImpl;
-import com.jll.entity.Issue;
 import com.jll.entity.PlayType;
-
+import com.jll.entity.SysCode;
 @Repository
 public class PlayTypeDaoImpl extends DefaultGenericDaoImpl<PlayType> implements PlayTypeDao
 {
@@ -25,5 +26,95 @@ public class PlayTypeDaoImpl extends DefaultGenericDaoImpl<PlayType> implements 
 		return this.query(sql, params, PlayType.class);
 	}
 
+	@Override
+	public void addPlayType(PlayType playType) {
+		this.saveOrUpdate(playType);
+	}
+
+	@Override
+	public Integer getCountSeq(String lotteryType) {
+		String sql = "from PlayType where lotteryType=:lotteryType ORDER BY seq DESC";
+	    Query<PlayType> query = getSessionFactory().getCurrentSession().createQuery(sql,PlayType.class);
+	    query.setParameter("lotteryType", lotteryType);
+	    query.setMaxResults(1);
+	    List<PlayType> list = query.list();
+	    Integer seq=0;
+	    if(list.size()>0) {
+	        for(PlayType playType : list){    
+	        	seq=playType.getSeq();
+	        } 
+	    }
+		return seq;
+	}
+	//修改状态
+	@Override
+	public void updateState(Integer id, Integer state) {
+		Session session=getSessionFactory().getCurrentSession();
+		String hql = ("update PlayType set state=:state where id=:id");  
+		Query query = session.createQuery(hql);
+		query.setParameter("state", state);
+		query.setParameter("id", id);
+		query.executeUpdate();
+	}
+
+	@Override
+	public List<PlayType> queryById(Integer id) {
+		String sql = "from PlayType where id=?";
+		List<Object> params = new ArrayList<>();
+		params.add(id);
+		return this.query(sql, params, PlayType.class);
+	}
+	//是否隐藏
+	@Override
+	public void updateIsHidden(Integer id, Integer isHidden) {
+		Session session=getSessionFactory().getCurrentSession();
+		String hql = ("update PlayType set isHidden=:isHidden where id=:id");  
+		Query query = session.createQuery(hql);
+		query.setParameter("isHidden", isHidden);
+		query.setParameter("id", id);
+		query.executeUpdate();
+	}
+	//选择单式还是复式
+	@Override
+	public void updateMulSinFlag(Integer id, Integer mulSinFlag) {
+		Session session=getSessionFactory().getCurrentSession();
+		String hql = ("update PlayType set mulSinFlag=:mulSinFlag where id=:id");  
+		Query query = session.createQuery(hql);
+		query.setParameter("mulSinFlag", mulSinFlag);
+		query.setParameter("id", id);
+		query.executeUpdate();
+	}
+	//修改
+	@Override
+	public void updatePlayType(Integer id, String lotteryType,String classification, String ptName, String ptDesc,Integer state,Integer mulSinFlag,Integer isHidden,Integer seq) {
+		Session session=getSessionFactory().getCurrentSession();
+		String hql="";
+		if(seq==null) {
+			hql=("update PlayType set lotteryType=:lotteryType,classification=:classification,ptName=:ptName,ptDesc=:ptDesc,state=:state,mulSinFlag=:mulSinFlag,isHidden=:isHidden where id=:id");
+		}else {
+			 hql=("update PlayType set lotteryType=:lotteryType,classification=:classification,ptName=:ptName,ptDesc=:ptDesc,state=:state,mulSinFlag=:mulSinFlag,isHidden=:isHidden,seq=:seq where id=:id");
+		}
+		Query query = session.createQuery(hql);
+		query.setParameter("lotteryType", lotteryType);
+		query.setParameter("classification", classification);
+		query.setParameter("ptName", ptName);
+		query.setParameter("ptDesc", ptDesc);
+		query.setParameter("id", id);
+		query.setParameter("state", state);
+		query.setParameter("mulSinFlag", mulSinFlag);
+		query.setParameter("isHidden", isHidden);
+		if(seq!=null) {
+			query.setParameter("seq", seq);
+		}
+		query.executeUpdate();	
+	}
 	
+	@Override
+	public List<PlayType> queryLotteryType(String lotteryType) {
+		String sql = "from PlayType where lotteryType=:lotteryType";
+	    Query<PlayType> query = getSessionFactory().getCurrentSession().createQuery(sql,PlayType.class);
+	    query.setParameter("lotteryType", lotteryType);
+	    List<PlayType> list = query.list();
+		return list;
+	}
 }

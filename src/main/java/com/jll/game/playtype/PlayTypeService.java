@@ -13,4 +13,14 @@ public interface PlayTypeService
 	 * @return
 	 */
 	List<PlayType> queryPlayType(String lotteryType);
+	
+	void addPlayType(PlayType playType);
+	
+	void updateState(Integer id,Integer state);
+	
+	void updateIsHidden(Integer id, Integer isHidden);
+	
+	void updateMulSinFlag(Integer id, Integer mulSinFlag);
+	
+	void updatePlayType(PlayType playType);
 }

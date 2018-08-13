@@ -59,6 +59,17 @@ public class UserInfoDaoImpl extends DefaultGenericDaoImpl<UserInfo> implements 
 		
 		return rets.size() > 0?rets.get(0) : null;
 	}
+	
+	@Override
+	public UserInfo getUserById(Integer userId) {
+		String sql = "from UserInfo where id = ?";
+		List<Object> params = new ArrayList<Object>();
+		params.add(userId);
+		
+		List<UserInfo> rets = query(sql, params, UserInfo.class);
+		
+		return rets.size() > 0?rets.get(0) : null;
+	}
 
 	@Override
 	public boolean isUserExisting(UserInfo user) {
@@ -136,7 +147,7 @@ public class UserInfoDaoImpl extends DefaultGenericDaoImpl<UserInfo> implements 
 	}
 
 	@Override
-	public List<UserInfo> queryAllUserInfo(Integer id,String userName,String realName,Integer proxyId,BigDecimal platRebate,String startTime,String endTime) {
+	public List<UserInfo> queryAllUserInfo(Integer id,String userName,Integer proxyId,String startTime,String endTime) {
 		Map<String,Object> map=new HashMap<String,Object>();
 		Date beginDate = java.sql.Date.valueOf(startTime);
 	    Date endDate = java.sql.Date.valueOf(endTime);
@@ -144,8 +155,13 @@ public class UserInfoDaoImpl extends DefaultGenericDaoImpl<UserInfo> implements 
 		map.put("endTime", endDate);
 		String hql="";
 		if(proxyId!=null) {
-			hql=("select a.* from (select *,FIND_IN_SET(:proxyId,superior) as aa from UserInfo)a where a.aa=1 and a.createTime>:startTime and a.createTime<=:endTime");
-			Query<UserInfo> query = getSessionFactory().getCurrentSession().createQuery(hql,UserInfo.class);
+			hql=("select a.* from (select *,FIND_IN_SET(:proxyId,superior) as aa from user_info)a where a.aa=1 and a.create_time>:startTime and a.create_time<=:endTime");
+			Query<UserInfo> query=null;
+			try {
+				query= getSessionFactory().getCurrentSession().createNativeQuery(hql).addEntity(UserInfo.class);
+			}catch(Exception e) {
+				e.printStackTrace();
+			}
 			query.setParameter("proxyId", proxyId);  
 			query.setParameter("startTime", beginDate,DateType.INSTANCE);
 			query.setParameter("endTime", endDate,DateType.INSTANCE); 
@@ -155,8 +171,6 @@ public class UserInfoDaoImpl extends DefaultGenericDaoImpl<UserInfo> implements 
 		}else {
 			String userNameSql="";
 			String idSql="";
-			String realNameSql="";
-			String platRebateSql="";
 			if(id!=null) {
 				idSql=" and id=:id";
 				map.put("id", id);
@@ -165,16 +179,8 @@ public class UserInfoDaoImpl extends DefaultGenericDaoImpl<UserInfo> implements 
 				userNameSql=" and userName=:userName";
 				map.put("userName", userName);
 			}
-			if(!StringUtils.isBlank(realName)) {
-				realNameSql=" and realName=:realName";
-				map.put("realName", realName);
-			}
-			if(platRebate!=null) {
-				platRebateSql=" and platRebate=:platRebate";
-				map.put("platRebate", platRebate);
-			}
 			String timeSql=" where create_time >:startTime and create_time <=:endTime";
-			hql=("from UserInfo"+timeSql+idSql+userNameSql+realNameSql+platRebateSql);
+			hql=("from UserInfo"+timeSql+idSql+userNameSql);
 			Query<UserInfo> query = getSessionFactory().getCurrentSession().createQuery(hql,UserInfo.class);
 			if (map != null) {  
 	            Set<String> keySet = map.keySet();  

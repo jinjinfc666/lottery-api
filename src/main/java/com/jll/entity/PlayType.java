@@ -11,8 +11,8 @@ public class PlayType implements java.io.Serializable {
 	private Integer id;
 	private String lotteryType;
 	private String classification;
-	private String name;
-	private String desc;
+	private String ptName;
+	private String ptDesc;
 	private Integer state;
 	private Integer mulSinFlag;
 	private Integer isHidden;
@@ -22,11 +22,11 @@ public class PlayType implements java.io.Serializable {
 	public PlayType() {
 	}
 
-	public PlayType(String lotteryType, String classification,String name, String desc, Integer state, Integer mulSinFlag ,Integer isHidden,Integer seq, Date createTime) {
+	public PlayType(String lotteryType, String classification,String ptName, String ptDesc, Integer state, Integer mulSinFlag ,Integer isHidden,Integer seq, Date createTime) {
 		this.lotteryType = lotteryType;
 		this.classification=classification;
-		this.name = name;
-		this.desc = desc;
+		this.ptName = ptName;
+		this.ptDesc = ptDesc;
 		this.state = state;
 		this.mulSinFlag = mulSinFlag;
 		this.isHidden = isHidden;
@@ -73,21 +73,21 @@ public class PlayType implements java.io.Serializable {
 	public void setLotteryType(String lotteryType) {
 		this.lotteryType = lotteryType;
 	}
-
-	public String getName() {
-		return this.name;
+	
+	public String getPtName() {
+		return ptName;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setPtName(String ptName) {
+		this.ptName = ptName;
 	}
 
-	public String getDesc() {
-		return this.desc;
+	public String getPtDesc() {
+		return ptDesc;
 	}
 
-	public void setDesc(String desc) {
-		this.desc = desc;
+	public void setPtDesc(String ptDesc) {
+		this.ptDesc = ptDesc;
 	}
 
 	public Integer getState() {
