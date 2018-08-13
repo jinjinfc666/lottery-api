@@ -198,5 +198,4 @@ public class CacheRedisServiceImpl implements CacheRedisService
 		
 		cacheDao.setPlayType(cache);
 	}
-
 }
