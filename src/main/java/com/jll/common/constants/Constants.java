@@ -400,7 +400,7 @@ public class Constants {
 		PAYMENT_PLATFORM("payment_platform"),
 		SITE_MSG_VALID_DAY("site_msg_valid_day"),
 		NOTIFY_MSG_VALID_DAY("notify_msg_valid_day"),
-		LUCKY_DRAW("lucky_draw"),
+		LUCKY_DRAW("lucky_draw"),//幸运抽奖
 		LOTTERY_CONFIG_CQSSC("lottery_config_cqssc"),//,"重庆时时彩属性"
 		LOTTERY_CONFIG_GD11X5("lottery_config_gd11x5"),//,"广东11选5属性"
 		LOTTERY_CONFIG_TXFFC("lottery_config_txffc"),//,"腾讯分分彩属性"
@@ -411,7 +411,9 @@ public class Constants {
 		LOTTERY_CONFIG_BJPK10("lottery_config_bjpk10"),//"PK10属性"
 		SIGN_IN_DAY("sign_in_day"),
 		POINT_EXCHANGE_SCALE("point_exchange_scale"),
-		CT_PLAY_TYPE_CLASSICFICATION("ct_play_type_classicfication");//"玩法类型"
+		CT_PLAY_TYPE_CLASSICFICATION("ct_play_type_classicfication"),//"玩法类型"
+		LOTTERY_TYPE_BETTING_TIME("lottery_type_betting_time"),//彩种投注截止时间
+		URL_WINING_NUMBER_EXTENAL("url_wining_number_extenal");//外部数据接口配置
 		private String value;
 		
 		private SysCodeTypes(String value) {
