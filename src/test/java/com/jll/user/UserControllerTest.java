@@ -248,7 +248,7 @@ public class UserControllerTest extends ControllerJunitBase{
 	}
 	
 	
-	public void testApplyEmail() throws Exception{
+	public void ItestApplyEmail() throws Exception{
 		/*String userName = "admin";
 		String pwd = "admin";
 		String token = queryToken(userName, pwd);*/
@@ -334,6 +334,50 @@ public class UserControllerTest extends ControllerJunitBase{
 		}
 	}
 	
+	
+	public void testQueryAllUsers() throws Exception{
+		String userName = "test001";
+		String pwd = "test001";
+		
+		String token = queryToken(userName, pwd);
+		
+		ObjectMapper mapper = new ObjectMapper();
+		ByteArrayInputStream bis = null;
+		try {
+			ObjectNode node = mapper.createObjectNode();
+			node.putPOJO("userName", "中国");
+			node.putPOJO("startTime", "2018");
+			node.putPOJO("endTime", "2018");
+			
+			bis = new ByteArrayInputStream(mapper.writeValueAsBytes(node));
+			WebRequest request = new GetMethodWebRequest("http://localhost:8080/users/queryAllUserInfo?userName=中国&startTime=2018&endTime=2018");
+			WebConversation wc = new WebConversation();
+			
+			request.setHeaderField("Authorization", "Bearer " + token);
+			
+			WebResponse response = wc.sendRequest(request);
+			
+			int  status = response.getResponseCode();
+			
+			Assert.assertEquals(HttpServletResponse.SC_OK, status);
+			String result = response.getText();
+			
+			Map<String, Object> retItems = null;
+			
+			retItems = mapper.readValue(result, HashMap.class);
+			
+			Assert.assertNotNull(retItems);
+
+			Assert.assertEquals(Message.status.SUCCESS.getCode(), retItems.get(Message.KEY_STATUS));
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}finally {
+			if(bis != null) {
+				bis.close();
+			}
+		}
+	}
 	
 	
 	private String queryToken(String userName, String pwd) {

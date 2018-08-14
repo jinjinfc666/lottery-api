@@ -8,6 +8,10 @@ import java.util.Date;
  */
 public class PlayType implements java.io.Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 774013967875953997L;
 	private Integer id;
 	private String lotteryType;
 	private String classification;
