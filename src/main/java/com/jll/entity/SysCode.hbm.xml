@@ -21,7 +21,7 @@
             </column>
         </property>
         <property generated="never" lazy="false" name="codeVal" optimistic-lock="true" type="string" unique="false">
-            <column length="50" name="code_val">
+            <column length="200" name="code_val">
                 <comment>����ֵ</comment>
             </column>
         </property>
