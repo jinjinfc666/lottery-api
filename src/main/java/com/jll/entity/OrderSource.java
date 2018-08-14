@@ -1,5 +1,5 @@
 package com.jll.entity;
-// Generated 2018-8-8 15:26:50 by Hibernate Tools 5.2.10.Final
+// Generated 2018-8-14 16:52:58 by Hibernate Tools 5.2.10.Final
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -23,8 +23,8 @@ public class OrderSource implements java.io.Serializable {
 		this.createTime = createTime;
 	}
 
-	public OrderSource(Date createTime, String codeName, BigDecimal mobileAmount,
-			BigDecimal pcAmount, BigDecimal sumAmount) {
+	public OrderSource(Date createTime, String codeName, BigDecimal mobileAmount, BigDecimal pcAmount,
+			BigDecimal sumAmount) {
 		this.createTime = createTime;
 		this.codeName = codeName;
 		this.mobileAmount = mobileAmount;

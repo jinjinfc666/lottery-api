@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Generated 2018-8-8 15:26:51 by Hibernate Tools 5.2.10.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 2018-8-14 16:52:58 by Hibernate Tools 5.2.10.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping auto-import="true" default-access="property" default-cascade="none" default-lazy="true">
     <class catalog="lottery" dynamic-insert="false" dynamic-update="false" mutable="true" name="com.jll.entity.PlayType" optimistic-lock="version" polymorphism="implicit" select-before-update="false" table="play_type">
         <id name="id" type="java.lang.Integer">
@@ -12,6 +12,7 @@
         </property>
         <property generated="never" lazy="false" name="classification" optimistic-lock="true" type="string" unique="false">
             <column length="100" name="classification">
+                <comment>���ࣺ����3����|��������������2����|����������1|����</comment>
             </column>
         </property>
         <property generated="never" lazy="false" name="ptName" optimistic-lock="true" type="string" unique="false">
@@ -31,12 +32,12 @@
         </property>
         <property generated="never" lazy="false" name="mulSinFlag" optimistic-lock="true" type="java.lang.Integer" unique="false">
             <column name="mul_sin_flag">
-                <comment>0:��Ч;1,��Ч</comment>
+                <comment>0:��ʽ;1:����</comment>
             </column>
         </property>
         <property generated="never" lazy="false" name="isHidden" optimistic-lock="true" type="java.lang.Integer" unique="false">
             <column name="is_hidden">
-                <comment>0:��Ч;1,��Ч</comment>
+                <comment>�����Ƿ���ʾ��0��ʾ 1����</comment>
             </column>
         </property>
         <property generated="never" lazy="false" name="seq" optimistic-lock="true" type="java.lang.Integer" unique="false">
