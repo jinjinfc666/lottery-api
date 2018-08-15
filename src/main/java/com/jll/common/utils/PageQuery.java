@@ -4,6 +4,8 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
+import javax.annotation.Resource;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
@@ -16,7 +18,13 @@ import org.hibernate.criterion.Projections;
 import org.springframework.orm.hibernate5.HibernateCallback;
 import org.springframework.orm.hibernate5.HibernateTemplate;
 
+import com.jll.dao.SupserDao;
+
 public class PageQuery {
+	
+	@Resource
+	static private SupserDao  supserDao; 
+	
 	private static Logger log = Logger.getLogger(PageQuery.class);
 
 	public static Integer getNextIndex(boolean fprev, boolean prev,
@@ -72,6 +80,27 @@ public class PageQuery {
 			e.printStackTrace();
 		}
 		return page;
+	}
+	
+	
+	public static Page queryForPagenationBySql(String sql,Class<?> cls, List<?> paramsList, int pageIndex, int size) {
+		Page page = new Page();
+		try {
+			String sql11 = "select count(*) from (" + sql + ") a ";
+			int totalcount = 0;
+			totalcount = supserDao.getCount(sql11);
+			if (totalcount <= 0) {
+				return page;
+			}
+			String sql0 = sql + "  limit " + (pageIndex - 1) * size + ", " + size;
+			System.out.println(sql);
+			List l1 = supserDao.excuteSqlForQuery(sql0,cls,paramsList);
+			page = queryForPagenation(l1, pageIndex, size, totalcount);
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return page;
+	
 	}
 
 	public static Page queryForPagenation(HibernateTemplate hibernateTemplate,

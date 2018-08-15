@@ -91,4 +91,8 @@ public interface UserInfoService
 	//查询所有的用户
 	List<UserInfo> queryAllUserInfo(Map<String,Object> map);
 	Map<String, Object> exchangePoint(int userId, double amount);
+	
+	//获取登陆用户信息，如果OK，返回用户信息
+	UserInfo getCurLoginInfo();
+	Map<String, Object> userProfitReport(String userName);
 }

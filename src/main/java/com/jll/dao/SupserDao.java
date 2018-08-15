@@ -183,25 +183,6 @@ public class SupserDao extends HibernateDaoSupport{
 		});
 	}
 
-	public List excuteSqlForQuery(String sql, Class entity, List paramsList) {
-		final String excuteSql = sql;
-		final List params = paramsList;
-		final Class cls = entity;
-		return (List) getHibernateTemplate().execute(new HibernateCallback() {
-			public Object doInHibernate(Session session) throws HibernateException {
-				SQLQuery query = session.createSQLQuery(excuteSql);
-				query.addEntity(cls);
-				if (params != null && params.size() > 0) {
-					int length = params.size();
-					for (int i = 0; i < length; i++) {
-						setParam(query, i, params.get(i));
-					}
-				}
-				return query.list();
-			}
-		});
-	}
-
 	public int excuteSqlForUpdate(String sql, List paramsList) {
 		final String excuteSql = sql;
 		final List params = paramsList;
@@ -270,6 +251,8 @@ public class SupserDao extends HibernateDaoSupport{
 			}
 		});
 	}
+	
+
 
 	public List excuteuniteForQuery(Class c1, Class c2, List paramsList, String sql) {
 		final String excuteSql = sql;
@@ -358,7 +341,7 @@ public class SupserDao extends HibernateDaoSupport{
 		return getHibernateTemplate().findByCriteria(dCriteria);
 	}
 	
-	public List excuteSqlForQuery1(String sql, Class entity, List paramsList) {
+	public List excuteSqlForQuery(String sql, Class entity, List paramsList) {
 		final String excuteSql = sql;
 		final List params = paramsList;
 		final Class cls = entity;
@@ -465,7 +448,7 @@ public class SupserDao extends HibernateDaoSupport{
 		});
 	}
 	
-	public int getCount1(String sql, List paramsList){
+	public int getCount(String sql, List paramsList){
 		Integer totalcount = ConvertUtils.convertInteger(excuteSqlForUniqueResult1(sql,paramsList));		
 		return totalcount;
 	}
