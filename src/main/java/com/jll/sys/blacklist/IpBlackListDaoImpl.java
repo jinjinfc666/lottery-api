@@ -1,4 +1,4 @@
-package com.jll.blacklist;
+package com.jll.sys.blacklist;
 
 
 import java.util.List;
