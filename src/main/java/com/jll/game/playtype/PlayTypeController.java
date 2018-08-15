@@ -30,8 +30,8 @@ import com.terran4j.commons.api2doc.annotations.ApiComment;
 @ApiComment(seeClass = SysCode.class)
 @RestController
 @RequestMapping({"/settingPlayType"})
-public class SysPlayTypeController {
-	private Logger logger = Logger.getLogger(SysPlayTypeController.class);
+public class PlayTypeController {
+	private Logger logger = Logger.getLogger(PlayTypeController.class);
 	@Resource
 	PlayTypeService playTypeService;
 	@Resource

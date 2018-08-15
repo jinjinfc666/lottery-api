@@ -393,6 +393,7 @@ public class ReportController {
 			  @RequestParam(name = "state", required = true) Integer state,//状态
 			  HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
+		Map<String, Object> map = new HashMap<>();
 		if(id==null||state==null||state!=1||state!=2) {
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
@@ -403,16 +404,15 @@ public class ReportController {
 		ret.put("state", state);
 		logger.debug(ret+"------------------------------UpdateDepositState--------------------------------------");
 		try {
-			depositApplicationService.updateState(ret);
-			ret.clear();
-			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+			map.clear();
+			map=depositApplicationService.updateState(ret);
 		}catch(Exception e){
-			ret.clear();
-			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
-			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			map.clear();
+			map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
 		}
-		return ret;
+		return map;
 	}
 	/**
 	 *会员盈亏报表

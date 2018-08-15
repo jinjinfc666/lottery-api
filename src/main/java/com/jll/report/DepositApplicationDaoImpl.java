@@ -19,6 +19,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.support.HibernateDaoSupport;
 import org.springframework.stereotype.Repository;
 
+import com.jll.entity.DepositApplication;
+import com.jll.entity.IpBlackList;
+
 
 
 
@@ -85,6 +88,15 @@ public class DepositApplicationDaoImpl extends HibernateDaoSupport implements De
 		query.setParameter("state", state);
 		query.setParameter("id", id);;
 		query.executeUpdate();
+	}
+	//查询是否存在
+	@Override
+	public List<DepositApplication> queryById(Integer id) {
+		String sql = "from DepositApplication where id=:id";
+	    Query<DepositApplication> query = getSessionFactory().getCurrentSession().createQuery(sql,DepositApplication.class);
+	    query.setParameter("id", id);
+	    List<DepositApplication> list = query.list();
+	    return list;
 	}
 	
 }
