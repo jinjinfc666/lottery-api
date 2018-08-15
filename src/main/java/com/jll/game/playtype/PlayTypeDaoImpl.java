@@ -86,16 +86,11 @@ public class PlayTypeDaoImpl extends DefaultGenericDaoImpl<PlayType> implements 
 	}
 	//修改
 	@Override
-	public void updatePlayType(Integer id, String lotteryType,String classification, String ptName, String ptDesc,Integer state,Integer mulSinFlag,Integer isHidden,Integer seq) {
+	public void updatePlayType(Integer id,String classification, String ptName, String ptDesc,Integer state,Integer mulSinFlag,Integer isHidden) {
 		Session session=getSessionFactory().getCurrentSession();
 		String hql="";
-		if(seq==null) {
-			hql=("update PlayType set lotteryType=:lotteryType,classification=:classification,ptName=:ptName,ptDesc=:ptDesc,state=:state,mulSinFlag=:mulSinFlag,isHidden=:isHidden where id=:id");
-		}else {
-			 hql=("update PlayType set lotteryType=:lotteryType,classification=:classification,ptName=:ptName,ptDesc=:ptDesc,state=:state,mulSinFlag=:mulSinFlag,isHidden=:isHidden,seq=:seq where id=:id");
-		}
+		hql=("update PlayType set classification=:classification,ptName=:ptName,ptDesc=:ptDesc,state=:state,mulSinFlag=:mulSinFlag,isHidden=:isHidden where id=:id");
 		Query query = session.createQuery(hql);
-		query.setParameter("lotteryType", lotteryType);
 		query.setParameter("classification", classification);
 		query.setParameter("ptName", ptName);
 		query.setParameter("ptDesc", ptDesc);
@@ -103,9 +98,6 @@ public class PlayTypeDaoImpl extends DefaultGenericDaoImpl<PlayType> implements 
 		query.setParameter("state", state);
 		query.setParameter("mulSinFlag", mulSinFlag);
 		query.setParameter("isHidden", isHidden);
-		if(seq!=null) {
-			query.setParameter("seq", seq);
-		}
 		query.executeUpdate();	
 	}
 	
@@ -114,6 +106,24 @@ public class PlayTypeDaoImpl extends DefaultGenericDaoImpl<PlayType> implements 
 		String sql = "from PlayType where lotteryType=:lotteryType";
 	    Query<PlayType> query = getSessionFactory().getCurrentSession().createQuery(sql,PlayType.class);
 	    query.setParameter("lotteryType", lotteryType);
+	    List<PlayType> list = query.list();
+		return list;
+	}
+	//查询这个玩法是否存在
+	@Override
+	public List<PlayType> queryByPlayType(PlayType playType) {
+		String lotteryType=playType.getLotteryType();
+		String classification=playType.getClassification();
+		String ptName=playType.getPtName();
+		String ptDesc=playType.getPtDesc();
+		Integer mulSinFlag=playType.getMulSinFlag();
+		String sql = "from PlayType where lotteryType=:lotteryType and classification=:classification and ptName=:ptName and ptDesc=:ptDesc and mulSinFlag=:mulSinFlag";
+	    Query<PlayType> query = getSessionFactory().getCurrentSession().createQuery(sql,PlayType.class);
+	    query.setParameter("lotteryType", lotteryType);
+	    query.setParameter("classification", classification);
+	    query.setParameter("ptName", ptName);
+	    query.setParameter("ptDesc", ptDesc);
+	    query.setParameter("mulSinFlag", mulSinFlag);
 	    List<PlayType> list = query.list();
 		return list;
 	}

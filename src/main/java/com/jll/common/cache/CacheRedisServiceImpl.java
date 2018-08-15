@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.jll.common.constants.Constants;
 import com.jll.common.constants.Constants.SysCodeTypes;
+import com.jll.entity.IpBlackList;
 import com.jll.entity.Issue;
 import com.jll.entity.OrderInfo;
 import com.jll.entity.PlayType;
@@ -137,7 +138,7 @@ public class CacheRedisServiceImpl implements CacheRedisService
 		return true;
 
 	}
-	
+	@Override
 	public void setSysCode(String codeTypeName, List<SysCode> sysCodes) {
 		CacheObject<Map<String, SysCode>> cacheObj = new CacheObject<>();
 		Map<String, SysCode> sysCodesTemp = new HashMap<>();
@@ -248,4 +249,52 @@ public class CacheRedisServiceImpl implements CacheRedisService
 		
 		return true;
 	}
+	//ip缓存
+	@Override
+	public Map<Integer, IpBlackList> getIpBlackList(String codeName) {
+		CacheObject<Map<Integer, IpBlackList>>  cache = cacheDao.getIpBlackList(codeName);
+		if(cache == null) {
+			return null;
+		}
+		return cache.getContent();
+	}
+	@Override
+	public IpBlackList getIpBlackList(String codeTypeName, Integer codeName) {
+		return cacheDao.getIpBlackList(codeTypeName, codeName);
+	}
+	@Override
+	public void setIpBlackList(String codeTypeName, IpBlackList ipBlackList) {
+		CacheObject<Map<Integer, IpBlackList>> cacheObject=cacheDao.getIpBlackList(codeTypeName);
+		Map<Integer, IpBlackList> ipBlackListTemp=null;
+		if(cacheObject==null) {
+			ipBlackListTemp = new HashMap<>();
+			cacheObject= new CacheObject<>();
+		}else {
+			ipBlackListTemp=cacheObject.getContent();
+		}
+		ipBlackListTemp.put(ipBlackList.getId(), ipBlackList);
+		cacheObject.setContent(ipBlackListTemp);
+		cacheObject.setKey(codeTypeName);
+		cacheDao.setIpBlackList(cacheObject);
+	}
+	@Override
+	public void setIpBlackList(String codeTypeName, List<IpBlackList> ipBlackLists) {
+		CacheObject<Map<Integer, IpBlackList>> cacheObj = new CacheObject<>();
+		Map<Integer, IpBlackList> ipBlackListTemp = new HashMap<>();
+		for(IpBlackList ipBlackList : ipBlackLists) {
+			ipBlackListTemp.put(ipBlackList.getId(), ipBlackList);
+		}
+		
+		//container.put(codeTypeName, sysCodesTemp);
+		cacheObj.setContent(ipBlackListTemp);
+		cacheObj.setKey(codeTypeName);
+		cacheDao.setIpBlackList(cacheObj);
+	}
+
+	@Override
+	public void deleteIpBlackList(String codeTypeName, Integer codeName) {
+		cacheDao.deleteIpBlackList(codeTypeName, codeName);
+	}
+	
+	
 }

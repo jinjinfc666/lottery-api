@@ -3,6 +3,7 @@ package com.jll.common.cache;
 import java.util.List;
 import java.util.Map;
 
+import com.jll.entity.IpBlackList;
 import com.jll.entity.Issue;
 import com.jll.entity.PlayType;
 import com.jll.entity.SysCode;
@@ -56,4 +57,12 @@ public interface CacheRedisDao {
 	CacheObject<Map<String, Integer>> getStatGroupByBettingNum(String cacheKey);
 
 	void setStatGroupByBettingNum(CacheObject<Map<String, Integer>> cacheObj);
+	//缓存ip
+	CacheObject<Map<Integer, IpBlackList>> getIpBlackList(String codeTypeName);
+	
+	IpBlackList getIpBlackList(String codeTypeName, Integer codeName);
+	
+	void setIpBlackList(CacheObject<Map<Integer, IpBlackList>> cacheObj);
+	
+	void deleteIpBlackList(String codeTypeName,Integer codeName);
 }

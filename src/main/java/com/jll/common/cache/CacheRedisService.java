@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.jll.common.constants.Constants.SysCodeTypes;
+import com.jll.entity.IpBlackList;
 import com.jll.entity.Issue;
 import com.jll.entity.OrderInfo;
 import com.jll.entity.PlayType;
@@ -92,4 +93,14 @@ public interface CacheRedisService {
 	 * @return
 	 */
 	boolean isIssueBetting(String lotteryType, int issueId);
+	//ip缓存
+	Map<Integer, IpBlackList> getIpBlackList(String codeName);
+	
+	IpBlackList getIpBlackList(String codeTypeName, Integer codeName);
+	
+	void setIpBlackList(String codeTypeName, IpBlackList ipBlackList);
+	
+	void setIpBlackList(String codeTypeName, List<IpBlackList> ipBlackLists);
+	
+	void deleteIpBlackList (String codeTypeName, Integer codeName);
 }
