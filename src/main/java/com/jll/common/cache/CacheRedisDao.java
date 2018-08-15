@@ -1,5 +1,6 @@
 package com.jll.common.cache;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
@@ -56,4 +57,11 @@ public interface CacheRedisDao {
 	CacheObject<Map<String, Integer>> getStatGroupByBettingNum(String cacheKey);
 
 	void setStatGroupByBettingNum(CacheObject<Map<String, Integer>> cacheObj);
+	
+	/**
+	 * 想消息队列发布消息
+	 * @param channel  接收消息的队列名称 或者 主题
+	 * @param mes 需要发布的消息
+	 */
+	void publishMessage(String channel, Serializable mes);
 }

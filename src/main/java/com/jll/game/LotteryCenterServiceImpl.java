@@ -163,6 +163,8 @@ public class LotteryCenterServiceImpl implements LotteryCenterService
 		if(currIssue != null && 
 				currIssue.getState() == Constants.IssueState.END_ISSUE.getCode()
 				&& hasMoreIssue(lottoType.getCodeName())) {
+			cacheServ.publishMessage(Constants.TOPIC_WINNING_NUMBER, currIssue.getIssueNum());
+			
 			currIssue = moveToNext(currIssue, lottoType.getCodeName());
 		}
 	}
@@ -199,7 +201,7 @@ public class LotteryCenterServiceImpl implements LotteryCenterService
 		startTime = currIssue.getStartTime();
 		endTime = currIssue.getEndTime();
 		endBettingTime = DateUtils.addSeconds(endTime, 
-				Integer.valueOf(lottoAttri.getCodeVal()));
+				Integer.valueOf(lottoAttri.getCodeVal())*-1);
 		endTime = DateUtils.addSeconds(endTime, -5);
 		temp = issueServ.getIssueById(currIssue.getId());
 		

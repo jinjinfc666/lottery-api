@@ -1,5 +1,6 @@
 package com.jll.common.cache;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -247,5 +248,10 @@ public class CacheRedisServiceImpl implements CacheRedisService
 		}
 		
 		return true;
+	}
+
+	@Override
+	public void publishMessage(String channel, Serializable mes) {
+		cacheDao.publishMessage(channel, mes);
 	}
 }
