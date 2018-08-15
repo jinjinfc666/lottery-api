@@ -40,13 +40,29 @@ public class SysPlayTypeController {
 	@RequestMapping(value={"/addPlayType"}, method={RequestMethod.POST}, produces={"application/json"})
 	public Map<String, Object> addPlayType(@RequestBody PlayType playType) {
 		Map<String, Object> ret = new HashMap<>();
-		try {
-			playTypeService.addPlayType(playType);
+		if(StringUtils.isBlank(playType.getLotteryType())
+				||StringUtils.isBlank(playType.getClassification())
+				||StringUtils.isBlank(playType.getPtDesc())
+				||StringUtils.isBlank(playType.getPtName())
+				||playType.getMulSinFlag()==null||playType.getIsHidden()==null||playType.getState()==null) 
+		{
 			ret.clear();
-			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+		}
+		try {
+			ret.clear();
+			ret=playTypeService.addPlayType(playType);
+			int status=(int) ret.get(Message.KEY_STATUS);
+			if(status==Message.status.SUCCESS.getCode()) {
+				String lotteryType=playType.getLotteryType();
+				List<PlayType> playTypes=playTypeService.queryByLotteryType(lotteryType);
+				cacheRedisService.setPlayType(lotteryType, playTypes);
+			}
+			return ret;
 		}catch(Exception e){
 			ret.clear();
-			e.printStackTrace();
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
@@ -136,8 +152,18 @@ public class SysPlayTypeController {
 			  HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
 		try {
-			playTypeService.updateState(id, state);
-			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+			ret.clear();
+			ret=playTypeService.updateState(id, state);
+			int status=(int) ret.get(Message.KEY_STATUS);
+			if(status==Message.status.SUCCESS.getCode()) {
+				List<PlayType> playType=playTypeService.queryById(id);
+				if(playType!=null&&playType.size()>0) {
+					String lotteryType=playType.get(0).getLotteryType();
+					List<PlayType> playTypes=playTypeService.queryByLotteryType(lotteryType);
+					cacheRedisService.setPlayType(lotteryType, playTypes);
+				}
+			}
+			return ret;
 		}catch(Exception e){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
@@ -152,8 +178,18 @@ public class SysPlayTypeController {
 			  HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
 		try {
-			playTypeService.updateIsHidden(id, isHidden);
-			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+			ret.clear();
+			ret=playTypeService.updateIsHidden(id, isHidden);
+			int status=(int) ret.get(Message.KEY_STATUS);
+			if(status==Message.status.SUCCESS.getCode()) {
+				List<PlayType> playType=playTypeService.queryById(id);
+				if(playType != null && playType.size() > 0) {
+					String lotteryType=playType.get(0).getLotteryType();
+					List<PlayType> playTypes=playTypeService.queryByLotteryType(lotteryType);
+					cacheRedisService.setPlayType(lotteryType, playTypes);
+				}
+			}
+			return ret;
 		}catch(Exception e){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
@@ -168,8 +204,18 @@ public class SysPlayTypeController {
 			  HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
 		try {
-			playTypeService.updateMulSinFlag(id, mulSinFlag);
-			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+			ret.clear();
+			ret=playTypeService.updateMulSinFlag(id, mulSinFlag);
+			int status=(int) ret.get(Message.KEY_STATUS);
+			if(status==Message.status.SUCCESS.getCode()) {
+				List<PlayType> playType=playTypeService.queryById(id);
+				if(playType != null && playType.size() > 0) {
+					String lotteryType=playType.get(0).getLotteryType();
+					List<PlayType> playTypes=playTypeService.queryByLotteryType(lotteryType);
+					cacheRedisService.setPlayType(lotteryType, playTypes);
+				}
+			}
+			return ret;
 		}catch(Exception e){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
@@ -182,8 +228,15 @@ public class SysPlayTypeController {
 	public Map<String, Object> updatePlayType(@RequestBody PlayType playType) {
 		Map<String, Object> ret = new HashMap<>();
 		try {
-			playTypeService.updatePlayType(playType);
-			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+			ret.clear();
+			ret=playTypeService.updatePlayType(playType);
+			int status=(int) ret.get(Message.KEY_STATUS);
+			if(status==Message.status.SUCCESS.getCode()) {
+				String lotteryType=playType.getLotteryType();
+				List<PlayType> playTypes=playTypeService.queryByLotteryType(lotteryType);
+				cacheRedisService.setPlayType(lotteryType, playTypes);
+			}
+			return ret;
 		}catch(Exception e){
 			e.printStackTrace();
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());

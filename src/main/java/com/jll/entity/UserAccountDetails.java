@@ -1,5 +1,5 @@
 package com.jll.entity;
-// Generated 2018-8-8 15:26:50 by Hibernate Tools 5.2.10.Final
+// Generated 2018-8-14 16:52:58 by Hibernate Tools 5.2.10.Final
 
 import java.util.Date;
 
@@ -98,7 +98,6 @@ public class UserAccountDetails implements java.io.Serializable {
 	public void setOperationType(String operationType) {
 		this.operationType = operationType;
 	}
-
 	
 	public int getDataItemType() {
 		return dataItemType;
@@ -115,5 +114,5 @@ public class UserAccountDetails implements java.io.Serializable {
 	public void setCreateTime(Date createTime) {
 		this.createTime = createTime;
 	}
-
+	
 }

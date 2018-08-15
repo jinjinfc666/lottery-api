@@ -51,6 +51,7 @@ import com.jll.common.utils.StringUtils;
 import com.jll.common.utils.Utils;
 import com.jll.dao.SupserDao;
 import com.jll.entity.DepositApplication;
+import com.jll.entity.MemberPlReport;
 import com.jll.entity.OrderInfo;
 import com.jll.entity.Promo;
 import com.jll.entity.SiteMessFeedback;
@@ -396,7 +397,7 @@ public class UserInfoServiceImpl implements UserInfoService
 	@Override
 	public Map<String, Object> getBankCodeList() {
 		Map<String, Object> ret = new HashMap<>();
-		List<SysCode> types = sysCodeService.queryType(SysCodeTypes.LOTTERY_TYPES.getCode());
+		List<SysCode> types = sysCodeService.queryAllSmallType(SysCodeTypes.LOTTERY_TYPES.getCode());
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		ret.put("data", types);
 		return ret;
@@ -812,6 +813,28 @@ public class UserInfoServiceImpl implements UserInfoService
 		supserDao.update(redAcc);
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		return ret;
+	}
+
+	@Override
+	public UserInfo getCurLoginInfo() {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		if(auth == null) {
+			return null;
+		}
+		return getUserByUserName(auth.getName());
+	}
+
+	@Override
+	public Map<String, Object> userProfitReport(String userName) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+		MemberPlReport redAcc = new MemberPlReport();
+		List<?> finds =  supserDao.findByName(MemberPlReport.class, "userName",userName);
+		if(!finds.isEmpty()){
+			redAcc = (MemberPlReport) finds.get(0);
+		}
+		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		ret.put(Message.KEY_DATA,redAcc);
+		return null;
 	}
 	
 }

@@ -2,22 +2,29 @@ package com.jll.dao;
 
 import java.util.Date;
 
+import org.apache.commons.lang3.time.DateUtils;
+
 public class PageQueryDao {
 	
 	private Date startDate;
 	private Date endDate;
 	private String billNo;
-	private int pageIndex;
-	private int pageSize;
+	private Integer pageIndex;
+	private Integer pageSize;
 	
+	private Integer DEFAULT_PAGE_INDEX=1;
+	private Integer DEFAULT_PAGE_SIZE=20;
 	
 	public PageQueryDao() {
-		this.pageIndex = 1;
-		this.pageIndex = 20;
+		this.pageIndex = DEFAULT_PAGE_INDEX;
+		this.pageSize = DEFAULT_PAGE_SIZE;
 	}
 
 
 	public Date getStartDate() {
+		if(null == startDate){
+			return DateUtils.addDays(new Date(), -1);
+		}
 		return startDate;
 	}
 
@@ -28,6 +35,9 @@ public class PageQueryDao {
 
 
 	public Date getEndDate() {
+		if(null == endDate){
+			return new Date();
+		}
 		return endDate;
 	}
 
@@ -47,23 +57,30 @@ public class PageQueryDao {
 	}
 
 
-	public int getPageIndex() {
+	public Integer getPageIndex() {
+		if(null == pageSize){
+			return DEFAULT_PAGE_INDEX;
+		}
 		return pageIndex;
 	}
 
 
-	public void setPageIndex(int pageIndex) {
+	public void setPageIndex(Integer pageIndex) {
 		this.pageIndex = pageIndex;
 	}
 
 
-	public int getPageSize() {
+	public Integer getPageSize() {
+		if(null == pageSize){
+			return DEFAULT_PAGE_SIZE;
+		}
 		return pageSize;
 	}
 
 
-	public void setPageSize(int pageSize) {
+	public void setPageSize(Integer pageSize) {
 		this.pageSize = pageSize;
 	}
-
+	
+	
 }

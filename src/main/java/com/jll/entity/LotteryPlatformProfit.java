@@ -1,5 +1,5 @@
 package com.jll.entity;
-// Generated 2018-8-8 15:26:50 by Hibernate Tools 5.2.10.Final
+// Generated 2018-8-14 16:52:58 by Hibernate Tools 5.2.10.Final
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -24,9 +24,9 @@ public class LotteryPlatformProfit implements java.io.Serializable {
 	public LotteryPlatformProfit() {
 	}
 
-	public LotteryPlatformProfit(Date createTime, String codeName, String issueNum,
-			Integer playTypeid, String playType, BigDecimal betting, BigDecimal cancelAmount, BigDecimal winning,
-			BigDecimal rebate, BigDecimal platformProfit) {
+	public LotteryPlatformProfit(Date createTime, String codeName, String issueNum, Integer playTypeid, String playType,
+			BigDecimal betting, BigDecimal cancelAmount, BigDecimal winning, BigDecimal rebate,
+			BigDecimal platformProfit) {
 		this.createTime = createTime;
 		this.codeName = codeName;
 		this.issueNum = issueNum;

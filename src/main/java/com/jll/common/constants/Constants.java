@@ -1471,4 +1471,28 @@ public class Constants {
 			return this.code;
 		}
 	}
+	/**
+	 * ip 缓存codeName
+	 */
+	public static enum IpBlackList{
+		IP_BLACK_LIST("ip_black_list");
+		private String code;
+		
+		private IpBlackList(String code) {
+			this.code = code;
+		}
+		
+		public String getCode() {
+			return this.code;
+		}
+		
+		public static List<String> getList() {
+			List<String> map=new ArrayList<String>();
+			IpBlackList[] names = IpBlackList.values();
+			for(IpBlackList name: names) {
+				map.add(name.getCode());
+			}
+			return map;
+		}
+	}
 }

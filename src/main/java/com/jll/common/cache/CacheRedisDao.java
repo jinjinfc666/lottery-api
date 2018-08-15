@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+import com.jll.entity.IpBlackList;
 import com.jll.entity.Issue;
 import com.jll.entity.PlayType;
 import com.jll.entity.SysCode;
@@ -64,4 +65,12 @@ public interface CacheRedisDao {
 	 * @param mes 需要发布的消息
 	 */
 	void publishMessage(String channel, Serializable mes);
+	//缓存ip
+	CacheObject<Map<Integer, IpBlackList>> getIpBlackList(String codeTypeName);
+	
+	IpBlackList getIpBlackList(String codeTypeName, Integer codeName);
+	
+	void setIpBlackList(CacheObject<Map<Integer, IpBlackList>> cacheObj);
+	
+	void deleteIpBlackList(String codeTypeName,Integer codeName);
 }

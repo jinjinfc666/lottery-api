@@ -1,5 +1,5 @@
 package com.jll.entity;
-// Generated 2018-8-8 15:26:50 by Hibernate Tools 5.2.10.Final
+// Generated 2018-8-14 16:52:58 by Hibernate Tools 5.2.10.Final
 
 import java.util.Date;
 
@@ -8,10 +8,6 @@ import java.util.Date;
  */
 public class PlayType implements java.io.Serializable {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 774013967875953997L;
 	private Integer id;
 	private String lotteryType;
 	private String classification;
@@ -26,9 +22,10 @@ public class PlayType implements java.io.Serializable {
 	public PlayType() {
 	}
 
-	public PlayType(String lotteryType, String classification,String ptName, String ptDesc, Integer state, Integer mulSinFlag ,Integer isHidden,Integer seq, Date createTime) {
+	public PlayType(String lotteryType, String classification, String ptName, String ptDesc, Integer state,
+			Integer mulSinFlag, Integer isHidden, Integer seq, Date createTime) {
 		this.lotteryType = lotteryType;
-		this.classification=classification;
+		this.classification = classification;
 		this.ptName = ptName;
 		this.ptDesc = ptDesc;
 		this.state = state;
@@ -36,30 +33,6 @@ public class PlayType implements java.io.Serializable {
 		this.isHidden = isHidden;
 		this.seq = seq;
 		this.createTime = createTime;
-	}
-	
-	public Integer getIsHidden() {
-		return isHidden;
-	}
-
-	public void setIsHidden(Integer isHidden) {
-		this.isHidden = isHidden;
-	}
-
-	public Integer getMulSinFlag() {
-		return mulSinFlag;
-	}
-
-	public void setMulSinFlag(Integer mulSinFlag) {
-		this.mulSinFlag = mulSinFlag;
-	}
-
-	public String getClassification() {
-		return classification;
-	}
-
-	public void setClassification(String classification) {
-		this.classification = classification;
 	}
 
 	public Integer getId() {
@@ -77,9 +50,17 @@ public class PlayType implements java.io.Serializable {
 	public void setLotteryType(String lotteryType) {
 		this.lotteryType = lotteryType;
 	}
-	
+
+	public String getClassification() {
+		return this.classification;
+	}
+
+	public void setClassification(String classification) {
+		this.classification = classification;
+	}
+
 	public String getPtName() {
-		return ptName;
+		return this.ptName;
 	}
 
 	public void setPtName(String ptName) {
@@ -87,7 +68,7 @@ public class PlayType implements java.io.Serializable {
 	}
 
 	public String getPtDesc() {
-		return ptDesc;
+		return this.ptDesc;
 	}
 
 	public void setPtDesc(String ptDesc) {
@@ -100,6 +81,22 @@ public class PlayType implements java.io.Serializable {
 
 	public void setState(Integer state) {
 		this.state = state;
+	}
+
+	public Integer getMulSinFlag() {
+		return this.mulSinFlag;
+	}
+
+	public void setMulSinFlag(Integer mulSinFlag) {
+		this.mulSinFlag = mulSinFlag;
+	}
+
+	public Integer getIsHidden() {
+		return this.isHidden;
+	}
+
+	public void setIsHidden(Integer isHidden) {
+		this.isHidden = isHidden;
 	}
 
 	public Integer getSeq() {

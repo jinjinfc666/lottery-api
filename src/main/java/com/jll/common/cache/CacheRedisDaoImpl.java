@@ -1,12 +1,15 @@
 package com.jll.common.cache;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Repository;
 
+import com.jll.entity.IpBlackList;
 import com.jll.entity.Issue;
 import com.jll.entity.PlayType;
 import com.jll.entity.SysCode;
@@ -106,6 +109,27 @@ public class CacheRedisDaoImpl  extends AbstractBaseRedisDao implements CacheRed
 	public void setStatGroupByBettingNum(CacheObject<Map<String, Integer>> cacheObj) {
 		this.saveOrUpdate(cacheObj);
 	}
+	//缓存ip
+	@Override
+	public CacheObject<Map<Integer, IpBlackList>> getIpBlackList(String codeName) {
+		CacheObject<Map<Integer, IpBlackList>> cacheObject = get(codeName);
+		return cacheObject;
+	}
+	@Override
+	public IpBlackList getIpBlackList(String codeTypeName, Integer codeName) {
+		CacheObject<Map<Integer, IpBlackList>> cacheObject=get(codeTypeName);
+		if(cacheObject==null) {
+			return null;
+		}
+		Map<Integer,IpBlackList> map=cacheObject.getContent();
+		IpBlackList sysCode=map.get(codeName); 
+		return sysCode;
+	}
+
+	@Override
+	public void setIpBlackList(CacheObject<Map<Integer, IpBlackList>> cacheObj) {
+		this.saveOrUpdate(cacheObj);
+	}
 
 	@Override
 	public void publishMessage(String channel, Serializable mes) {
@@ -113,4 +137,22 @@ public class CacheRedisDaoImpl  extends AbstractBaseRedisDao implements CacheRed
 		redisTemplate.convertAndSend(channel, mes);
 	}
 
+	public void deleteIpBlackList(String codeTypeName, Integer codeName) {
+		CacheObject<Map<Integer, IpBlackList>> cacheObject = get(codeTypeName);
+		Map<Integer,IpBlackList> map=new HashMap<Integer,IpBlackList>();
+		if(cacheObject != null){
+			map=cacheObject.getContent();
+			Iterator<?> iterator = map.keySet().iterator(); 
+			while (iterator.hasNext()) {
+			    Integer key = (Integer) iterator.next();
+			    if (codeName.intValue()==key.intValue()) {
+			       iterator.remove();        //添加该行代码
+			        map.remove(key);    
+			     }
+			}
+		}
+		cacheObject.setContent(map);
+		cacheObject.setKey(codeTypeName);
+		this.setIpBlackList(cacheObject);
+	}
 }

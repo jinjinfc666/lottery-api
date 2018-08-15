@@ -1,12 +1,10 @@
 package com.jll.user;
 
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
-import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
@@ -770,4 +768,14 @@ public class UserController {
 			@RequestParam("amount") double amount) {
 		return userInfoService.exchangePoint(userId,amount);
 	}
+	
+	
+	@ApiComment("User Profit Report")
+	@RequestMapping(value="/{userName}/profit-report", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> userProfitReport(
+			@PathVariable("userName") String userName) {
+		return userInfoService.userProfitReport(userName);
+	}	
+	
+	
 }

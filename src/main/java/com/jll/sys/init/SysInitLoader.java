@@ -40,16 +40,82 @@ public class SysInitLoader {
 		initLotteryAttributes();
 		initSysCodePlayType();
 		initAccOpeType();
+		initPaymentPlatform();
+		initLuckyDraw();
+		initSignInDay();
 	}
-	
+	//加载签到活动
+	private void initSignInDay() {
+		String codeTypeName = Constants.SysCodeTypes.SIGN_IN_DAY.getCode();
+		Map<String, SysCode> signInDay = cacheServ.getSysCode(codeTypeName);
+		List<SysCode> sysCodes = null;
+		
+		if(signInDay == null || signInDay.size() == 0) {
+			sysCodes = sysCodeServ.queryAllSmallType(codeTypeName);
+			List<SysCode> sysCodeTypes = sysCodeServ.queryByCodeNameBigType(codeTypeName);
+			
+			if(sysCodes == null || sysCodes.size() == 0
+					|| sysCodeTypes == null
+					|| sysCodeTypes.size() == 0) {
+				return ;
+			}
+			
+			sysCodes.add(sysCodeTypes.get(0));
+			
+			cacheServ.setSysCode(codeTypeName, sysCodes);
+		}
+	}
+	//加载流水类型
 	private void initAccOpeType() {
 		String codeTypeName = Constants.SysCodeTypes.FLOW_TYPES.getCode();
 		Map<String, SysCode> accOpeType = cacheServ.getSysCode(codeTypeName);
 		List<SysCode> sysCodes = null;
 		
 		if(accOpeType == null || accOpeType.size() == 0) {
-			sysCodes = sysCodeServ.queryCacheType(codeTypeName);
-			List<SysCode> sysCodeTypes = sysCodeServ.queryCacheTypeOnly(codeTypeName);
+			sysCodes = sysCodeServ.queryAllSmallType(codeTypeName);
+			List<SysCode> sysCodeTypes = sysCodeServ.queryByCodeNameBigType(codeTypeName);
+			
+			if(sysCodes == null || sysCodes.size() == 0
+					|| sysCodeTypes == null
+					|| sysCodeTypes.size() == 0) {
+				return ;
+			}
+			
+			sysCodes.add(sysCodeTypes.get(0));
+			
+			cacheServ.setSysCode(codeTypeName, sysCodes);
+		}
+	}
+	//加载支付平台
+	private void initPaymentPlatform() {
+		String codeTypeName = Constants.SysCodeTypes.PAYMENT_PLATFORM.getCode();
+		Map<String, SysCode> paymentPlatform = cacheServ.getSysCode(codeTypeName);
+		List<SysCode> sysCodes = null;
+		
+		if(paymentPlatform == null || paymentPlatform.size() == 0) {
+			sysCodes = sysCodeServ.queryAllSmallType(codeTypeName);
+			List<SysCode> sysCodeTypes = sysCodeServ.queryByCodeNameBigType(codeTypeName);
+			
+			if(sysCodes == null || sysCodes.size() == 0
+					|| sysCodeTypes == null
+					|| sysCodeTypes.size() == 0) {
+				return ;
+			}
+			
+			sysCodes.add(sysCodeTypes.get(0));
+			
+			cacheServ.setSysCode(codeTypeName, sysCodes);
+		}
+	}
+	//加载幸运抽奖
+	private void initLuckyDraw() {
+		String codeTypeName = Constants.SysCodeTypes.LUCKY_DRAW.getCode();
+		Map<String, SysCode> luckyDraw = cacheServ.getSysCode(codeTypeName);
+		List<SysCode> sysCodes = null;
+		
+		if(luckyDraw == null || luckyDraw.size() == 0) {
+			sysCodes = sysCodeServ.queryAllSmallType(codeTypeName);
+			List<SysCode> sysCodeTypes = sysCodeServ.queryByCodeNameBigType(codeTypeName);
 			
 			if(sysCodes == null || sysCodes.size() == 0
 					|| sysCodeTypes == null
@@ -63,7 +129,6 @@ public class SysInitLoader {
 		}
 	}
 
-
 	//加载彩种类型
 	private void initLotteryType() {
 		String codeTypeName = Constants.SysCodeTypes.LOTTERY_TYPES.getCode();
@@ -71,8 +136,8 @@ public class SysInitLoader {
 		List<SysCode> sysCodes = null;
 		
 		if(lottoTypes == null || lottoTypes.size() == 0) {
-			sysCodes = sysCodeServ.queryCacheType(codeTypeName);
-			List<SysCode> sysCodeTypes = sysCodeServ.queryCacheTypeOnly(codeTypeName);
+			sysCodes = sysCodeServ.queryAllSmallType(codeTypeName);
+			List<SysCode> sysCodeTypes = sysCodeServ.queryByCodeNameBigType(codeTypeName);
 			
 			if(sysCodes == null || sysCodes.size() == 0
 					|| sysCodeTypes == null
@@ -92,8 +157,8 @@ public class SysInitLoader {
 		List<SysCode> sysCodes = null;
 		
 		if(playTypes == null || playTypes.size() == 0) {
-			sysCodes = sysCodeServ.queryCacheType(codeTypeName);
-			List<SysCode> sysCodeTypes = sysCodeServ.queryCacheTypeOnly(codeTypeName);
+			sysCodes = sysCodeServ.queryAllSmallType(codeTypeName);
+			List<SysCode> sysCodeTypes = sysCodeServ.queryByCodeNameBigType(codeTypeName);
 			
 			if(sysCodes == null || sysCodes.size() == 0
 					|| sysCodeTypes == null
@@ -116,8 +181,8 @@ public class SysInitLoader {
 				List<SysCode> sysCodes = null;
 				
 				if(lottoTypes == null || lottoTypes.size() == 0) {
-					sysCodes = sysCodeServ.queryCacheType(codeTypeName);
-					List<SysCode> sysCodeTypes = sysCodeServ.queryCacheTypeOnly(codeTypeName);
+					sysCodes = sysCodeServ.queryAllSmallType(codeTypeName);
+					List<SysCode> sysCodeTypes = sysCodeServ.queryByCodeNameBigType(codeTypeName);
 					
 					if(sysCodes == null || sysCodes.size() == 0
 							|| sysCodeTypes == null
