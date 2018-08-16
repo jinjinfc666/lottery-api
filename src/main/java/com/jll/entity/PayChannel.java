@@ -10,7 +10,7 @@ public class PayChannel implements java.io.Serializable {
 	private String channelName;
 	private String nickName;
 	private String typeClass;
-	private String type;
+	private Integer payType;
 	private Float maxAmount;
 	private Integer enableMaxAmount;
 	private Integer seq;
@@ -23,13 +23,13 @@ public class PayChannel implements java.io.Serializable {
 	public PayChannel() {
 	}
 
-	public PayChannel(String channelName, String nickName, String typeClass, String type, Float maxAmount,
+	public PayChannel(String channelName, String nickName, String typeClass, Integer payType, Float maxAmount,
 			Integer enableMaxAmount, Integer seq, Integer state, String qrUrl, String bankAcc, String bankName,
 			String remark) {
 		this.channelName = channelName;
 		this.nickName = nickName;
 		this.typeClass = typeClass;
-		this.type = type;
+		this.payType = payType;
 		this.maxAmount = maxAmount;
 		this.enableMaxAmount = enableMaxAmount;
 		this.seq = seq;
@@ -72,12 +72,12 @@ public class PayChannel implements java.io.Serializable {
 		this.typeClass = typeClass;
 	}
 
-	public String getType() {
-		return this.type;
+	public Integer getPayType() {
+		return this.payType;
 	}
 
-	public void setType(String type) {
-		this.type = type;
+	public void setPayType(Integer payType) {
+		this.payType = payType;
 	}
 
 	public Float getMaxAmount() {
