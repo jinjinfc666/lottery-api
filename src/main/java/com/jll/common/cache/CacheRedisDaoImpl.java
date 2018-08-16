@@ -1,10 +1,12 @@
 package com.jll.common.cache;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Repository;
 
 import com.jll.entity.IpBlackList;
@@ -12,10 +14,13 @@ import com.jll.entity.Issue;
 import com.jll.entity.PlayType;
 import com.jll.entity.SysCode;
 import com.jll.game.BulletinBoard;
+import com.jll.game.LotteryCenterServiceImpl;
 
 @Repository
 public class CacheRedisDaoImpl  extends AbstractBaseRedisDao implements CacheRedisDao{
 
+	private Logger logger = Logger.getLogger(LotteryCenterServiceImpl.class);
+	
 	@Override
 	public void setCaptchaCode(CacheObject<String> cacheObj) {
 		this.saveOrUpdate(cacheObj);
@@ -127,6 +132,11 @@ public class CacheRedisDaoImpl  extends AbstractBaseRedisDao implements CacheRed
 	}
 
 	@Override
+	public void publishMessage(String channel, Serializable mes) {
+		logger.debug("try to obtain the winning number for ::: " + mes);
+		redisTemplate.convertAndSend(channel, mes);
+	}
+
 	public void deleteIpBlackList(String codeTypeName, Integer codeName) {
 		CacheObject<Map<Integer, IpBlackList>> cacheObject = get(codeTypeName);
 		Map<Integer,IpBlackList> map=new HashMap<Integer,IpBlackList>();

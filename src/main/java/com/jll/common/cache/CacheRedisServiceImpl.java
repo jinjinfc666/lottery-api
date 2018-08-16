@@ -1,5 +1,6 @@
 package com.jll.common.cache;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -249,6 +250,11 @@ public class CacheRedisServiceImpl implements CacheRedisService
 		
 		return true;
 	}
+
+	@Override
+	public void publishMessage(String channel, Serializable mes) {
+		cacheDao.publishMessage(channel, mes);
+	}
 	//ip缓存
 	@Override
 	public Map<Integer, IpBlackList> getIpBlackList(String codeName) {
@@ -295,6 +301,5 @@ public class CacheRedisServiceImpl implements CacheRedisService
 	public void deleteIpBlackList(String codeTypeName, Integer codeName) {
 		cacheDao.deleteIpBlackList(codeTypeName, codeName);
 	}
-	
 	
 }

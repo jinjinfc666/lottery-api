@@ -18,6 +18,10 @@ public class Constants {
 	
 	public final static String KEY_STAT_ISSUE_BETTING = "stat_issuse_betting_";
 	
+	public final static String TOPIC_WINNING_NUMBER = "winning_number";
+	
+	public final static String TOPIC_PAY_OUT = "pay_out";
+	
 	public static enum DepositOrderState{
 		INIT_OR_PUSHED(0),
 		FAILED_PUSH(10),

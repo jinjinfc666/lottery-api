@@ -1,5 +1,6 @@
 package com.jll.common.cache;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
@@ -93,6 +94,14 @@ public interface CacheRedisService {
 	 * @return
 	 */
 	boolean isIssueBetting(String lotteryType, int issueId);
+	
+	/**
+	 * 想消息队列发布消息
+	 * @param channel  接收消息的队列名称 或者 主题
+	 * @param mes 需要发布的消息
+	 */
+	void publishMessage(String channel, Serializable mes);
+	
 	//ip缓存
 	Map<Integer, IpBlackList> getIpBlackList(String codeName);
 	
