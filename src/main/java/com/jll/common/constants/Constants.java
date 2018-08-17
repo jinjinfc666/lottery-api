@@ -1530,4 +1530,44 @@ public class Constants {
 			return null;
 		}
 	}
+	
+	/**
+	 * payType配置时需要的属性
+	 */
+	public static enum PayTypeIs{
+		IS(0,"非第三方平台"),
+		NO(1,"第三方平台");
+		
+		private Integer code;
+		private String name;
+		
+		private PayTypeIs(Integer code,String name) {
+			this.code = code;
+			this.name = name;
+		}
+		
+		public Integer getCode() {
+			return this.code;
+		}
+		public String getName() {
+			return this.name;
+		}
+		
+		public static List<Integer> getList() {
+			List<Integer> map=new ArrayList<Integer>();
+			PayTypeIs[] names = PayTypeIs.values();
+			for(PayTypeIs name: names) {
+				map.add(name.getCode());
+			}
+			return map;
+		}
+		public static Map<Integer,String> getMap() {
+			Map<Integer,String> map=new HashMap<Integer,String>();
+			PayTypeIs[] names = PayTypeIs.values();
+			for(PayTypeIs name: names) {
+				map.put(name.getCode(), name.getName());
+			}
+			return map;
+		}
+	}
 }
