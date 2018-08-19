@@ -1496,6 +1496,42 @@ public class Constants {
 			return map;
 		}
 	}
+	
+	/**
+	 * 订单延迟状态
+	 */
+	public static enum OrderDelayState{
+		DEPLAY(0, "delay"),
+		NON_DEPLAY(1, "non_deplay");
+		
+		private int code;
+		private String desc;
+		
+		private OrderDelayState(int code, String desc) {
+			this.code = code;
+			this.desc = desc;
+		}
+		
+		public int getCode() {
+			return this.code;
+		}
+		
+		public String getDesc() {
+			return this.desc;
+		}
+		
+		public static OrderDelayState getStateByCode(int code) {
+			OrderDelayState[] states = OrderDelayState.values();
+			for(OrderDelayState state : states) {
+				if(state.getCode() == code) {
+					return state;
+				}
+			}
+			
+			return null;
+		}
+	}
+	
 	/**
 	 * payType配置时需要的属性
 	 */
