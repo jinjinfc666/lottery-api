@@ -21,6 +21,8 @@ import com.jll.common.constants.Constants.SysCodeTypes;
 import com.jll.entity.IpBlackList;
 import com.jll.entity.Issue;
 import com.jll.entity.OrderInfo;
+import com.jll.entity.PayChannel;
+import com.jll.entity.PayType;
 import com.jll.entity.PlayType;
 import com.jll.entity.SysCode;
 import com.jll.game.BulletinBoard;
@@ -185,7 +187,7 @@ public class CacheRedisServiceImpl implements CacheRedisService
 	public SysCode getSysCode(String codeTypeName, String codeName) {
 		return cacheDao.getSysCode(codeTypeName, codeName);
 	}
-
+	//playType 玩法--------------------Start----------------------------------
 	@Override
 	public List<PlayType> getPlayType(SysCode lotteryType) {
 		String cacheKey = Constants.KEY_PLAY_TYPE + lotteryType.getCodeName();
@@ -202,7 +204,8 @@ public class CacheRedisServiceImpl implements CacheRedisService
 		
 		cacheDao.setPlayType(cache);
 	}
-
+	//playType 玩法--------------------End----------------------------------
+	
 	@Override
 	public void statGroupByBettingNum(String lotteryType, OrderInfo order) {
 		StringBuffer cacheKey = new StringBuffer();
@@ -300,6 +303,71 @@ public class CacheRedisServiceImpl implements CacheRedisService
 	@Override
 	public void deleteIpBlackList(String codeTypeName, Integer codeName) {
 		cacheDao.deleteIpBlackList(codeTypeName, codeName);
+	}
+	//充值方式
+
+	@Override
+	public List<PayType> getPayType(String codeName) {
+		List<PayType> playTypes = cacheDao.getPayType(codeName);
+		if(playTypes!=null&&playTypes.size()>0) {
+			return playTypes;
+		}
+		return null;
+	}
+
+	@Override
+	public void setPayType(String codeTypeName, List<PayType> payTypes) {
+		CacheObject<List<PayType>> cache = new CacheObject<>();
+		cache.setContent(payTypes);
+		cache.setKey(codeTypeName);
+		
+		cacheDao.setPayType(cache);
+		
+	}
+	//充值渠道
+
+	@Override
+	public Map<Integer, PayChannel> getPayChannel(String codeName) {
+		CacheObject<Map<Integer, PayChannel>>  cache = cacheDao.getPayChannel(codeName);
+		if(cache == null) {
+			return null;
+		}
+		return cache.getContent();
+	}
+
+	@Override
+	public PayChannel getPayChannel(String codeName, Integer codeName1) {
+		return cacheDao.getPayChannel(codeName, codeName1);
+	}
+
+	@Override
+	public void setPayChannel(String codeName, PayChannel payChannel) {
+		CacheObject<Map<Integer, PayChannel>> cacheObject=cacheDao.getPayChannel(codeName);
+		Map<Integer, PayChannel> payChannelTemp=null;
+		if(cacheObject==null) {
+			payChannelTemp = new HashMap<>();
+			cacheObject= new CacheObject<>();
+		}else {
+			payChannelTemp=cacheObject.getContent();
+		}
+		payChannelTemp.put(payChannel.getId(), payChannel);
+		cacheObject.setContent(payChannelTemp);
+		cacheObject.setKey(codeName);
+		cacheDao.setPayChannel(cacheObject);
+	}
+
+	@Override
+	public void setPayChannel(String codeName, List<PayChannel> payChannelLists) {
+		CacheObject<Map<Integer, PayChannel>> cacheObj = new CacheObject<>();
+		Map<Integer, PayChannel> payChannelTemp = new HashMap<>();
+		for(PayChannel payChannel : payChannelLists) {
+			payChannelTemp.put(payChannel.getId(), payChannel);
+		}
+		
+		//container.put(codeTypeName, sysCodesTemp);
+		cacheObj.setContent(payChannelTemp);
+		cacheObj.setKey(codeName);
+		cacheDao.setPayChannel(cacheObj);
 	}
 	
 }

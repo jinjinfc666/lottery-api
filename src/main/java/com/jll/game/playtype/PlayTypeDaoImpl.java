@@ -86,19 +86,8 @@ public class PlayTypeDaoImpl extends DefaultGenericDaoImpl<PlayType> implements 
 	}
 	//修改
 	@Override
-	public void updatePlayType(Integer id,String classification, String ptName, String ptDesc,Integer state,Integer mulSinFlag,Integer isHidden) {
-		Session session=getSessionFactory().getCurrentSession();
-		String hql="";
-		hql=("update PlayType set classification=:classification,ptName=:ptName,ptDesc=:ptDesc,state=:state,mulSinFlag=:mulSinFlag,isHidden=:isHidden where id=:id");
-		Query query = session.createQuery(hql);
-		query.setParameter("classification", classification);
-		query.setParameter("ptName", ptName);
-		query.setParameter("ptDesc", ptDesc);
-		query.setParameter("id", id);
-		query.setParameter("state", state);
-		query.setParameter("mulSinFlag", mulSinFlag);
-		query.setParameter("isHidden", isHidden);
-		query.executeUpdate();	
+	public void updatePlayType(PlayType playType) {
+		this.saveOrUpdate(playType);
 	}
 	
 	@Override

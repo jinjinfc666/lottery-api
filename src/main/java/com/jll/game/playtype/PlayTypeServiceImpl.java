@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
@@ -109,7 +110,7 @@ public class PlayTypeServiceImpl implements PlayTypeService
 	public Map<String,Object> updatePlayType(PlayType playType) {
 		Integer id=playType.getId();
 		String classification=playType.getClassification();
-		String pdName=playType.getPtName();
+		String ptName=playType.getPtName();
 		String ptDesc=playType.getPtDesc();
 		Integer state=playType.getState();
 		Integer mulSinFlag=playType.getMulSinFlag();
@@ -117,7 +118,26 @@ public class PlayTypeServiceImpl implements PlayTypeService
 		Map<String,Object> map=new HashMap<String,Object>();
 		boolean isNo=this.isNoPlayType(id);
 		if(isNo) {
-			playTypeDao.updatePlayType(id,classification, pdName, ptDesc,state,mulSinFlag,isHidden);
+			PlayType playTypeNew=this.queryById(id).get(0);
+			if(!StringUtils.isBlank(classification)) {
+				playTypeNew.setClassification(classification);
+			}
+			if(!StringUtils.isBlank(ptName)) {
+				playTypeNew.setPtName(ptName);				
+			}
+			if(!StringUtils.isBlank(ptDesc)) {
+				playTypeNew.setPtDesc(ptDesc);
+			}
+			if(state!=null) {
+				playTypeNew.setState(state);
+			}
+			if(mulSinFlag!=null) {
+				playTypeNew.setMulSinFlag(mulSinFlag);		
+			}
+			if(isHidden!=null) {
+				playTypeNew.setIsHidden(isHidden);
+			}
+			playTypeDao.updatePlayType(playTypeNew);
 			map.clear();
 			map.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		}else {

@@ -26,7 +26,7 @@ public interface PlayTypeDao
 	
 	void updateMulSinFlag(Integer id,Integer mulSinFlag);
 	
-	void updatePlayType(Integer id,String classification,String name,String desc,Integer state,Integer mulSinFlag,Integer isHidden);
+	void updatePlayType(PlayType playType);
 	
 	List<PlayType> queryLotteryType(String lotteryType);
 	

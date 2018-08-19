@@ -8,6 +8,8 @@ import com.jll.common.constants.Constants.SysCodeTypes;
 import com.jll.entity.IpBlackList;
 import com.jll.entity.Issue;
 import com.jll.entity.OrderInfo;
+import com.jll.entity.PayChannel;
+import com.jll.entity.PayType;
 import com.jll.entity.PlayType;
 import com.jll.entity.SysCode;
 import com.jll.game.BulletinBoard;
@@ -73,8 +75,6 @@ public interface CacheRedisService {
 	 * @return
 	 */
 	List<PlayType> getPlayType(SysCode lotteryType);
-	
-	
 	/**
 	 * 将彩票玩法保存到缓存，以彩种作为key:play_type_ + lotteryType
 	 * @param lotteryType
@@ -112,4 +112,17 @@ public interface CacheRedisService {
 	void setIpBlackList(String codeTypeName, List<IpBlackList> ipBlackLists);
 	
 	void deleteIpBlackList (String codeTypeName, Integer codeName);
+	//充值方式
+	List<PayType> getPayType(String codeName);
+	
+	void setPayType(String codeTypeName, List<PayType> payTypes);
+	
+	//充值渠道
+	Map<Integer, PayChannel> getPayChannel(String codeName);
+	
+	PayChannel getPayChannel(String codeName, Integer codeName1);
+	
+	void setPayChannel(String codeName, PayChannel payChannel);
+	
+	void setPayChannel(String codeName, List<PayChannel> payChannelLists);
 }
