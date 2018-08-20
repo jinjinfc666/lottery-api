@@ -74,6 +74,7 @@ public interface CacheRedisService {
 	 * @param lotteryType
 	 * @return
 	 */
+	List<PlayType> getPlayType(String cacheCodeName);
 	List<PlayType> getPlayType(SysCode lotteryType);
 	/**
 	 * 将彩票玩法保存到缓存，以彩种作为key:play_type_ + lotteryType

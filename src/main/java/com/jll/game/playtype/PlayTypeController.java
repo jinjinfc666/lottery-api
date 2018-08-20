@@ -347,4 +347,21 @@ public class PlayTypeController {
 			return ret;
 		}
 	}
+	//修改排序
+	@RequestMapping(value={"/updatePlayTypeSeq"}, method={RequestMethod.PUT}, produces={"application/json"})
+	public Map<String, Object> updatePlayTypeSeq(@RequestParam(name = "lotteryType", required = true) String lotteryType,//只传值,
+			@RequestParam(name = "allId", required = true) String allId,
+			  HttpServletRequest request) {
+		Map<String, Object> ret = new HashMap<>();
+		try {
+			Map<String,Object> map=playTypeService.updatePlayTypeSeq(lotteryType, allId);
+			return map;
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			return ret;
+		}
+	}
 }

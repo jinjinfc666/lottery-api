@@ -183,35 +183,22 @@ public class DepositController {
 			return ret;
 		}
 	}
-//	//修改排序
-//	@RequestMapping(value={"/updatePayTypeState"}, method={RequestMethod.PUT}, produces={"application/json"})
-//	public Map<String, Object> updatePayTypeState(@RequestParam(name = "id", required = true) Integer id,
-//			  @RequestParam(name = "seqa", required = true) Integer seqa,
-//			  @RequestParam(name = "seqb", required = true) Integer seqb,
-//			  HttpServletRequest request) {
-//		Map<String, Object> ret = new HashMap<>();
-//		ret.put("id", id);
-//		ret.put("seqa", seqa);
-//		ret.put("seqb", seqb);
-//		try {
-//			Map<String,Object> map=payTypeService.updatePayTypeState(ret);
-//			int status=(int) map.get(Message.KEY_STATUS);	
-//			if(status==Message.status.SUCCESS.getCode()) {
-//				String payTypeName=Constants.PayTypeName.PAY_TYPE_CLASS.getCode();
-//				List<PayType> payTypeAll=payTypeService.queryAllPayType();  
-//				if(payTypeAll!=null&&payTypeAll.size()>0) {
-//					cacheServ.setPayType(payTypeName, payTypeAll);
-//				}
-//			}
-//			return map;
-//		}catch(Exception e){
-//			ret.clear();
-//			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-//			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
-//			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
-//		}
-//		return ret;
-//	}
+	//修改排序
+	@RequestMapping(value={"/updatePayTypeSeq"}, method={RequestMethod.PUT}, produces={"application/json"})
+	public Map<String, Object> updatePayTypeSeq(@RequestParam(name = "allId", required = true) String allId,
+			  HttpServletRequest request) {
+		Map<String, Object> ret = new HashMap<>();
+		try {
+			Map<String,Object> map=payTypeService.updatePayTypeState(allId);
+			return map;
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+		}
+		return ret;
+	}
 	/**
 	 * 充值渠道
 	 * */
@@ -331,6 +318,22 @@ public class DepositController {
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 			ret.put("data", map);
 			return ret;
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+		}
+		return ret;
+	}
+	//修改排序
+	@RequestMapping(value={"/updatePayChannelSeq"}, method={RequestMethod.PUT}, produces={"application/json"})
+	public Map<String, Object> updatePayChannelSeq(@RequestParam(name = "allId", required = true) String allId,
+			  HttpServletRequest request) {
+		Map<String, Object> ret = new HashMap<>();
+		try {
+			Map<String,Object> map=payChannelService.updatePayChannelSeq(allId);
+			return map;
 		}catch(Exception e){
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());

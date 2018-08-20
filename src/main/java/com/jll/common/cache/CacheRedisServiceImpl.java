@@ -194,7 +194,13 @@ public class CacheRedisServiceImpl implements CacheRedisService
 		List<PlayType> playTypes = cacheDao.getPlayType(cacheKey);
 		return playTypes;
 	}
-
+	//通过lotteryType查找
+	@Override
+	public List<PlayType> getPlayType(String cacheCodeName) {
+		String cacheKey = Constants.KEY_PLAY_TYPE + cacheCodeName;
+		List<PlayType> playTypes = cacheDao.getPlayType(cacheKey);
+		return playTypes;
+	}
 	@Override
 	public void setPlayType(String lotteryType, List<PlayType> playTypes) {
 		String cacheKey = Constants.KEY_PLAY_TYPE + lotteryType;

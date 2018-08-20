@@ -149,37 +149,49 @@ public class PayTypeServiceImpl implements PayTypeService
 	public List<PayType> queryAllPayType() {
 		return payTypeDao.queryAllPayType();
 	}
-//	//修改排序
-//	@Override
-//	public Map<String, Object> updatePayTypeState(Map<String,Object> ret) {
-//		Map<String, Object> map=new HashMap<String,Object>();
-//		Integer id=(Integer) ret.get("id");
-//		int seqa=(int)ret.get("seqa");
-//		int seqb=(int)ret.get("seqb");
-//		if(seqa>seqb) {
-//			for(int a=seqa-1;a>=seqb;a--) {
-//				PayType payType=payTypeDao.queryBySeq(a);
-//				payType.setSeq(a+1);
-//				payTypeDao.updatePayType(payType);
-//			}
-//			PayType payType1=payTypeDao.queryById(id).get(0);
-//			payType1.setSeq(seqb);
-//			payTypeDao.updatePayType(payType1);
-//		}else if(seqb>seqa) {
-//			PayType payType=null;
-//			for(int a=seqa+1;a<=seqb;a++) {
-//				payType=payTypeDao.queryBySeq(a);
-//				payType.setSeq(a-1);
-//				payTypeDao.updatePayType(payType);
-//			}
-//			PayType payType1=payTypeDao.queryById(id).get(0);
-//			payType1.setSeq(seqb);
-//			payTypeDao.updatePayType(payType1);
-//		}
-//		map.clear();
-//		map.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-//		return map;
-//	}
+	//修改排序
+	@Override
+	public Map<String, Object> updatePayTypeState(String allId) {
+		String payTypeName=Constants.PayTypeName.PAY_TYPE_CLASS.getCode();
+		Map<String,Object> map=new HashMap<String,Object>();
+		String[] strArray = null;   
+		strArray = allId.split(",");//把字符串转为String数组
+		if(strArray.length>0) {
+			for(int a=0;a<strArray.length;a++) {
+				Integer id=Integer.valueOf(strArray[a]);
+				List<PayType> list=payTypeDao.queryById(id);
+				PayType payType=null;
+				List<PayType> payTypeCacheLists=null;
+				if(list!=null&&list.size()>=0) {
+					payType=list.get(0);
+					payType.setSeq(a+1);
+					payTypeDao.updatePayType(payType);
+					payTypeCacheLists=cacheServ.getPayType(payTypeName);
+					if(payTypeCacheLists!=null&&payTypeCacheLists.size()>0) {
+						Integer id1=null;
+						for(int i=0; i<payTypeCacheLists.size();i++)    {   
+						     PayType payType1=payTypeCacheLists.get(i);
+						     id1=payType1.getId();
+						     if((int)id1==(int)id) {
+						    	 payType1.setSeq(a+1);
+						    	 payTypeCacheLists.set(i, payType1);
+							}
+						 }
+						cacheServ.setPayType(payTypeName, payTypeCacheLists);
+					}
+				}
+			}
+			map.clear();
+			map.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+			return map;
+		}else {
+			map.clear();
+			map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			return map;
+		}
+	}
 	@Override
 	public PayType queryById(Integer id) {
 		List<PayType> list=payTypeDao.queryById(id);

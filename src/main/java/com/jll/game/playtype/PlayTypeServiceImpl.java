@@ -14,8 +14,10 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.jll.common.cache.CacheRedisService;
 import com.jll.common.constants.Message;
 import com.jll.entity.PlayType;
+import com.jll.entity.SysCode;
 
 @Configuration
 @PropertySource("classpath:sys-setting.properties")
@@ -27,6 +29,8 @@ public class PlayTypeServiceImpl implements PlayTypeService
 
 	@Resource
 	PlayTypeDao playTypeDao;
+	@Resource
+	CacheRedisService cacheRedisService;
 
 	
 	@Override
@@ -173,6 +177,48 @@ public class PlayTypeServiceImpl implements PlayTypeService
 			return true;
 		}
 		return false;
+	}
+	//修改排序
+	@Override
+	public Map<String, Object> updatePlayTypeSeq(String cacheCodeName, String allId) {
+		Map<String,Object> map=new HashMap<String,Object>();
+		String[] strArray = null;   
+		strArray = allId.split(",");//把字符串转为String数组
+		if(strArray.length>0) {
+			for(int a=0;a<strArray.length;a++) {
+				Integer id=Integer.valueOf(strArray[a]);
+				List<PlayType> list=playTypeDao.queryById(id);
+				PlayType playType=null;
+				List<PlayType> playTypeCacheLists=null;
+				if(list!=null&&list.size()>=0) {
+					playType=list.get(0);
+					playType.setSeq(a+1);
+					playTypeDao.updatePlayTypeSeq(playType);
+					playTypeCacheLists=cacheRedisService.getPlayType(cacheCodeName);
+					if(playTypeCacheLists!=null&&playTypeCacheLists.size()>0) {
+						Integer id1=null;
+						for(int i=0; i<playTypeCacheLists.size();i++)    {   
+						     PlayType playType1=playTypeCacheLists.get(i);
+						     id1=playType1.getId();
+						     if((int)id1==(int)id) {
+						    	playType1.setSeq(a+1);
+						    	playTypeCacheLists.set(i, playType1);
+							}
+						 }
+						cacheRedisService.setPlayType(cacheCodeName, playTypeCacheLists);
+					}
+				}
+			}
+			map.clear();
+			map.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+			return map;
+		}else {
+			map.clear();
+			map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			return map;
+		}
 	}
 }
 

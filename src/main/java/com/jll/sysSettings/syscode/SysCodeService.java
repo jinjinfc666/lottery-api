@@ -53,4 +53,6 @@ public interface SysCodeService {
 	boolean isSmallNull(String bigCodeName,String smallCodeName);
 	//通过小类的codeName和大类的CodeName来查询出这条数据
 	List<SysCode> querySmallType(String bigCodeName, String smallCodeName);
+	//修改排序
+	Map<String,Object> updateSmallTypeSeq(String BigcodeName,String allId);
 }

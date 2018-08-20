@@ -116,4 +116,9 @@ public class PlayTypeDaoImpl extends DefaultGenericDaoImpl<PlayType> implements 
 	    List<PlayType> list = query.list();
 		return list;
 	}
+	//修改排序
+	@Override
+	public void updatePlayTypeSeq(PlayType playType) {
+		this.saveOrUpdate(playType);
+	}
 }

@@ -17,6 +17,7 @@ import com.jll.common.constants.Message;
 import com.jll.entity.IpBlackList;
 import com.jll.entity.PayChannel;
 import com.jll.entity.PayType;
+import com.jll.entity.SysCode;
 @Service
 @Transactional
 public class PayChannelServiceImpl implements PayChannelService
@@ -213,6 +214,39 @@ public class PayChannelServiceImpl implements PayChannelService
 			return list;
 		}
 		return null;
+	}
+	//修改排序
+	@Override
+	public Map<String, Object> updatePayChannelSeq(String allId) {
+		String payChannelName=Constants.PayChannel.PAY_CHANNEL.getCode();
+		Map<String,Object> map=new HashMap<String,Object>();
+		String[] strArray = null;   
+		strArray = allId.split(",");//把字符串转为String数组
+		if(strArray.length>0) {
+			for(int a=0;a<strArray.length;a++) {
+				Integer id=Integer.valueOf(strArray[a]);
+				List<PayChannel> list=payChannelDao.queryById(id);
+				PayChannel payChannel=null;
+				PayChannel payChannelCache=null;
+				if(list!=null&&list.size()>=0) {
+					payChannel=list.get(0);
+					payChannel.setSeq(a+1);
+					payChannelDao.updatePayChannel(payChannel);
+					payChannelCache=cacheServ.getPayChannel(payChannelName, id);
+					payChannelCache.setSeq(a+1);
+					cacheServ.setPayChannel(payChannelName, payChannelCache);
+				}
+			}
+			map.clear();
+			map.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+			return map;
+		}else {
+			map.clear();
+			map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			return map;
+		}
 	}
 }
 

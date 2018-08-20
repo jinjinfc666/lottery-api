@@ -33,4 +33,6 @@ public interface PlayTypeService
 	boolean isNoPlayType(PlayType playType);
 	//查询id是否存在
 	boolean isNoPlayType(Integer id);
+	//修改排序
+	Map<String,Object> updatePlayTypeSeq(String lotteryType,String allId);
 }

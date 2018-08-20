@@ -20,7 +20,7 @@ public interface PayTypeService
 	//查询所有数据
 	List<PayType> queryAllPayType();
 	//修改排序
-//	Map<String,Object> updatePayTypeState(Map<String,Object> ret);
+	Map<String,Object> updatePayTypeState(String allId);
 	//通过id查找
 	PayType queryById(Integer id);
 }

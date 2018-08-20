@@ -285,6 +285,23 @@ public class BackstageSysController {
 		}
 		return ret;
 	}
+	//修改排序
+	@RequestMapping(value={"/updateSmallLotteryTypeSeq"}, method={RequestMethod.PUT}, produces={"application/json"})
+	public Map<String, Object> updateSmallLotteryTypeSeq(@RequestParam(name = "allId", required = true) String allId,
+			  HttpServletRequest request) {
+		Map<String, Object> ret = new HashMap<>();
+		String bigCodeName=Constants.SysCodeTypes.LOTTERY_TYPES.getCode();
+		try {
+			Map<String,Object> map=sysCodeService.updateSmallTypeSeq(bigCodeName, allId);
+			return map;
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			return ret;
+		}
+	}
 	/**
 	 *流水类型的增删改查
 	 * @author Silence 
@@ -408,6 +425,23 @@ public class BackstageSysController {
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
 		}
 		return ret;
+	}
+	//修改排序
+	@RequestMapping(value={"/updateSmallFlowTypeSeq"}, method={RequestMethod.PUT}, produces={"application/json"})
+	public Map<String, Object> updateSmallFlowTypeSeq(@RequestParam(name = "allId", required = true) String allId,
+			  HttpServletRequest request) {
+		Map<String, Object> ret = new HashMap<>();
+		String bigCodeName=Constants.SysCodeTypes.FLOW_TYPES.getCode();
+		try {
+			Map<String,Object> map=sysCodeService.updateSmallTypeSeq(bigCodeName, allId);
+			return map;
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			return ret;
+		}
 	}
 	/**
 	 *幸运抽奖类型的增删改查
@@ -533,6 +567,23 @@ public class BackstageSysController {
 		}
 		return ret;
 	}
+	//修改排序
+	@RequestMapping(value={"/updateSmallLuckyDrawSeq"}, method={RequestMethod.PUT}, produces={"application/json"})
+	public Map<String, Object> updateSmallLuckyDrawSeq(@RequestParam(name = "allId", required = true) String allId,
+			  HttpServletRequest request) {
+		Map<String, Object> ret = new HashMap<>();
+		String bigCodeName=Constants.SysCodeTypes.PAYMENT_PLATFORM.getCode();
+		try {
+			Map<String,Object> map=sysCodeService.updateSmallTypeSeq(bigCodeName, allId);
+			return map;
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			return ret;
+		}
+	}
 	/**
 	 *支付平台类型的增删改查
 	 * @author Silence 
@@ -656,6 +707,23 @@ public class BackstageSysController {
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
 		}
 		return ret;
+	}
+	//修改排序
+	@RequestMapping(value={"/updateSmallPaymentPlatformSeq"}, method={RequestMethod.PUT}, produces={"application/json"})
+	public Map<String, Object> updateSmallPaymentPlatformSeq(@RequestParam(name = "allId", required = true) String allId,
+			  HttpServletRequest request) {
+		Map<String, Object> ret = new HashMap<>();
+		String bigCodeName=Constants.SysCodeTypes.LUCKY_DRAW.getCode();
+		try {
+			Map<String,Object> map=sysCodeService.updateSmallTypeSeq(bigCodeName, allId);
+			return map;
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			return ret;
+		}
 	}
 	/**
 	 *签到活动类型的增删改查
@@ -781,6 +849,23 @@ public class BackstageSysController {
 		}
 		return ret;
 	}
+	//修改排序
+	@RequestMapping(value={"/updateSmallSignInDaySeq"}, method={RequestMethod.PUT}, produces={"application/json"})
+	public Map<String, Object> updateSmallSignInDaySeq(@RequestParam(name = "allId", required = true) String allId,
+			  HttpServletRequest request) {
+		Map<String, Object> ret = new HashMap<>();
+		String bigCodeName=Constants.SysCodeTypes.SIGN_IN_DAY.getCode();
+		try {
+			Map<String,Object> map=sysCodeService.updateSmallTypeSeq(bigCodeName, allId);
+			return map;
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			return ret;
+		}
+	}
 	/**
 	 *玩法类型的增删改查
 	 * @author Silence 
@@ -904,6 +989,23 @@ public class BackstageSysController {
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
 		}
 		return ret;
+	}
+	//修改排序
+	@RequestMapping(value={"/updateSmallPTypeClassicficationSeq"}, method={RequestMethod.PUT}, produces={"application/json"})
+	public Map<String, Object> updateSmallPTypeClassicficationSeq(@RequestParam(name = "allId", required = true) String allId,
+			  HttpServletRequest request) {
+		Map<String, Object> ret = new HashMap<>();
+		String bigCodeName=Constants.SysCodeTypes.CT_PLAY_TYPE_CLASSICFICATION.getCode();
+		try {
+			Map<String,Object> map=sysCodeService.updateSmallTypeSeq(bigCodeName, allId);
+			return map;
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			return ret;
+		}
 	}
 	/**
 	 *彩种属性类型的增删改查
@@ -1033,6 +1135,23 @@ public class BackstageSysController {
 		}
 		return ret;
 	}
+	//修改排序
+	@RequestMapping(value={"/updateSmallLotteryConfigSeq"}, method={RequestMethod.PUT}, produces={"application/json"})
+	public Map<String, Object> updateSmallLotteryConfigSeq(@RequestParam(name = "bigcodeName", required = true) String bigCodeName,
+			@RequestParam(name = "allId", required = true) String allId,
+			  HttpServletRequest request) {
+		Map<String, Object> ret = new HashMap<>();
+		try {
+			Map<String,Object> map=sysCodeService.updateSmallTypeSeq(bigCodeName, allId);
+			return map;
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			return ret;
+		}
+	}
 	/**
 	 *充值方式的增删改查
 	 * @author Silence 
@@ -1156,5 +1275,22 @@ public class BackstageSysController {
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
 		}
 		return ret;
+	}
+	//修改排序
+	@RequestMapping(value={"/updateSmallPayTypeSeq"}, method={RequestMethod.PUT}, produces={"application/json"})
+	public Map<String, Object> updateSmallPayTypeSeq(@RequestParam(name = "allId", required = true) String allId,
+			  HttpServletRequest request) {
+		Map<String, Object> ret = new HashMap<>();
+		String bigCodeName=Constants.SysCodeTypes.PAY_TYPE.getCode();
+		try {
+			Map<String,Object> map=sysCodeService.updateSmallTypeSeq(bigCodeName, allId);
+			return map;
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			return ret;
+		}
 	}
 }

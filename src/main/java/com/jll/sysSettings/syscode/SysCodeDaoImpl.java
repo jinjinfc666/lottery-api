@@ -19,10 +19,11 @@ import org.springframework.orm.hibernate5.support.HibernateDaoSupport;
 import org.springframework.stereotype.Repository;
 
 import com.jll.common.constants.Constants;
+import com.jll.dao.DefaultGenericDaoImpl;
 import com.jll.entity.SysCode;
 
 @Repository
-public class SysCodeDaoImpl extends HibernateDaoSupport implements SysCodeDao {
+public class SysCodeDaoImpl extends DefaultGenericDaoImpl<SysCode> implements SysCodeDao {
 	private final String state="1";
 	@Autowired
 	public void setSuperSessionFactory(SessionFactory sessionFactory){
@@ -338,5 +339,12 @@ public class SysCodeDaoImpl extends HibernateDaoSupport implements SysCodeDao {
 	    query.setParameter("codeName", codeName);
 	    List<SysCode> list = query.list();
 		return list;
+	}
+	//修改排序
+
+
+	@Override
+	public void updateSmallTypeSeq(SysCode sysCode) {
+		this.saveOrUpdate(sysCode);
 	}
 }

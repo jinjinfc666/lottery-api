@@ -19,4 +19,6 @@ public interface PayChannelService
 	boolean isNull(Integer id);
 	//查询所有
 	List<PayChannel> queryAll();
+	//修改排序
+	Map<String,Object> updatePayChannelSeq(String allId);
 }

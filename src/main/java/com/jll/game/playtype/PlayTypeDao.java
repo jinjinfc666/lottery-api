@@ -32,4 +32,7 @@ public interface PlayTypeDao
 	
 	//查询这个玩法是否存在
 	List<PlayType> queryByPlayType(PlayType playType);
+	
+	//修改排序
+	void updatePlayTypeSeq(PlayType playType);
 }
