@@ -20,8 +20,8 @@
                 <comment>��ֵ��ʽ����</comment>
             </column>
         </property>
-        <property generated="never" lazy="false" name="payType" optimistic-lock="true" type="string" unique="false">
-            <column length="50" name="pay_type">
+        <property generated="never" lazy="false" name="payType" optimistic-lock="true" type="java.lang.Integer" unique="false">
+            <column name="pay_type">
                 <comment>��ֵ��ʽ</comment>
             </column>
         </property>
