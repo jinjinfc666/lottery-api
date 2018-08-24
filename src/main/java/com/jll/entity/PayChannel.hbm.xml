@@ -20,8 +20,8 @@
                 <comment>��ֵ��ʽ����</comment>
             </column>
         </property>
-        <property generated="never" lazy="false" name="type" optimistic-lock="true" type="string" unique="false">
-            <column length="50" name="type">
+        <property generated="never" lazy="false" name="payType" optimistic-lock="true" type="string" unique="false">
+            <column length="50" name="pay_type">
                 <comment>��ֵ��ʽ</comment>
             </column>
         </property>

@@ -6,6 +6,8 @@ import java.util.Map;
 import org.springframework.stereotype.Repository;
 
 import com.jll.entity.Issue;
+import com.jll.entity.PayChannel;
+import com.jll.entity.PayType;
 import com.jll.entity.PlayType;
 import com.jll.entity.SysCode;
 import com.jll.game.BulletinBoard;
@@ -102,4 +104,32 @@ public class CacheRedisDaoImpl  extends AbstractBaseRedisDao implements CacheRed
 		this.saveOrUpdate(cacheObj);
 	}
 
+	@Override
+	public List<PayChannel> getPayChannel(String cacheKey) {
+		CacheObject<List<PayChannel>> cacheObject = this.get(cacheKey);
+		if(cacheObject == null) {
+			return null;
+		}
+		return cacheObject.getContent();
+	}
+
+	
+	@Override
+	public void setPayChannel(CacheObject<List<PayChannel>> cache) {
+		this.saveOrUpdate(cache);
+	}
+
+	@Override
+	public List<PayType> getPayType(String cacheKey) {
+		CacheObject<List<PayType>> cacheObject = this.get(cacheKey);
+		if(cacheObject == null) {
+			return null;
+		}
+		return cacheObject.getContent();
+	}
+
+	@Override
+	public void setPayType(CacheObject<List<PayType>> cache) {
+		this.saveOrUpdate(cache);
+	}
 }

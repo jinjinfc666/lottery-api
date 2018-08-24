@@ -19,6 +19,8 @@ import com.jll.common.constants.Constants;
 import com.jll.common.constants.Constants.SysCodeTypes;
 import com.jll.entity.Issue;
 import com.jll.entity.OrderInfo;
+import com.jll.entity.PayChannel;
+import com.jll.entity.PayType;
 import com.jll.entity.PlayType;
 import com.jll.entity.SysCode;
 import com.jll.game.BulletinBoard;
@@ -247,5 +249,61 @@ public class CacheRedisServiceImpl implements CacheRedisService
 		}
 		
 		return true;
+	}
+
+	@Override
+	public List<PayChannel> getPayChannel(int payTypeId) {
+		String cacheKey = Constants.KEY_PLAY_TYPE + payTypeId;
+		List<PayChannel> playTypes = cacheDao.getPayChannel(cacheKey);
+		return playTypes;
+	}
+
+	@Override
+	public void setPayChannel(int payTypeId, List<PayChannel> payChannel) {
+		String cacheKey = Constants.KEY_PAY_TYPE+payTypeId;
+		CacheObject<List<PayChannel>> cache = new CacheObject<>();
+		cache.setContent(payChannel);
+		cache.setKey(cacheKey);
+		cacheDao.setPayChannel(cache);
+	}
+
+	@Override
+	public List<PayType> getPayType() {
+		String cacheKey = Constants.KEY_PLAY_TYPE ;
+		List<PayType> playTypes = cacheDao.getPayType(cacheKey);
+		return playTypes;
+	}
+
+	@Override
+	public void setPayType(List<PayType> payTypes) {
+		String cacheKey = Constants.KEY_PAY_TYPE;
+		CacheObject<List<PayType>> cache = new CacheObject<>();
+		cache.setContent(payTypes);
+		cache.setKey(cacheKey);
+		cacheDao.setPayType(cache);
+	}
+
+	@Override
+	public PayChannel getPayChannelInfo(int payId,int pcId){
+		List<PayChannel> pcLists =  getPayChannel(payId);
+		if(null == pcLists){
+			return null;
+		}
+		for (PayChannel payChannel : pcLists) {
+			if(payChannel.getId() == pcId){
+				return payChannel;
+			}
+		}
+		return null;
+	}
+	@Override
+	public PayType getPayTypeInfo(int payId){
+		List<PayType> pcLists =  getPayType();
+		for (PayType pt : pcLists) {
+			if(pt.getId() ==payId){
+				return pt;
+			}
+		}
+		return null;
 	}
 }

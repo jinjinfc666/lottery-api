@@ -6,6 +6,8 @@ import java.util.Map;
 import com.jll.common.constants.Constants.SysCodeTypes;
 import com.jll.entity.Issue;
 import com.jll.entity.OrderInfo;
+import com.jll.entity.PayChannel;
+import com.jll.entity.PayType;
 import com.jll.entity.PlayType;
 import com.jll.entity.SysCode;
 import com.jll.game.BulletinBoard;
@@ -92,4 +94,16 @@ public interface CacheRedisService {
 	 * @return
 	 */
 	boolean isIssueBetting(String lotteryType, int issueId);
+	
+	List<PayChannel> getPayChannel(int payTypeId);
+	PayChannel getPayChannelInfo(int payId,int pcId);
+	
+	void setPayChannel(int payTypeId, List<PayChannel> payChannel);
+	
+	List<PayType> getPayType();
+	PayType getPayTypeInfo(int payId);
+	void setPayType(List<PayType> payTypes);
+	
+	 
+	
 }

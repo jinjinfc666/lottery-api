@@ -110,6 +110,7 @@ public class UserInfoServiceImpl implements UserInfoService
 	@Override
 	public Map<String, Object> updateFundPwd(String userName, String oldPwd, String newPwd) {
 		Map<String, Object> ret = new HashMap<String, Object>();
+		
 		UserInfo dbInfo = (UserInfo) supserDao.get(UserInfo.class,"userName",userName);
 		if(StringUtils.checkFundPwdFmtIsOK(newPwd)
 				|| !newPwd.equals(oldPwd)

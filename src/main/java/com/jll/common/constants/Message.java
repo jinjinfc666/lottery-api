@@ -8,6 +8,7 @@ public class Message {
 	public final static String KEY_STATUS = "status";
 	
 	public final static String KEY_DATA = "data";
+	public final static String KEY_DATA_TYPE = "data_type";
 	
 	public final static String KEY_REMAKE = "remake";
 	public final static String KEY_EXPIRED_TIME = "expired_time";
@@ -82,7 +83,7 @@ public class Message {
 		ERROR_PROMS_OTHER_CONDITION_BET_AMT_DISSATISFY("010027", "Participation in activities must meet the minimum bet amount of %s times, your current bet amount of %s times!!"),
 		ERROR_USER__WALLET_INVALID("010030", "Wallet is invalid!!"),
 		ERROR_USER_POINT_NOT_ENOUGH("010028", "User point not enough!!!"),
-		ERROR_PROMS_INVALID("010029", "This promo invalid!!!"),
+		ERROR_PROMS_INVALID("010031", "This promo invalid!!!"),
 		
 		/**************third party*************************/
 		ERROR_TP_INVALID_SMS("020001", "Invalid SMS!!"),
@@ -107,6 +108,11 @@ public class Message {
 		ERROR_MESSAGE_CONTENT_IS_EMPTY("040002", "Message content is empty!!"),
 		ERROR_NOTIFY_RECEIVER_TYPE_ERROR("040003", "Notify receiver type error!!"),
 		ERROR_NOTIFY_RECEIVER_ERROR("040003", "Notify receiver error!!"),
+		
+		
+		/**************pay model*************************/
+		ERROR_MESSAGE_PAY_TYPE_DISABLE("050001", "This pay type is disable!!!"),
+		ERROR_MESSAGE_PAYMENT_AMOUNT_MORE("050001", "This pay type payment amount more than maximum %d !!!"),
 		
 		;
 		

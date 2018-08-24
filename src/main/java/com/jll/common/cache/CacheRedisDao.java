@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.jll.entity.Issue;
+import com.jll.entity.PayChannel;
+import com.jll.entity.PayType;
 import com.jll.entity.PlayType;
 import com.jll.entity.SysCode;
 import com.jll.game.BulletinBoard;
@@ -56,4 +58,12 @@ public interface CacheRedisDao {
 	CacheObject<Map<String, Integer>> getStatGroupByBettingNum(String cacheKey);
 
 	void setStatGroupByBettingNum(CacheObject<Map<String, Integer>> cacheObj);
+
+	List<PayChannel> getPayChannel(String cacheKey);
+	void setPayChannel(CacheObject<List<PayChannel>> cache);
+	
+	List<PayType> getPayType(String cacheKey);
+	
+	void setPayType(CacheObject<List<PayType>> cache);
 }
+

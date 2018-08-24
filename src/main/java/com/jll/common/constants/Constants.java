@@ -16,9 +16,12 @@ public class Constants {
 	
 	public final static String KEY_PLAY_TYPE = "play_type_";
 	
-	public final static String KEY_STAT_ISSUE_BETTING = "stat_issuse_betting_";
+	public final static String KEY_PAY_TYPE = "pay_type_";
 	
+	public final static String KEY_STAT_ISSUE_BETTING = "stat_issuse_betting_";
+
 	public static enum DepositOrderState{
+		
 		INIT_OR_PUSHED(0),
 		FAILED_PUSH(10),
 		CANCEL_ORDER(11),
@@ -1467,4 +1470,134 @@ public class Constants {
 			return this.code;
 		}
 	}
+	
+	public static enum PayTypeState{
+		VALID_STATE(1,"有效"),
+		INVALID_STATE(0,"无效");
+		
+		private int code;
+		
+		private String desc;
+
+		private PayTypeState(int code, String desc) {
+			this.code = code;
+			this.desc = desc;
+		}
+
+		public int getCode() {
+			return code;
+		}
+
+		public void setCode(int code) {
+			this.code = code;
+		}
+
+		public String getDesc() {
+			return desc;
+		}
+
+		public void setDesc(String desc) {
+			this.desc = desc;
+		}
+		
+	}
+	
+	
+	public static enum PayChannelMaxAmountState{
+		ENABLED(1,"激活最大额限制"),
+		DISABLED(0,"禁用最大额限制");
+		
+		private int code;
+		
+		private String desc;
+
+		private PayChannelMaxAmountState(int code, String desc) {
+			this.code = code;
+			this.desc = desc;
+		}
+
+		public int getCode() {
+			return code;
+		}
+
+		public void setCode(int code) {
+			this.code = code;
+		}
+
+		public String getDesc() {
+			return desc;
+		}
+
+		public void setDesc(String desc) {
+			this.desc = desc;
+		}
+		
+	}
+	
+	//系统内部使用的充值渠道
+	public static enum PayChannelType{
+		ADMIN_SEND_USER("admin_send_user", "管理员的充值申请"),
+		AGENT_SEND_USER("agent_send_user", "代理给用户充值");
+
+		private PayChannelType(String code, String desc) {
+			this.code = code;
+			this.desc = desc;
+		}
+
+		private String code;
+		
+		private String desc;
+		
+		public String getDesc() {
+			return desc;
+		}
+
+		public void setDesc(String desc) {
+			this.desc = desc;
+		}
+
+		public String getCode() {
+			return code;
+		}
+
+		public void setCode(String code) {
+			this.code = code;
+		}
+		
+		
+		public static PayChannelType getValueByCode(String code) {
+			PayChannelType[] valuse = PayChannelType.values();
+			for(PayChannelType val: valuse) {
+				if( val.getCode().equals(code)){
+					return val;
+				}
+			}
+			return null;
+		}
+		
+	
+	}
+	
+	   //支付方式
+		public static enum PayType{
+			SYS_PAY("sys_pay"),
+			ZHI_HUI_FU_PAY("zhi_hui_fu_pay"),
+			CAI_PAY("cai_pay"),
+			TONG_YUN("tong_yun");
+			
+			private String code;
+
+			private PayType(String code) {
+				this.code = code;
+			}
+
+			public String getCode() {
+				return code;
+			}
+
+			public void setCode(String code) {
+				this.code = code;
+			}
+		}
+		
 }

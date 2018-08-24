@@ -10,10 +10,13 @@ import org.apache.log4j.Logger;
 
 import com.jll.common.cache.CacheRedisService;
 import com.jll.common.constants.Constants;
+import com.jll.entity.PayChannel;
+import com.jll.entity.PayType;
 import com.jll.entity.PlayType;
 import com.jll.entity.SysCode;
 import com.jll.game.LotteryCenterServiceImpl;
 import com.jll.game.playtype.PlayTypeService;
+import com.jll.pay.PaymentService;
 import com.jll.sysSettings.syscode.SysCodeService;
 
 public class SysInitLoader {
@@ -29,9 +32,13 @@ public class SysInitLoader {
 	@Resource
 	PlayTypeService playTypeServ;
 	
+	@Resource
+	PaymentService paymentService;
+	
 	public void init() {
 		initSysCode();
 		initPlayType();
+		initPayChannel();
 	}
 	
 
@@ -165,5 +172,23 @@ public class SysInitLoader {
 				cacheServ.setPlayType(lotteryType.getCodeName(), playTypes);
 			}
 		}
+	}
+	
+	
+	//加载支付渠道
+	private void initPayChannel() {
+		if(null == cacheServ.getPayType()){
+			List<PayType> payLists  = paymentService.getSysPayType();
+			if(!payLists.isEmpty()){
+				cacheServ.setPayType(payLists);
+				for (PayType payType : payLists) {
+					List<PayChannel> payCLists = paymentService.getSysPayChannelByType(payType.getId());
+					cacheServ.setPayChannel(payType.getId(), payCLists);
+				}
+			}
+		}
+		
+		
+		
 	}
 }
