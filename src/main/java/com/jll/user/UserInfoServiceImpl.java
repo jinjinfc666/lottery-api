@@ -398,7 +398,7 @@ public class UserInfoServiceImpl implements UserInfoService
 	@Override
 	public Map<String, Object> getBankCodeList() {
 		Map<String, Object> ret = new HashMap<>();
-		List<SysCode> types = sysCodeService.queryType(SysCodeTypes.LOTTERY_TYPES.getCode());
+		List<SysCode> types = sysCodeService.queryAllSmallType(SysCodeTypes.LOTTERY_TYPES.getCode());
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		ret.put("data", types);
 		return ret;

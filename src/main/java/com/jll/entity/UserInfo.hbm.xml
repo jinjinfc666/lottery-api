@@ -15,6 +15,11 @@
                 <comment>�û�����</comment>
             </column>
         </property>
+        <property generated="never" lazy="false" name="userId" optimistic-lock="true" type="string" unique="false">
+            <column length="30" name="user_id">
+                <comment>�û�����</comment>
+            </column>
+        </property>
         <property generated="never" lazy="false" name="loginPwd" optimistic-lock="true" type="string" unique="false">
             <column length="256" name="login_pwd">
                 <comment>��¼����</comment>

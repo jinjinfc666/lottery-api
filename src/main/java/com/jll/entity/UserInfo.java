@@ -12,6 +12,7 @@ public class UserInfo implements java.io.Serializable {
 	private Integer id;
 	private String realName;
 	private String userName;
+	private String userId;
 	private String loginPwd;
 	private String fundPwd;
 	private Integer state;
@@ -35,12 +36,13 @@ public class UserInfo implements java.io.Serializable {
 	public UserInfo() {
 	}
 
-	public UserInfo(String realName, String userName, String loginPwd, String fundPwd, Integer state, Integer level,
+	public UserInfo(String realName, String userName,String userId, String loginPwd, String fundPwd, Integer state, Integer level,
 			Integer loginCount, Date unlockTime, Integer userType, String superior, BigDecimal rebate,
 			BigDecimal platRebate, String phoneNum, String qq, String wechat, String email, Integer isValidPhone,
 			Integer isValidEmail, String regIp, Date createTime, Integer creator) {
 		this.realName = realName;
 		this.userName = userName;
+		this.userId = userId;
 		this.loginPwd = loginPwd;
 		this.fundPwd = fundPwd;
 		this.state = state;
@@ -60,6 +62,16 @@ public class UserInfo implements java.io.Serializable {
 		this.regIp = regIp;
 		this.createTime = createTime;
 		this.creator = creator;
+	}
+	
+	
+	
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
 	}
 
 	public Integer getId() {

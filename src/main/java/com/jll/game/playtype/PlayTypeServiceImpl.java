@@ -1,11 +1,13 @@
 package com.jll.game.playtype;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
@@ -13,7 +15,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.jll.common.cache.CacheRedisService;
+import com.jll.common.constants.Message;
 import com.jll.entity.PlayType;
+import com.jll.entity.SysCode;
 
 @Configuration
 @PropertySource("classpath:sys-setting.properties")
@@ -25,9 +29,9 @@ public class PlayTypeServiceImpl implements PlayTypeService
 
 	@Resource
 	PlayTypeDao playTypeDao;
-
 	@Resource
-	CacheRedisService cacheServ;
+	CacheRedisService cacheRedisService;
+
 	
 	@Override
 	public List<PlayType> queryPlayType(String lotteryType) {
@@ -36,75 +40,184 @@ public class PlayTypeServiceImpl implements PlayTypeService
 	}
 	//添加
 	@Override
-	public void addPlayType(PlayType playType) {
-		Integer seq=playTypeDao.getCountSeq(playType.getLotteryType())+1;
-		playType.setSeq(seq);
-        playType.setCreateTime(new Date());
-		playTypeDao.addPlayType(playType);
-		String lotteryType=playType.getLotteryType();
-		List<PlayType> playTypes=playTypeDao.queryByLotteryType(lotteryType);
-		cacheServ.setPlayType(lotteryType, playTypes);
+	public Map<String,Object> addPlayType(PlayType playType) {
+		Map<String,Object> map=new HashMap<String,Object>();
+		boolean isNo=this.isNoPlayType(playType);
+		if(!isNo) {
+			Integer seq=playTypeDao.getCountSeq(playType.getLotteryType())+1;
+			playType.setSeq(seq);
+	        playType.setCreateTime(new Date());
+			playTypeDao.addPlayType(playType);
+			map.clear();
+			map.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		}else {
+			map.clear();
+			map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+		}
+		return map;
 	}
 	//修改状态
 	@Override
-	public void updateState(Integer id, Integer state) {
-		playTypeDao.updateState(id, state);
-		List<PlayType> playType=playTypeDao.queryById(id);
-		if(playType!=null&&playType.size()>0) {
-			String lotteryType=playType.get(0).getLotteryType();
-			List<PlayType> playTypes=playTypeDao.queryByLotteryType(lotteryType);
-			cacheServ.setPlayType(lotteryType, playTypes);
+	public Map<String,Object> updateState(Integer id, Integer state) {
+		Map<String,Object> map=new HashMap<String,Object>();
+		boolean isNo=this.isNoPlayType(id);
+		if(isNo) {
+			playTypeDao.updateState(id, state);
+			map.clear();
+			map.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		}else {
+			map.clear();
+			map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
 		}
+		return map;
 	}
 	//设置是否隐藏
 	@Override
-	public void updateIsHidden(Integer id, Integer isHidden) {
-		playTypeDao.updateIsHidden(id, isHidden);
-		List<PlayType> playType=playTypeDao.queryById(id);
-		if(playType != null && playType.size() > 0) {
-			String lotteryType=playType.get(0).getLotteryType();
-			List<PlayType> playTypes=playTypeDao.queryByLotteryType(lotteryType);
-			cacheServ.setPlayType(lotteryType, playTypes);
+	public Map<String,Object> updateIsHidden(Integer id, Integer isHidden) {
+		Map<String,Object> map=new HashMap<String,Object>();
+		boolean isNo=this.isNoPlayType(id);
+		if(isNo) {
+			playTypeDao.updateIsHidden(id, isHidden);
+			map.clear();
+			map.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		}else {
+			map.clear();
+			map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
 		}
+		return map;
 	}
 	//选择单式还是复式
 	@Override
-	public void updateMulSinFlag(Integer id, Integer mulSinFlag) {
-		playTypeDao.updateMulSinFlag(id, mulSinFlag);
-		List<PlayType> playType=playTypeDao.queryById(id);
-		if(playType != null && playType.size() > 0) {
-			String lotteryType=playType.get(0).getLotteryType();
-			List<PlayType> playTypes=playTypeDao.queryByLotteryType(lotteryType);
-			cacheServ.setPlayType(lotteryType, playTypes);
+	public Map<String,Object> updateMulSinFlag(Integer id, Integer mulSinFlag) {
+		Map<String,Object> map=new HashMap<String,Object>();
+		boolean isNo=this.isNoPlayType(id);
+		if(isNo) {
+			playTypeDao.updateMulSinFlag(id, mulSinFlag);
+			map.clear();
+			map.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		}else {
+			map.clear();
+			map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
 		}
+		return map;
 	}
 	//修改
 	@Override
-	public void updatePlayType(PlayType playType) {
+	public Map<String,Object> updatePlayType(PlayType playType) {
 		Integer id=playType.getId();
-		String lotteryType=playType.getLotteryType();
 		String classification=playType.getClassification();
-		String pdName=playType.getPtName();
+		String ptName=playType.getPtName();
 		String ptDesc=playType.getPtDesc();
 		Integer state=playType.getState();
 		Integer mulSinFlag=playType.getMulSinFlag();
 		Integer isHidden=playType.getIsHidden();
-		List<PlayType> playType1=playTypeDao.queryById(id);
-		if(playType1 != null && playType1.size() > 0) {
-			if(lotteryType.equals(playType1.get(0).getLotteryType())) {
-				Integer seq=null;
-				playTypeDao.updatePlayType(id,lotteryType,classification, pdName, ptDesc,state,mulSinFlag,isHidden,seq);
-				List<PlayType> playTypes=playTypeDao.queryByLotteryType(lotteryType);
-				cacheServ.setPlayType(lotteryType, playTypes);
-			}else {
-				Integer seq=playTypeDao.getCountSeq(lotteryType)+1;
-				playType.setSeq(seq);
-				playTypeDao.updatePlayType(id,lotteryType,classification, pdName, ptDesc,state,mulSinFlag,isHidden,seq);
-				List<PlayType> playTypes=playTypeDao.queryLotteryType(playType1.get(0).getLotteryType());
-				cacheServ.setPlayType(playType1.get(0).getLotteryType(), playTypes);
-				List<PlayType> playTypes1=playTypeDao.queryLotteryType(lotteryType);
-				cacheServ.setPlayType(lotteryType, playTypes1);
+		Map<String,Object> map=new HashMap<String,Object>();
+		boolean isNo=this.isNoPlayType(id);
+		if(isNo) {
+			PlayType playTypeNew=this.queryById(id).get(0);
+			if(!StringUtils.isBlank(classification)) {
+				playTypeNew.setClassification(classification);
 			}
+			if(!StringUtils.isBlank(ptName)) {
+				playTypeNew.setPtName(ptName);				
+			}
+			if(!StringUtils.isBlank(ptDesc)) {
+				playTypeNew.setPtDesc(ptDesc);
+			}
+			if(state!=null) {
+				playTypeNew.setState(state);
+			}
+			if(mulSinFlag!=null) {
+				playTypeNew.setMulSinFlag(mulSinFlag);		
+			}
+			if(isHidden!=null) {
+				playTypeNew.setIsHidden(isHidden);
+			}
+			playTypeDao.updatePlayType(playTypeNew);
+			map.clear();
+			map.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		}else {
+			map.clear();
+			map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+		}
+		return map;
+	}
+	@Override
+	public List<PlayType> queryByLotteryType(String lotteryType) {
+		return playTypeDao.queryByLotteryType(lotteryType);
+	}
+	@Override
+	public List<PlayType> queryById(Integer id) {
+		return playTypeDao.queryById(id);
+	}
+	//查询id是否存在
+	@Override
+	public boolean isNoPlayType(Integer id) {
+		List<PlayType> list=playTypeDao.queryById(id);
+		if(list!=null&&list.size()>0) {
+			return true;
+		}
+		return false;
+	}
+	//添加时的验证
+	@Override
+	public boolean isNoPlayType(PlayType playType) {
+		List<PlayType> list=playTypeDao.queryByPlayType(playType);
+		if(list!=null&&list.size()>0) {
+			return true;
+		}
+		return false;
+	}
+	//修改排序
+	@Override
+	public Map<String, Object> updatePlayTypeSeq(String cacheCodeName, String allId) {
+		Map<String,Object> map=new HashMap<String,Object>();
+		String[] strArray = null;   
+		strArray = allId.split(",");//把字符串转为String数组
+		if(strArray.length>0) {
+			for(int a=0;a<strArray.length;a++) {
+				Integer id=Integer.valueOf(strArray[a]);
+				List<PlayType> list=playTypeDao.queryById(id);
+				PlayType playType=null;
+				List<PlayType> playTypeCacheLists=null;
+				if(list!=null&&list.size()>=0) {
+					playType=list.get(0);
+					playType.setSeq(a+1);
+					playTypeDao.updatePlayTypeSeq(playType);
+					playTypeCacheLists=cacheRedisService.getPlayType(cacheCodeName);
+					if(playTypeCacheLists!=null&&playTypeCacheLists.size()>0) {
+						Integer id1=null;
+						for(int i=0; i<playTypeCacheLists.size();i++)    {   
+						     PlayType playType1=playTypeCacheLists.get(i);
+						     id1=playType1.getId();
+						     if((int)id1==(int)id) {
+						    	playType1.setSeq(a+1);
+						    	playTypeCacheLists.set(i, playType1);
+							}
+						 }
+						cacheRedisService.setPlayType(cacheCodeName, playTypeCacheLists);
+					}
+				}
+			}
+			map.clear();
+			map.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+			return map;
+		}else {
+			map.clear();
+			map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			return map;
 		}
 	}
 }

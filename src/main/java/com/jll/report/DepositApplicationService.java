@@ -6,5 +6,7 @@ import java.util.Map;
 
 public interface DepositApplicationService {
 	List<?> queryDetails(Map<String,Object> ret);
-	public void updateState(Map<String,Object> ret);
+	public Map<String,Object> updateState(Map<String,Object> ret);
+	//判断是否存在
+	boolean isNullById(Integer id);
 }

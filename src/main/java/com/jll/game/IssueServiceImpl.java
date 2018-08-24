@@ -41,6 +41,24 @@ public class IssueServiceImpl implements IssueService
 	public Issue getIssueById(Integer id) {
 		return issueDao.getIssueById(id);
 	}
+
+	@Override
+	public Issue getIssueByIssueNum(String issueNum) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	//通过彩种和期次数量来查找
+	@Override
+	public List<Issue> queryByLTNumber(String lotteryType, Integer number) {
+		List<Issue> issue=issueDao.queryByLTNumeber(lotteryType);
+		if(issue!=null&&issue.size()>0) {
+			List<Issue> issueList=issueDao.queryByLTNumber(lotteryType, issue.get(0).getStartTime(), number);
+		  if(issueList!=null&& issueList.size()>0) {
+			  return issueList;
+		  }
+		}
+		return null;
+	}
 	
 	
 }
