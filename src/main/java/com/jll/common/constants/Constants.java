@@ -1423,7 +1423,8 @@ public class Constants {
 		DT_SETTING("dt_setting"),//,"单挑设置"
 		WINING_RATE("wining_rate"),//中奖率
 		BETTING_END_TIME("betting_end_time"),//投注截止时间
-		URL_WINING_NUMBER_EXTENAL("url_wining_number_extenal");//外部数据接口
+		URL_WINING_NUMBER_EXTENAL("url_wining_number_extenal"),//外部数据接口
+		LOTTO_PRIZE_RATE("lotto_prize_rate");//中奖赔率
 		private String code;
 		
 		private LotteryAttributes(String code) {
