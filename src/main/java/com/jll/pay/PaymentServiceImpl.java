@@ -1,6 +1,5 @@
 package com.jll.pay;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -19,8 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.jll.common.cache.CacheRedisService;
 import com.jll.common.constants.Constants;
-import com.jll.common.constants.Constants.PayChannelMaxAmountState;
 import com.jll.common.constants.Constants.PayChannelType;
+import com.jll.common.constants.Constants.PayChannnelEMA;
 import com.jll.common.constants.Constants.PayTypeState;
 import com.jll.common.constants.Message;
 import com.jll.common.utils.PageQuery;
@@ -78,18 +77,19 @@ public class PaymentServiceImpl  implements PaymentService
 
 	@Override
 	public List<PayChannel> getUserPayChannel() {
-		List<PayChannel> queryLists = new ArrayList<>();
+	
 		List<PayChannel> retLists = new ArrayList<>();
-		List<PayType> payTyps =  cacheRedisService.getPayType();
-		for (PayType payType : payTyps) {
-			queryLists.addAll(cacheRedisService.getPayChannel(payType.getId()));
-		}
 		
-		for (PayChannel payCl : queryLists) {
-			if(null == PayChannelType.getValueByCode(payCl.getChannelName())){
-				retLists.add(payCl);
+		Map<Integer, PayChannel> queryLists =cacheRedisService.getPayChannel(Constants.PayChannel.PAY_CHANNEL.getCode());
+		
+		for (Integer pKey : queryLists.keySet()) {
+			PayChannel pc = queryLists.get(pKey);
+			if(null == PayChannelType.getValueByCode(pc.getChannelName())
+					&& pc.getState() == Constants.PayTypeState.INVALID_STATE.getCode()){
+				retLists.add(pc);
 			}
-		}
+		}		
+		
 		Collections.sort(retLists, new Comparator<PayChannel>() {
             public int compare(PayChannel o1, PayChannel o2) {
                 return o1.getSeq().compareTo(o2.getSeq());
@@ -151,7 +151,7 @@ public class PaymentServiceImpl  implements PaymentService
 		}
 		
 		//验证支付渠道
-		PayChannel pcInfo = cacheRedisService.getPayChannelInfo(info.getPayType(), info.getPayChannel());
+		PayChannel pcInfo = cacheRedisService.getPayChannel(Constants.PayChannel.PAY_CHANNEL.getCode()).get(info.getPayChannel());
 		if(null == pcInfo ||
 				pcInfo.getState() == PayTypeState.VALID_STATE.getCode()){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
@@ -161,7 +161,7 @@ public class PaymentServiceImpl  implements PaymentService
 		}
 		
 		//验证支付渠道最大限制额度
-		if(PayChannelMaxAmountState.ENABLED.getCode() == pcInfo.getEnableMaxAmount()
+		if(PayChannnelEMA.NO.getCode() == pcInfo.getEnableMaxAmount()
 				&& info.getAmount() > pcInfo.getMaxAmount()){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_MESSAGE_PAY_TYPE_DISABLE.getCode());
