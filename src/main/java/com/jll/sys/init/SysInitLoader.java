@@ -39,6 +39,7 @@ public class SysInitLoader {
 	@Resource
 	PaymentService paymentService;
 	
+	@Resource
 	IpBlackListService ipBlackListService;
 	
 	@Resource
