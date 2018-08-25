@@ -67,12 +67,12 @@ public class PaymentServiceImpl  implements PaymentService
 
 	@Override
 	public List<PayType> getSysPayType() {
-		return (List<PayType>) supserDao.findByName(PayType.class, "state",Constants.PayTypeState.INVALID_STATE.getCode());
+		return (List<PayType>) supserDao.findByName(PayType.class, "state",Constants.PayTypeState.VALID_STATE.getCode());
 	}
 	
 	@Override
 	public List<PayChannel> getSysPayChannelByType(int peyType) {
-		return (List<PayChannel>) supserDao.findByName(PayChannel.class,"payType",peyType,"state",Constants.PayTypeState.INVALID_STATE.getCode());
+		return (List<PayChannel>) supserDao.findByName(PayChannel.class,"payType",peyType,"state",Constants.PayTypeState.VALID_STATE.getCode());
 	}
 
 	@Override
@@ -84,8 +84,8 @@ public class PaymentServiceImpl  implements PaymentService
 		
 		for (Integer pKey : queryLists.keySet()) {
 			PayChannel pc = queryLists.get(pKey);
-			if(null == PayChannelType.getValueByCode(pc.getChannelName())
-					&& pc.getState() == Constants.PayTypeState.INVALID_STATE.getCode()){
+			if(null == PayChannelType.getValueByCode(pc.getPayCode())
+					&& pc.getState() == Constants.PayTypeState.VALID_STATE.getCode()){
 				retLists.add(pc);
 			}
 		}		
@@ -175,13 +175,13 @@ public class PaymentServiceImpl  implements PaymentService
 		DepositApplication depositOrder = depositOrderDao.saveDepositOrder(info.getPayType(), info.getPayChannel(),userId, info.getAmount(), "",new Date(),"");
 		pramsInfo.put("depositOrder", depositOrder);
 		pramsInfo.put("userId", userId);
-		pramsInfo.put("rechargeType", pcInfo.getChannelName());
+		pramsInfo.put("rechargeType", pcInfo.getPayCode());
 		pramsInfo.put("amount", info.getAmount());
 		if(pt.getPlatId().equals(Constants.PayType.CAI_PAY.getCode())){
 			pramsInfo.remove("reqIP");
 			pramsInfo.remove("payerName");
 			pramsInfo.remove("payCardNumber");
-			if(!pcInfo.getChannelName().equals("00026")){
+			if(!pcInfo.getPayCode().equals("00026")){
 				String retCode = caiPayService.processScanPay(pramsInfo);
 				getScanPayInfo(ret, retCode, StringUtils.getStringValue(pramsInfo.get("qrcode")));
 			}else{
@@ -193,7 +193,7 @@ public class PaymentServiceImpl  implements PaymentService
 		}else if(pt.getPlatId().equals(Constants.PayType.ZHI_HUI_FU_PAY.getCode())){
 			pramsInfo.remove("payerName");
 			pramsInfo.remove("payCardNumber");
-			if(pcInfo.getChannelName().equals("b2c")){
+			if(pcInfo.getPayCode().equals("b2c")){
 				zhihPayService.processOnlineBankPay(pramsInfo);
 				ret.put("isRedirect",true);
 				ret.put(Message.KEY_DATA, pramsInfo.get("redirect"));
