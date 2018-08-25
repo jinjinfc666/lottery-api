@@ -30,6 +30,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jll.common.cache.CacheRedisService;
+import com.jll.common.constants.Constants;
 import com.jll.common.constants.Message;
 import com.jll.common.http.HttpRemoteStub;
 import com.jll.common.utils.BigDecimalUtil;
@@ -543,7 +544,7 @@ public class CaiPayServiceImpl implements CaiPayService
 				|| BigDecimalUtil.div(Double.valueOf(notices.getOrderAmount()), 100.00,2) != depositOrder.getAmount()){
 			return false;
 		}
-		PayChannel pcInfo = cacheRedisService.getPayChannelInfo(depositOrder.getPayType(), depositOrder.getPayChannel());
+		PayChannel pcInfo = cacheRedisService.getPayChannel(Constants.PayChannel.PAY_CHANNEL.getCode(), depositOrder.getPayChannel());
 		
 		String channelCode = pcInfo.getChannelName();
 		Merchant merchant = queryCurrMerchant(channelCode);
