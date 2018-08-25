@@ -15,4 +15,6 @@ public interface WalletDao
 	UserAccount queryByUser(UserInfo user);
 
 	UserAccount queryById(int walletId);
+
+	void updateWallet(UserAccount wallet);
 }

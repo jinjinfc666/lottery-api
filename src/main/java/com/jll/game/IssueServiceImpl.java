@@ -44,8 +44,7 @@ public class IssueServiceImpl implements IssueService
 
 	@Override
 	public Issue getIssueByIssueNum(String issueNum) {
-		// TODO Auto-generated method stub
-		return null;
+		return issueDao.getIssueByIssueNum(issueNum);
 	}
 	
 	

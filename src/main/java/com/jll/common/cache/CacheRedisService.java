@@ -10,6 +10,7 @@ import com.jll.entity.Issue;
 import com.jll.entity.OrderInfo;
 import com.jll.entity.PlayType;
 import com.jll.entity.SysCode;
+import com.jll.entity.UserInfo;
 import com.jll.game.BulletinBoard;
 
 
@@ -112,4 +113,41 @@ public interface CacheRedisService {
 	void setIpBlackList(String codeTypeName, List<IpBlackList> ipBlackLists);
 	
 	void deleteIpBlackList (String codeTypeName, Integer codeName);
+
+	/**
+	 * 相同用户是否有相同期次的订单正在处理
+	 * @param user
+	 * @param orders
+	 * @return
+	 */
+	boolean isUserBetting(UserInfo user, OrderInfo order);
+
+	/**
+	 * 标识正在处理用户一个订单
+	 * @param user
+	 * @param orders
+	 */
+	void setUserBettingFlag(UserInfo user, OrderInfo order);
+
+	/**
+	 * 将用户订单的处理标识取消
+	 * @param user
+	 * @param orders
+	 */
+	void releaseUserBettingFlag(UserInfo user, OrderInfo order);
+
+	boolean isTimesValid(String lottoType, Integer times);
+
+	boolean isMonUnitValid(String lottoType, Float monUnit);
+
+	boolean isPlayTypeValid(String lotteryType, Integer playTypeId);
+
+	/**
+	 * 获取投注的倍数
+	 * @param lotteryType
+	 * @return
+	 */
+	SysCode getBetTimes(String lotteryType);
+
+	SysCode getMoneyUnit(String lotteryType);
 }

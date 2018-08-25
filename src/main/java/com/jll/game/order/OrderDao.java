@@ -9,6 +9,8 @@ public interface OrderDao
 {
 
 	void saveOrders(OrderInfo order);
+
+	List<OrderInfo> queryOrdersByIssue(Integer issueId);
 		
 	
 }

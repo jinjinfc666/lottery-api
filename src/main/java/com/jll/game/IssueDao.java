@@ -12,4 +12,6 @@ public interface IssueDao
 	void saveIssue(Issue currIssue);
 
 	Issue getIssueById(Integer id);
+
+	Issue getIssueByIssueNum(String issueNum);
 }

@@ -133,14 +133,14 @@ public class PlayTypeServiceImpl implements PlayTypeService
 		return playTypeDao.queryByLotteryType(lotteryType);
 	}
 	@Override
-	public List<PlayType> queryById(Integer id) {
+	public PlayType queryById(Integer id) {
 		return playTypeDao.queryById(id);
 	}
 	//查询id是否存在
 	@Override
 	public boolean isNoPlayType(Integer id) {
-		List<PlayType> list=playTypeDao.queryById(id);
-		if(list!=null&&list.size()>0) {
+		PlayType list=playTypeDao.queryById(id);
+		if(list!=null) {
 			return true;
 		}
 		return false;

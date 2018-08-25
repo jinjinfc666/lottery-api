@@ -95,4 +95,6 @@ public interface UserInfoService
 	//获取登陆用户信息，如果OK，返回用户信息
 	UserInfo getCurLoginInfo();
 	Map<String, Object> userProfitReport(String userName);
+	
+	Float calPrizeRate(UserInfo user, String lottoType);
 }

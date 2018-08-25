@@ -50,6 +50,11 @@ public class WalletDaoImpl extends DefaultGenericDaoImpl<UserAccount> implements
 		}
 		return userAccounts.get(0);
 	}
+
+	@Override
+	public void updateWallet(UserAccount wallet) {
+		this.saveOrUpdate(wallet);
+	}
   
   
 }

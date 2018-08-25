@@ -40,5 +40,19 @@ public class IssueDaoImpl extends DefaultGenericDaoImpl<Issue> implements IssueD
 		return result.get(0);
 	}
 
+	@Override
+	public Issue getIssueByIssueNum(String issueNum) {
+		String sql = "from Issue where issueNum =?";
+		List<Object> params = new ArrayList<>();
+		params.add(issueNum);
+		
+		List<Issue> result = query(sql, params, Issue.class);
+		if(result == null || result.size() == 0) {
+			return null;
+		}
+		
+		return result.get(0);
+	}
+
 
 }

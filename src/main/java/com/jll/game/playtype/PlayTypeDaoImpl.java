@@ -58,11 +58,18 @@ public class PlayTypeDaoImpl extends DefaultGenericDaoImpl<PlayType> implements 
 	}
 
 	@Override
-	public List<PlayType> queryById(Integer id) {
+	public PlayType queryById(Integer id) {
 		String sql = "from PlayType where id=?";
 		List<Object> params = new ArrayList<>();
 		params.add(id);
-		return this.query(sql, params, PlayType.class);
+		
+		List<PlayType> playTypes = this.query(sql, params, PlayType.class);
+		
+		if(playTypes != null && playTypes.size() > 0) {
+			return playTypes.get(0);
+		}
+		
+		return null;
 	}
 	//是否隐藏
 	@Override

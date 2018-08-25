@@ -12,16 +12,22 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.jll.common.cache.CacheObject;
 import com.jll.common.cache.CacheRedisService;
 import com.jll.common.constants.Constants;
+import com.jll.common.constants.Message;
 import com.jll.common.utils.StringUtils;
 import com.jll.entity.Issue;
 import com.jll.entity.PlayType;
 import com.jll.entity.SysCode;
+import com.jll.entity.UserInfo;
+import com.jll.game.cqssc.PlayTypeFactory;
+import com.jll.game.playtype.PlayTypeFacade;
+import com.jll.game.playtype.PlayTypeService;
+import com.jll.user.UserInfoService;
 
 @Configuration
 @PropertySource("classpath:sys-setting.properties")
@@ -39,6 +45,12 @@ public class LotteryCenterServiceImpl implements LotteryCenterService
 	
 	@Resource
 	CacheRedisService cacheServ;
+	
+	@Resource
+	PlayTypeService playTypeServ;
+	
+	@Resource
+	UserInfoService userServ;
 	
 	@Override
 	public synchronized void makeAPlan() {
@@ -325,6 +337,25 @@ public class LotteryCenterServiceImpl implements LotteryCenterService
 		}else {
 			moveToNext(bulletinBoard.getCurrIssue(), lottoType.getCodeName());
 		}
+	}
+
+	@Override
+	public String PreBet(Map<String, Object> params, Map<String, Object> data) {
+		String playTypeName = null;
+		PlayTypeFacade playTypeFacade = null;
+		String lotteryType = (String)params.get("lottoType");
+		Integer playTypeId = (Integer)params.get("playType");
+		PlayType playType = playTypeServ.queryById(playTypeId);
+		String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+		UserInfo user = userServ.getUserByUserName(userName);
+		
+		playTypeName = lotteryType + "/" + playType.getClassification() + "/" + playType.getPtName();
+		playTypeFacade = PlayTypeFactory.getInstance().getPlayTypeFacade(playTypeName);
+		
+		Map<String, Object> retData = playTypeFacade.preProcessNumber(params, user);
+		data.putAll(retData);
+		
+		return Integer.toString(Message.status.SUCCESS.getCode());
 	}
 
 	

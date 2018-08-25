@@ -45,7 +45,7 @@ public class Utils {
 		Random random = new Random();		
 		
 		ret.append(dateFormat.format(nowTime));
-		ret.append(numFormat.format(seq));
+		ret.append(numFormat.format(seq.intValue()));
 		for(int i = 0; i < 4; i++) {
 			int currIndex = random.nextInt(10);
 			ret.append(Integer.toString(currIndex));

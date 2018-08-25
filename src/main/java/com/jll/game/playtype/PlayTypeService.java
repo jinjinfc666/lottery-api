@@ -27,7 +27,7 @@ public interface PlayTypeService
 	
 	List<PlayType> queryByLotteryType(String lotteryType);
 	
-	List<PlayType> queryById(Integer id);
+	PlayType queryById(Integer id);
 	
 	//添加时的验证
 	boolean isNoPlayType(PlayType playType);
