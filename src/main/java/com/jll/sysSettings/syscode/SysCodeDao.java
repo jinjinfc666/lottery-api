@@ -42,4 +42,6 @@ public interface SysCodeDao {
 	public List<SysCode> quertBigType();
 	//通过codeName查询代码类型    这个codeName只能是大类的codeName
 	List<SysCode> queryByCodeNameBigType(String codeName);
+	//修改排序
+	public void updateSmallTypeSeq(SysCode sysCode);
 }

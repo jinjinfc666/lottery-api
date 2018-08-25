@@ -11,6 +11,8 @@ import org.springframework.stereotype.Repository;
 
 import com.jll.entity.IpBlackList;
 import com.jll.entity.Issue;
+import com.jll.entity.PayChannel;
+import com.jll.entity.PayType;
 import com.jll.entity.PlayType;
 import com.jll.entity.SysCode;
 import com.jll.game.BulletinBoard;
@@ -163,5 +165,39 @@ public class CacheRedisDaoImpl  extends AbstractBaseRedisDao implements CacheRed
 	@Override
 	public CacheObject<Integer> getUserBettingFlag(String cacheKey) {
 		return this.get(cacheKey);
+	}
+	
+	//充值渠道
+	@Override
+	public CacheObject<Map<Integer, PayChannel>> getPayChannel(String codeName) {
+		CacheObject<Map<Integer, PayChannel>> cacheObject = get(codeName);
+		return cacheObject;
+	}
+	@Override
+	public List<PayType> getPayType(String cacheKey) {
+		CacheObject<List<PayType>> cacheObject = this.get(cacheKey);
+		if(cacheObject == null) {
+			return null;
+		}
+		return cacheObject.getContent();
+	}
+	@Override
+	public void setPayType(CacheObject<List<PayType>> cache) {
+		this.saveOrUpdate(cache);
+	}
+	@Override
+	public PayChannel getPayChannel(String codeTypeName, Integer codeName) {
+		CacheObject<Map<Integer, PayChannel>> cacheObject=get(codeTypeName);
+		if(cacheObject==null) {
+			return null;
+		}
+		Map<Integer,PayChannel> map=cacheObject.getContent();
+		PayChannel payChannel=map.get(codeName); 
+		return payChannel;
+	}
+
+	@Override
+	public void setPayChannel(CacheObject<Map<Integer, PayChannel>> cacheObj) {
+		this.saveOrUpdate(cacheObj);
 	}
 }

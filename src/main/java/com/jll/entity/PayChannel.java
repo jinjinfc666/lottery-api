@@ -19,13 +19,15 @@ public class PayChannel implements java.io.Serializable {
 	private String bankAcc;
 	private String bankName;
 	private String remark;
+	private String payCode;
 
 	public PayChannel() {
 	}
 
 	public PayChannel(String channelName, String nickName, String typeClass, Integer payType, Float maxAmount,
 			Integer enableMaxAmount, Integer seq, Integer state, String qrUrl, String bankAcc, String bankName,
-			String remark) {
+			String remark, String payCode) {
+		super();
 		this.channelName = channelName;
 		this.nickName = nickName;
 		this.typeClass = typeClass;
@@ -38,7 +40,10 @@ public class PayChannel implements java.io.Serializable {
 		this.bankAcc = bankAcc;
 		this.bankName = bankName;
 		this.remark = remark;
+		this.payCode = payCode;
 	}
+
+
 
 	public Integer getId() {
 		return this.id;
@@ -71,9 +76,9 @@ public class PayChannel implements java.io.Serializable {
 	public void setTypeClass(String typeClass) {
 		this.typeClass = typeClass;
 	}
-
+	
 	public Integer getPayType() {
-		return this.payType;
+		return payType;
 	}
 
 	public void setPayType(Integer payType) {
@@ -142,6 +147,14 @@ public class PayChannel implements java.io.Serializable {
 
 	public void setRemark(String remark) {
 		this.remark = remark;
+	}
+
+	public String getPayCode() {
+		return payCode;
+	}
+
+	public void setPayCode(String payCode) {
+		this.payCode = payCode;
 	}
 
 }

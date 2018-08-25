@@ -10,10 +10,17 @@ import org.apache.log4j.Logger;
 
 import com.jll.common.cache.CacheRedisService;
 import com.jll.common.constants.Constants;
+import com.jll.entity.IpBlackList;
+import com.jll.entity.PayChannel;
+import com.jll.entity.PayType;
 import com.jll.entity.PlayType;
 import com.jll.entity.SysCode;
 import com.jll.game.LotteryCenterServiceImpl;
 import com.jll.game.playtype.PlayTypeService;
+import com.jll.pay.PaymentService;
+import com.jll.sys.blacklist.IpBlackListService;
+import com.jll.sys.deposit.PayChannelService;
+import com.jll.sys.deposit.PayTypeService;
 import com.jll.sysSettings.syscode.SysCodeService;
 
 public class SysInitLoader {
@@ -29,9 +36,24 @@ public class SysInitLoader {
 	@Resource
 	PlayTypeService playTypeServ;
 	
+	@Resource
+	PaymentService paymentService;
+	
+	@Resource
+	IpBlackListService ipBlackListService;
+	
+	@Resource
+	PayTypeService payTypeService;
+	
+	@Resource
+	PayChannelService payChannelService;
+	
 	public void init() {
 		initSysCode();
 		initPlayType();
+		initIpBlackList();
+		initPayType();
+		initPayChannel();
 	}
 	
 
@@ -43,6 +65,7 @@ public class SysInitLoader {
 		initPaymentPlatform();
 		initLuckyDraw();
 		initSignInDay();
+		initSysCodePayType();
 	}
 	//加载签到活动
 	private void initSignInDay() {
@@ -150,6 +173,27 @@ public class SysInitLoader {
 			cacheServ.setSysCode(codeTypeName, sysCodes);
 		}
 	}
+	//加载充值方式类型   这是SysCode表里的Pay_Type(充值方式)的缓存
+	private void initSysCodePayType() {
+		String codeTypeName = Constants.SysCodeTypes.PAY_TYPE.getCode();
+		Map<String, SysCode> sysCodePayType = cacheServ.getSysCode(codeTypeName);
+		List<SysCode> sysCodes = null;
+		
+		if(sysCodePayType == null || sysCodePayType.size() == 0) {
+			sysCodes = sysCodeServ.queryAllSmallType(codeTypeName);
+			List<SysCode> sysCodeTypes = sysCodeServ.queryByCodeNameBigType(codeTypeName);
+			
+			if(sysCodes == null || sysCodes.size() == 0
+					|| sysCodeTypes == null
+					|| sysCodeTypes.size() == 0) {
+				return ;
+			}
+			
+			sysCodes.add(sysCodeTypes.get(0));
+			
+			cacheServ.setSysCode(codeTypeName, sysCodes);
+		}
+	}
 	//加载玩法类型
 	private void initSysCodePlayType() {
 		String codeTypeName = Constants.SysCodePlayType.CT_PLAY_TYPE_CLASSICFICATION.getCode();
@@ -169,6 +213,21 @@ public class SysInitLoader {
 			sysCodes.add(sysCodeTypes.get(0));
 			
 			cacheServ.setSysCode(codeTypeName, sysCodes);
+		}
+	}
+	//加载ip限制
+	private void initIpBlackList() {
+		String codeTypeName = Constants.IpBlackList.IP_BLACK_LIST.getCode();
+		Map<Integer, IpBlackList> ipBlackListMaps = cacheServ.getIpBlackList(codeTypeName);
+		List<IpBlackList> ipBlackLists = null;
+		
+		if(ipBlackListMaps == null || ipBlackListMaps.size() == 0) {
+			ipBlackLists = ipBlackListService.query();
+			
+			if(ipBlackLists == null || ipBlackLists.size() == 0) {
+				return ;
+			}
+			cacheServ.setIpBlackList(codeTypeName, ipBlackLists);
 		}
 	}
 	//加载彩种的属性
@@ -231,4 +290,34 @@ public class SysInitLoader {
 			}
 		}
 	}
+
+	//加载充值方式  这是pay_type表的缓存
+	private void initPayType() {
+		String payTypeName=Constants.PayTypeName.PAY_TYPE_CLASS.getCode();
+		List<PayType> payTypeLists = cacheServ.getPayType(payTypeName);
+		
+		if(payTypeLists == null || payTypeLists.size() == 0) {
+			payTypeLists = payTypeService.queryAllPayType();
+			if(payTypeLists == null || payTypeLists.size() == 0) {
+				return ;
+			}
+			cacheServ.setPayType(payTypeName, payTypeLists);
+		}
+	}
+	//加载充值渠道
+	private void initPayChannel() {
+		String payChannelName=Constants.PayChannel.PAY_CHANNEL.getCode();
+		Map<Integer, PayChannel> payChannelMaps = cacheServ.getPayChannel(payChannelName);
+		List<PayChannel> payChannelLists = null;
+		
+		if(payChannelMaps == null || payChannelMaps.size() == 0) {
+			payChannelLists = payChannelService.queryAll();
+			
+			if(payChannelLists == null || payChannelLists.size() == 0) {
+				return ;
+			}
+			cacheServ.setPayChannel(payChannelName, payChannelLists);
+		}
+	}
+		
 }

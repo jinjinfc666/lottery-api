@@ -103,8 +103,9 @@ public class IpBlackListController {
 			ret=ipBlackListService.update(ipBlackList);
 			int status=(int) ret.get(Message.KEY_STATUS);
 			if(status==Message.status.SUCCESS.getCode()) {
-				IpBlackList list=ipBlackListService.query(id);
 				String codeTypeName=Constants.IpBlackList.IP_BLACK_LIST.getCode();
+				IpBlackList list=cacheServ.getIpBlackList(codeTypeName, id);
+				list.setIp(ip);
 				cacheServ.setIpBlackList(codeTypeName, list);
 			}
 			return ret;

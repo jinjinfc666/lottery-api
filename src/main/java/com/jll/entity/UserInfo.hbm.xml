@@ -19,7 +19,6 @@
             <column length="50" name="user_id">
             </column>
         </property>
-        
         <property generated="never" lazy="false" name="loginPwd" optimistic-lock="true" type="string" unique="false">
             <column length="256" name="login_pwd">
                 <comment>��¼����</comment>

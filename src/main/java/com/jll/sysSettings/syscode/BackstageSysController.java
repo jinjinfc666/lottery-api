@@ -1,15 +1,18 @@
 package com.jll.sysSettings.syscode;
 
+import java.sql.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.hibernate.type.DateType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -52,7 +55,6 @@ public class BackstageSysController {
 		if(!StringUtils.isBlank(remark)) {
 			sysCode.setRemark(remark);
 		}
-		
 		try {
 			ret.clear();
 			ret=sysCodeService.addSysCode(codeName,sysCode);
@@ -72,8 +74,8 @@ public class BackstageSysController {
 		return ret;
 	}
 	//查询所有的类型
-	@RequestMapping(value={"/bigType"}, method={RequestMethod.POST}, produces={"application/json"})
-	public Map<String, Object> quertBigType() {
+	@RequestMapping(value={"/bigType"}, method={RequestMethod.GET}, produces={"application/json"})
+	public Map<String, Object> queryBigType() {
 		Map<String, Object> ret = new HashMap<>();
 		try {
 			List<SysCode> sysCode=sysCodeService.quertBigType();
@@ -89,7 +91,7 @@ public class BackstageSysController {
 		return ret;
 	}
 	//修改大类的值
-	@RequestMapping(value={"/updateBigType"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/updateBigType"}, method={RequestMethod.PUT}, produces={"application/json"})
 	public Map<String, Object> updateBigType(@RequestParam(name = "id", required = false) Integer id,
 			  @RequestParam(name = "codeName", required = true) String codeName,//和id一样不能修改只需要传过来
 			  @RequestParam(name = "codeVal", required = false) String codeVal,
@@ -108,7 +110,13 @@ public class BackstageSysController {
 		try {
 			sysCodeService.updateBigType(ret);
 			//存储到缓存
-			SysCode sysCode1=sysCodeService.queryById(id);
+			SysCode sysCode1=cacheRedisService.getSysCode(codeName, codeName);
+			if(!StringUtils.isBlank(codeVal)) {
+				sysCode1.setCodeVal(codeVal);
+			}
+			if(!StringUtils.isBlank(remark)) {
+				sysCode1.setRemark(remark);
+			}
 			cacheRedisService.setSysCode(codeName, sysCode1);
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
@@ -121,25 +129,28 @@ public class BackstageSysController {
 		return ret;
 	}
 	//修改大类的状态
-	@RequestMapping(value={"/updateBigTypeState"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/updateBigTypeState"}, method={RequestMethod.PUT}, produces={"application/json"})
 	public Map<String, Object> updateBigTypeState(@RequestParam(name = "id", required = true) Integer id,
 			@RequestParam(name = "codeName", required = true) String codeName,//不能修改只传值
 			  @RequestParam(name = "state", required = true) Integer state,//1为有效0为无效
 			  HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
 		try {
-			sysCodeService.updateBigTypeState(id,state);		
-			SysCode sysCode=sysCodeService.queryById(id);
-			// //TODO 
+			sysCodeService.updateBigTypeState(id,state);	
+			// //TODO 	
+			SysCode sysCode=cacheRedisService.getSysCode(codeName, codeName);
+			sysCode.setState(state);
 			cacheRedisService.setSysCode(codeName, sysCode);
-			List<SysCode> list=sysCodeService.queryAllSmallType(codeName);
-			if(list!=null&&list.size()>0) {
-				Iterator<SysCode> it=list.iterator();
-				while(it.hasNext()) {
-					SysCode sysCode1=it.next();
-					cacheRedisService.setSysCode(codeName, sysCode1);
-				}
-			}
+			
+			Map<String,SysCode> map=cacheRedisService.getSysCode(codeName);
+			if (map != null) {  
+	            Set<String> keySet = map.keySet();  
+	            for (String string : keySet) {  
+	                SysCode sysCode1=cacheRedisService.getSysCode(codeName, string);
+	                sysCode1.setState(state);
+	                cacheRedisService.setSysCode(codeName, sysCode);
+	            }  
+	        }
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		}catch(Exception e){
@@ -188,12 +199,12 @@ public class BackstageSysController {
 		return ret;
 	}
 	//查询彩种类型下的所有值
-	@RequestMapping(value={"/querySmallLotteryType"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/querySmallLotteryType"}, method={RequestMethod.GET}, produces={"application/json"})
 	public Map<String, Object> querySmallLotteryType() {
 		Map<String, Object> ret = new HashMap<>();
 		String bigCodeName=Constants.SysCodeTypes.LOTTERY_TYPES.getCode();
 		try {
-			List<SysCode> sysCode=sysCodeService.queryAllSmallType(bigCodeName);
+			Map<String,SysCode> sysCode=cacheRedisService.getSysCode(bigCodeName);
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 			ret.put("data", sysCode);
@@ -206,8 +217,9 @@ public class BackstageSysController {
 		return ret;
 	}
 	//软删除彩种类型下的某个小类
-	@RequestMapping(value={"/updateSmallLotteryTypeState"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/updateSmallLotteryTypeState"}, method={RequestMethod.PUT}, produces={"application/json"})
 	public Map<String, Object> updateSmallLotteryTypeState(@RequestParam(name = "id", required = true) Integer id,
+			  @RequestParam(name = "codeName", required = true) String codeName,//不能修改只传值
 			  @RequestParam(name = "state", required = true) Integer state,//1为有效0为无效
 			  HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
@@ -216,9 +228,12 @@ public class BackstageSysController {
 			ret.put("id", id);
 			ret.put("state", state);
 			sysCodeService.updateSmallTypeState(id, state);	
-			SysCode sysCode=sysCodeService.queryById(id);
 			//存储到缓存
-			cacheRedisService.setSysCode(bigCodeName, sysCode);
+			SysCode sysCode=cacheRedisService.getSysCode(bigCodeName, codeName);
+			if(sysCode!=null) {
+				sysCode.setState(state);
+				cacheRedisService.setSysCode(bigCodeName, sysCode);	
+			}
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		}catch(Exception e){
@@ -230,8 +245,9 @@ public class BackstageSysController {
 		return ret;
 	}
 	//修改彩种类型下的某一条数据
-	@RequestMapping(value={"/updateSmallLotteryType"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/updateSmallLotteryType"}, method={RequestMethod.PUT}, produces={"application/json"})
 	public Map<String, Object> updateSmallLotteryType(@RequestParam(name = "id", required = true) Integer id,
+			  @RequestParam(name = "codeName", required = true) String codeName,//不能修改只传值
 			  @RequestParam(name = "codeVal", required = false) String codeVal,
 			  @RequestParam(name = "remark", required = false) String remark,
 			  HttpServletRequest request) {
@@ -248,9 +264,17 @@ public class BackstageSysController {
 		ret.put("remark", remark);
 		try {
 			sysCodeService.updateSmallType(ret);
-			SysCode sysCode2=sysCodeService.queryById(id);
 			//存储到缓存
-			cacheRedisService.setSysCode(bigCodeName, sysCode2);
+			SysCode sysCode1=cacheRedisService.getSysCode(bigCodeName, codeName);
+			if(sysCode1!=null) {
+				if(!StringUtils.isBlank(codeVal)) {
+					sysCode1.setCodeVal(codeVal);
+				}
+				if(!StringUtils.isBlank(remark)) {
+					sysCode1.setRemark(remark);
+				}
+				cacheRedisService.setSysCode(bigCodeName, sysCode1);
+			}
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		}catch(Exception e){
@@ -260,6 +284,23 @@ public class BackstageSysController {
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
 		}
 		return ret;
+	}
+	//修改排序
+	@RequestMapping(value={"/updateSmallLotteryTypeSeq"}, method={RequestMethod.PUT}, produces={"application/json"})
+	public Map<String, Object> updateSmallLotteryTypeSeq(@RequestParam(name = "allId", required = true) String allId,
+			  HttpServletRequest request) {
+		Map<String, Object> ret = new HashMap<>();
+		String bigCodeName=Constants.SysCodeTypes.LOTTERY_TYPES.getCode();
+		try {
+			Map<String,Object> map=sysCodeService.updateSmallTypeSeq(bigCodeName, allId);
+			return map;
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			return ret;
+		}
 	}
 	/**
 	 *流水类型的增删改查
@@ -299,12 +340,12 @@ public class BackstageSysController {
 		return ret;
 	}
 	//查询流水类型下的所有值
-	@RequestMapping(value={"/querySmallFlowType"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/querySmallFlowType"}, method={RequestMethod.GET}, produces={"application/json"})
 	public Map<String, Object> querySmallFlowType() {
 		Map<String, Object> ret = new HashMap<>();
 		String bigCodeName=Constants.SysCodeTypes.FLOW_TYPES.getCode();
 		try {
-			List<SysCode> sysCode=sysCodeService.queryAllSmallType(bigCodeName);
+			Map<String,SysCode> sysCode=cacheRedisService.getSysCode(bigCodeName);
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 			ret.put("data", sysCode);
@@ -317,8 +358,9 @@ public class BackstageSysController {
 		return ret;
 	}
 	//软删除流水类型下的某个小类
-	@RequestMapping(value={"/updateSmallFlowTypeState"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/updateSmallFlowTypeState"}, method={RequestMethod.PUT}, produces={"application/json"})
 	public Map<String, Object> updateSmallFlowTypeState(@RequestParam(name = "id", required = true) Integer id,
+			@RequestParam(name = "codeName", required = true) String codeName,//不能修改只传值
 			  @RequestParam(name = "state", required = true) Integer state,//1为有效0为无效
 			  HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
@@ -327,9 +369,12 @@ public class BackstageSysController {
 			ret.put("id", id);
 			ret.put("state", state);
 			sysCodeService.updateSmallTypeState(id, state);	
-			SysCode sysCode=sysCodeService.queryById(id);
 			//存储到缓存
-			cacheRedisService.setSysCode(bigCodeName, sysCode);
+			SysCode sysCode=cacheRedisService.getSysCode(bigCodeName, codeName);
+			if(sysCode!=null) {
+				sysCode.setState(state);
+				cacheRedisService.setSysCode(bigCodeName, sysCode);	
+			}
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		}catch(Exception e){
@@ -341,8 +386,9 @@ public class BackstageSysController {
 		return ret;
 	}
 	//修改流水类型下的某一条数据
-	@RequestMapping(value={"/updateSmallFlowType"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/updateSmallFlowType"}, method={RequestMethod.PUT}, produces={"application/json"})
 	public Map<String, Object> updateSmallFlowType(@RequestParam(name = "id", required = true) Integer id,
+			  @RequestParam(name = "codeName", required = true) String codeName,//不能修改只传值
 			  @RequestParam(name = "codeVal", required = false) String codeVal,
 			  @RequestParam(name = "remark", required = false) String remark,
 			  HttpServletRequest request) {
@@ -359,9 +405,17 @@ public class BackstageSysController {
 		ret.put("remark", remark);
 		try {
 			sysCodeService.updateSmallType(ret);
-			SysCode sysCode2=sysCodeService.queryById(id);
 			//存储到缓存
-			cacheRedisService.setSysCode(bigCodeName, sysCode2);
+			SysCode sysCode1=cacheRedisService.getSysCode(bigCodeName, codeName);
+			if(sysCode1!=null) {
+				if(!StringUtils.isBlank(codeVal)) {
+					sysCode1.setCodeVal(codeVal);
+				}
+				if(!StringUtils.isBlank(remark)) {
+					sysCode1.setRemark(remark);
+				}
+				cacheRedisService.setSysCode(bigCodeName, sysCode1);
+			}
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		}catch(Exception e){
@@ -371,6 +425,23 @@ public class BackstageSysController {
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
 		}
 		return ret;
+	}
+	//修改排序
+	@RequestMapping(value={"/updateSmallFlowTypeSeq"}, method={RequestMethod.PUT}, produces={"application/json"})
+	public Map<String, Object> updateSmallFlowTypeSeq(@RequestParam(name = "allId", required = true) String allId,
+			  HttpServletRequest request) {
+		Map<String, Object> ret = new HashMap<>();
+		String bigCodeName=Constants.SysCodeTypes.FLOW_TYPES.getCode();
+		try {
+			Map<String,Object> map=sysCodeService.updateSmallTypeSeq(bigCodeName, allId);
+			return map;
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			return ret;
+		}
 	}
 	/**
 	 *幸运抽奖类型的增删改查
@@ -391,7 +462,7 @@ public class BackstageSysController {
 		if(!StringUtils.isBlank(remark)) {
 			sysCode.setRemark(remark);
 		}
-		String bigCodeName=Constants.SysCodeTypes.PAYMENT_PLATFORM.getCode();
+		String bigCodeName=Constants.SysCodeTypes.LUCKY_DRAW.getCode();
 		try {
 			Integer codeType=sysCodeService.queryByCodeName(bigCodeName);
 			sysCode.setCodeType(codeType);	
@@ -410,12 +481,12 @@ public class BackstageSysController {
 		return ret;
 	}
 	//查询幸运抽奖类型下的所有值
-	@RequestMapping(value={"/querySmallLuckyDraw"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/querySmallLuckyDraw"}, method={RequestMethod.GET}, produces={"application/json"})
 	public Map<String, Object> querySmallLuckyDraw() {
 		Map<String, Object> ret = new HashMap<>();
-		String bigCodeName=Constants.SysCodeTypes.PAYMENT_PLATFORM.getCode();
+		String bigCodeName=Constants.SysCodeTypes.LUCKY_DRAW.getCode();
 		try {
-			List<SysCode> sysCode=sysCodeService.queryAllSmallType(bigCodeName);
+			Map<String,SysCode> sysCode=cacheRedisService.getSysCode(bigCodeName);
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 			ret.put("data", sysCode);
@@ -428,19 +499,23 @@ public class BackstageSysController {
 		return ret;
 	}
 	//软删除幸运抽奖类型下的某个小类
-	@RequestMapping(value={"/updateSmallLuckyDrawState"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/updateSmallLuckyDrawState"}, method={RequestMethod.PUT}, produces={"application/json"})
 	public Map<String, Object> updateSmallLuckyDrawState(@RequestParam(name = "id", required = true) Integer id,
+			@RequestParam(name = "codeName", required = true) String codeName,//不能修改只传值
 			  @RequestParam(name = "state", required = true) Integer state,//1为有效0为无效
 			  HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
-		String bigCodeName=Constants.SysCodeTypes.PAYMENT_PLATFORM.getCode();
+		String bigCodeName=Constants.SysCodeTypes.LUCKY_DRAW.getCode();
 		try {
 			ret.put("id", id);
 			ret.put("state", state);
 			sysCodeService.updateSmallTypeState(id, state);	
-			SysCode sysCode=sysCodeService.queryById(id);
 			//存储到缓存
-			cacheRedisService.setSysCode(bigCodeName, sysCode);
+			SysCode sysCode=cacheRedisService.getSysCode(bigCodeName, codeName);
+			if(sysCode!=null) {
+				sysCode.setState(state);
+				cacheRedisService.setSysCode(bigCodeName, sysCode);	
+			}
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		}catch(Exception e){
@@ -452,8 +527,9 @@ public class BackstageSysController {
 		return ret;
 	}
 	//修改幸运抽奖类型下的某一条数据
-	@RequestMapping(value={"/updateSmallLuckyDraw"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/updateSmallLuckyDraw"}, method={RequestMethod.PUT}, produces={"application/json"})
 	public Map<String, Object> updateSmallLuckyDraw(@RequestParam(name = "id", required = true) Integer id,
+			  @RequestParam(name = "codeName", required = true) String codeName,//不能修改只传值
 			  @RequestParam(name = "codeVal", required = false) String codeVal,
 			  @RequestParam(name = "remark", required = false) String remark,
 			  HttpServletRequest request) {
@@ -464,15 +540,23 @@ public class BackstageSysController {
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
 	    	return ret;
 		}
-		String bigCodeName=Constants.SysCodeTypes.PAYMENT_PLATFORM.getCode();
+		String bigCodeName=Constants.SysCodeTypes.LUCKY_DRAW.getCode();
 		ret.put("id", id);
 		ret.put("codeVal", codeVal);
 		ret.put("remark", remark);
 		try {
 			sysCodeService.updateSmallType(ret);
-			SysCode sysCode2=sysCodeService.queryById(id);
 			//存储到缓存
-			cacheRedisService.setSysCode(bigCodeName, sysCode2);
+			SysCode sysCode1=cacheRedisService.getSysCode(bigCodeName, codeName);
+			if(sysCode1!=null) {
+				if(!StringUtils.isBlank(codeVal)) {
+					sysCode1.setCodeVal(codeVal);
+				}
+				if(!StringUtils.isBlank(remark)) {
+					sysCode1.setRemark(remark);
+				}
+				cacheRedisService.setSysCode(bigCodeName, sysCode1);
+			}
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		}catch(Exception e){
@@ -482,6 +566,23 @@ public class BackstageSysController {
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
 		}
 		return ret;
+	}
+	//修改排序
+	@RequestMapping(value={"/updateSmallLuckyDrawSeq"}, method={RequestMethod.PUT}, produces={"application/json"})
+	public Map<String, Object> updateSmallLuckyDrawSeq(@RequestParam(name = "allId", required = true) String allId,
+			  HttpServletRequest request) {
+		Map<String, Object> ret = new HashMap<>();
+		String bigCodeName=Constants.SysCodeTypes.LUCKY_DRAW.getCode();
+		try {
+			Map<String,Object> map=sysCodeService.updateSmallTypeSeq(bigCodeName, allId);
+			return map;
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			return ret;
+		}
 	}
 	/**
 	 *支付平台类型的增删改查
@@ -502,7 +603,7 @@ public class BackstageSysController {
 		if(!StringUtils.isBlank(remark)) {
 			sysCode.setRemark(remark);
 		}
-		String bigCodeName=Constants.SysCodeTypes.LUCKY_DRAW.getCode();
+		String bigCodeName=Constants.SysCodeTypes.PAYMENT_PLATFORM.getCode();
 		try {
 			Integer codeType=sysCodeService.queryByCodeName(bigCodeName);
 			sysCode.setCodeType(codeType);	
@@ -521,12 +622,12 @@ public class BackstageSysController {
 		return ret;
 	}
 	//查询支付平台类型下的所有值
-	@RequestMapping(value={"/querySmallPaymentPlatform"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/querySmallPaymentPlatform"}, method={RequestMethod.GET}, produces={"application/json"})
 	public Map<String, Object> querySmallPaymentPlatform() {
 		Map<String, Object> ret = new HashMap<>();
-		String bigCodeName=Constants.SysCodeTypes.LUCKY_DRAW.getCode();
+		String bigCodeName=Constants.SysCodeTypes.PAYMENT_PLATFORM.getCode();
 		try {
-			List<SysCode> sysCode=sysCodeService.queryAllSmallType(bigCodeName);
+			Map<String,SysCode> sysCode=cacheRedisService.getSysCode(bigCodeName);
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 			ret.put("data", sysCode);
@@ -539,19 +640,23 @@ public class BackstageSysController {
 		return ret;
 	}
 	//软删除支付平台类型下的某个小类
-	@RequestMapping(value={"/updateSmallPaymentPlatformState"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/updateSmallPaymentPlatformState"}, method={RequestMethod.PUT}, produces={"application/json"})
 	public Map<String, Object> updateSmallPaymentPlatformState(@RequestParam(name = "id", required = true) Integer id,
+			@RequestParam(name = "codeName", required = true) String codeName,//不能修改只传值
 			  @RequestParam(name = "state", required = true) Integer state,//1为有效0为无效
 			  HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
-		String bigCodeName=Constants.SysCodeTypes.LUCKY_DRAW.getCode();
+		String bigCodeName=Constants.SysCodeTypes.PAYMENT_PLATFORM.getCode();
 		try {
 			ret.put("id", id);
 			ret.put("state", state);
 			sysCodeService.updateSmallTypeState(id, state);	
-			SysCode sysCode=sysCodeService.queryById(id);
 			//存储到缓存
-			cacheRedisService.setSysCode(bigCodeName, sysCode);
+			SysCode sysCode=cacheRedisService.getSysCode(bigCodeName, codeName);
+			if(sysCode!=null) {
+				sysCode.setState(state);
+				cacheRedisService.setSysCode(bigCodeName, sysCode);	
+			}
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		}catch(Exception e){
@@ -563,8 +668,9 @@ public class BackstageSysController {
 		return ret;
 	}
 	//修改支付平台类型下的某一条数据
-	@RequestMapping(value={"/updateSmallPaymentPlatform"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/updateSmallPaymentPlatform"}, method={RequestMethod.PUT}, produces={"application/json"})
 	public Map<String, Object> updateSmallPaymentPlatform(@RequestParam(name = "id", required = true) Integer id,
+			  @RequestParam(name = "codeName", required = true) String codeName,//不能修改只传值
 			  @RequestParam(name = "codeVal", required = false) String codeVal,
 			  @RequestParam(name = "remark", required = false) String remark,
 			  HttpServletRequest request) {
@@ -575,15 +681,23 @@ public class BackstageSysController {
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
 	    	return ret;
 		}
-		String bigCodeName=Constants.SysCodeTypes.LUCKY_DRAW.getCode();
+		String bigCodeName=Constants.SysCodeTypes.PAYMENT_PLATFORM.getCode();
 		ret.put("id", id);
 		ret.put("codeVal", codeVal);
 		ret.put("remark", remark);
 		try {
 			sysCodeService.updateSmallType(ret);
-			SysCode sysCode2=sysCodeService.queryById(id);
 			//存储到缓存
-			cacheRedisService.setSysCode(bigCodeName, sysCode2);
+			SysCode sysCode1=cacheRedisService.getSysCode(bigCodeName, codeName);
+			if(sysCode1!=null) {
+				if(!StringUtils.isBlank(codeVal)) {
+					sysCode1.setCodeVal(codeVal);
+				}
+				if(!StringUtils.isBlank(remark)) {
+					sysCode1.setRemark(remark);
+				}
+				cacheRedisService.setSysCode(bigCodeName, sysCode1);
+			}
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		}catch(Exception e){
@@ -593,6 +707,23 @@ public class BackstageSysController {
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
 		}
 		return ret;
+	}
+	//修改排序
+	@RequestMapping(value={"/updateSmallPaymentPlatformSeq"}, method={RequestMethod.PUT}, produces={"application/json"})
+	public Map<String, Object> updateSmallPaymentPlatformSeq(@RequestParam(name = "allId", required = true) String allId,
+			  HttpServletRequest request) {
+		Map<String, Object> ret = new HashMap<>();
+		String bigCodeName=Constants.SysCodeTypes.PAYMENT_PLATFORM.getCode();
+		try {
+			Map<String,Object> map=sysCodeService.updateSmallTypeSeq(bigCodeName, allId);
+			return map;
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			return ret;
+		}
 	}
 	/**
 	 *签到活动类型的增删改查
@@ -632,12 +763,12 @@ public class BackstageSysController {
 		return ret;
 	}
 	//查询签到活动类型下的所有值
-	@RequestMapping(value={"/querySmallSignInDay"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/querySmallSignInDay"}, method={RequestMethod.GET}, produces={"application/json"})
 	public Map<String, Object> querySmallSignInDay() {
 		Map<String, Object> ret = new HashMap<>();
 		String bigCodeName=Constants.SysCodeTypes.SIGN_IN_DAY.getCode();
 		try {
-			List<SysCode> sysCode=sysCodeService.queryAllSmallType(bigCodeName);
+			Map<String,SysCode> sysCode=cacheRedisService.getSysCode(bigCodeName);
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 			ret.put("data", sysCode);
@@ -650,8 +781,9 @@ public class BackstageSysController {
 		return ret;
 	}
 	//软删除签到活动类型下的某个小类
-	@RequestMapping(value={"/updateSmallSignInDayState"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/updateSmallSignInDayState"}, method={RequestMethod.PUT}, produces={"application/json"})
 	public Map<String, Object> updateSmallSignInDayState(@RequestParam(name = "id", required = true) Integer id,
+			@RequestParam(name = "codeName", required = true) String codeName,//不能修改只传值
 			  @RequestParam(name = "state", required = true) Integer state,//1为有效0为无效
 			  HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
@@ -660,9 +792,12 @@ public class BackstageSysController {
 			ret.put("id", id);
 			ret.put("state", state);
 			sysCodeService.updateSmallTypeState(id, state);	
-			SysCode sysCode=sysCodeService.queryById(id);
 			//存储到缓存
-			cacheRedisService.setSysCode(bigCodeName, sysCode);
+			SysCode sysCode=cacheRedisService.getSysCode(bigCodeName, codeName);
+			if(sysCode!=null) {
+				sysCode.setState(state);
+				cacheRedisService.setSysCode(bigCodeName, sysCode);	
+			}
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		}catch(Exception e){
@@ -674,8 +809,9 @@ public class BackstageSysController {
 		return ret;
 	}
 	//修改签到活动类型下的某一条数据
-	@RequestMapping(value={"/updateSmallSignInDay"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/updateSmallSignInDay"}, method={RequestMethod.PUT}, produces={"application/json"})
 	public Map<String, Object> updateSmallSignInDay(@RequestParam(name = "id", required = true) Integer id,
+			  @RequestParam(name = "codeName", required = true) String codeName,//不能修改只传值
 			  @RequestParam(name = "codeVal", required = false) String codeVal,
 			  @RequestParam(name = "remark", required = false) String remark,
 			  HttpServletRequest request) {
@@ -692,9 +828,17 @@ public class BackstageSysController {
 		ret.put("remark", remark);
 		try {
 			sysCodeService.updateSmallType(ret);
-			SysCode sysCode2=sysCodeService.queryById(id);
 			//存储到缓存
-			cacheRedisService.setSysCode(bigCodeName, sysCode2);
+			SysCode sysCode1=cacheRedisService.getSysCode(bigCodeName, codeName);
+			if(sysCode1!=null) {
+				if(!StringUtils.isBlank(codeVal)) {
+					sysCode1.setCodeVal(codeVal);
+				}
+				if(!StringUtils.isBlank(remark)) {
+					sysCode1.setRemark(remark);
+				}
+				cacheRedisService.setSysCode(bigCodeName, sysCode1);
+			}
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		}catch(Exception e){
@@ -704,6 +848,23 @@ public class BackstageSysController {
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
 		}
 		return ret;
+	}
+	//修改排序
+	@RequestMapping(value={"/updateSmallSignInDaySeq"}, method={RequestMethod.PUT}, produces={"application/json"})
+	public Map<String, Object> updateSmallSignInDaySeq(@RequestParam(name = "allId", required = true) String allId,
+			  HttpServletRequest request) {
+		Map<String, Object> ret = new HashMap<>();
+		String bigCodeName=Constants.SysCodeTypes.SIGN_IN_DAY.getCode();
+		try {
+			Map<String,Object> map=sysCodeService.updateSmallTypeSeq(bigCodeName, allId);
+			return map;
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			return ret;
+		}
 	}
 	/**
 	 *玩法类型的增删改查
@@ -743,12 +904,12 @@ public class BackstageSysController {
 		return ret;
 	}
 	//查询玩法类型下的所有值
-	@RequestMapping(value={"/querySmallPTypeClassicfication"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/querySmallPTypeClassicfication"}, method={RequestMethod.GET}, produces={"application/json"})
 	public Map<String, Object> querySmallPTypeClassicfication() {
 		Map<String, Object> ret = new HashMap<>();
 		String bigCodeName=Constants.SysCodeTypes.CT_PLAY_TYPE_CLASSICFICATION.getCode();
 		try {
-			List<SysCode> sysCode=sysCodeService.queryAllSmallType(bigCodeName);
+			Map<String,SysCode> sysCode=cacheRedisService.getSysCode(bigCodeName);
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 			ret.put("data", sysCode);
@@ -761,8 +922,9 @@ public class BackstageSysController {
 		return ret;
 	}
 	//软删除玩法类型下的某个小类
-	@RequestMapping(value={"/updateSmallPTypeClassicficationState"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/updateSmallPTypeClassicficationState"}, method={RequestMethod.PUT}, produces={"application/json"})
 	public Map<String, Object> updateSmallPTypeClassicficationState(@RequestParam(name = "id", required = true) Integer id,
+			@RequestParam(name = "codeName", required = true) String codeName,//不能修改只传值
 			  @RequestParam(name = "state", required = true) Integer state,//1为有效0为无效
 			  HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
@@ -771,9 +933,12 @@ public class BackstageSysController {
 			ret.put("id", id);
 			ret.put("state", state);
 			sysCodeService.updateSmallTypeState(id, state);	
-			SysCode sysCode=sysCodeService.queryById(id);
 			//存储到缓存
-			cacheRedisService.setSysCode(bigCodeName, sysCode);
+			SysCode sysCode=cacheRedisService.getSysCode(bigCodeName, codeName);
+			if(sysCode!=null) {
+				sysCode.setState(state);
+				cacheRedisService.setSysCode(bigCodeName, sysCode);	
+			}
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		}catch(Exception e){
@@ -785,8 +950,9 @@ public class BackstageSysController {
 		return ret;
 	}
 	//修改玩法类型下的某一条数据
-	@RequestMapping(value={"/updateSmallPTypeClassicfication"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/updateSmallPTypeClassicfication"}, method={RequestMethod.PUT}, produces={"application/json"})
 	public Map<String, Object> updateSmallPTypeClassicfication(@RequestParam(name = "id", required = true) Integer id,
+			@RequestParam(name = "codeName", required = true) String codeName,//不能修改只传值
 			  @RequestParam(name = "codeVal", required = false) String codeVal,
 			  @RequestParam(name = "remark", required = false) String remark,
 			  HttpServletRequest request) {
@@ -803,9 +969,17 @@ public class BackstageSysController {
 		ret.put("remark", remark);
 		try {
 			sysCodeService.updateSmallType(ret);
-			SysCode sysCode2=sysCodeService.queryById(id);
 			//存储到缓存
-			cacheRedisService.setSysCode(bigCodeName, sysCode2);
+			SysCode sysCode1=cacheRedisService.getSysCode(bigCodeName, codeName);
+			if(sysCode1!=null) {
+				if(!StringUtils.isBlank(codeVal)) {
+					sysCode1.setCodeVal(codeVal);
+				}
+				if(!StringUtils.isBlank(remark)) {
+					sysCode1.setRemark(remark);
+				}
+				cacheRedisService.setSysCode(bigCodeName, sysCode1);
+			}
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		}catch(Exception e){
@@ -815,6 +989,23 @@ public class BackstageSysController {
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
 		}
 		return ret;
+	}
+	//修改排序
+	@RequestMapping(value={"/updateSmallPTypeClassicficationSeq"}, method={RequestMethod.PUT}, produces={"application/json"})
+	public Map<String, Object> updateSmallPTypeClassicficationSeq(@RequestParam(name = "allId", required = true) String allId,
+			  HttpServletRequest request) {
+		Map<String, Object> ret = new HashMap<>();
+		String bigCodeName=Constants.SysCodeTypes.CT_PLAY_TYPE_CLASSICFICATION.getCode();
+		try {
+			Map<String,Object> map=sysCodeService.updateSmallTypeSeq(bigCodeName, allId);
+			return map;
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			return ret;
+		}
 	}
 	/**
 	 *彩种属性类型的增删改查
@@ -855,13 +1046,13 @@ public class BackstageSysController {
 		return ret;
 	}
 	//查询玩法类型下的所有值
-	@RequestMapping(value={"/querySmallLotteryConfig"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/querySmallLotteryConfig"}, method={RequestMethod.GET}, produces={"application/json"})
 	public Map<String, Object> querySmallLotteryConfig(@RequestParam(name = "bigcodeName", required = true) String bigcodeName,
 			  HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
 		String lotteryConfigCodeName=bigcodeName;
 		try {
-			List<SysCode> sysCode=sysCodeService.queryAllSmallType(lotteryConfigCodeName);
+			Map<String,SysCode> sysCode=cacheRedisService.getSysCode(lotteryConfigCodeName);
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 			ret.put("data", sysCode);
@@ -874,9 +1065,10 @@ public class BackstageSysController {
 		return ret;
 	}
 	//软删除玩法类型下的某个小类
-	@RequestMapping(value={"/updateSmallLotteryConfigState"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/updateSmallLotteryConfigState"}, method={RequestMethod.PUT}, produces={"application/json"})
 	public Map<String, Object> updateSmallLotteryConfigState(@RequestParam(name = "bigcodeName", required = true) String bigcodeName,
 			  @RequestParam(name = "id", required = true) Integer id,
+			  @RequestParam(name = "codeName", required = true) String codeName,//不能修改只传值
 			  @RequestParam(name = "state", required = true) Integer state,//1为有效0为无效
 			  HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
@@ -885,9 +1077,12 @@ public class BackstageSysController {
 			ret.put("id", id);
 			ret.put("state", state);
 			sysCodeService.updateSmallTypeState(id, state);	
-			SysCode sysCode=sysCodeService.queryById(id);
 			//存储到缓存
-			cacheRedisService.setSysCode(lotteryConfigCodeName, sysCode);
+			SysCode sysCode=cacheRedisService.getSysCode(lotteryConfigCodeName, codeName);
+			if(sysCode!=null) {
+				sysCode.setState(state);
+				cacheRedisService.setSysCode(lotteryConfigCodeName, sysCode);	
+			}
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		}catch(Exception e){
@@ -899,9 +1094,10 @@ public class BackstageSysController {
 		return ret;
 	}
 	//修改玩法类型下的某一条数据
-	@RequestMapping(value={"/updateSmallLotteryConfig"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/updateSmallLotteryConfig"}, method={RequestMethod.PUT}, produces={"application/json"})
 	public Map<String, Object> updateSmallLotteryConfig(@RequestParam(name = "bigcodeName", required = true) String bigcodeName,
 			  @RequestParam(name = "id", required = true) Integer id,
+			  @RequestParam(name = "codeName", required = true) String codeName,//不能修改只传值
 			  @RequestParam(name = "codeVal", required = false) String codeVal,
 			  @RequestParam(name = "remark", required = false) String remark,
 			  HttpServletRequest request) {
@@ -918,9 +1114,17 @@ public class BackstageSysController {
 		ret.put("remark", remark);
 		try {
 			sysCodeService.updateSmallType(ret);
-			SysCode sysCode2=sysCodeService.queryById(id);
 			//存储到缓存
-			cacheRedisService.setSysCode(lotteryConfigCodeName, sysCode2);
+			SysCode sysCode1=cacheRedisService.getSysCode(lotteryConfigCodeName, codeName);
+			if(sysCode1!=null) {
+				if(!StringUtils.isBlank(codeVal)) {
+					sysCode1.setCodeVal(codeVal);
+				}
+				if(!StringUtils.isBlank(remark)) {
+					sysCode1.setRemark(remark);
+				}
+				cacheRedisService.setSysCode(lotteryConfigCodeName, sysCode1);
+			}
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		}catch(Exception e){
@@ -930,5 +1134,163 @@ public class BackstageSysController {
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
 		}
 		return ret;
+	}
+	//修改排序
+	@RequestMapping(value={"/updateSmallLotteryConfigSeq"}, method={RequestMethod.PUT}, produces={"application/json"})
+	public Map<String, Object> updateSmallLotteryConfigSeq(@RequestParam(name = "bigcodeName", required = true) String bigCodeName,
+			@RequestParam(name = "allId", required = true) String allId,
+			  HttpServletRequest request) {
+		Map<String, Object> ret = new HashMap<>();
+		try {
+			Map<String,Object> map=sysCodeService.updateSmallTypeSeq(bigCodeName, allId);
+			return map;
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			return ret;
+		}
+	}
+	/**
+	 *充值方式的增删改查
+	 * @author Silence 
+	 */
+	//增加充值方式类型小类
+	@RequestMapping(value={"/addSmallPayType"}, method={RequestMethod.POST}, produces={"application/json"})
+	public Map<String, Object> addSmallPayType(@RequestParam(name = "codeName", required = true) String codeName,
+			  @RequestParam(name = "codeVal", required = true) String codeVal,
+			  @RequestParam(name = "remark", required = false) String remark,
+			  HttpServletRequest request) {
+		Map<String, Object> ret = new HashMap<>();
+		SysCode sysCode = new SysCode();
+		sysCode.setCodeName(codeName);
+		sysCode.setCodeVal(codeVal);
+		sysCode.setState(Constants.SysCodeState.VALID_STATE.getCode());
+		sysCode.setIsCodeType(0);
+		if(!StringUtils.isBlank(remark)) {
+			sysCode.setRemark(remark);
+		}
+		String bigCodeName=Constants.SysCodeTypes.PAY_TYPE.getCode();
+		try {
+			Integer codeType=sysCodeService.queryByCodeName(bigCodeName);
+			sysCode.setCodeType(codeType);	
+			ret.clear();
+			ret=sysCodeService.addSmallSysCode(bigCodeName,sysCode);
+			//存储到缓存
+			List<SysCode> sysCode1=sysCodeService.querySmallType(bigCodeName, codeName);
+			SysCode sysCode2=sysCode1.get(0);
+			cacheRedisService.setSysCode(bigCodeName, sysCode2);
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+		}
+		return ret;
+	}
+	//查询充值方式类型下的所有值
+	@RequestMapping(value={"/querySmallPayType"}, method={RequestMethod.GET}, produces={"application/json"})
+	public Map<String, Object> querySmallPayType() {
+		Map<String, Object> ret = new HashMap<>();
+		String bigCodeName=Constants.SysCodeTypes.PAY_TYPE.getCode();
+		try {
+			Map<String,SysCode> sysCode=cacheRedisService.getSysCode(bigCodeName);
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+			ret.put("data", sysCode);
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+		}
+		return ret;
+	}
+	//软删除充值方式类型下的某个小类
+	@RequestMapping(value={"/updateSmallPayTypeState"}, method={RequestMethod.PUT}, produces={"application/json"})
+	public Map<String, Object> updateSmallPayTypeState(@RequestParam(name = "id", required = true) Integer id,
+			@RequestParam(name = "codeName", required = true) String codeName,//不能修改只传值
+			  @RequestParam(name = "state", required = true) Integer state,//1为有效0为无效
+			  HttpServletRequest request) {
+		Map<String, Object> ret = new HashMap<>();
+		String bigCodeName=Constants.SysCodeTypes.PAY_TYPE.getCode();
+		try {
+			ret.put("id", id);
+			ret.put("state", state);
+			sysCodeService.updateSmallTypeState(id, state);	
+			//存储到缓存
+			SysCode sysCode=cacheRedisService.getSysCode(bigCodeName, codeName);
+			if(sysCode!=null) {
+				sysCode.setState(state);
+				cacheRedisService.setSysCode(bigCodeName, sysCode);	
+			}
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+		}
+		return ret;
+	}
+	//修改充值方式类型下的某一条数据
+	@RequestMapping(value={"/updateSmallPayType"}, method={RequestMethod.PUT}, produces={"application/json"})
+	public Map<String, Object> updateSmallPayType(@RequestParam(name = "id", required = true) Integer id,
+			@RequestParam(name = "codeName", required = true) String codeName,//不能修改只传值
+			  @RequestParam(name = "codeVal", required = false) String codeVal,
+			  @RequestParam(name = "remark", required = false) String remark,
+			  HttpServletRequest request) {
+		Map<String, Object> ret = new HashMap<>();
+		if(StringUtils.isBlank(codeVal)&&StringUtils.isBlank(remark)) {
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+	    	return ret;
+		}
+		String bigCodeName=Constants.SysCodeTypes.PAY_TYPE.getCode();
+		ret.put("id", id);
+		ret.put("codeVal", codeVal);
+		ret.put("remark", remark);
+		try {
+			sysCodeService.updateSmallType(ret);
+			//存储到缓存
+			SysCode sysCode1=cacheRedisService.getSysCode(bigCodeName, codeName);
+			if(sysCode1!=null) {
+				if(!StringUtils.isBlank(codeVal)) {
+					sysCode1.setCodeVal(codeVal);
+				}
+				if(!StringUtils.isBlank(remark)) {
+					sysCode1.setRemark(remark);
+				}
+				cacheRedisService.setSysCode(bigCodeName, sysCode1);
+			}
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+		}
+		return ret;
+	}
+	//修改排序
+	@RequestMapping(value={"/updateSmallPayTypeSeq"}, method={RequestMethod.PUT}, produces={"application/json"})
+	public Map<String, Object> updateSmallPayTypeSeq(@RequestParam(name = "allId", required = true) String allId,
+			  HttpServletRequest request) {
+		Map<String, Object> ret = new HashMap<>();
+		String bigCodeName=Constants.SysCodeTypes.PAY_TYPE.getCode();
+		try {
+			Map<String,Object> map=sysCodeService.updateSmallTypeSeq(bigCodeName, allId);
+			return map;
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			return ret;
+		}
 	}
 }

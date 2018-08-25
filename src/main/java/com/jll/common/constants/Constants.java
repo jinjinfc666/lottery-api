@@ -16,8 +16,10 @@ public class Constants {
 	
 	public final static String KEY_PLAY_TYPE = "play_type_";
 	
-	public final static String KEY_STAT_ISSUE_BETTING = "stat_issuse_betting_";
+	public final static String KEY_PAY_TYPE = "pay_type_";
 	
+	public final static String KEY_STAT_ISSUE_BETTING = "stat_issuse_betting_";
+
 	public final static String TOPIC_WINNING_NUMBER = "winning_number";
 	
 	public final static String TOPIC_PAY_OUT = "pay_out";
@@ -28,6 +30,7 @@ public class Constants {
 	
 	
 	public static enum DepositOrderState{
+		
 		INIT_OR_PUSHED(0),
 		FAILED_PUSH(10),
 		CANCEL_ORDER(11),
@@ -420,7 +423,8 @@ public class Constants {
 		LOTTERY_CONFIG_BJPK10("lottery_config_bjpk10"),//"PK10属性"
 		SIGN_IN_DAY("sign_in_day"),
 		POINT_EXCHANGE_SCALE("point_exchange_scale"),
-		CT_PLAY_TYPE_CLASSICFICATION("ct_play_type_classicfication");//"玩法类型"
+		CT_PLAY_TYPE_CLASSICFICATION("ct_play_type_classicfication"),//"玩法类型"
+		PAY_TYPE("pay_type");//充值方式
 		private String value;
 		
 		private SysCodeTypes(String value) {
@@ -1428,9 +1432,10 @@ public class Constants {
 		WINING_RATE("wining_rate"),//中奖率
 		BETTING_END_TIME("betting_end_time"),//投注截止时间
 		URL_WINING_NUMBER_EXTENAL("url_wining_number_extenal"),//外部数据接口
-		LOTTO_PRIZE_RATE("lotto_prize_rate"),
+		LOTTO_PRIZE_RATE("lotto_prize_rate"),//中奖赔率
 		BET_TIMES("bet_times"),
 		MONEY_UNIT("money_unit");
+		
 		private String code;
 		
 		private LotteryAttributes(String code) {
@@ -1479,6 +1484,103 @@ public class Constants {
 			return this.code;
 		}
 	}
+	public static enum PayTypeState{
+		VALID_STATE(1,"有效"),
+		INVALID_STATE(0,"无效");
+		
+		private int code;
+		
+		private String desc;
+
+		private PayTypeState(int code, String desc) {
+			this.code = code;
+			this.desc = desc;
+		}
+
+		public int getCode() {
+			return code;
+		}
+
+		public void setCode(int code) {
+			this.code = code;
+		}
+
+		public String getDesc() {
+			return desc;
+		}
+
+		public void setDesc(String desc) {
+			this.desc = desc;
+		}
+		
+	}
+	
+	//系统内部使用的充值渠道
+	public static enum PayChannelType{
+		ADMIN_SEND_USER("admin_send_user", "管理员的充值申请"),
+		AGENT_SEND_USER("agent_send_user", "代理给用户充值");
+
+		private PayChannelType(String code, String desc) {
+			this.code = code;
+			this.desc = desc;
+		}
+
+		private String code;
+		
+		private String desc;
+		
+		public String getDesc() {
+			return desc;
+		}
+
+		public void setDesc(String desc) {
+			this.desc = desc;
+		}
+
+		public String getCode() {
+			return code;
+		}
+
+		public void setCode(String code) {
+			this.code = code;
+		}
+		
+		
+		public static PayChannelType getValueByCode(String code) {
+			PayChannelType[] valuse = PayChannelType.values();
+			for(PayChannelType val: valuse) {
+				if( val.getCode().equals(code)){
+					return val;
+				}
+			}
+			return null;
+		}
+		
+	
+	}
+	
+	   //支付方式
+		public static enum PayType{
+			SYS_PAY("sys_pay"),
+			ZHI_HUI_FU_PAY("zhi_hui_fu_pay"),
+			CAI_PAY("cai_pay"),
+			TONG_YUN("tong_yun");
+			
+			private String code;
+
+			private PayType(String code) {
+				this.code = code;
+			}
+
+			public String getCode() {
+				return code;
+			}
+
+			public void setCode(String code) {
+				this.code = code;
+			}
+		}
+		
 	/**
 	 * ip 缓存codeName
 	 */
@@ -1615,14 +1717,94 @@ public class Constants {
 		public String getLottoType() {
 			return this.lottoType;
 		}
+	}
+	/**
+	 * payType配置缓存时需要的key名
+	 */
+	public static enum PayTypeName{
+		PAY_TYPE_CLASS("pay_type_class");
+		
+		private String code;
+		
+		private PayTypeName(String code) {
+			this.code = code;
+		}
+		
+		public String getCode() {
+			return this.code;
+		}
+		
+		public static List<String> getList() {
+			List<String> map=new ArrayList<String>();
+			PayTypeName[] names = PayTypeName.values();
+			for(PayTypeName name: names) {
+				map.add(name.getCode());
+			}
+			return map;
+		}
+	}
+	/**
+	 * PayChannnel添加时需要的enable_max_amount字段值
+	 */
+	public static enum PayChannnelEMA{
+		IS(0,"不激活"),
+		NO(1,"激活");
+		
+		private Integer code;
+		private String name;
+		
+		private PayChannnelEMA(Integer code,String name) {
+			this.code = code;
+			this.name = name;
+		}
+		
+		public Integer getCode() {
+			return this.code;
+		}
 		public String getName() {
 			return this.name;
 		}
+					
+		public static List<Integer> getList() {
+			List<Integer> map=new ArrayList<Integer>();
+			PayChannnelEMA[] names = PayChannnelEMA.values();
+			for(PayChannnelEMA name: names) {
+				map.add(name.getCode());
+			}
+			return map;
+		}
+		public static Map<Integer,String> getMap() {
+			Map<Integer,String> map=new HashMap<Integer,String>();
+			PayChannnelEMA[] names = PayChannnelEMA.values();
+			for(PayChannnelEMA name: names) {
+				map.put(name.getCode(), name.getName());
+			}
+			return map;
+		}
+	}
+	/**
+	 * payChannel配置缓存时需要的key名
+	 */
+	public static enum PayChannel{
+		PAY_CHANNEL("pay_channel");
 		
+		private String code;
 		
-		public String getRemark() {
-			return this.remark;
+		private PayChannel(String code) {
+			this.code = code;
 		}
 		
+		public String getCode() {
+			return this.code;
+		}
+		
+		public static List<String> getList() {
+			List<String> map=new ArrayList<String>();
+			PayChannel[] names = PayChannel.values();
+			for(PayChannel name: names) {
+				map.add(name.getCode());
+			}
+			return map;
+		}
 	}
 }
