@@ -23,4 +23,6 @@ public interface WalletDao
 	void updateState(Integer userId,Integer state);
 	//查找userId存不存在在userAccount表
 	List<UserAccount> queryByUserId(Integer userId);
+
+	void updateWallet(UserAccount wallet);
 }

@@ -16,6 +16,10 @@ public interface OrderService
 	 * @return
 	 */
 	String saveOrders(List<OrderInfo> orders, int walletId, int zhFlag, String lotteryType);
+
+	List<OrderInfo> queryOrdersByIssue(Integer issueId);
+
+	void saveOrder(OrderInfo order);
 	
 	
 	

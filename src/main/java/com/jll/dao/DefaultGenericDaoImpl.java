@@ -5,11 +5,13 @@ import java.util.List;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.orm.hibernate5.support.HibernateDaoSupport;
 
 public class DefaultGenericDaoImpl<T> extends HibernateDaoSupport implements GenericDaoIf<T> {
 
 	@Autowired
+	@DependsOn("sessionFactory")
 	public void setSuperSessionFactory(SessionFactory sessionFactory)
 	{
 	    super.setSessionFactory(sessionFactory);

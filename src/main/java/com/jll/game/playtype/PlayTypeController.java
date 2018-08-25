@@ -158,6 +158,12 @@ public class PlayTypeController {
 			ret=playTypeService.updateState(id, state);
 			int status=(int) ret.get(Message.KEY_STATUS);
 			if(status==Message.status.SUCCESS.getCode()) {
+				/*PlayType playType=playTypeService.queryById(id);
+				if(playType!=null) {
+					String lotteryType = playType.getLotteryType();
+					List<PlayType> playTypes=playTypeService.queryByLotteryType(lotteryType);
+					cacheRedisService.setPlayType(lotteryType, playTypes);
+				}*/
 				SysCode sysCode=new SysCode();
 				sysCode.setCodeName(lotteryType);
 				List<PlayType> playTypeList=cacheRedisService.getPlayType(sysCode);
@@ -194,6 +200,12 @@ public class PlayTypeController {
 			ret=playTypeService.updateIsHidden(id, isHidden);
 			int status=(int) ret.get(Message.KEY_STATUS);
 			if(status==Message.status.SUCCESS.getCode()) {
+				/*PlayType playType=playTypeService.queryById(id);
+				if(playType != null) {
+					String lotteryType = playType.getLotteryType();
+					List<PlayType> playTypes=playTypeService.queryByLotteryType(lotteryType);
+					cacheRedisService.setPlayType(lotteryType, playTypes);
+				}*/
 				SysCode sysCode=new SysCode();
 				sysCode.setCodeName(lotteryType);
 				List<PlayType> playTypeList=cacheRedisService.getPlayType(sysCode);
@@ -230,6 +242,12 @@ public class PlayTypeController {
 			ret=playTypeService.updateMulSinFlag(id, mulSinFlag);
 			int status=(int) ret.get(Message.KEY_STATUS);
 			if(status==Message.status.SUCCESS.getCode()) {
+				/*PlayType playType=playTypeService.queryById(id);
+				if(playType != null) {
+					String lotteryType = playType.getLotteryType();
+					List<PlayType> playTypes=playTypeService.queryByLotteryType(lotteryType);
+					cacheRedisService.setPlayType(lotteryType, playTypes);
+				}*/
 				SysCode sysCode=new SysCode();
 				sysCode.setCodeName(lotteryType);
 				List<PlayType> playTypeList=cacheRedisService.getPlayType(sysCode);

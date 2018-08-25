@@ -101,4 +101,6 @@ public interface UserInfoService
 	Map<String,Object> queryAgentByAgent(Integer id);
 	//通过id查看这个用户是否存在
 	boolean isOrNoUserInfo(Integer id);
+	
+	Float calPrizeRate(UserInfo user, String lottoType);
 }

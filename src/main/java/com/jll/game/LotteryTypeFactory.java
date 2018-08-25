@@ -24,6 +24,8 @@ public class LotteryTypeFactory {
 		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}catch(Exception ex) {
+			ex.printStackTrace();
 		}
 		
 		return null;

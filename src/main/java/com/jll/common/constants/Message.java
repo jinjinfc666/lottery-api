@@ -34,6 +34,10 @@ public class Message {
 	//code : **-->module name;****-->errorNum
 	public static enum Error{
 		ERROR_COMMON_ERROR_PARAMS("000001", "Error parameter!!"),
+		ERROR_COMMON_NO_PERMISSION("000002", "No permission!!"),
+		ERROR_COMMON_ERROR_LOGIN("000003", "No pricipal!!"),		
+		ERROR_COMMON_NO_ACCOUNT_OPERATION("000004", "Account operation is required!!"),		
+		ERROR_COMMON_OTHERS("009999", "Others!!"),
 		
 		ERROR_PAYMENT_TLCLOUD_CONFIGURATION("010001", "configuration of tl-cloud is wrong!!"),
 		ERROR_PAYMENT_TLCLOUD_FAILED_PUSH_ORDER("010002", "Failed to push order!!"),
@@ -43,15 +47,7 @@ public class Message {
 		ERROR_PAYMENT_CAIPAY_FAILED_CANCEL_ORDER("010005", "configuration of cai-pay is wrong!!"),
 		ERROR_PAYMENT_CAIPAY_FAILED_SIGNATURE_PARAMS("010006", "Can not sign the parameters!!"),
 		ERROR_SYSTEM_CONFIG_NO_RECEIVER_BANK_CARD("020001", "No Receiver bank card is specified!!"),
-		
-		ERROR_SYSTEM_AUTH_NO_ACCESS_PERMISSION("030001", "No Permission to access resource!!"),
-		ERROR_COMMON_NO_PERMISSION("000002", "No permission!!"),
-		ERROR_COMMON_ERROR_LOGIN("000003", "No pricipal!!"),
-		
-		ERROR_COMMON_NO_ACCOUNT_OPERATION("000004", "Account operation is required!!"),
-		
-		ERROR_COMMON_OTHERS("009999", "Others!!"),
-		
+				
 		/******user module**************/
 		ERROR_USER_EXISTING("010001", "The user is existing!!"),
 		ERROR_USER_NO_GENERAL_AGENCY("010002", "No general agency!!"),
@@ -83,6 +79,8 @@ public class Message {
 		ERROR_PROMS_OTHER_CONDITION_BET_AMT_DISSATISFY("010027", "Participation in activities must meet the minimum bet amount of %s times, your current bet amount of %s times!!"),
 		ERROR_USER__WALLET_INVALID("010030", "Wallet is invalid!!"),
 		ERROR_USER_POINT_NOT_ENOUGH("010028", "User point not enough!!!"),
+
+		ERROR_USER_INVALID_WALLET("010030", "Invalid wallet!!!"),
 		ERROR_PROMS_INVALID("010031", "This promo invalid!!!"),
 		
 		/**************third party*************************/
@@ -100,8 +98,10 @@ public class Message {
 		ERROR_GAME_MULTIPLE_ORDERS_NOT_ALLOWED("030007", "Only one order is allowed under non zhui hao!!"),
 		ERROR_GAME_EXPIRED_ISSUE("030008", "The issue is expired!!"),
 		ERROR_GAME_BAL_INSUFFICIENT("030009", "Balance is insufficient!!"),
-		
-		
+		ERROR_GAME_NO_PLAY_TYPE("030010", "No Play Type!!"),
+		ERROR_GAME_INVALID_PLAY_TYPE("030011", "Invalid Play Type!!"),
+		ERROR_GAME_INVALID_BET_NUM("030012", "Invalid Play Bet number!!"),
+		ERROR_GAME_FAILED_PROCESS_BETTING_NUM("030013", "Failed to process beting number!!"),
 		
 		/*** system model****/
 		ERROR_MESSAGE_TITLE_IS_EMPTY("040001", "Message title is empty!!"),
@@ -109,10 +109,13 @@ public class Message {
 		ERROR_NOTIFY_RECEIVER_TYPE_ERROR("040003", "Notify receiver type error!!"),
 		ERROR_NOTIFY_RECEIVER_ERROR("040003", "Notify receiver error!!"),
 		
+		ERROR_SYSTEM_AUTH_NO_ACCESS_PERMISSION("050001", "No Permission to access resource!!"),
+		ERROR_SYSTEM_INVALID_BETTING_TIMES("050002", "Invalid betting times!!"),
+		ERROR_SYSTEM_INVALID_BETTING_MONEY_UNIT("050003", "Invalid betting money unit!!"),
 		
 		/**************pay model*************************/
-		ERROR_MESSAGE_PAY_TYPE_DISABLE("050001", "This pay type is disable!!!"),
-		ERROR_MESSAGE_PAYMENT_AMOUNT_MORE("050001", "This pay type payment amount more than maximum %d !!!"),
+		ERROR_MESSAGE_PAY_TYPE_DISABLE("060001", "This pay type is disable!!!"),
+		ERROR_MESSAGE_PAYMENT_AMOUNT_MORE("060001", "This pay type payment amount more than maximum %d !!!"),
 		
 		;
 		

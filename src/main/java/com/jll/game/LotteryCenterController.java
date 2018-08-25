@@ -8,7 +8,9 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.apache.log4j.Logger;
+import org.eclipse.jetty.util.StringUtil;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,6 +21,7 @@ import com.jll.common.cache.CacheRedisService;
 import com.jll.common.constants.Constants;
 import com.jll.common.constants.Constants.SysCodeTypes;
 import com.jll.common.constants.Message;
+import com.jll.common.utils.StringUtils;
 import com.jll.entity.Issue;
 import com.jll.entity.OrderInfo;
 import com.jll.entity.PlayType;
@@ -27,6 +30,8 @@ import com.jll.entity.UserInfo;
 import com.jll.game.order.OrderService;
 import com.jll.game.playtype.PlayTypeService;
 import com.jll.sysSettings.syscode.SysCodeService;
+import com.jll.user.UserInfoService;
+import com.jll.user.wallet.WalletService;
 import com.terran4j.commons.api2doc.annotations.Api2Doc;
 import com.terran4j.commons.api2doc.annotations.ApiComment;
 
@@ -56,11 +61,73 @@ public class LotteryCenterController {
 	@Resource
 	OrderService orderServ;
 	
-	@RequestMapping(value="/pre-bet", method = { RequestMethod.POST }, consumes=MediaType.APPLICATION_JSON_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> PreBet(@RequestBody OrderInfo order){
+	@Resource
+	WalletService walletServ;
+	
+	@Resource
+	UserInfoService userServ;
+	
+	@RequestMapping(value="/{lottery-type}/pre-bet", method = { RequestMethod.POST }, consumes=MediaType.APPLICATION_JSON_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> PreBet(@PathVariable(name = "lottery-type", required = true) String lotteryType,
+			@RequestBody Map<String, Object> params){
+		boolean isTimesValid = false;
+		boolean isMonUnitValid = false;
+		boolean isPlayTypeValid = false;
+		Map<String, Object> resp = new HashMap<String, Object>();
+		Map<String, Object> data = new HashMap<String, Object>();
+		String betNum = (String)params.get("betNum");
+		Integer times = (Integer)params.get("times");
+		Float monUnit = ((Double)params.get("monUnit")).floatValue();
+		Integer playType = (Integer)params.get("playType");
+		String retCode = null;
 		
+		params.put("lottoType", lotteryType);
+		params.put("monUnit", monUnit);
 		
-		return null;
+		if(StringUtils.isBlank(betNum)) {
+			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_GAME_INVALID_BET_NUM.getCode());
+			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_GAME_INVALID_BET_NUM.getErrorMes());
+			return resp;
+		}
+		
+		isTimesValid = cacheServ.isTimesValid(lotteryType, times);
+		
+		if(!isTimesValid) {
+			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_SYSTEM_INVALID_BETTING_TIMES.getCode());
+			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_SYSTEM_INVALID_BETTING_TIMES.getErrorMes());
+			return resp;
+		}
+		
+		isMonUnitValid = cacheServ.isMonUnitValid(lotteryType, monUnit);
+		if(!isMonUnitValid) {
+			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_SYSTEM_INVALID_BETTING_MONEY_UNIT.getCode());
+			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_SYSTEM_INVALID_BETTING_MONEY_UNIT.getErrorMes());
+			return resp;
+		}
+		
+		isPlayTypeValid = cacheServ.isPlayTypeValid(lotteryType, playType);
+		if(!isPlayTypeValid) {
+			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_GAME_INVALID_PLAY_TYPE.getCode());
+			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_GAME_INVALID_PLAY_TYPE.getErrorMes());
+			return resp;
+		}
+		
+		retCode = lotCenServ.PreBet(params, data);
+		if(StringUtil.isBlank(retCode) || 
+				!retCode.equals(Integer.toString(Message.status.SUCCESS.getCode()))) {
+			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_GAME_FAILED_PROCESS_BETTING_NUM.getCode());
+			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_GAME_FAILED_PROCESS_BETTING_NUM.getErrorMes());
+			return resp;
+		}
+		
+		resp.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		resp.put(Message.KEY_DATA, data);
+		return resp;
 	}
 	
 	@RequestMapping(value="/{lottery-type}/bet/zh/{zhFlag}/wallet/{walletId}", method = { RequestMethod.POST }, consumes=MediaType.APPLICATION_JSON_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
@@ -79,7 +146,7 @@ public class LotteryCenterController {
 			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_GAME_LOTTERY_TYPE_INVALID.getErrorMes());
 			return resp;
 		}
-		
+				
 		Constants.ZhState zh = Constants.ZhState.getByCode(zhFlag);
 		if(zh == null) {
 			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
@@ -194,22 +261,80 @@ public class LotteryCenterController {
 	
 	@RequestMapping(value="/{lottery-type}/times", method = { RequestMethod.GET }, consumes=MediaType.APPLICATION_JSON_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> queryTimes(@PathVariable(name = "lottery-type", required = true) String lotteryType){
+		Map<String, Object> resp = new HashMap<String, Object>();
+		boolean isExisting = false;
 		
+		isExisting = cacheServ.isCodeExisting(SysCodeTypes.LOTTERY_TYPES, lotteryType);
+		if(!isExisting) {
+			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_GAME_LOTTERY_TYPE_INVALID.getCode());
+			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_GAME_LOTTERY_TYPE_INVALID.getErrorMes());
+			return resp;
+		}
 		
-		return null;
+		SysCode sysCode = cacheServ.getBetTimes(lotteryType);
+		
+		if(sysCode == null || StringUtils.isBlank(sysCode.getCodeVal())){
+			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_SYSTEM_INVALID_BETTING_TIMES.getCode());
+			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_SYSTEM_INVALID_BETTING_TIMES.getErrorMes());
+			return resp;
+		}
+		
+		resp.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		resp.put("times", sysCode.getCodeVal());
+		return resp;
 	}
 	
 	@RequestMapping(value="/{lottery-type}/patterns", method = { RequestMethod.GET }, consumes=MediaType.APPLICATION_JSON_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> queryPattern(@PathVariable(name = "lottery-type", required = true) String lotteryType){
+		Map<String, Object> resp = new HashMap<String, Object>();
+		boolean isExisting = false;
 		
+		isExisting = cacheServ.isCodeExisting(SysCodeTypes.LOTTERY_TYPES, lotteryType);
+		if(!isExisting) {
+			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_GAME_LOTTERY_TYPE_INVALID.getCode());
+			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_GAME_LOTTERY_TYPE_INVALID.getErrorMes());
+			return resp;
+		}
 		
-		return null;
+		SysCode sysCode = cacheServ.getMoneyUnit(lotteryType);
+		
+		if(sysCode == null || StringUtils.isBlank(sysCode.getCodeVal())){
+			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_SYSTEM_INVALID_BETTING_MONEY_UNIT.getCode());
+			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_SYSTEM_INVALID_BETTING_MONEY_UNIT.getErrorMes());
+			return resp;
+		}
+		
+		resp.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		resp.put("patterns", sysCode.getCodeVal());
+		return resp;
 	}
 	
 	@RequestMapping(value="/{lottery-type}/prize-rates", method = { RequestMethod.GET }, consumes=MediaType.APPLICATION_JSON_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> queryPrizeRate(@PathVariable(name = "lottery-type", required = true) String lotteryType){
+		Map<String, Object> resp = new HashMap<String, Object>();
+		String userName = null;
+		boolean isExisting = false;
+		UserInfo user = null;
+		Float prizeRate = null;
 		
+		isExisting = cacheServ.isCodeExisting(SysCodeTypes.LOTTERY_TYPES, lotteryType);
+		if(!isExisting) {
+			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_GAME_LOTTERY_TYPE_INVALID.getCode());
+			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_GAME_LOTTERY_TYPE_INVALID.getErrorMes());
+			return resp;
+		}
 		
-		return null;
+		userName = SecurityContextHolder.getContext().getAuthentication().getName();
+		user = userServ.getUserByUserName(userName);
+		prizeRate = userServ.calPrizeRate(user, lotteryType);
+		
+		resp.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		resp.put("prizeRate", prizeRate);
+		return resp;
 	}
 }

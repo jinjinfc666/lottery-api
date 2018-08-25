@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.jll.common.constants.Message;
+import com.jll.common.constants.Constants;
 import com.jll.common.constants.Constants.WalletType;
 import com.jll.entity.UserAccount;
 import com.jll.entity.UserInfo;
@@ -50,14 +51,13 @@ public class WalletServiceImpl implements WalletService
 		wallet.setPrize(new BigDecimal(0.0F));
 		wallet.setRewardPoints(0L);
 		wallet.setUserId(user.getId());
-		
+		wallet.setState(Constants.WalletState.NORMAL.getCode());
 		walletDao.createWallet(wallet);
 	}
 
 	@Override
 	public void updateWallet(UserAccount wallet) {
-		// TODO Auto-generated method stub
-		
+		walletDao.updateWallet(wallet);
 	}
 
 	@Override

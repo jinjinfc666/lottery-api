@@ -135,7 +135,6 @@ public class CacheRedisDaoImpl  extends AbstractBaseRedisDao implements CacheRed
 
 	@Override
 	public void publishMessage(String channel, Serializable mes) {
-		logger.debug("try to obtain the winning number for ::: " + mes);
 		redisTemplate.convertAndSend(channel, mes);
 	}
 
@@ -157,6 +156,17 @@ public class CacheRedisDaoImpl  extends AbstractBaseRedisDao implements CacheRed
 		cacheObject.setKey(codeTypeName);
 		this.setIpBlackList(cacheObject);
 	}
+
+	@Override
+	public void setUserBettingFlag(CacheObject<Integer> cacheObj) {
+		this.saveOrUpdate(cacheObj);
+	}
+
+	@Override
+	public CacheObject<Integer> getUserBettingFlag(String cacheKey) {
+		return this.get(cacheKey);
+	}
+	
 	//充值渠道
 	@Override
 	public CacheObject<Map<Integer, PayChannel>> getPayChannel(String codeName) {

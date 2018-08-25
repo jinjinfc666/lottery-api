@@ -174,8 +174,9 @@ public class UserController {
 	 * this will be only called  by the user with role:role_admin
 	 * @param request
 	 */
-	@RequestMapping(value="/agents", method = { RequestMethod.POST }, produces=MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> regAgent(@RequestBody UserInfo user) {
+	@RequestMapping(value="/agents/{agent-id}", method = { RequestMethod.POST }, produces=MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> regAgent(@PathVariable("agent-id") Integer agentId,
+			@RequestBody UserInfo user) {
 		Map<String, Object> resp = new HashMap<String, Object>();
 				
 		UserInfo generalAgency = userInfoService.getGeneralAgency();

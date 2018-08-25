@@ -1,6 +1,5 @@
 package com.jll.user;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -37,7 +36,6 @@ import com.jll.common.constants.Constants.SiteMessageReadType;
 import com.jll.common.constants.Constants.State;
 import com.jll.common.constants.Constants.SysCodeState;
 import com.jll.common.constants.Constants.SysCodeTypes;
-import com.jll.common.constants.Constants.SysCodeTypesFlag;
 import com.jll.common.constants.Constants.SysNotifyReceiverType;
 import com.jll.common.constants.Constants.SysNotifyType;
 import com.jll.common.constants.Constants.UserLevel;
@@ -46,6 +44,7 @@ import com.jll.common.constants.Constants.UserType;
 import com.jll.common.constants.Constants.WalletType;
 import com.jll.common.constants.Message;
 import com.jll.common.utils.BigDecimalUtil;
+import com.jll.common.utils.MathUtil;
 import com.jll.common.utils.SecurityUtils;
 import com.jll.common.utils.StringUtils;
 import com.jll.common.utils.Utils;
@@ -53,7 +52,6 @@ import com.jll.dao.SupserDao;
 import com.jll.entity.DepositApplication;
 import com.jll.entity.MemberPlReport;
 import com.jll.entity.OrderInfo;
-import com.jll.entity.Promo;
 import com.jll.entity.SiteMessFeedback;
 import com.jll.entity.SiteMessage;
 import com.jll.entity.SysCode;
@@ -86,7 +84,7 @@ public class UserInfoServiceImpl implements UserInfoService
 	SysCodeService sysCodeService;
 	
 	@Resource
-	CacheRedisService cacheRedisService;
+	CacheRedisService cacheServ;
 	
 	@Value("${sys_reset_pwd_default_pwd}")
 	String defaultPwd;
@@ -410,7 +408,7 @@ public class UserInfoServiceImpl implements UserInfoService
 		Map<String, Object> bankInfo =  getUserBankLists(userId);
 		List<?> bankList = (List<?>) bankInfo.get(Message.KEY_DATA);
 		
-		int maxCardNum = Integer.valueOf(((SysCode)cacheRedisService.getSysCode(SysCodeTypes.BANK_LIST.getCode()).get(SysCodeTypes.BANK_LIST.getCode())).getCodeVal());
+		int maxCardNum = Integer.valueOf(((SysCode)cacheServ.getSysCode(SysCodeTypes.BANK_LIST.getCode()).get(SysCodeTypes.BANK_LIST.getCode())).getCodeVal());
 		if(bankList.size() == maxCardNum){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_MORE_BIND_BANK_CARD.getCode());
@@ -619,7 +617,7 @@ public class UserInfoServiceImpl implements UserInfoService
 			back.setFbUserId(dbMsg.getUserId());
 		}
 		
-		int validDay = Integer.valueOf(((SysCode)cacheRedisService.getSysCode(SysCodeTypes.SITE_MSG_VALID_DAY.getCode()).get(SysCodeTypes.SITE_MSG_VALID_DAY.getCode())).getCodeVal());
+		int validDay = Integer.valueOf(((SysCode)cacheServ.getSysCode(SysCodeTypes.SITE_MSG_VALID_DAY.getCode()).get(SysCodeTypes.SITE_MSG_VALID_DAY.getCode())).getCodeVal());
 		dbMsg.setExpireTime(DateUtils.addDays(new Date(), validDay));
 		dbMsg.setIsRead(SiteMessageReadType.UN_READING.getCode());
 		
@@ -676,7 +674,7 @@ public class UserInfoServiceImpl implements UserInfoService
 					return ret;
 				}
 			}
-			int validDay = Integer.valueOf(((SysCode)cacheRedisService.getSysCode(SysCodeTypes.SITE_MSG_VALID_DAY.getCode()).get(SysCodeTypes.SITE_MSG_VALID_DAY.getCode())).getCodeVal());
+			int validDay = Integer.valueOf(((SysCode)cacheServ.getSysCode(SysCodeTypes.SITE_MSG_VALID_DAY.getCode()).get(SysCodeTypes.SITE_MSG_VALID_DAY.getCode())).getCodeVal());
 			msg.setExpireTime(DateUtils.addDays(new Date(), validDay));
 			List<SiteMessage> addList = new ArrayList<>();
 			for(String id:sendIds.split(StringUtils.COMMA)){
@@ -791,7 +789,7 @@ public class UserInfoServiceImpl implements UserInfoService
 		dbAcc.setRewardPoints(addDtl.getPostAmount().longValue());
 		supserDao.update(dbAcc);
 		
-		SysCode dbCode = cacheRedisService.getSysCode(SysCodeTypes.POINT_EXCHANGE_SCALE.getCode(), SysCodeTypes.POINT_EXCHANGE_SCALE.getCode());
+		SysCode dbCode = cacheServ.getSysCode(SysCodeTypes.POINT_EXCHANGE_SCALE.getCode(), SysCodeTypes.POINT_EXCHANGE_SCALE.getCode());
 		if(dbCode.getState() ==  SysCodeState.INVALID_STATE.getCode()){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_PROMS_INVALID.getCode());
@@ -878,5 +876,15 @@ public class UserInfoServiceImpl implements UserInfoService
 			return true;
 		}
 		return false;
+	}
+	@Override
+	public Float calPrizeRate(UserInfo user, String lottoType) {
+		String lottoAttrType = Constants.KEY_LOTTO_ATTRI_PREFIX + lottoType;
+		SysCode prizeRange = cacheServ.getSysCode(lottoAttrType, Constants.LotteryAttributes.LOTTO_PRIZE_RATE.getCode());
+		String[] prizeRanges = prizeRange.getCodeVal().split(",");
+		Float prizeRate = MathUtil.multiply(user.getPlatRebate().floatValue(), 
+				Constants.VAL_REBATE_PRIZE_RATE, Float.class);
+		prizeRate = MathUtil.subtract(Float.valueOf(prizeRanges[1]), prizeRate, Float.class);
+		return prizeRate;
 	}
 }

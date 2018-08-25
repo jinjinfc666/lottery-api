@@ -111,6 +111,10 @@ public class WalletDaoImpl extends DefaultGenericDaoImpl<UserAccount> implements
 		params.add(userId);
 		return this.query(sql, params, UserAccount.class);
 	}
+	@Override
+	public void updateWallet(UserAccount wallet) {
+		this.saveOrUpdate(wallet);
+	}
   
   
 }
