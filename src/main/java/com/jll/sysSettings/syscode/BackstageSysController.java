@@ -74,8 +74,8 @@ public class BackstageSysController {
 		return ret;
 	}
 	//查询所有的类型
-	@RequestMapping(value={"/bigType"}, method={RequestMethod.POST}, produces={"application/json"})
-	public Map<String, Object> quertBigType() {
+	@RequestMapping(value={"/bigType"}, method={RequestMethod.GET}, produces={"application/json"})
+	public Map<String, Object> queryBigType() {
 		Map<String, Object> ret = new HashMap<>();
 		try {
 			List<SysCode> sysCode=sysCodeService.quertBigType();
@@ -91,7 +91,7 @@ public class BackstageSysController {
 		return ret;
 	}
 	//修改大类的值
-	@RequestMapping(value={"/updateBigType"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/updateBigType"}, method={RequestMethod.PUT}, produces={"application/json"})
 	public Map<String, Object> updateBigType(@RequestParam(name = "id", required = false) Integer id,
 			  @RequestParam(name = "codeName", required = true) String codeName,//和id一样不能修改只需要传过来
 			  @RequestParam(name = "codeVal", required = false) String codeVal,
@@ -129,7 +129,7 @@ public class BackstageSysController {
 		return ret;
 	}
 	//修改大类的状态
-	@RequestMapping(value={"/updateBigTypeState"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/updateBigTypeState"}, method={RequestMethod.PUT}, produces={"application/json"})
 	public Map<String, Object> updateBigTypeState(@RequestParam(name = "id", required = true) Integer id,
 			@RequestParam(name = "codeName", required = true) String codeName,//不能修改只传值
 			  @RequestParam(name = "state", required = true) Integer state,//1为有效0为无效
@@ -199,7 +199,7 @@ public class BackstageSysController {
 		return ret;
 	}
 	//查询彩种类型下的所有值
-	@RequestMapping(value={"/querySmallLotteryType"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/querySmallLotteryType"}, method={RequestMethod.GET}, produces={"application/json"})
 	public Map<String, Object> querySmallLotteryType() {
 		Map<String, Object> ret = new HashMap<>();
 		String bigCodeName=Constants.SysCodeTypes.LOTTERY_TYPES.getCode();
@@ -217,7 +217,7 @@ public class BackstageSysController {
 		return ret;
 	}
 	//软删除彩种类型下的某个小类
-	@RequestMapping(value={"/updateSmallLotteryTypeState"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/updateSmallLotteryTypeState"}, method={RequestMethod.PUT}, produces={"application/json"})
 	public Map<String, Object> updateSmallLotteryTypeState(@RequestParam(name = "id", required = true) Integer id,
 			  @RequestParam(name = "codeName", required = true) String codeName,//不能修改只传值
 			  @RequestParam(name = "state", required = true) Integer state,//1为有效0为无效
@@ -245,7 +245,7 @@ public class BackstageSysController {
 		return ret;
 	}
 	//修改彩种类型下的某一条数据
-	@RequestMapping(value={"/updateSmallLotteryType"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/updateSmallLotteryType"}, method={RequestMethod.PUT}, produces={"application/json"})
 	public Map<String, Object> updateSmallLotteryType(@RequestParam(name = "id", required = true) Integer id,
 			  @RequestParam(name = "codeName", required = true) String codeName,//不能修改只传值
 			  @RequestParam(name = "codeVal", required = false) String codeVal,
@@ -340,7 +340,7 @@ public class BackstageSysController {
 		return ret;
 	}
 	//查询流水类型下的所有值
-	@RequestMapping(value={"/querySmallFlowType"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/querySmallFlowType"}, method={RequestMethod.GET}, produces={"application/json"})
 	public Map<String, Object> querySmallFlowType() {
 		Map<String, Object> ret = new HashMap<>();
 		String bigCodeName=Constants.SysCodeTypes.FLOW_TYPES.getCode();
@@ -358,7 +358,7 @@ public class BackstageSysController {
 		return ret;
 	}
 	//软删除流水类型下的某个小类
-	@RequestMapping(value={"/updateSmallFlowTypeState"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/updateSmallFlowTypeState"}, method={RequestMethod.PUT}, produces={"application/json"})
 	public Map<String, Object> updateSmallFlowTypeState(@RequestParam(name = "id", required = true) Integer id,
 			@RequestParam(name = "codeName", required = true) String codeName,//不能修改只传值
 			  @RequestParam(name = "state", required = true) Integer state,//1为有效0为无效
@@ -386,7 +386,7 @@ public class BackstageSysController {
 		return ret;
 	}
 	//修改流水类型下的某一条数据
-	@RequestMapping(value={"/updateSmallFlowType"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/updateSmallFlowType"}, method={RequestMethod.PUT}, produces={"application/json"})
 	public Map<String, Object> updateSmallFlowType(@RequestParam(name = "id", required = true) Integer id,
 			  @RequestParam(name = "codeName", required = true) String codeName,//不能修改只传值
 			  @RequestParam(name = "codeVal", required = false) String codeVal,
@@ -462,7 +462,7 @@ public class BackstageSysController {
 		if(!StringUtils.isBlank(remark)) {
 			sysCode.setRemark(remark);
 		}
-		String bigCodeName=Constants.SysCodeTypes.PAYMENT_PLATFORM.getCode();
+		String bigCodeName=Constants.SysCodeTypes.LUCKY_DRAW.getCode();
 		try {
 			Integer codeType=sysCodeService.queryByCodeName(bigCodeName);
 			sysCode.setCodeType(codeType);	
@@ -481,10 +481,10 @@ public class BackstageSysController {
 		return ret;
 	}
 	//查询幸运抽奖类型下的所有值
-	@RequestMapping(value={"/querySmallLuckyDraw"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/querySmallLuckyDraw"}, method={RequestMethod.GET}, produces={"application/json"})
 	public Map<String, Object> querySmallLuckyDraw() {
 		Map<String, Object> ret = new HashMap<>();
-		String bigCodeName=Constants.SysCodeTypes.PAYMENT_PLATFORM.getCode();
+		String bigCodeName=Constants.SysCodeTypes.LUCKY_DRAW.getCode();
 		try {
 			Map<String,SysCode> sysCode=cacheRedisService.getSysCode(bigCodeName);
 			ret.clear();
@@ -499,13 +499,13 @@ public class BackstageSysController {
 		return ret;
 	}
 	//软删除幸运抽奖类型下的某个小类
-	@RequestMapping(value={"/updateSmallLuckyDrawState"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/updateSmallLuckyDrawState"}, method={RequestMethod.PUT}, produces={"application/json"})
 	public Map<String, Object> updateSmallLuckyDrawState(@RequestParam(name = "id", required = true) Integer id,
 			@RequestParam(name = "codeName", required = true) String codeName,//不能修改只传值
 			  @RequestParam(name = "state", required = true) Integer state,//1为有效0为无效
 			  HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
-		String bigCodeName=Constants.SysCodeTypes.PAYMENT_PLATFORM.getCode();
+		String bigCodeName=Constants.SysCodeTypes.LUCKY_DRAW.getCode();
 		try {
 			ret.put("id", id);
 			ret.put("state", state);
@@ -527,7 +527,7 @@ public class BackstageSysController {
 		return ret;
 	}
 	//修改幸运抽奖类型下的某一条数据
-	@RequestMapping(value={"/updateSmallLuckyDraw"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/updateSmallLuckyDraw"}, method={RequestMethod.PUT}, produces={"application/json"})
 	public Map<String, Object> updateSmallLuckyDraw(@RequestParam(name = "id", required = true) Integer id,
 			  @RequestParam(name = "codeName", required = true) String codeName,//不能修改只传值
 			  @RequestParam(name = "codeVal", required = false) String codeVal,
@@ -540,7 +540,7 @@ public class BackstageSysController {
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
 	    	return ret;
 		}
-		String bigCodeName=Constants.SysCodeTypes.PAYMENT_PLATFORM.getCode();
+		String bigCodeName=Constants.SysCodeTypes.LUCKY_DRAW.getCode();
 		ret.put("id", id);
 		ret.put("codeVal", codeVal);
 		ret.put("remark", remark);
@@ -572,7 +572,7 @@ public class BackstageSysController {
 	public Map<String, Object> updateSmallLuckyDrawSeq(@RequestParam(name = "allId", required = true) String allId,
 			  HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
-		String bigCodeName=Constants.SysCodeTypes.PAYMENT_PLATFORM.getCode();
+		String bigCodeName=Constants.SysCodeTypes.LUCKY_DRAW.getCode();
 		try {
 			Map<String,Object> map=sysCodeService.updateSmallTypeSeq(bigCodeName, allId);
 			return map;
@@ -603,7 +603,7 @@ public class BackstageSysController {
 		if(!StringUtils.isBlank(remark)) {
 			sysCode.setRemark(remark);
 		}
-		String bigCodeName=Constants.SysCodeTypes.LUCKY_DRAW.getCode();
+		String bigCodeName=Constants.SysCodeTypes.PAYMENT_PLATFORM.getCode();
 		try {
 			Integer codeType=sysCodeService.queryByCodeName(bigCodeName);
 			sysCode.setCodeType(codeType);	
@@ -622,10 +622,10 @@ public class BackstageSysController {
 		return ret;
 	}
 	//查询支付平台类型下的所有值
-	@RequestMapping(value={"/querySmallPaymentPlatform"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/querySmallPaymentPlatform"}, method={RequestMethod.GET}, produces={"application/json"})
 	public Map<String, Object> querySmallPaymentPlatform() {
 		Map<String, Object> ret = new HashMap<>();
-		String bigCodeName=Constants.SysCodeTypes.LUCKY_DRAW.getCode();
+		String bigCodeName=Constants.SysCodeTypes.PAYMENT_PLATFORM.getCode();
 		try {
 			Map<String,SysCode> sysCode=cacheRedisService.getSysCode(bigCodeName);
 			ret.clear();
@@ -640,13 +640,13 @@ public class BackstageSysController {
 		return ret;
 	}
 	//软删除支付平台类型下的某个小类
-	@RequestMapping(value={"/updateSmallPaymentPlatformState"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/updateSmallPaymentPlatformState"}, method={RequestMethod.PUT}, produces={"application/json"})
 	public Map<String, Object> updateSmallPaymentPlatformState(@RequestParam(name = "id", required = true) Integer id,
 			@RequestParam(name = "codeName", required = true) String codeName,//不能修改只传值
 			  @RequestParam(name = "state", required = true) Integer state,//1为有效0为无效
 			  HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
-		String bigCodeName=Constants.SysCodeTypes.LUCKY_DRAW.getCode();
+		String bigCodeName=Constants.SysCodeTypes.PAYMENT_PLATFORM.getCode();
 		try {
 			ret.put("id", id);
 			ret.put("state", state);
@@ -668,7 +668,7 @@ public class BackstageSysController {
 		return ret;
 	}
 	//修改支付平台类型下的某一条数据
-	@RequestMapping(value={"/updateSmallPaymentPlatform"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/updateSmallPaymentPlatform"}, method={RequestMethod.PUT}, produces={"application/json"})
 	public Map<String, Object> updateSmallPaymentPlatform(@RequestParam(name = "id", required = true) Integer id,
 			  @RequestParam(name = "codeName", required = true) String codeName,//不能修改只传值
 			  @RequestParam(name = "codeVal", required = false) String codeVal,
@@ -681,7 +681,7 @@ public class BackstageSysController {
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
 	    	return ret;
 		}
-		String bigCodeName=Constants.SysCodeTypes.LUCKY_DRAW.getCode();
+		String bigCodeName=Constants.SysCodeTypes.PAYMENT_PLATFORM.getCode();
 		ret.put("id", id);
 		ret.put("codeVal", codeVal);
 		ret.put("remark", remark);
@@ -713,7 +713,7 @@ public class BackstageSysController {
 	public Map<String, Object> updateSmallPaymentPlatformSeq(@RequestParam(name = "allId", required = true) String allId,
 			  HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
-		String bigCodeName=Constants.SysCodeTypes.LUCKY_DRAW.getCode();
+		String bigCodeName=Constants.SysCodeTypes.PAYMENT_PLATFORM.getCode();
 		try {
 			Map<String,Object> map=sysCodeService.updateSmallTypeSeq(bigCodeName, allId);
 			return map;
@@ -763,7 +763,7 @@ public class BackstageSysController {
 		return ret;
 	}
 	//查询签到活动类型下的所有值
-	@RequestMapping(value={"/querySmallSignInDay"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/querySmallSignInDay"}, method={RequestMethod.GET}, produces={"application/json"})
 	public Map<String, Object> querySmallSignInDay() {
 		Map<String, Object> ret = new HashMap<>();
 		String bigCodeName=Constants.SysCodeTypes.SIGN_IN_DAY.getCode();
@@ -781,7 +781,7 @@ public class BackstageSysController {
 		return ret;
 	}
 	//软删除签到活动类型下的某个小类
-	@RequestMapping(value={"/updateSmallSignInDayState"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/updateSmallSignInDayState"}, method={RequestMethod.PUT}, produces={"application/json"})
 	public Map<String, Object> updateSmallSignInDayState(@RequestParam(name = "id", required = true) Integer id,
 			@RequestParam(name = "codeName", required = true) String codeName,//不能修改只传值
 			  @RequestParam(name = "state", required = true) Integer state,//1为有效0为无效
@@ -809,7 +809,7 @@ public class BackstageSysController {
 		return ret;
 	}
 	//修改签到活动类型下的某一条数据
-	@RequestMapping(value={"/updateSmallSignInDay"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/updateSmallSignInDay"}, method={RequestMethod.PUT}, produces={"application/json"})
 	public Map<String, Object> updateSmallSignInDay(@RequestParam(name = "id", required = true) Integer id,
 			  @RequestParam(name = "codeName", required = true) String codeName,//不能修改只传值
 			  @RequestParam(name = "codeVal", required = false) String codeVal,
@@ -904,7 +904,7 @@ public class BackstageSysController {
 		return ret;
 	}
 	//查询玩法类型下的所有值
-	@RequestMapping(value={"/querySmallPTypeClassicfication"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/querySmallPTypeClassicfication"}, method={RequestMethod.GET}, produces={"application/json"})
 	public Map<String, Object> querySmallPTypeClassicfication() {
 		Map<String, Object> ret = new HashMap<>();
 		String bigCodeName=Constants.SysCodeTypes.CT_PLAY_TYPE_CLASSICFICATION.getCode();
@@ -922,7 +922,7 @@ public class BackstageSysController {
 		return ret;
 	}
 	//软删除玩法类型下的某个小类
-	@RequestMapping(value={"/updateSmallPTypeClassicficationState"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/updateSmallPTypeClassicficationState"}, method={RequestMethod.PUT}, produces={"application/json"})
 	public Map<String, Object> updateSmallPTypeClassicficationState(@RequestParam(name = "id", required = true) Integer id,
 			@RequestParam(name = "codeName", required = true) String codeName,//不能修改只传值
 			  @RequestParam(name = "state", required = true) Integer state,//1为有效0为无效
@@ -950,7 +950,7 @@ public class BackstageSysController {
 		return ret;
 	}
 	//修改玩法类型下的某一条数据
-	@RequestMapping(value={"/updateSmallPTypeClassicfication"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/updateSmallPTypeClassicfication"}, method={RequestMethod.PUT}, produces={"application/json"})
 	public Map<String, Object> updateSmallPTypeClassicfication(@RequestParam(name = "id", required = true) Integer id,
 			@RequestParam(name = "codeName", required = true) String codeName,//不能修改只传值
 			  @RequestParam(name = "codeVal", required = false) String codeVal,
@@ -1046,7 +1046,7 @@ public class BackstageSysController {
 		return ret;
 	}
 	//查询玩法类型下的所有值
-	@RequestMapping(value={"/querySmallLotteryConfig"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/querySmallLotteryConfig"}, method={RequestMethod.GET}, produces={"application/json"})
 	public Map<String, Object> querySmallLotteryConfig(@RequestParam(name = "bigcodeName", required = true) String bigcodeName,
 			  HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
@@ -1065,7 +1065,7 @@ public class BackstageSysController {
 		return ret;
 	}
 	//软删除玩法类型下的某个小类
-	@RequestMapping(value={"/updateSmallLotteryConfigState"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/updateSmallLotteryConfigState"}, method={RequestMethod.PUT}, produces={"application/json"})
 	public Map<String, Object> updateSmallLotteryConfigState(@RequestParam(name = "bigcodeName", required = true) String bigcodeName,
 			  @RequestParam(name = "id", required = true) Integer id,
 			  @RequestParam(name = "codeName", required = true) String codeName,//不能修改只传值
@@ -1094,7 +1094,7 @@ public class BackstageSysController {
 		return ret;
 	}
 	//修改玩法类型下的某一条数据
-	@RequestMapping(value={"/updateSmallLotteryConfig"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/updateSmallLotteryConfig"}, method={RequestMethod.PUT}, produces={"application/json"})
 	public Map<String, Object> updateSmallLotteryConfig(@RequestParam(name = "bigcodeName", required = true) String bigcodeName,
 			  @RequestParam(name = "id", required = true) Integer id,
 			  @RequestParam(name = "codeName", required = true) String codeName,//不能修改只传值
@@ -1190,7 +1190,7 @@ public class BackstageSysController {
 		return ret;
 	}
 	//查询充值方式类型下的所有值
-	@RequestMapping(value={"/querySmallPayType"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/querySmallPayType"}, method={RequestMethod.GET}, produces={"application/json"})
 	public Map<String, Object> querySmallPayType() {
 		Map<String, Object> ret = new HashMap<>();
 		String bigCodeName=Constants.SysCodeTypes.PAY_TYPE.getCode();
@@ -1208,7 +1208,7 @@ public class BackstageSysController {
 		return ret;
 	}
 	//软删除充值方式类型下的某个小类
-	@RequestMapping(value={"/updateSmallPayTypeState"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/updateSmallPayTypeState"}, method={RequestMethod.PUT}, produces={"application/json"})
 	public Map<String, Object> updateSmallPayTypeState(@RequestParam(name = "id", required = true) Integer id,
 			@RequestParam(name = "codeName", required = true) String codeName,//不能修改只传值
 			  @RequestParam(name = "state", required = true) Integer state,//1为有效0为无效
@@ -1236,7 +1236,7 @@ public class BackstageSysController {
 		return ret;
 	}
 	//修改充值方式类型下的某一条数据
-	@RequestMapping(value={"/updateSmallPayType"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/updateSmallPayType"}, method={RequestMethod.PUT}, produces={"application/json"})
 	public Map<String, Object> updateSmallPayType(@RequestParam(name = "id", required = true) Integer id,
 			@RequestParam(name = "codeName", required = true) String codeName,//不能修改只传值
 			  @RequestParam(name = "codeVal", required = false) String codeVal,

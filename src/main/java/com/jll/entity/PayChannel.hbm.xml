@@ -20,7 +20,6 @@
                 <comment>��ֵ��ʽ����</comment>
             </column>
         </property>
-        
          <property generated="never" lazy="false" name="payCode" optimistic-lock="true" type="string" unique="false">
             <column length="50" name="pay_code">
                 <comment>第三方支付代码</comment>
