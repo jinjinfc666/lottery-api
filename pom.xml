@@ -277,7 +277,7 @@
 			<artifactId>slf4j-log4j12</artifactId>
 			<!-- <version>1.7.25</version> -->
 		</dependency>
-
+	
 		<dependency>
 			<groupId>javax.mail</groupId>
 			<artifactId>javax.mail-api</artifactId>
@@ -300,9 +300,18 @@
 			<artifactId>quartz-jobs</artifactId>
 			<version>${quartz-version}</version>
 		</dependency>
+<!-- 		<dependency>  -->
+<!-- 		    <groupId>org.apache.ftpserver</groupId>  -->
+<!-- 		    <artifactId>ftpserver-core</artifactId>  -->
+<!-- 		    <version>1.0.6</version>  -->
+<!-- 		</dependency> -->
+		<dependency>
+		    <groupId>commons-net</groupId>
+		    <artifactId>commons-net</artifactId>
+		    <version>3.5</version>
+		    <scope>runtime</scope>
+		</dependency>
 	</dependencies>
-
-
 	<build>
 		<plugins>
 			<plugin>
