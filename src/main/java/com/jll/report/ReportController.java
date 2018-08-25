@@ -63,7 +63,7 @@ public class ReportController {
 	 *流水明细
 	 * @author Silence 
 	 */
-	@RequestMapping(value={"/userFlowDetail"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/userFlowDetail"}, method={RequestMethod.GET}, produces={"application/json"})
 	public Map<String, Object> queryUserAccountDetails(@RequestParam(name = "userName", required = false) String userName,
 			  @RequestParam(name = "orderNum", required = false) String orderNum,
 			  @RequestParam(name = "amountStart", required = false) Float amountStart,
@@ -101,7 +101,7 @@ public class ReportController {
 		}
 		return ret;
 	}
-	@RequestMapping(value={"/userFlowDetail/type"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/userFlowDetail/type"}, method={RequestMethod.GET}, produces={"application/json"})
 	public Map<String, Object> queryType(){
 		Map<String, Object> ret = new HashMap<>();
 		try {
@@ -146,7 +146,7 @@ public class ReportController {
 	 *彩票交易
 	 * @author Silence
 	 */
-	@RequestMapping(value={"/loyTstRecord"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/loyTstRecord"}, method={RequestMethod.GET}, produces={"application/json"})
 	public Map<String, Object> queryLoyTst(@RequestParam(name = "lotteryType", required = false) String lotteryType,//彩种 String
 			  @RequestParam(name = "isZh", required = false) Integer isZh,//是否追号 :0,非追号;1,追号
 			  @RequestParam(name = "state", required = false) Integer state,//0,等待派奖;1,赢;2,输;3,用户取消订单;4,系统取消订单
@@ -189,7 +189,7 @@ public class ReportController {
 		return ret;
 	}
 	//查询条件:彩种
-	@RequestMapping(value={"/loyTstRecord/lotteTypes"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/loyTstRecord/lotteTypes"}, method={RequestMethod.GET}, produces={"application/json"})
 	public Map<String, Object> queryLoyTstQueryConditions() {
 		Map<String, Object> ret = new HashMap<>();
 		try {
@@ -204,7 +204,7 @@ public class ReportController {
 		return ret;
 	}
 	//查询条件:是否追号
-	@RequestMapping(value={"/loyTstRecord/loyTstIsZh"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/loyTstRecord/loyTstIsZh"}, method={RequestMethod.GET}, produces={"application/json"})
 	public Map<String, Object> queryLoyTstIsZh() {
 		Map<String, Object> ret = new HashMap<>();
 		try {
@@ -218,7 +218,7 @@ public class ReportController {
 		return ret;
 	}
 	//查询条件:中奖情况
-	@RequestMapping(value={"/loyTstRecord/LoyTstState"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/loyTstRecord/LoyTstState"}, method={RequestMethod.GET}, produces={"application/json"})
 	public Map<String, Object> queryLoyTstState() {
 		Map<String, Object> ret = new HashMap<>();
 		try {
@@ -232,7 +232,7 @@ public class ReportController {
 		return ret;
 	}
 	//查询条件:订单来源
-	@RequestMapping(value={"/loyTstRecord/LoyTstTerminalType"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/loyTstRecord/LoyTstTerminalType"}, method={RequestMethod.GET}, produces={"application/json"})
 	public Map<String, Object> queryLoyTstTerminalType() {
 		Map<String, Object> ret = new HashMap<>();
 		try {
@@ -249,7 +249,7 @@ public class ReportController {
 	 *存取款明细
 	 * @author Silence
 	 */
-	@RequestMapping(value={"/DWD"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/DWD"}, method={RequestMethod.GET}, produces={"application/json"})
 	public Map<String, Object> queryDWD(@RequestParam(name = "type", required = true) String type,//存款:1 取款:2
 			  @RequestParam(name = "state", required = false) Integer state,
 			  @RequestParam(name = "userName", required = false) String userName,
@@ -292,7 +292,7 @@ public class ReportController {
 	}
 	
 	//查询条件:存取类型
-	@RequestMapping(value={"/DWD/DWType"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/DWD/DWType"}, method={RequestMethod.GET}, produces={"application/json"})
 	public Map<String, Object> queryDWDType() {
 		Map<String, Object> ret = new HashMap<>();
 		try {
@@ -306,7 +306,7 @@ public class ReportController {
 		return ret;
 	}
 	//查询条件:存取状态
-	@RequestMapping(value={"/DWD/DWDState"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/DWD/DWDState"}, method={RequestMethod.GET}, produces={"application/json"})
 	public Map<String, Object> queryDWDState() {
 		Map<String, Object> ret = new HashMap<>();
 		Map<String, Object> ret1 = new HashMap<>();
@@ -323,7 +323,7 @@ public class ReportController {
 		return ret;
 	}
 	//存取款明细的详细信息
-	@RequestMapping(value={"/DWD/DWDetails"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/DWD/DWDetails"}, method={RequestMethod.GET}, produces={"application/json"})
 	public Map<String, Object> queryDWDetails(@RequestParam(name = "type", required = true) String type,//存款:1 取款:2
 			  @RequestParam(name = "id", required = true) Integer id,
 			  HttpServletRequest request) {
@@ -355,7 +355,7 @@ public class ReportController {
 	 *充值明细
 	 * @author Silence
 	 */
-	@RequestMapping(value={"/DepositApplication"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/DepositApplication"}, method={RequestMethod.GET}, produces={"application/json"})
 	public Map<String, Object> queryDepositApplication(@RequestParam(name = "userName", required = false) String userName,
 			  @RequestParam(name = "orderNum", required = false) String orderNum,//订单号 String
 			  @RequestParam(name = "startTime", required = true) String startTime,//时间 String
@@ -388,7 +388,7 @@ public class ReportController {
 		return ret;
 	}
 	//修改存款状态
-	@RequestMapping(value={"/DepositApplication/UpdateDepositState"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/DepositApplication/UpdateDepositState"}, method={RequestMethod.PUT}, produces={"application/json"})
 	public Map<String, Object> UpdateDepositState(@RequestParam(name = "id", required = true) Integer id,
 			  @RequestParam(name = "state", required = true) Integer state,//状态
 			  HttpServletRequest request) {
@@ -418,7 +418,7 @@ public class ReportController {
 	 *会员盈亏报表
 	 * @author Silence
 	 */
-	@RequestMapping(value={"/MReport"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/MReport"}, method={RequestMethod.GET}, produces={"application/json"})
 	public Map<String, Object> queryMReport(@RequestParam(name = "userName", required = false) String userName,
 			  @RequestParam(name = "startTime", required = true) String startTime,//时间 String
 			  @RequestParam(name = "endTime", required = true) String endTime,//时间 String
@@ -449,7 +449,7 @@ public class ReportController {
 		return ret;
 	}
 	//总计
-	@RequestMapping(value={"/MReportSum"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/MReportSum"}, method={RequestMethod.GET}, produces={"application/json"})
 	public Map<String, Object> queryMReportSum(@RequestParam(name = "userName", required = false) String userName,
 			  @RequestParam(name = "startTime", required = true) String startTime,//时间 String
 			  @RequestParam(name = "endTime", required = true) String endTime,//时间 String
@@ -493,7 +493,7 @@ public class ReportController {
 	 *团队盈亏报表
 	 * @author Silence
 	 */
-	@RequestMapping(value={"/MReportTeam"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/MReportTeam"}, method={RequestMethod.GET}, produces={"application/json"})
 	public Map<String, Object> queryMReportTeam(@RequestParam(name = "userName", required = false) String userName,
 			  @RequestParam(name = "startTime", required = true) String startTime,//时间 String
 			  @RequestParam(name = "endTime", required = true) String endTime,//时间 String
@@ -524,7 +524,7 @@ public class ReportController {
 		return ret;
 	}
 	//总计
-	@RequestMapping(value={"/MReportSumTeam"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/MReportSumTeam"}, method={RequestMethod.GET}, produces={"application/json"})
 	public Map<String, Object> queryMReportSumTeam(@RequestParam(name = "userName", required = false) String userName,
 			  @RequestParam(name = "startTime", required = true) String startTime,//时间 String
 			  @RequestParam(name = "endTime", required = true) String endTime,//时间 String
@@ -563,7 +563,7 @@ public class ReportController {
 		}
 	}
 	//查找下级
-	@RequestMapping(value={"/MReportNextTeam"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/MReportNextTeam"}, method={RequestMethod.GET}, produces={"application/json"})
 	public Map<String, Object> queryMReportNextTeam(@RequestParam(name = "userName", required = true) String userName,
 			  @RequestParam(name = "startTime", required = true) String startTime,//时间 String
 			  @RequestParam(name = "endTime", required = true) String endTime,//时间 String
@@ -606,7 +606,7 @@ public class ReportController {
 	 *团队盈亏报表(按彩种查询)
 	 * @author Silence
 	 */
-	@RequestMapping(value={"/LReportTeam"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/LReportTeam"}, method={RequestMethod.GET}, produces={"application/json"})
 	public Map<String, Object> queryLReportTeam(@RequestParam(name = "userName", required = false) String userName,
 			@RequestParam(name = "codeName", required = true) String codeName,//时间 String
 			@RequestParam(name = "startTime", required = true) String startTime,//时间 String
@@ -639,7 +639,7 @@ public class ReportController {
 		return ret;
 	}
 	//总计
-	@RequestMapping(value={"/LReportTeamSum"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/LReportTeamSum"}, method={RequestMethod.GET}, produces={"application/json"})
 	public Map<String, Object> queryLReportTeamSum(@RequestParam(name = "userName", required = false) String userName,
 			@RequestParam(name = "codeName", required = true) String codeName,//时间 String
 			@RequestParam(name = "startTime", required = true) String startTime,//时间 String
@@ -681,7 +681,7 @@ public class ReportController {
 		}
 	}
 	//查找下级---------------------------------------------
-	@RequestMapping(value={"/LReportNextTeam"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/LReportNextTeam"}, method={RequestMethod.GET}, produces={"application/json"})
 	public Map<String, Object> queryLReportNextTeam(@RequestParam(name = "userName", required = false) String userName,
 			@RequestParam(name = "codeName", required = true) String codeName,//时间 String
 			@RequestParam(name = "startTime", required = true) String startTime,//时间 String
@@ -726,7 +726,7 @@ public class ReportController {
 	 *订单数据来源
 	 * @author Silence
 	 */
-	@RequestMapping(value={"/OrderSource"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/OrderSource"}, method={RequestMethod.GET}, produces={"application/json"})
 	public Map<String, Object> queryOrderSource(@RequestParam(name = "codeName", required = false) String codeName,//时间 String
 			@RequestParam(name = "startTime", required = true) String startTime,//时间 String
 			@RequestParam(name = "endTime", required = true) String endTime,//时间 String
@@ -761,7 +761,7 @@ public class ReportController {
 	 *平台盈亏 资金汇总
 	 * @author Silence
 	 */
-	@RequestMapping(value={"/PPL"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/PPL"}, method={RequestMethod.GET}, produces={"application/json"})
 	public Map<String, Object> queryPPL(@RequestParam(name = "codeName", required = false) String codeName,//时间 String
 			@RequestParam(name = "issueNum", required = false) String issueNum,//时间 String
 			@RequestParam(name = "playTypeid", required = false) String playTypeid,//时间 String

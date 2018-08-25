@@ -1,6 +1,7 @@
 package com.jll.sys.deposit;
 
 
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,20 +10,20 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.net.ftp.FTPClient;
 import org.apache.log4j.Logger;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.jll.common.cache.CacheRedisService;
 import com.jll.common.constants.Constants;
 import com.jll.common.constants.Message;
-import com.jll.entity.IpBlackList;
 import com.jll.entity.PayChannel;
 import com.jll.entity.PayType;
-import com.jll.entity.PlayType;
 import com.jll.entity.SysCode;
 import com.jll.entity.UserAccountDetails;
 import com.terran4j.commons.api2doc.annotations.Api2Doc;
@@ -40,6 +41,8 @@ public class DepositController {
 	PayTypeService payTypeService;
 	@Resource
 	PayChannelService payChannelService;
+	@Resource
+	FTPService fTPService;
 	/**
 	 * 充值平台
 	 * */
@@ -333,6 +336,24 @@ public class DepositController {
 		Map<String, Object> ret = new HashMap<>();
 		try {
 			Map<String,Object> map=payChannelService.updatePayChannelSeq(allId);
+			return map;
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+		}
+		return ret;
+	}
+	/**
+	 * 充值二维码上传
+	 * */
+	@RequestMapping(value={"/uploadQRCode"}, method={RequestMethod.POST}, produces={"application/json"})
+	public Map<String, Object> uploadQRCode(@RequestParam(name = "imgName", required = true) String imgName,
+			  HttpServletRequest request) {
+		Map<String, Object> ret = new HashMap<>();
+		try {
+			Map<String,Object> map=fTPService.upload(imgName);
 			return map;
 		}catch(Exception e){
 			ret.clear();
