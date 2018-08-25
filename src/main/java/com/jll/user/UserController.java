@@ -776,6 +776,41 @@ public class UserController {
 			@PathVariable("userName") String userName) {
 		return userInfoService.userProfitReport(userName);
 	}	
-	
-	
+	/**
+	 * 代理开户功能:  
+	 * 	1.查询总代下面的所有一级代理
+	 *  2.点击代理查询下一级代理
+	 * */
+	//查询总代下面的所有一级代理
+	@RequestMapping(value={"/queryAllAgent"}, method={RequestMethod.GET}, produces={"application/json"})
+	public Map<String, Object> queryAllAgent() {
+		Map<String, Object> ret = new HashMap<>();
+		try {
+			List<UserInfo> userInfoLists=userInfoService.queryAllAgent();
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+			ret.put("data", userInfoLists);
+		}catch(Exception e){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+		}
+		return ret;
+	}
+	//点击代理查询下一级代理
+	@RequestMapping(value={"/queryAgentByAgent"}, method={RequestMethod.GET}, produces={"application/json"})
+	public Map<String, Object> queryAgentByAgent(@RequestParam(name = "id", required = true) Integer id,
+			  HttpServletRequest request) {
+		Map<String, Object> ret = new HashMap<>();
+		try {
+			Map<String,Object> map=userInfoService.queryAgentByAgent(id);
+			return map;
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			return ret;
+		}
+	}
 }
