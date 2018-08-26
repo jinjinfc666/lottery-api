@@ -3,6 +3,7 @@ package com.jll.user;
 import java.math.BigDecimal;
 import java.util.List;
 
+import com.jll.dao.PageBean;
 import com.jll.entity.UserInfo;
 
 public interface UserInfoDao
@@ -45,4 +46,6 @@ public interface UserInfoDao
 	boolean checkUserIds(String UserIds);
 	
 	List<UserInfo> queryAllUserInfo(Integer id,String userName,Integer proxyId,String startTime,String endTime);
+	
+	PageBean<UserInfo> queryAllUserInfoByPage(PageBean<UserInfo> reqPage);
 }

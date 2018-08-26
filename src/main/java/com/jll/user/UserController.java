@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.jll.common.constants.Constants.UserType;
 import com.jll.common.constants.Message;
 import com.jll.common.utils.StringUtils;
+import com.jll.dao.PageBean;
 import com.jll.entity.SiteMessFeedback;
 import com.jll.entity.SiteMessage;
 import com.jll.entity.UserInfo;
@@ -778,5 +779,18 @@ public class UserController {
 		return userInfoService.userProfitReport(userName);
 	}	
 	
-	
+	@ApiComment("test")
+	@RequestMapping(value="/user-page", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> queryUserByPage(@RequestParam("pageSize") Integer pageSize,
+			@RequestParam("pageIndex") Integer pageIndex) {
+		Map<String, Object> ret = new HashMap<>();
+		PageBean<UserInfo> reqPage = new PageBean<>();
+		reqPage.setPageIndex(pageIndex);
+		reqPage.setPageSize(pageSize);		
+		
+		PageBean<UserInfo> page = userInfoService.queryAllUserInfoByPage(reqPage);
+		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		ret.put(Message.KEY_DATA, page);
+		return ret;
+	}
 }

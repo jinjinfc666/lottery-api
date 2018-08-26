@@ -51,6 +51,8 @@ public interface GenericDaoIf<T> {
 	 */
 	List<T> query(String HQL, List<Object> params, Class<T> clazz);
 	
+	PageBean<T> queryByPagination(PageBean<T> page, String HQL, List<Object> params, Class<T> clazz);
+	
 	/**
 	 * count the entities in the database
 	 * @param HQL  eg.select count(*) from entity

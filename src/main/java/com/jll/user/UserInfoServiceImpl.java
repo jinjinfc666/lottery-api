@@ -48,6 +48,7 @@ import com.jll.common.utils.MathUtil;
 import com.jll.common.utils.SecurityUtils;
 import com.jll.common.utils.StringUtils;
 import com.jll.common.utils.Utils;
+import com.jll.dao.PageBean;
 import com.jll.dao.SupserDao;
 import com.jll.entity.DepositApplication;
 import com.jll.entity.MemberPlReport;
@@ -845,6 +846,22 @@ public class UserInfoServiceImpl implements UserInfoService
 				Constants.VAL_REBATE_PRIZE_RATE, Float.class);
 		prizeRate = MathUtil.subtract(Float.valueOf(prizeRanges[1]), prizeRate, Float.class);
 		return prizeRate;
+	}
+
+	@Override
+	public PageBean<UserInfo> queryAllUserInfoByPage(PageBean<UserInfo> reqPage) {
+		/*Integer pageIndex = reqPage.getPageIndex();
+		Long totalPages = reqPage.getTotalPages();*/
+		Integer pageSize = reqPage.getPageSize();
+		
+		
+		if(pageSize > 10000) {
+			return null;
+		}
+		
+		PageBean<UserInfo> retPage = userDao.queryAllUserInfoByPage(reqPage);
+		
+		return retPage;
 	}
 	
 }
