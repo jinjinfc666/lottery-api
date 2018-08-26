@@ -836,7 +836,48 @@ public class UserInfoServiceImpl implements UserInfoService
 		ret.put(Message.KEY_DATA,redAcc);
 		return null;
 	}
-
+	//查询总代下面的所有一级代理
+	@Override
+	public List<UserInfo> queryAllAgent() {
+		UserInfo userInfo=userDao.querySumAgent();
+		List<UserInfo> list=userDao.queryAllAgent(userInfo.getId());
+		if(list!=null&&list.size()>0) {
+			return list;
+		}
+		return null;
+	}
+	//点击代理查询下一级代理
+	@Override
+	public Map<String,Object> queryAgentByAgent(Integer id) {
+		boolean isOrNo=this.isOrNoUserInfo(id);
+		Map<String,Object> map=new HashMap<String,Object>();
+		if(isOrNo) {
+			List<UserInfo> list=userDao.queryAgentByAgent(id);
+			map.clear();
+			map.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+			if(list!=null&&list.size()>0) {
+				map.put("data", list);
+			}else {
+				map.put("data", null);
+			}
+			return map;
+		}else {
+			map.clear();
+			map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			return map;
+		}
+	}
+	//通过id查看这个用户是否存在
+	@Override
+	public boolean isOrNoUserInfo(Integer id) {
+		UserInfo userInfo=userDao.getUserById(id);
+		if(userInfo!=null) {
+			return true;
+		}
+		return false;
+	}
 	@Override
 	public Float calPrizeRate(UserInfo user, String lottoType) {
 		String lottoAttrType = Constants.KEY_LOTTO_ATTRI_PREFIX + lottoType;
