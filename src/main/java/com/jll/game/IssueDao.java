@@ -13,6 +13,8 @@ public interface IssueDao
 	void saveIssue(Issue currIssue);
 
 	Issue getIssueById(Integer id);
+
+	Issue getIssueByIssueNum(String issueNum);
 	
 	//通过彩种和期次数量来查找
 	List<Issue> queryByLTNumber(String lotteryType, Date time,Integer number);

@@ -36,7 +36,7 @@ public class UserInfo implements java.io.Serializable {
 	public UserInfo() {
 	}
 
-	public UserInfo(String realName, String userName,String userId, String loginPwd, String fundPwd, Integer state, Integer level,
+	public UserInfo(String realName, String userName, String userId, String loginPwd, String fundPwd, Integer state, Integer level,
 			Integer loginCount, Date unlockTime, Integer userType, String superior, BigDecimal rebate,
 			BigDecimal platRebate, String phoneNum, String qq, String wechat, String email, Integer isValidPhone,
 			Integer isValidEmail, String regIp, Date createTime, Integer creator) {
@@ -63,16 +63,6 @@ public class UserInfo implements java.io.Serializable {
 		this.createTime = createTime;
 		this.creator = creator;
 	}
-	
-	
-	
-	public String getUserId() {
-		return userId;
-	}
-
-	public void setUserId(String userId) {
-		this.userId = userId;
-	}
 
 	public Integer getId() {
 		return this.id;
@@ -96,6 +86,15 @@ public class UserInfo implements java.io.Serializable {
 
 	public void setUserName(String userName) {
 		this.userName = userName;
+	}
+
+	
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
 	}
 
 	public String getLoginPwd() {

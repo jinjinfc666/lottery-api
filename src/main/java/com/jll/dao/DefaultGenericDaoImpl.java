@@ -5,11 +5,13 @@ import java.util.List;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.orm.hibernate5.support.HibernateDaoSupport;
 
 public class DefaultGenericDaoImpl<T> extends HibernateDaoSupport implements GenericDaoIf<T> {
 
 	@Autowired
+	@DependsOn("sessionFactory")
 	public void setSuperSessionFactory(SessionFactory sessionFactory)
 	{
 	    super.setSessionFactory(sessionFactory);
@@ -76,6 +78,57 @@ public class DefaultGenericDaoImpl<T> extends HibernateDaoSupport implements Gen
 	public T get(String id) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public PageBean<T> queryByPagination(PageBean<T> page, String HQL, List<Object> params, Class<T> clazz) {
+		PageBean<T> ret = new PageBean<>();
+		List<T> content = null;
+		int entityNameStartInd = 0;
+		String sql = HQL;
+		StringBuffer sqlCount = new StringBuffer("select count(*) ");
+		Long totalPages =  null;
+		Integer pageIndex = page.getPageIndex();
+		Integer pageSize = page.getPageSize();
+		Integer startPosition = pageIndex * pageSize;
+	    Query<T> query = getSessionFactory().getCurrentSession().createQuery(sql, clazz);
+
+	    entityNameStartInd = HQL.indexOf("from");
+	    if(entityNameStartInd < 0) {
+	    	entityNameStartInd = HQL.indexOf("FROM");
+	    }
+	    
+	    sqlCount.append(HQL.substring(entityNameStartInd));
+	    totalPages =  queryCount(sqlCount.toString(), params, clazz);
+	    
+	    if(totalPages % pageSize == 0) {
+	    	totalPages = totalPages / pageSize;
+	    }else {
+	    	totalPages = totalPages / pageSize + 1; 
+	    }
+	    if(pageIndex.intValue() > (totalPages.intValue() - 1)) {
+			return null;
+		}
+	    
+	    if(params != null) {
+	    	int indx = 0;
+	    	for(Object para : params) {
+	    		query.setParameter(indx, para);
+	    		
+	    		indx++;
+	    	}
+	    }
+	    
+	    query.setFirstResult(startPosition);
+	    query.setMaxResults(pageSize);
+	    content = query.list();
+	    
+	    ret.setContent(content);
+	    ret.setPageIndex(pageIndex);
+	    ret.setPageSize(pageSize);
+	    ret.setTotalPages(totalPages);
+	    
+		return ret;
 	}
 
 }

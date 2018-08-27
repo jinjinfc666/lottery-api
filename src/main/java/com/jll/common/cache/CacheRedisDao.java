@@ -82,6 +82,10 @@ public interface CacheRedisDao {
 	void setIpBlackList(CacheObject<Map<Integer, IpBlackList>> cacheObj);
 	
 	void deleteIpBlackList(String codeTypeName,Integer codeName);
+
+	void setUserBettingFlag(CacheObject<Integer> cacheObj);
+
+	CacheObject<Integer> getUserBettingFlag(String cacheKey);
 	
 	//充值方式
 	void setPayType(CacheObject<List<PayType>> cache);

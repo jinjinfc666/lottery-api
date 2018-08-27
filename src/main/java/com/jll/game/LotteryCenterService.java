@@ -1,5 +1,7 @@
 package com.jll.game;
 
+import java.util.Map;
+
 import com.jll.common.constants.Constants.SysCodeTypes;
 import com.jll.entity.Issue;
 import com.jll.entity.PlayType;
@@ -40,6 +42,8 @@ public interface LotteryCenterService
 	 * @return
 	 */
 	Issue queryLastIssue(String lotteryType);
+
+	String PreBet(Map<String, Object> params, Map<String, Object> data);
 
 	
 }

@@ -4,10 +4,12 @@ import java.io.Serializable;
 
 import javax.annotation.Resource;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
+import com.jll.common.cache.CacheRedisServiceImpl;
 import com.jll.common.threadpool.ThreadPoolManager;
 import com.jll.common.utils.StringUtils;
 import com.jll.entity.Issue;
@@ -19,6 +21,8 @@ import com.jll.game.LotteryTypeService;
 @PropertySource("classpath:sys-setting.properties")
 public class WinningNumberListenerImpl implements MessageDelegateListener {
 
+	private Logger logger = Logger.getLogger(WinningNumberListenerImpl.class);
+	
 	@Resource
 	IssueService issueServ;
 	
@@ -27,6 +31,8 @@ public class WinningNumberListenerImpl implements MessageDelegateListener {
 	
 	@Override
 	public void handleMessage(Serializable message) {
+		logger.debug("Its ready to obtain the winning number for issue:::" + message);
+		
 		Issue issue = null;
 		String lottoType = null;
 		String issueNum = (String)message;

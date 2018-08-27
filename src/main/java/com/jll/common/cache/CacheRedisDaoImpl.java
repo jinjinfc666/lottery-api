@@ -9,6 +9,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Repository;
 
+import com.jll.dao.PageBean;
 import com.jll.entity.IpBlackList;
 import com.jll.entity.Issue;
 import com.jll.entity.PayChannel;
@@ -135,7 +136,6 @@ public class CacheRedisDaoImpl  extends AbstractBaseRedisDao implements CacheRed
 
 	@Override
 	public void publishMessage(String channel, Serializable mes) {
-		logger.debug("try to obtain the winning number for ::: " + mes);
 		redisTemplate.convertAndSend(channel, mes);
 	}
 
@@ -157,6 +157,17 @@ public class CacheRedisDaoImpl  extends AbstractBaseRedisDao implements CacheRed
 		cacheObject.setKey(codeTypeName);
 		this.setIpBlackList(cacheObject);
 	}
+
+	@Override
+	public void setUserBettingFlag(CacheObject<Integer> cacheObj) {
+		this.saveOrUpdate(cacheObj);
+	}
+
+	@Override
+	public CacheObject<Integer> getUserBettingFlag(String cacheKey) {
+		return this.get(cacheKey);
+	}
+	
 	//充值渠道
 	@Override
 	public CacheObject<Map<Integer, PayChannel>> getPayChannel(String codeName) {
@@ -189,5 +200,12 @@ public class CacheRedisDaoImpl  extends AbstractBaseRedisDao implements CacheRed
 	@Override
 	public void setPayChannel(CacheObject<Map<Integer, PayChannel>> cacheObj) {
 		this.saveOrUpdate(cacheObj);
+	}
+
+	@Override
+	public PageBean<CacheObject> queryByPagination(PageBean<CacheObject> page, String HQL, List<Object> params,
+			Class<CacheObject> clazz) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

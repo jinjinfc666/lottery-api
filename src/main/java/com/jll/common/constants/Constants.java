@@ -24,6 +24,11 @@ public class Constants {
 	
 	public final static String TOPIC_PAY_OUT = "pay_out";
 	
+	public final static String KEY_LOTTO_ATTRI_PREFIX = "lottery_config_";
+	
+	public final static Integer VAL_REBATE_PRIZE_RATE = 26;
+	
+	
 	public static enum DepositOrderState{
 		
 		INIT_OR_PUSHED(0),
@@ -1497,7 +1502,10 @@ public class Constants {
 		WINING_RATE("wining_rate"),//中奖率
 		BETTING_END_TIME("betting_end_time"),//投注截止时间
 		URL_WINING_NUMBER_EXTENAL("url_wining_number_extenal"),//外部数据接口
-		LOTTO_PRIZE_RATE("lotto_prize_rate");//中奖赔率
+		LOTTO_PRIZE_RATE("lotto_prize_rate"),//中奖赔率
+		BET_TIMES("bet_times"),
+		MONEY_UNIT("money_unit");
+		
 		private String code;
 		
 		private LotteryAttributes(String code) {
@@ -1743,6 +1751,44 @@ public class Constants {
 			return map;
 		}
 	}
+	
+	/**
+	 * payType配置时需要的属性
+	 */
+	public static enum PayTypes{
+		qszx("cqssc","qszx", "前三直选"),		
+		zszx("cqssc","zszx", "中三直选"),
+		hszx("cqssc","hszx", "后三直选"),
+		qszux_zsfs("cqssc","qszux/zsfs", "前三组选/组三复式"),
+		qszux_zlfs("cqssc","qszux/zlfs", "前三组选/组六复式"),
+		qszux_hhzxds("cqssc","qszux/hhzxds", "前三组选/混合组选(单式)"),
+		zszux_zsfs("cqssc","qszux/hhzxds", "中三组选/组三复式"),
+		zszux_zlfs("cqssc","zszux/zlfs", "中三组选/组六复式"),
+		zszux_hhzxds("cqssc","zszux/hhzxds", "中三组选/混合组选(单式)"),
+		hszux_zsfs("cqssc","hszux/zsfs", "后三组选/组三复式"),
+		hszux_zlfs("cqssc","hszux/zsfs", "后三组选/组六复式"),
+		hszux_hhzxds("cqssc","hszux/hhzxds", "后三组选/混合组选(单式)"),
+		wxq2("cqssc","wxq2", "五星前二"),
+		wxq2_zxfs("cqssc","wxq2/zxfs", "五星前二/组选(复式)"),
+		bdw_qsbdwfs("cqssc","bdw/qsbdwfs", "不定位/前三不定位(复式)"),
+		bdw_zsbdwfs("cqssc","bdw/zsbdwfs", "不定位/中三不定位(复式)"),
+		bdw_hsbdwfs("cqssc","bdw/hsbdwfs", "不定位/后三不定位(复式)"),
+		dwd("cqssc","dwd", "定位胆(复式)"),;
+		
+		private String lottoType;
+		private String name;
+		private String remark;
+		
+		private PayTypes(String lottoType, String name, String remark) {
+			this.lottoType = lottoType;
+			this.name = name;
+			this.remark = remark;
+		}
+		
+		public String getLottoType() {
+			return this.lottoType;
+		}
+	}
 	/**
 	 * payType配置缓存时需要的key名
 	 */
@@ -1789,7 +1835,7 @@ public class Constants {
 		public String getName() {
 			return this.name;
 		}
-		
+					
 		public static List<Integer> getList() {
 			List<Integer> map=new ArrayList<Integer>();
 			PayChannnelEMA[] names = PayChannnelEMA.values();

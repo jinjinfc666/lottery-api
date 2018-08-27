@@ -1,6 +1,7 @@
 package com.jll.common.cache;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -24,6 +25,7 @@ import com.jll.entity.PayChannel;
 import com.jll.entity.PayType;
 import com.jll.entity.PlayType;
 import com.jll.entity.SysCode;
+import com.jll.entity.UserInfo;
 import com.jll.game.BulletinBoard;
 import com.jll.sysSettings.syscode.SysCodeService;
 
@@ -35,6 +37,8 @@ public class CacheRedisServiceImpl implements CacheRedisService
 {
 	private Logger logger = Logger.getLogger(CacheRedisServiceImpl.class);
 
+	private Object locker = new Object();
+	
 	@Resource
 	CacheRedisDao cacheDao;
 	
@@ -212,7 +216,7 @@ public class CacheRedisServiceImpl implements CacheRedisService
 	//playType 玩法--------------------End----------------------------------
 	
 	@Override
-	public void statGroupByBettingNum(String lotteryType, OrderInfo order) {
+	public synchronized void statGroupByBettingNum(String lotteryType, OrderInfo order) {
 		StringBuffer cacheKey = new StringBuffer();
 		cacheKey.append(Constants.KEY_STAT_ISSUE_BETTING)
 		.append(lotteryType).append(order.getIssueId());
@@ -303,6 +307,7 @@ public class CacheRedisServiceImpl implements CacheRedisService
 		return null;
 	}
 	public void publishMessage(String channel, Serializable mes) {
+		logger.debug(String.format("publish message %s to %s", mes, channel));//"publish message to notify the module to obtain the winning number!!!" + mes);
 		cacheDao.publishMessage(channel, mes);
 	}
 	//ip缓存
@@ -351,6 +356,144 @@ public class CacheRedisServiceImpl implements CacheRedisService
 	public void deleteIpBlackList(String codeTypeName, Integer codeName) {
 		cacheDao.deleteIpBlackList(codeTypeName, codeName);
 	}
+
+	@Override
+	public boolean isUserBetting(UserInfo user, OrderInfo order) {
+		StringBuffer cacheKey = new StringBuffer();
+		cacheKey.append("betting_flag_").append(order.getIssueId()).append("_").append(user.getUserId());
+		
+		CacheObject<Integer> cacheObj = getUserBettingFlag(cacheKey.toString());
+		
+		if(cacheObj == null) {
+			return false;
+		}
+		
+		return cacheObj.getContent().intValue() == 0?false:true;
+	}
+
+	@Override
+	public synchronized void setUserBettingFlag(UserInfo user, OrderInfo order) {
+		synchronized(locker) {
+			StringBuffer cacheKey = new StringBuffer();
+			CacheObject<Integer> cacheObj = null;
+			
+			cacheKey.append("betting_flag_").append(order.getIssueId()).append("_").append(user.getUserId());
+			cacheObj = getUserBettingFlag(cacheKey.toString());
+			
+			if(cacheObj == null) {
+				cacheObj = new CacheObject<>();
+				cacheObj.setExpired(24*60*60);
+				cacheObj.setKey(cacheKey.toString());
+			}
+			
+			cacheObj.setContent(1);
+			
+			cacheDao.setUserBettingFlag(cacheObj);
+		}
+	}
+
+	private CacheObject<Integer> getUserBettingFlag(String cacheKey) {
+		CacheObject<Integer> cacheObj = cacheDao.getUserBettingFlag(cacheKey);
+		
+		return cacheObj;
+	}
+
+	@Override
+	public void releaseUserBettingFlag(UserInfo user, OrderInfo order) {
+		StringBuffer cacheKey = new StringBuffer();
+		CacheObject<Integer> cacheObj = null;
+		
+		cacheKey.append("betting_flag_").append(order.getIssueId()).append("_").append(user.getUserId());
+		cacheObj = getUserBettingFlag(cacheKey.toString());
+		
+		if(cacheObj == null) {
+			cacheObj = new CacheObject<>();
+			cacheObj.setExpired(24*60*60);
+			cacheObj.setKey(cacheKey.toString());
+		}
+		
+		cacheObj.setContent(0);
+		
+		cacheDao.setUserBettingFlag(cacheObj);		
+	}
+
+	@Override
+	public boolean isTimesValid(String lottoType, Integer times) {
+		String timesStr = null;
+		String[] timesArray = null;
+		SysCode sysCode = cacheDao.getSysCode(Constants.KEY_LOTTO_ATTRI_PREFIX+lottoType, 
+				Constants.LotteryAttributes.BET_TIMES.getCode());
+		if(sysCode == null) {
+			return false;
+		}
+		
+		timesStr = sysCode.getCodeVal();
+		timesArray = timesStr.split(",");
+		
+		for(String temp : timesArray) {
+			if(temp.equals(Integer.toString(times))) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
+
+	@Override
+	public boolean isMonUnitValid(String lottoType, Float monUnit) {
+		String monUnitStr = null;
+		String[] monUnitArray = null;
+		SysCode sysCode = cacheDao.getSysCode(Constants.KEY_LOTTO_ATTRI_PREFIX+lottoType, 
+				Constants.LotteryAttributes.MONEY_UNIT.getCode());
+		if(sysCode == null) {
+			return false;
+		}
+		
+		monUnitStr = sysCode.getCodeVal();
+		monUnitArray = monUnitStr.split(",");
+		
+		for(String temp : monUnitArray) {
+			BigDecimal tempDecimal = new BigDecimal(Float.valueOf(temp));
+			BigDecimal moneyUnitDecimal = new BigDecimal(monUnit);
+			if(tempDecimal.compareTo(moneyUnitDecimal) == 0) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
+
+	@Override
+	public boolean isPlayTypeValid(String lotteryType, Integer playTypeId) {
+		List<PlayType> playTypes = cacheDao.getPlayType(Constants.KEY_PLAY_TYPE + lotteryType);
+		if(playTypes == null || playTypes.size() == 0) {
+			return false;
+		}
+				
+		for(PlayType temp : playTypes) {
+			if(temp.getId().intValue() == playTypeId) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
+
+	@Override
+	public SysCode getBetTimes(String lotteryType) {
+		SysCode sysCode = cacheDao.getSysCode(Constants.KEY_LOTTO_ATTRI_PREFIX+lotteryType, 
+				Constants.LotteryAttributes.BET_TIMES.getCode());
+		
+		return sysCode;
+	}
+
+	@Override
+	public SysCode getMoneyUnit(String lotteryType) {
+		SysCode sysCode = cacheDao.getSysCode(Constants.KEY_LOTTO_ATTRI_PREFIX+lotteryType, 
+				Constants.LotteryAttributes.MONEY_UNIT.getCode());
+		return sysCode;
+	}
+	
 	//充值方式
 
 	@Override

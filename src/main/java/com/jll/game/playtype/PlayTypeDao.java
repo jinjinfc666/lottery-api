@@ -20,7 +20,7 @@ public interface PlayTypeDao
 	
 	void updateState(Integer id,Integer state);
 	
-	List<PlayType> queryById(Integer id);
+	PlayType queryById(Integer id);
 	
 	void updateIsHidden(Integer id, Integer isHidden);
 	

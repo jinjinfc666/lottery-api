@@ -14,4 +14,6 @@ public interface LotteryTypeService
 	 * 获取开奖号码
 	 */
 	void queryWinningNum(String issueNum);
+
+	void payout(String issueNum);
 }

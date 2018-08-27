@@ -29,8 +29,10 @@
 	
 	<bean id="jdkSerializer" class="org.springframework.data.redis.serializer.JdkSerializationRedisSerializer" />
 	
+	<bean id="stringRedisSerializer" class="org.springframework.data.redis.serializer.StringRedisSerializer" />
+	
 	<redis:listener-container>
-        <redis:listener ref="winningNumberListenerImpl" serializer="jdkSerializer" method="handleMessage" topic="winningNum"/>
-        <redis:listener ref="payoutListenerImpl" serializer="jdkSerializer" method="handleMessage" topic="payout"/>
+        <redis:listener ref="winningNumberListenerImpl" serializer="stringRedisSerializer" method="handleMessage" topic="winning_number"/>
+        <redis:listener ref="payoutListenerImpl" serializer="stringRedisSerializer" method="handleMessage" topic="pay_out"/>
     </redis:listener-container>
 </beans>

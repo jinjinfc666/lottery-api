@@ -20,8 +20,8 @@ import com.jll.sys.promo.PromoService;
 import com.terran4j.commons.api2doc.annotations.Api2Doc;
 import com.terran4j.commons.api2doc.annotations.ApiComment;
 
-@Api2Doc(id = "UserRecord", name = "User Record")
-@ApiComment(seeClass = UserInfo.class)
+//@Api2Doc(id = "UserRecord", name = "User Record")
+//@ApiComment(seeClass = UserInfo.class)
 @RestController
 @RequestMapping({ "/record" })
 public class UserRecordController {
@@ -32,7 +32,7 @@ public class UserRecordController {
 	@Resource
 	PromoService promoService;
 	
-	@ApiComment("Get User Bet Order")
+	//@ApiComment("Get User Bet Order")
 	@RequestMapping(value="/{userId}/bet-order", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> getUserBetOrder(
 			@PathVariable("userId") int userId,
@@ -43,14 +43,14 @@ public class UserRecordController {
 	}
 	
 	
-	@ApiComment("Get User Bet Types")
+	//@ApiComment("Get User Bet Types")
 	@RequestMapping(value="/betTypes", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> getUserBetTypes() {
 		return userRecordService.getUserBetType();
 	}
 	
 	
-	@ApiComment("Get User Credit Record")
+	//@ApiComment("Get User Credit Record")
 	@RequestMapping(value="/{userId}/credit", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> getUserBetOrder(
 			@PathVariable("userId") int userId,
@@ -60,7 +60,7 @@ public class UserRecordController {
 		return userRecordService.getUserCreditRecord(query, page);
 	}
 	
-	@ApiComment("Get User Sing in day Record")
+	//@ApiComment("Get User Sing in day Record")
 	@RequestMapping(value="/{userId}/sing-in", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> getUserSingInDay(
 			@PathVariable("userId") int userId,
@@ -72,7 +72,7 @@ public class UserRecordController {
 	}
 	
 	
-	@ApiComment("Get User Credit Types")
+	//@ApiComment("Get User Credit Types")
 	@RequestMapping(value="/creditTypes", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> getUserCreditTypes(@PathVariable("userName") String userName) {
 		return userRecordService.getUserCreditType();

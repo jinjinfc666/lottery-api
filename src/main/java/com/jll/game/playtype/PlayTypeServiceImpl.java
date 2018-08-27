@@ -122,7 +122,7 @@ public class PlayTypeServiceImpl implements PlayTypeService
 		Map<String,Object> map=new HashMap<String,Object>();
 		boolean isNo=this.isNoPlayType(id);
 		if(isNo) {
-			PlayType playTypeNew=this.queryById(id).get(0);
+			PlayType playTypeNew=this.queryById(id);
 			if(!StringUtils.isBlank(classification)) {
 				playTypeNew.setClassification(classification);
 			}
@@ -157,14 +157,14 @@ public class PlayTypeServiceImpl implements PlayTypeService
 		return playTypeDao.queryByLotteryType(lotteryType);
 	}
 	@Override
-	public List<PlayType> queryById(Integer id) {
+	public PlayType queryById(Integer id) {
 		return playTypeDao.queryById(id);
 	}
 	//查询id是否存在
 	@Override
 	public boolean isNoPlayType(Integer id) {
-		List<PlayType> list=playTypeDao.queryById(id);
-		if(list!=null&&list.size()>0) {
+		PlayType list=playTypeDao.queryById(id);
+		if(list!=null) {
 			return true;
 		}
 		return false;
@@ -187,11 +187,9 @@ public class PlayTypeServiceImpl implements PlayTypeService
 		if(strArray.length>0) {
 			for(int a=0;a<strArray.length;a++) {
 				Integer id=Integer.valueOf(strArray[a]);
-				List<PlayType> list=playTypeDao.queryById(id);
-				PlayType playType=null;
+				PlayType playType=playTypeDao.queryById(id);
 				List<PlayType> playTypeCacheLists=null;
-				if(list!=null&&list.size()>=0) {
-					playType=list.get(0);
+				if(playType != null) {
 					playType.setSeq(a+1);
 					playTypeDao.updatePlayTypeSeq(playType);
 					playTypeCacheLists=cacheRedisService.getPlayType(cacheCodeName);
