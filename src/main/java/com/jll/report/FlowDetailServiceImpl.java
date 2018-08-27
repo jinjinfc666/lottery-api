@@ -29,7 +29,7 @@ public class FlowDetailServiceImpl implements FlowDetailService {
 		String operationType=(String)ret.get("operationType");
 		String startTime=(String) ret.get("startTime");
 		String endTime=(String) ret.get("endTime");
-		String codeTypeName=Constants.SysCodeTypes.LOTTERY_TYPES.getCode();
+		String codeTypeName=Constants.SysCodeTypes.FLOW_TYPES.getCode();
 		SysCode sysCode=cacheRedisService.getSysCode(codeTypeName,codeTypeName);
 		Integer codeTypeNameId=sysCode.getId();
 		return flowDetailDao.queryUserAccountDetails(codeTypeNameId,userName,orderNum,amountStart,amountEnd,operationType,startTime,endTime);

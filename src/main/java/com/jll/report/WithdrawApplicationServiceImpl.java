@@ -1,5 +1,7 @@
 package com.jll.report;
 
+import java.util.Date;
+
 import javax.annotation.Resource;
 
 
@@ -19,5 +21,10 @@ public class WithdrawApplicationServiceImpl implements WithdrawApplicationServic
 	public WithdrawApplication queryDetails(Integer id){
 		WithdrawApplication dep=withdrawApplicationDao.queryDetails(id);
 		return dep;
+	}
+	
+	@Override
+	public long getUserWithdrawCount(int userId, Date start, Date end) {
+		return withdrawApplicationDao.getUserWithdrawCount(userId,start,end);
 	}
 }

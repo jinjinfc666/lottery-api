@@ -17,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.jll.common.cache.CacheRedisService;
 import com.jll.common.constants.Message;
 import com.jll.entity.PlayType;
-import com.jll.entity.SysCode;
 
 @Configuration
 @PropertySource("classpath:sys-setting.properties")

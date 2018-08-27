@@ -190,7 +190,7 @@ public class PaymentServiceImpl  implements PaymentService
 				ret.put(Message.KEY_DATA, pramsInfo.get("redirect"));
 				ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 			}
-		}else if(pt.getPlatId().equals(Constants.PayType.ZHI_HUI_FU_PAY.getCode())){
+		}else if(pt.getPlatId().equals(Constants.PayType.WISDOM_PAYMENT.getCode())){
 			pramsInfo.remove("payerName");
 			pramsInfo.remove("payCardNumber");
 			if(pcInfo.getPayCode().equals("b2c")){
@@ -202,7 +202,7 @@ public class PaymentServiceImpl  implements PaymentService
 				String retCode = zhihPayService.processScanPay(pramsInfo);
 				getScanPayInfo(ret, retCode, StringUtils.getStringValue(pramsInfo.get("qrcode")));
 			}
-		}else if(pt.getPlatId().equals(Constants.PayType.TONG_YUN.getCode())){
+		}else if(pt.getPlatId().equals(Constants.PayType.TLY_PAY.getCode())){
 			String retCode = tlCloudService.saveDepositOrder(pramsInfo);
 			
 			if(retCode.equals(String.valueOf(Message.status.SUCCESS.getCode()))) {

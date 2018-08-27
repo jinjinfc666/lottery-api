@@ -10,22 +10,16 @@ import java.util.Set;
 import javax.persistence.NoResultException;
 
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 import org.hibernate.type.DateType;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.hibernate5.support.HibernateDaoSupport;
 import org.springframework.stereotype.Repository;
 
-import com.jll.common.constants.Constants;
+import com.jll.dao.DefaultGenericDaoImpl;
+import com.jll.entity.UserAccountDetails;
 
 
 @Repository
-public class FlowDetailDaoImpl extends HibernateDaoSupport implements FlowDetailDao {
-	@Autowired
-	public void setSuperSessionFactory(SessionFactory sessionFactory){
-		super.setSessionFactory(sessionFactory);
-	}
+public class FlowDetailDaoImpl extends DefaultGenericDaoImpl<UserAccountDetails> implements FlowDetailDao {
 	@Override
 	public Map<String,Object> queryUserAccountDetails(Integer codeTypeNameId,String userName,String orderNum,Float amountStart,Float amountEnd,String operationType,String startTime,String endTime) {
 		String userNameSql="";
@@ -67,13 +61,13 @@ public class FlowDetailDaoImpl extends HibernateDaoSupport implements FlowDetail
 			map.put("startTime", beginDate);
 			map.put("endTime", endDate);
 		}
-		Integer userType=Constants.UserTypes.SYSTEM_USER.getCode();
-		String sql="from UserAccountDetails a,UserInfo b,SysCode c,OrderInfo d where a.userId=b.id and a.operationType=c.codeName and a.orderId=d.id and c.codeType=:codeTypeNameId and b.userType !=:userType"+userNameSql+orderNumSql+amountStartSql+amountEndSql+operationTypeSql+timeSql+" order by a.id";
-		String sql1="select coalesce(SUM(a.amount),0) from UserAccountDetails a,UserInfo b,SysCode c,OrderInfo d where a.userId=b.id and a.operationType=c.codeName and a.orderId=d.id and c.codeType=:codeTypeNameId and b.userType !=:userType"+userNameSql+orderNumSql+amountStartSql+amountEndSql+operationTypeSql+timeSql+" order by a.id";
+//		Integer userType=Constants.UserTypes.SYSTEM_USER.getCode();
+		String sql="from UserAccountDetails a,UserInfo b,SysCode c,OrderInfo d where a.userId=b.id and a.operationType=c.codeName and a.orderId=d.id and c.codeType=:codeTypeNameId "+userNameSql+orderNumSql+amountStartSql+amountEndSql+operationTypeSql+timeSql+" order by a.id";
+		String sql1="select coalesce(SUM(a.amount),0) from UserAccountDetails a,UserInfo b,SysCode c,OrderInfo d where a.userId=b.id and a.operationType=c.codeName and a.orderId=d.id and c.codeType=:codeTypeNameId "+userNameSql+orderNumSql+amountStartSql+amountEndSql+operationTypeSql+timeSql+" order by a.id";
 		Query<?> query = getSessionFactory().getCurrentSession().createQuery(sql);
 		Query<?> query1 = getSessionFactory().getCurrentSession().createQuery(sql1);
-		query.setParameter("userType", userType);
-		query1.setParameter("userType", userType);
+//		query.setParameter("userType", userType);
+//		query1.setParameter("userType", userType);
 		query.setParameter("codeTypeNameId", codeTypeNameId);
 		query1.setParameter("codeTypeNameId", codeTypeNameId);
 		if (map != null) {  
