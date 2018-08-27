@@ -891,10 +891,7 @@ public class UserInfoServiceImpl implements UserInfoService
 
 	@Override
 	public PageBean<UserInfo> queryAllUserInfoByPage(PageBean<UserInfo> reqPage) {
-		/*Integer pageIndex = reqPage.getPageIndex();
-		Long totalPages = reqPage.getTotalPages();*/
 		Integer pageSize = reqPage.getPageSize();
-		
 		
 		if(pageSize > 10000) {
 			return null;
