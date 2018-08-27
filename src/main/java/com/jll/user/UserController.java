@@ -27,6 +27,7 @@ import com.jll.common.utils.StringUtils;
 import com.jll.entity.SiteMessFeedback;
 import com.jll.entity.SiteMessage;
 import com.jll.entity.UserInfo;
+import com.jll.entity.WithdrawApplication;
 import com.jll.tp.EmailService;
 import com.jll.tp.SMSService;
 import com.terran4j.commons.api2doc.annotations.Api2Doc;
@@ -777,5 +778,52 @@ public class UserController {
 		return userInfoService.userProfitReport(userName);
 	}	
 	
+	
+	/**
+	 * 
+	 * @param userName 用户名
+	 * @param bankId   银行卡ID ,若小于0,则使用默认第一张银行卡，若为为银行卡id，则使用该id对应的银行卡
+	 * @param amount   提款金额
+	 * @param passoword 提款密码
+	 * @return
+	 */
+	
+    @ApiComment("User Withdraw apply")
+	@RequestMapping(value="/{userName}/withdraw/apply", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> userWithdrawApply(
+			 @PathVariable("userName") String userName,
+			 @RequestParam("bankId") int bankId,
+			 @RequestParam("amount") double amount,
+			 @RequestParam("passoword") String passoword) {
+		return userInfoService.userWithdrawApply(userName, bankId, amount,passoword);
+	}
+    
+    
+    @ApiComment(value="User Withdraw notices",seeClass=WithdrawApplication.class)
+   	@RequestMapping(value="/{userName}/withdraw/notices", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
+   	public Map<String, Object> userWithdrawNotices(
+   			@PathVariable("userName") String userName,
+   			@RequestBody WithdrawApplication wtd) {
+   		return userInfoService.userWithdrawNotices(userName,wtd);
+   	}
+    
+    
+    /**
+     * 
+     * @param fromUser  额度转出的用户
+     * @param toUser    额度转入的用户
+     * @param amount  转入额度，如果小于0，则转出所有额度
+     * @return
+     * 
+     */
+    
+    @ApiComment(value="User Amount Transfer",seeClass=WithdrawApplication.class)
+   	@RequestMapping(value="/amount/transfer", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
+   	public Map<String, Object> userAmountTransfer(
+   			@RequestParam("fromUser") String fromUser,
+   			@RequestParam("toUser") String toUser,
+   			@RequestParam("amount") double amount) {
+   		return userInfoService.userAmountTransfer(fromUser,toUser,amount);
+   	}
 	
 }

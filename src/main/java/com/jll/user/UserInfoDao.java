@@ -1,6 +1,6 @@
 package com.jll.user;
 
-import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 import com.jll.entity.UserInfo;
@@ -45,4 +45,5 @@ public interface UserInfoDao
 	boolean checkUserIds(String UserIds);
 	
 	List<UserInfo> queryAllUserInfo(Integer id,String userName,Integer proxyId,String startTime,String endTime);
+	
 }

@@ -1,7 +1,6 @@
 package com.jll.user;
 
 
-import java.math.BigDecimal;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,7 +16,6 @@ import org.springframework.stereotype.Repository;
 import com.jll.common.constants.Constants.UserType;
 import com.jll.common.utils.StringUtils;
 import com.jll.dao.DefaultGenericDaoImpl;
-import com.jll.entity.MemberPlReport;
 import com.jll.entity.UserInfo;
 
 @Repository
@@ -200,6 +198,6 @@ public class UserInfoDaoImpl extends DefaultGenericDaoImpl<UserInfo> implements 
 			return list;
 		}
 	}
-  
+
   
 }

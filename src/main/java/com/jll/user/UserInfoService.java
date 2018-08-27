@@ -8,6 +8,7 @@ import com.jll.entity.SiteMessFeedback;
 import com.jll.entity.SiteMessage;
 import com.jll.entity.UserBankCard;
 import com.jll.entity.UserInfo;
+import com.jll.entity.WithdrawApplication;
 
 public interface UserInfoService
 {
@@ -95,4 +96,9 @@ public interface UserInfoService
 	//获取登陆用户信息，如果OK，返回用户信息
 	UserInfo getCurLoginInfo();
 	Map<String, Object> userProfitReport(String userName);
+	
+	Map<String, Object> userWithdrawApply(String userName, int bankId, double amount, String passoword);
+	Map<String, Object> userWithdrawNotices(String userName, WithdrawApplication wtd);
+	Map<String, Object> userAmountTransfer(String fromUser, String toUser, double amount);
+
 }
