@@ -18,6 +18,7 @@ import org.springframework.stereotype.Repository;
 import com.jll.common.constants.Constants.UserType;
 import com.jll.common.utils.StringUtils;
 import com.jll.dao.DefaultGenericDaoImpl;
+import com.jll.dao.PageBean;
 import com.jll.entity.MemberPlReport;
 import com.jll.entity.UserInfo;
 
@@ -229,5 +230,12 @@ public class UserInfoDaoImpl extends DefaultGenericDaoImpl<UserInfo> implements 
 		return list.get(0);
 	}
 	
+	@Override
+	public PageBean<UserInfo> queryAllUserInfoByPage(PageBean<UserInfo> reqPage) {
+		String sql = "from UserInfo";
+		List<Object> params = new ArrayList<>();
+		
+		return this.queryByPagination(reqPage, sql, params, UserInfo.class);
+	}
   
 }

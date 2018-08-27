@@ -3,6 +3,7 @@ package com.jll.user;
 import java.math.BigDecimal;
 import java.util.List;
 
+import com.jll.dao.PageBean;
 import com.jll.entity.UserInfo;
 
 public interface UserInfoDao
@@ -52,4 +53,5 @@ public interface UserInfoDao
 	//查询总代
 	UserInfo querySumAgent();
 	
+	PageBean<UserInfo> queryAllUserInfoByPage(PageBean<UserInfo> reqPage);
 }

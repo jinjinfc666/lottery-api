@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.jll.dao.PageBean;
 import com.jll.entity.SiteMessFeedback;
 import com.jll.entity.SiteMessage;
 import com.jll.entity.UserBankCard;
@@ -103,4 +104,6 @@ public interface UserInfoService
 	boolean isOrNoUserInfo(Integer id);
 	
 	Float calPrizeRate(UserInfo user, String lottoType);
+	
+	PageBean<UserInfo> queryAllUserInfoByPage(PageBean<UserInfo> reqPage);
 }

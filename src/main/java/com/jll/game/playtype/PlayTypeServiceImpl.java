@@ -188,10 +188,8 @@ public class PlayTypeServiceImpl implements PlayTypeService
 			for(int a=0;a<strArray.length;a++) {
 				Integer id=Integer.valueOf(strArray[a]);
 				PlayType playType=playTypeDao.queryById(id);
-//				PlayType playType=null;
 				List<PlayType> playTypeCacheLists=null;
-				if(playType!=null) {
-//					playType=list.get(0);
+				if(playType != null) {
 					playType.setSeq(a+1);
 					playTypeDao.updatePlayTypeSeq(playType);
 					playTypeCacheLists=cacheRedisService.getPlayType(cacheCodeName);
