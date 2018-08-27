@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -200,6 +201,33 @@ public class UserInfoDaoImpl extends DefaultGenericDaoImpl<UserInfo> implements 
 			return list;
 		}
 	}
-  
+	//查询总代下面的所有一级代理
+	@Override
+	public List<UserInfo> queryAllAgent(Integer id) {
+		String sql="select * from(select *,FIND_IN_SET(:id,superior) as aa from user_info)a where a.aa=1";
+		Query<UserInfo> query1 = getSessionFactory().getCurrentSession().createNativeQuery(sql,UserInfo.class);
+	    query1.setParameter("id", id);
+	    List<UserInfo> list=query1.list();
+	    return list;
+	}
+	//点击代理查询下一级代理
+	@Override
+	public List<UserInfo> queryAgentByAgent(Integer id) {
+		String sql="select * from(select *,FIND_IN_SET(:id,superior) as aa from user_info)a where a.aa=1";
+		Query<UserInfo> query1 = getSessionFactory().getCurrentSession().createNativeQuery(sql,UserInfo.class);
+	    query1.setParameter("id", id);
+	    List<UserInfo> list=query1.list();
+	    return list;
+	}
+	//查询总代
+	@Override
+	public UserInfo querySumAgent() {
+		List<Object> params = new ArrayList<>();
+		String sql="from UserInfo where userType=?";
+		params.add(3);
+		List<UserInfo> list=query(sql, params, UserInfo.class);
+		return list.get(0);
+	}
+	
   
 }

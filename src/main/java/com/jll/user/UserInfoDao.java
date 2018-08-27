@@ -45,4 +45,11 @@ public interface UserInfoDao
 	boolean checkUserIds(String UserIds);
 	
 	List<UserInfo> queryAllUserInfo(Integer id,String userName,Integer proxyId,String startTime,String endTime);
+	//查询总代下面的所有一级代理
+	List<UserInfo> queryAllAgent(Integer id);
+	//点击代理查询下一级代理
+	List<UserInfo> queryAgentByAgent(Integer id);
+	//查询总代
+	UserInfo querySumAgent();
+	
 }
