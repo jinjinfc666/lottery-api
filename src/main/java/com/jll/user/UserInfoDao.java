@@ -53,5 +53,4 @@ public interface UserInfoDao
 	UserInfo querySumAgent();
 	
 	PageBean<UserInfo> queryAllUserInfoByPage(PageBean<UserInfo> reqPage);
-	
 }

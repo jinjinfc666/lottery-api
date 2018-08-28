@@ -17,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.jll.common.cache.CacheRedisService;
 import com.jll.common.constants.Message;
 import com.jll.entity.PlayType;
-import com.jll.entity.SysCode;
 
 @Configuration
 @PropertySource("classpath:sys-setting.properties")
@@ -188,8 +187,10 @@ public class PlayTypeServiceImpl implements PlayTypeService
 			for(int a=0;a<strArray.length;a++) {
 				Integer id=Integer.valueOf(strArray[a]);
 				PlayType playType=playTypeDao.queryById(id);
+//				PlayType playType=null;
 				List<PlayType> playTypeCacheLists=null;
-				if(playType != null) {
+				if(playType!=null) {
+//					playType=list.get(0);
 					playType.setSeq(a+1);
 					playTypeDao.updatePlayTypeSeq(playType);
 					playTypeCacheLists=cacheRedisService.getPlayType(cacheCodeName);

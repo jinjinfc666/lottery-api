@@ -14,10 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.jll.common.cache.CacheRedisService;
 import com.jll.common.constants.Constants;
 import com.jll.common.constants.Message;
-import com.jll.entity.IpBlackList;
 import com.jll.entity.PayChannel;
 import com.jll.entity.PayType;
-import com.jll.entity.SysCode;
 @Service
 @Transactional
 public class PayChannelServiceImpl implements PayChannelService
@@ -44,10 +42,11 @@ public class PayChannelServiceImpl implements PayChannelService
 		Integer enableMaxAmount=payChannel.getEnableMaxAmount();
 		Integer state=payChannel.getState();
 		String remark=payChannel.getRemark();
+		String payCode=payChannel.getPayCode();
 		if(StringUtils.isBlank(channelName)
 				||StringUtils.isBlank(nickName)
 				||StringUtils.isBlank(typeClass)
-				||payType==null||maxAmount==null||enableMaxAmount==null ||state==null ||StringUtils.isBlank(remark)) 
+				||payType==null||maxAmount==null||enableMaxAmount==null ||state==null ||StringUtils.isBlank(remark)||StringUtils.isBlank(payCode))
 		{
 			map.clear();
 			map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
@@ -107,6 +106,7 @@ public class PayChannelServiceImpl implements PayChannelService
 		Integer enableMaxAmount=payChannel.getEnableMaxAmount();
 		Integer state=payChannel.getState();
 		String remark=payChannel.getRemark();
+		String payCode=payChannel.getPayCode();
 		String qrUrl=payChannel.getQrUrl();
 		String bankAcc=payChannel.getBankAcc();
 		String bankName=payChannel.getBankName();
@@ -165,6 +165,9 @@ public class PayChannelServiceImpl implements PayChannelService
 			}
 			if(!StringUtils.isBlank(remark)) {
 				payChannel1.setRemark(remark);
+			}
+			if(!StringUtils.isBlank(payCode)) {
+				payChannel1.setPayCode(payCode);
 			}
 			if(!StringUtils.isBlank(qrUrl)) {
 				payChannel1.setQrUrl(qrUrl);

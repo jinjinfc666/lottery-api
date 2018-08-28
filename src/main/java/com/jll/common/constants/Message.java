@@ -87,7 +87,6 @@ public class Message {
 		ERROR_WTD_AMT_ERROR("010035", "Minimum withdrawals %s, maximum withdrawals %s!!!"),
 		ERROR_WTD_TIMES_ERROR("010036", "Daily withdrawals can be %s times,You can withdrawals %s times today!!!"),
 		ERROR_USER_BALANCE_NOT_ENOUGH("010037", "User balance not enough !!!"),
-		ERROR_USER_INVALID_WALLET("010038", "Invalid wallet!!!"),
 		
 		/**************third party*************************/
 		ERROR_TP_INVALID_SMS("020001", "Invalid SMS!!"),

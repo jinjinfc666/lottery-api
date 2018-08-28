@@ -104,6 +104,7 @@ public interface UserInfoService
 	Map<String, Object> userWithdrawNotices(String userName, WithdrawApplication wtd);
 	Map<String, Object> userAmountTransfer(String fromUser, String toUser, double amount);
 
+	
 	//查询总代下面的所有一级代理
 	List<UserInfo> queryAllAgent();
 	//点击代理查询下一级代理

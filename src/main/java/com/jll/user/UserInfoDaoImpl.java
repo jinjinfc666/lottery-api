@@ -200,7 +200,6 @@ public class UserInfoDaoImpl extends DefaultGenericDaoImpl<UserInfo> implements 
 		}
 	}
 
-	
 	//查询总代下面的所有一级代理
 	@Override
 	public List<UserInfo> queryAllAgent(Integer id) {

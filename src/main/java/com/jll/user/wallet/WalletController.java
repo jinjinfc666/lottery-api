@@ -4,14 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.springframework.http.MediaType;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,15 +17,53 @@ import com.jll.entity.UserInfo;
 import com.terran4j.commons.api2doc.annotations.Api2Doc;
 import com.terran4j.commons.api2doc.annotations.ApiComment;
 
-@Api2Doc(id = "userInfo", name = "user Info")
+@Api2Doc(id = "wallet", name = "用户账户信息")
 @ApiComment(seeClass = UserInfo.class)
 @RestController
-@RequestMapping({ "/users" })
+@RequestMapping({ "/wallet" })
 public class WalletController {
 	private Logger logger = Logger.getLogger(WalletController.class);
 
 	@Resource
-	WalletService userServ;
-	
-	
+	WalletService walletService;
+	//通过用户名(false)或时间去查询(true)
+	@RequestMapping(value={"/queryUserAccount"}, method={RequestMethod.GET}, produces={"application/json"})
+	public Map<String, Object> queryUserAccount(@RequestParam(name = "userName", required = false) String userName,
+			@RequestParam(name = "startTime", required = true) String startTime,
+			  @RequestParam(name = "endTime", required = true) String endTime,
+			  HttpServletRequest request) {
+		Map<String, Object> ret = new HashMap<>();
+		ret.put("userName", userName);
+		ret.put("startTime", startTime);
+		ret.put("endTime", endTime);
+		try {
+			Map<String,Object> map=walletService.queryUserAccount(ret);
+			return map;
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			return ret;
+		}
+	}
+	//锁定用户资金
+	@RequestMapping(value={"/updateUserAccountState"}, method={RequestMethod.PUT}, produces={"application/json"})
+	public Map<String, Object> updateUserAccountState(@RequestParam(name = "userId", required = true) Integer userId,
+			@RequestParam(name = "state", required = true) Integer state,
+			  HttpServletRequest request) {
+		Map<String, Object> ret = new HashMap<>();
+		ret.put("userId", userId);
+		ret.put("state", state);
+		try {
+			Map<String,Object> map=walletService.updateState(userId, state);
+			return map;
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			return ret;
+		}
+	}
 }

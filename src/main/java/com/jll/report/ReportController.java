@@ -90,16 +90,15 @@ public class ReportController {
 		try {
 			map= flowDetailService.queryUserAccountDetails(ret);
 			logger.debug(map+"------------------------------queryUserAccountDetails--------------------------------------");
-			ret.clear();
-			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-			ret.put("data", map);
+			map.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+			return map;
 		}catch(Exception e){
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			return ret;
 		}
-		return ret;
 	}
 	@RequestMapping(value={"/userFlowDetail/type"}, method={RequestMethod.GET}, produces={"application/json"})
 	public Map<String, Object> queryType(){

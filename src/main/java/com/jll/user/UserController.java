@@ -25,6 +25,7 @@ import com.jll.common.constants.Constants.UserType;
 import com.jll.common.constants.Message;
 import com.jll.common.utils.StringUtils;
 import com.jll.dao.PageBean;
+import com.jll.dao.PageQueryDao;
 import com.jll.entity.SiteMessFeedback;
 import com.jll.entity.SiteMessage;
 import com.jll.entity.UserInfo;
@@ -776,8 +777,9 @@ public class UserController {
 	@ApiComment("User Profit Report")
 	@RequestMapping(value="/{userName}/profit-report", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> userProfitReport(
-			@PathVariable("userName") String userName) {
-		return userInfoService.userProfitReport(userName);
+			@PathVariable("userName") String userName,
+			PageQueryDao page) {
+		return userInfoService.userProfitReport(userName,page);
 	}	
 	
 	/**
@@ -841,6 +843,7 @@ public class UserController {
 		ret.put(Message.KEY_DATA, page);
 		return ret;
 	}
+
 	/**
 	 * 代理开户功能:  
 	 * 	1.查询总代下面的所有一级代理
