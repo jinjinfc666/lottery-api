@@ -16,6 +16,7 @@ import org.hibernate.Transaction;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.query.Query;
 import org.hibernate.transform.Transformers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.HibernateCallback;
@@ -360,6 +361,21 @@ public class SupserDao extends HibernateDaoSupport{
 		});
 	}
 	
+	public List excuteHqlForQuery(String hql, Class entity, List params, int pageIndex, int pageSize) {
+		Query<?> query = getSessionFactory().getCurrentSession().createQuery(hql, entity);
+		if(params != null) {
+	    	int indx = 0;
+	    	for(Object para : params) {
+	    		query.setParameter(indx, para);
+	    		
+	    		indx++;
+	    	}
+	    }
+		query.setFirstResult((pageIndex-1)*pageSize);
+		query.setMaxResults(pageSize);
+		return query.list();
+	}
+	
 	public List excuteSqlForQuery1(String sql, Class c1) {
 		final String excuteSql = sql;
 		final Class class1 = c1;
@@ -431,6 +447,22 @@ public class SupserDao extends HibernateDaoSupport{
 				return query.executeUpdate();
 			}
 		});
+	}
+	
+	public long queryCountByHQL(String HQL, List<Object> params, Class<?> clazz) {
+		String sql = HQL;
+		
+	    Query<Long> query = getSessionFactory().getCurrentSession().createQuery(sql, Long.class);
+	    if(params != null) {
+	    	int indx = 0;
+	    	for(Object para : params) {
+	    		query.setParameter(indx, para);
+	    		
+	    		indx++;
+	    	}
+	    }
+	    
+	    return query.getSingleResult();
 	}
 	
 	public Object excuteSqlForUniqueResult1(String sql, List paramsList) {

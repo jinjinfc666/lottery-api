@@ -5,8 +5,6 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,8 +26,7 @@ public class HelpController {
 	@ApiComment("Get System History Open Record")
 	@RequestMapping(value="/history/open-record", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> getHistoryOpenRecord(
-			@PathVariable("lotteryType") String lotteryType,
-			@RequestBody PageQueryDao page) {
+			String lotteryType,PageQueryDao page) {
 		return helpService.getHistoryOpenRecord(lotteryType, page);
 	}
 	
@@ -37,8 +34,7 @@ public class HelpController {
 	@ApiComment("Get System All Lottory play type")
 	@RequestMapping(value="/lottory/play-type", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> getLottoryPlayType(
-			@PathVariable("lotteryType") String lotteryType,
-			@RequestBody PageQueryDao page) {
+			String lotteryType,PageQueryDao page) {
 		return helpService.getLottoryPlayType(lotteryType, page);
 	}
 

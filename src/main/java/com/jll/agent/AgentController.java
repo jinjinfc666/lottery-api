@@ -6,22 +6,15 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.springframework.http.MediaType;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jll.common.constants.Message;
-import com.jll.common.constants.Constants.UserType;
-import com.jll.common.utils.StringUtils;
 import com.jll.dao.PageQueryDao;
 import com.jll.entity.MemberPlReport;
 import com.jll.entity.OrderInfo;
-import com.jll.entity.SiteMessage;
 import com.jll.entity.UserAccountDetails;
 import com.jll.entity.UserInfo;
 import com.jll.user.UserInfoService;
@@ -44,9 +37,9 @@ public class AgentController {
 	@ApiComment(value="Get Agent Lower User Bet Order",seeClass = OrderInfo.class)
 	@RequestMapping(value="/lower/bet-order", method = { RequestMethod.POST }, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> getAgentLowerBetOrder(
-			 @RequestParam(name = "userName") String userName,
-			@RequestBody OrderInfo order,
-			@RequestBody PageQueryDao page) {
+			 String userName,
+			 OrderInfo order,
+			 PageQueryDao page) {
 		UserInfo superior = userInfoService.getCurLoginInfo();
 		if(null == superior){
 			Map<String, Object> resp = new HashMap<String, Object>();
@@ -61,9 +54,9 @@ public class AgentController {
 	@ApiComment(value="Get Agent Lower User Credit Order",seeClass = UserAccountDetails.class)
 	@RequestMapping(value="/lower/credit-order", method = { RequestMethod.POST }, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> getAgentLowerCreditOrder(
-			 @RequestParam(name = "userName") String userName,
-			@RequestBody UserAccountDetails order,
-			@RequestBody PageQueryDao page) {
+			String userName,
+			UserAccountDetails order,
+			PageQueryDao page) {
 		UserInfo superior = userInfoService.getCurLoginInfo();
 		if(null == superior){
 			Map<String, Object> resp = new HashMap<String, Object>();
@@ -75,12 +68,11 @@ public class AgentController {
 		return agentService.getAgentLowerCreditOrder(userName,order,superior.getId(),page);
 	}
 	
-	
 	@ApiComment(value="Get Agent Lower User Profit Report",seeClass = MemberPlReport.class)
 	@RequestMapping(value="/lower/profit-report", method = { RequestMethod.POST }, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> getAgentLowerProfitReport(
-			 @RequestParam(name = "userName") String userName,
-			@RequestBody PageQueryDao page) {
+			 String userName,
+			 PageQueryDao page) {
 		UserInfo superior = userInfoService.getCurLoginInfo();
 		if(null == superior){
 			Map<String, Object> resp = new HashMap<String, Object>();
@@ -96,7 +88,7 @@ public class AgentController {
 	@ApiComment("User Profit Report")
 	@RequestMapping(value="/{userName}/profit-report", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> userProfitReport(
-			@PathVariable("userName") String userName) {
-		return userInfoService.userProfitReport(userName);
+			@PathVariable("userName") String userName,PageQueryDao page) {
+		return userInfoService.userProfitReport(userName,page);
 	}
 }
