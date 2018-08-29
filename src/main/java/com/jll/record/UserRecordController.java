@@ -12,13 +12,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jll.common.constants.Constants.SysCodeTypes;
+import com.jll.common.utils.Utils;
 import com.jll.dao.PageQueryDao;
 import com.jll.entity.OrderInfo;
 import com.jll.entity.UserAccountDetails;
-import com.jll.entity.UserInfo;
 import com.jll.sys.promo.PromoService;
-import com.terran4j.commons.api2doc.annotations.Api2Doc;
-import com.terran4j.commons.api2doc.annotations.ApiComment;
 
 //@Api2Doc(id = "UserRecord", name = "User Record")
 //@ApiComment(seeClass = UserInfo.class)
@@ -32,12 +30,26 @@ public class UserRecordController {
 	@Resource
 	PromoService promoService;
 	
+	/**
+	 
+	 * @param params  
+	 * {
+	"pageIndex":1,
+	"pageSize":20,
+	"startDate":"2017-03-21 11:43:26",
+	"endDate":"2017-03-21 11:43:26",
+	"isZh":0 //不传查询所有
+	}
+	 * @return
+	 */
 	//@ApiComment("Get User Bet Order")
 	@RequestMapping(value="/{userId}/bet-order", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> getUserBetOrder(
 			@PathVariable("userId") int userId,
-			@RequestBody OrderInfo query,
-			@RequestBody PageQueryDao page) {
+			@RequestBody Map<String, String> params) {
+		PageQueryDao page = new PageQueryDao(Utils.toDate(params.get("startDate")),Utils.toDate(params.get("endDate")),Utils.toInteger(params.get("pageIndex")),
+				Utils.toInteger(params.get("pageSize")));
+		OrderInfo query = new OrderInfo();
 		query.setUserId(userId);
 		return userRecordService.getUserBetRecord(query, page);
 	}
@@ -50,15 +62,31 @@ public class UserRecordController {
 	}
 	
 	
+	/**
+	 
+	 * @param params  
+	 * {
+	"pageIndex":1,
+	"pageSize":20,
+	"startDate":"2017-03-21 11:43:26",
+	"endDate":"2017-03-21 11:43:26",
+	"orderId":123456 //不传查询所有
+	}
+	 * @return
+	 */
 	//@ApiComment("Get User Credit Record")
 	@RequestMapping(value="/{userId}/credit", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> getUserBetOrder(
+	public Map<String, Object> getUserCreditRecord(
 			@PathVariable("userId") int userId,
-			@RequestBody UserAccountDetails query,
-			@RequestBody PageQueryDao page) {
+			@RequestBody Map<String, String> params) {
+		PageQueryDao page = new PageQueryDao(Utils.toDate(params.get("startDate")),Utils.toDate(params.get("endDate")),Utils.toInteger(params.get("pageIndex")),
+				Utils.toInteger(params.get("pageSize")));
+		 UserAccountDetails query = new UserAccountDetails();
 		query.setUserId(userId);
+		query.setOrderId(Utils.toInteger(params.get("orderId")));
 		return userRecordService.getUserCreditRecord(query, page);
 	}
+	
 	
 	//@ApiComment("Get User Sing in day Record")
 	@RequestMapping(value="/{userId}/sing-in", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)

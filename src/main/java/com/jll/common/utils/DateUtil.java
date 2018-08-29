@@ -46,6 +46,15 @@ public class DateUtil extends DateUtils {
 		return str;
 	}
 	
+	public static Date fmtYmdHisToDate(String dateStr) {
+		try {
+			return  fmtYmdHis.parse(dateStr);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	public static String fmtYmdHisEmp(Date date) {
 		String str = null;
 		try {

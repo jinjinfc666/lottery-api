@@ -2,7 +2,8 @@ package com.jll.dao;
 
 import java.util.Date;
 
-import org.apache.commons.lang3.time.DateUtils;
+import com.jll.common.utils.DateUtil;
+
 
 public class PageQueryDao {
 	
@@ -20,10 +21,24 @@ public class PageQueryDao {
 		this.pageSize = DEFAULT_PAGE_SIZE;
 	}
 
+	public PageQueryDao( Integer pageIndex, Integer pageSize) {
+		super();
+		this.pageIndex = pageIndex;
+		this.pageSize = pageSize;
+	}
+	
+
+	public PageQueryDao(Date startDate, Date endDate, Integer pageIndex, Integer pageSize) {
+		super();
+		this.startDate = startDate;
+		this.endDate = endDate;
+		this.pageIndex = pageIndex;
+		this.pageSize = pageSize;
+	}
 
 	public Date getStartDate() {
 		if(null == startDate){
-			return DateUtils.addDays(new Date(), -1);
+			return DateUtil.getDateDayStart(new Date());
 		}
 		return startDate;
 	}
@@ -36,7 +51,7 @@ public class PageQueryDao {
 
 	public Date getEndDate() {
 		if(null == endDate){
-			return new Date();
+			return DateUtil.getDateDayEnd(new Date());
 		}
 		return endDate;
 	}

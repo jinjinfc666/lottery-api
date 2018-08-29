@@ -37,9 +37,9 @@ public class SysSiteMsgController {
 	
 	
 	@ApiComment("Get Site Msg Lists")
-	@RequestMapping(value="/lists", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value="/lists/{userName}", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> list(
-			@RequestParam("userName") String userName,
+			@PathVariable("userName") String userName,
 			@RequestBody PageQueryDao page) {
 		return sysSiteMsgService.getSiteMessageLists(userName,page);
 	}
@@ -52,10 +52,10 @@ public class SysSiteMsgController {
 
 	
 	@ApiComment("Feedback Site Message ")
-	@RequestMapping(value="/feedback/{userId}", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value="/feedback/{userId}/{msgId}", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> siteMessageFeedback(@PathVariable("userId") int userId,
-			@RequestBody SiteMessFeedback back,
-			@RequestParam(name = "msgId", required = true) int msgId) {
+			@PathVariable("msgId") int msgId,
+			@RequestBody SiteMessFeedback back) {
 		return userInfoService.siteMessageFeedback(userId,msgId,back);
 	}
 	
