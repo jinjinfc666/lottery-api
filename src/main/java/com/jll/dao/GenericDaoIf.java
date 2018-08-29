@@ -1,6 +1,7 @@
 package com.jll.dao;
 
 import java.util.List;
+import java.util.Map;
 
 public interface GenericDaoIf<T> {
 	
@@ -60,4 +61,8 @@ public interface GenericDaoIf<T> {
 	 * @return
 	 */
 	long queryCount(String HQL, List<Object> params, Class<T> clazz);
+	
+	PageBean queryByPagination(PageBean page, String HQL, Map<String,Object> params);
+	
+	long queryCount(String HQL, Map<String,Object> params);
 }

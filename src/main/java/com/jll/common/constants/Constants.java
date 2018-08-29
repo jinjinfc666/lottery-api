@@ -1878,4 +1878,20 @@ public class Constants {
 			return map;
 		}
 	}
+	/**
+	 * 分页需要的数据：每页显示多少条数据
+	 */
+	public static enum Pagination{
+		SUM_NUMBER(10);
+		
+		private Integer code;
+		
+		private Pagination(Integer code) {
+			this.code = code;
+		}
+		
+		public Integer getCode() {
+			return this.code;
+		}
+	}
 }
