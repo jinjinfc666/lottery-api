@@ -4,10 +4,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.jll.dao.PageBean;
+import com.jll.dao.PageQueryDao;
 import com.jll.entity.SiteMessFeedback;
 import com.jll.entity.SiteMessage;
 import com.jll.entity.UserBankCard;
 import com.jll.entity.UserInfo;
+import com.jll.entity.WithdrawApplication;
 
 public interface UserInfoService
 {
@@ -94,7 +97,14 @@ public interface UserInfoService
 	
 	//获取登陆用户信息，如果OK，返回用户信息
 	UserInfo getCurLoginInfo();
-	Map<String, Object> userProfitReport(String userName);
+	
+	Map<String, Object> userProfitReport(String userName,PageQueryDao page);
+
+	Map<String, Object> userWithdrawApply(String userName, int bankId, double amount, String passoword);
+	Map<String, Object> userWithdrawNotices(String userName, WithdrawApplication wtd);
+	Map<String, Object> userAmountTransfer(String fromUser, String toUser, double amount);
+
+	
 	//查询总代下面的所有一级代理
 	List<UserInfo> queryAllAgent();
 	//点击代理查询下一级代理
@@ -103,4 +113,6 @@ public interface UserInfoService
 	boolean isOrNoUserInfo(Integer id);
 	
 	Float calPrizeRate(UserInfo user, String lottoType);
+	
+	PageBean<UserInfo> queryAllUserInfoByPage(PageBean<UserInfo> reqPage);
 }

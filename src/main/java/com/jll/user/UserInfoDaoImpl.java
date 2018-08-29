@@ -1,11 +1,9 @@
 package com.jll.user;
 
 
-import java.math.BigDecimal;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -18,7 +16,7 @@ import org.springframework.stereotype.Repository;
 import com.jll.common.constants.Constants.UserType;
 import com.jll.common.utils.StringUtils;
 import com.jll.dao.DefaultGenericDaoImpl;
-import com.jll.entity.MemberPlReport;
+import com.jll.dao.PageBean;
 import com.jll.entity.UserInfo;
 
 @Repository
@@ -201,6 +199,7 @@ public class UserInfoDaoImpl extends DefaultGenericDaoImpl<UserInfo> implements 
 			return list;
 		}
 	}
+
 	//查询总代下面的所有一级代理
 	@Override
 	public List<UserInfo> queryAllAgent(Integer id) {
@@ -229,5 +228,12 @@ public class UserInfoDaoImpl extends DefaultGenericDaoImpl<UserInfo> implements 
 		return list.get(0);
 	}
 	
+	@Override
+	public PageBean<UserInfo> queryAllUserInfoByPage(PageBean<UserInfo> reqPage) {
+		String sql = "from UserInfo";
+		List<Object> params = new ArrayList<>();
+		
+		return this.queryByPagination(reqPage, sql, params, UserInfo.class);
+	}
   
 }

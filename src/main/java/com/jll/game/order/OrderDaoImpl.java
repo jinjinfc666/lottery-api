@@ -28,6 +28,5 @@ public class OrderDaoImpl extends DefaultGenericDaoImpl<OrderInfo> implements Or
 		
 		return this.query(sql, params, OrderInfo.class);
 	}
-
 	
 }

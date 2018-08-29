@@ -6,22 +6,17 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.springframework.http.MediaType;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jll.common.constants.Message;
-import com.jll.common.constants.Constants.UserType;
-import com.jll.common.utils.StringUtils;
+import com.jll.common.utils.Utils;
 import com.jll.dao.PageQueryDao;
 import com.jll.entity.MemberPlReport;
 import com.jll.entity.OrderInfo;
-import com.jll.entity.SiteMessage;
 import com.jll.entity.UserAccountDetails;
 import com.jll.entity.UserInfo;
 import com.jll.user.UserInfoService;
@@ -41,12 +36,24 @@ public class AgentController {
 	AgentService agentService;
 	
 	
+	/**
+	 
+	 * @param params  
+	 * {
+	"pageIndex":1,
+	"pageSize":20,
+	"startDate":"2017-03-21 11:43:26",
+	"endDate":"2017-03-21 11:43:26",
+	"userName":"test001",//不传查询所有
+	"issueId":0,//不传查询所有
+	"isZh":0//不传查询所有
+	}
+	 * @return
+	 */
 	@ApiComment(value="Get Agent Lower User Bet Order",seeClass = OrderInfo.class)
 	@RequestMapping(value="/lower/bet-order", method = { RequestMethod.POST }, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> getAgentLowerBetOrder(
-			 @RequestParam(name = "userName") String userName,
-			@RequestBody OrderInfo order,
-			@RequestBody PageQueryDao page) {
+			@RequestBody Map<String, String> params) {
 		UserInfo superior = userInfoService.getCurLoginInfo();
 		if(null == superior){
 			Map<String, Object> resp = new HashMap<String, Object>();
@@ -55,15 +62,33 @@ public class AgentController {
 			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_INVALID_USER_NAME.getErrorMes());
 			return resp;
 		}
+		OrderInfo order = new OrderInfo();
+		order.setIssueId(Utils.toInteger(params.get("issueId")));
+		order.setIsZh(Utils.toInteger(params.get("isZh")));
+		String userName = Utils.toString(params.get("userName"));
+		PageQueryDao page = new PageQueryDao(Utils.toDate(params.get("startDate")),Utils.toDate(params.get("endDate")),Utils.toInteger(params.get("pageIndex")),
+				Utils.toInteger(params.get("pageSize")));
+		
 		return agentService.getAgentLowerBetOrder(userName,order,superior.getId(),page);
 	}
 	
+
+	/**
+	 
+	 * @param params  
+	 * {
+	"pageIndex":1,
+	"pageSize":20,
+	"startDate":"2017-03-21 11:43:26",
+	"endDate":"2017-03-21 11:43:26",
+	"userName":"test001",//不传查询所有
+	"operationType":"betting" //不传查询所有
+	}
+	 * @return
+	 */
 	@ApiComment(value="Get Agent Lower User Credit Order",seeClass = UserAccountDetails.class)
 	@RequestMapping(value="/lower/credit-order", method = { RequestMethod.POST }, produces=MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> getAgentLowerCreditOrder(
-			 @RequestParam(name = "userName") String userName,
-			@RequestBody UserAccountDetails order,
-			@RequestBody PageQueryDao page) {
+	public Map<String, Object> getAgentLowerCreditOrder(@RequestBody Map<String, String> params) {
 		UserInfo superior = userInfoService.getCurLoginInfo();
 		if(null == superior){
 			Map<String, Object> resp = new HashMap<String, Object>();
@@ -72,15 +97,31 @@ public class AgentController {
 			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_INVALID_USER_NAME.getErrorMes());
 			return resp;
 		}
+		
+		UserAccountDetails order = new UserAccountDetails();
+		order.setOperationType(Utils.toString(params.get("operationType")));
+		String userName = Utils.toString(params.get("userName"));
+		PageQueryDao page = new PageQueryDao(Utils.toDate(params.get("startDate")),Utils.toDate(params.get("endDate")),Utils.toInteger(params.get("pageIndex")),
+				Utils.toInteger(params.get("pageSize")));
 		return agentService.getAgentLowerCreditOrder(userName,order,superior.getId(),page);
 	}
 	
 	
+	/**
+	 
+	 * @param params  
+	 * {
+	"pageIndex":1,
+	"pageSize":20,
+	"startDate":"2017-03-21 11:43:26",
+	"endDate":"2017-03-21 11:43:26",
+	"userName":"test001" //不传查询所有
+	}
+	 * @return
+	 */
 	@ApiComment(value="Get Agent Lower User Profit Report",seeClass = MemberPlReport.class)
 	@RequestMapping(value="/lower/profit-report", method = { RequestMethod.POST }, produces=MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> getAgentLowerProfitReport(
-			 @RequestParam(name = "userName") String userName,
-			@RequestBody PageQueryDao page) {
+	public Map<String, Object> getAgentLowerProfitReport(@RequestBody Map<String, String> params) {
 		UserInfo superior = userInfoService.getCurLoginInfo();
 		if(null == superior){
 			Map<String, Object> resp = new HashMap<String, Object>();
@@ -89,6 +130,9 @@ public class AgentController {
 			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_INVALID_USER_NAME.getErrorMes());
 			return resp;
 		}
+		String userName = Utils.toString(params.get("userName"));
+		PageQueryDao page = new PageQueryDao(Utils.toDate(params.get("startDate")),Utils.toDate(params.get("endDate")),Utils.toInteger(params.get("pageIndex")),
+				Utils.toInteger(params.get("pageSize")));
 		return agentService.getAgentLowerProfitReport(userName,superior.getId(),page);
 	}
 	
@@ -96,7 +140,7 @@ public class AgentController {
 	@ApiComment("User Profit Report")
 	@RequestMapping(value="/{userName}/profit-report", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> userProfitReport(
-			@PathVariable("userName") String userName) {
-		return userInfoService.userProfitReport(userName);
+			@PathVariable("userName") String userName,@RequestBody PageQueryDao page) {
+		return userInfoService.userProfitReport(userName,page);
 	}
 }

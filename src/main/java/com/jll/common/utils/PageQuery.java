@@ -22,8 +22,6 @@ import com.jll.dao.SupserDao;
 
 public class PageQuery {
 	
-	@Resource
-	static private SupserDao  supserDao; 
 	
 	private static Logger log = Logger.getLogger(PageQuery.class);
 
@@ -83,12 +81,12 @@ public class PageQuery {
 	}
 	
 	
-	public static Page queryForPagenationBySql(String sql,Class<?> cls, List<?> paramsList, int pageIndex, int size) {
+	public static Page queryForPagenationBySql(SupserDao  supserDao,String sql,Class<?> cls, List<?> paramsList, int pageIndex, int size) {
 		Page page = new Page();
 		try {
 			String sql11 = "select count(*) from (" + sql + ") a ";
 			int totalcount = 0;
-			totalcount = supserDao.getCount(sql11);
+			totalcount =Integer.valueOf(supserDao.excuteSqlForUniqueResult(sql11,paramsList).toString());
 			if (totalcount <= 0) {
 				return page;
 			}
@@ -102,6 +100,33 @@ public class PageQuery {
 		return page;
 	
 	}
+	
+	public static Page queryForPagenationByHql(SupserDao  supserDao,String sql,Class<?> cls, List<Object> paramsList, int pageIndex, int size) {
+		Page page = new Page();
+		try {
+			//sql = sql.toUpperCase();
+			int entityNameStartInd = sql.indexOf("from");
+		    if(entityNameStartInd < 0) {
+		    	entityNameStartInd = sql.indexOf("FROM");
+		    }
+		    
+			String sql11 = "select count(*) "+ sql.substring(entityNameStartInd);
+			int totalcount = 0;
+			totalcount =Integer.valueOf(""+supserDao.queryCountByHQL(sql11, paramsList, cls));
+			if (totalcount <= 0) {
+				return page;
+			}
+			System.out.println(sql);
+			List l1 = supserDao.excuteHqlForQuery(sql,cls,paramsList,pageIndex,size);
+			page = queryForPagenation(l1, pageIndex, size, totalcount);
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return page;
+	
+	}
+	
+	
 
 	public static Page queryForPagenation(HibernateTemplate hibernateTemplate,
 			DetachedCriteria criteria, Integer pageIndex, Integer size) {
