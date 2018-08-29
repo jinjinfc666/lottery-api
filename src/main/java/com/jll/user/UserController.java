@@ -79,7 +79,7 @@ public class UserController {
 	 * @param request
 	 */
 	@RequestMapping(value="/attrs/superior/{superior}", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> queryUserBySuperior(@RequestParam("superior") int Superior) {
+	public Map<String, Object> queryUserBySuperior(@RequestParam("superior") int Superior) { 
 		Map<String, Object> resp = new HashMap<String, Object>();
 		
 		

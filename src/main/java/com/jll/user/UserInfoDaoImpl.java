@@ -26,7 +26,7 @@ public class UserInfoDaoImpl extends DefaultGenericDaoImpl<UserInfo> implements 
 {
 	private Logger logger = Logger.getLogger(UserInfoDaoImpl.class);
 
-
+ 
 	@Override
 	public int getUserId(String userName) {
 		UserInfo userInfo=null;

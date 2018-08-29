@@ -854,7 +854,7 @@ public class UserInfoServiceImpl implements UserInfoService
 			List<UserInfo> list=userDao.queryAgentByAgent(id);
 			map.clear();
 			map.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-			if(list!=null&&list.size()>0) {
+			if(list!=null&&list.size()>0) { 
 				map.put("data", list);
 			}else {
 				map.put("data", null);
