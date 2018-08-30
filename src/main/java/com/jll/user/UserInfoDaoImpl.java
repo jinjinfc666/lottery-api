@@ -235,5 +235,18 @@ public class UserInfoDaoImpl extends DefaultGenericDaoImpl<UserInfo> implements 
 		
 		return this.queryByPagination(reqPage, sql, params, UserInfo.class);
 	}
+
+	@Override
+	public List<?> queryByAll() {
+		List<Object> params = new ArrayList<>();
+		String sql="from UserInfo where userType=?";
+		params.add(3);
+		List<UserInfo> list=query(sql, params, UserInfo.class);
+		String sql1="select a.user_name from(select *,FIND_IN_SET(:id,superior) as aa from user_info)a where a.aa=1";
+	    Query<?> query1 = getSessionFactory().getCurrentSession().createNativeQuery(sql1);
+	    query1.setParameter("id", list.get(0).getId());
+	    List<?> userNameList=query1.list();
+	    return userNameList;
+	}
   
 }

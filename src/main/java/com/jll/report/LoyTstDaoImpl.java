@@ -19,19 +19,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.support.HibernateDaoSupport;
 import org.springframework.stereotype.Repository;
 
+import com.jll.common.constants.Constants;
+import com.jll.dao.DefaultGenericDaoImpl;
+import com.jll.dao.PageBean;
+import com.jll.entity.OrderInfo;
+import com.jll.entity.UserAccountDetails;
+
 
 
 
 
 @Repository
-public class LoyTstDaoImpl extends HibernateDaoSupport implements LoyTstDao {
+public class LoyTstDaoImpl extends DefaultGenericDaoImpl<OrderInfo> implements LoyTstDao {
 	private Logger logger = Logger.getLogger(LoyTstDaoImpl.class);
-	@Autowired
-	public void setSuperSessionFactory(SessionFactory sessionFactory){
-		super.setSessionFactory(sessionFactory);
-	}
 	@Override
-	public List<?> queryLoyTst(Integer codeTypeNameId,String lotteryType,Integer isZh,Integer state,Integer terminalType,String startTime,String endTime,String issueNum,String userName,String orderNum) {
+	public PageBean queryLoyTst(Integer codeTypeNameId,String lotteryType,Integer isZh,Integer state,Integer terminalType,String startTime,String endTime,String issueNum,String userName,String orderNum,Integer pageIndex,Integer pageSize) {
 		String lotteryTypeSql="";
 		String isZhSql="";
 		String stateSql="";
@@ -76,30 +78,16 @@ public class LoyTstDaoImpl extends HibernateDaoSupport implements LoyTstDao {
 			orderNumSql=" and a.orderNum=:orderNum";
 			map.put("orderNum", orderNum);
 		}
-		String sql="from OrderInfo a,UserInfo b,UserAccountDetails c,Issue d,SysCode e,PlayType f where a.userId=b.id and a.issueId=d.id and a.id=c.orderId and d.lotteryType=e.codeName and e.codeType=:codeTypeNameId and a.playType=f.id "+lotteryTypeSql+isZhSql+stateSql+terminalTypeSql+timeSql+issueNumSql+userNameSql+orderNumSql+" order by a.id";
+		String betting=Constants.AccOperationType.BETTING.getDesc();
+		String sql="from OrderInfo a,UserInfo b,UserAccountDetails c,Issue d,SysCode e,PlayType f where a.userId=b.id and a.issueId=d.id and a.id=c.orderId and d.lotteryType=e.codeName and e.codeType=:codeTypeNameId and a.playType=f.id and c.operationType=:betting "+lotteryTypeSql+isZhSql+stateSql+terminalTypeSql+timeSql+issueNumSql+userNameSql+orderNumSql+" group by a.id order by a.id";
 		logger.debug(sql+"-----------------------------queryLoyTst----SQL--------------------------------");
-		Query<?> query = getSessionFactory().getCurrentSession().createQuery(sql);
-		query.setParameter("codeTypeNameId", codeTypeNameId);  
-		if (map != null) {  
-            Set<String> keySet = map.keySet();  
-            for (String string : keySet) {  
-                Object obj = map.get(string);  
-            	if(obj instanceof Date){  
-                	query.setParameter(string, (Date)obj,DateType.INSTANCE); //query.setParameter(string, (Date)obj,DateType.INSTANCE);   此方法为setDate的替代方法 
-                }else if(obj instanceof Object[]){  
-                    query.setParameterList(string, (Object[])obj);  
-                }else{  
-                    query.setParameter(string, obj);  
-                }  
-            }  
-        }
-		List<?> list1 = new ArrayList<>();
-		try {			
-			list1 = query.list();
-		}catch(NoResultException ex) {
-			
-		}
-		return list1;
+		map.put("codeTypeNameId", codeTypeNameId);
+		map.put("betting", betting);
+		PageBean page=new PageBean();
+		page.setPageIndex(pageIndex);
+		page.setPageSize(pageSize);
+		PageBean pageBean=queryByPagination(page,sql,map);
+		return pageBean;
 	}
 	
 }

@@ -22,14 +22,14 @@ import com.jll.entity.IpBlackList;
 public class DepositApplicationServiceImpl implements DepositApplicationService {
 	@Resource
 	DepositApplicationDao depositApplicationDao;
-	@Override
-	public List<?> queryDetails(Map<String,Object> ret){
-		String userName=(String) ret.get("userName");
-		String orderNum=(String) ret.get("orderNum");
-		String startTime=(String) ret.get("startTime");
-		String endTime=(String) ret.get("endTime");
-		return depositApplicationDao.queryDetails(userName,orderNum,startTime,endTime);
-	}
+//	@Override
+//	public List<?> queryDetails(Map<String,Object> ret){
+//		String userName=(String) ret.get("userName");
+//		String orderNum=(String) ret.get("orderNum");
+//		String startTime=(String) ret.get("startTime");
+//		String endTime=(String) ret.get("endTime");
+//		return depositApplicationDao.queryDetails(userName,orderNum,startTime,endTime);
+//	}
 	@Override
 	public Map<String,Object> updateState(Map<String, Object> ret) {
 		Map<String,Object> map=new HashMap<String,Object>();

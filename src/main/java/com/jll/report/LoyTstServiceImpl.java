@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.jll.common.cache.CacheRedisService;
 import com.jll.common.constants.Constants;
+import com.jll.dao.PageBean;
 import com.jll.entity.SysCode;
 
 
@@ -24,7 +25,7 @@ public class LoyTstServiceImpl implements LoyTstService {
 	@Resource
 	CacheRedisService cacheRedisService;
 	@Override
-	public List<?> queryLoyTst(Map<String, Object> ret) {
+	public PageBean queryLoyTst(Map<String, Object> ret) {
 		String lotteryType=(String)ret.get("lotteryType");
 		Integer isZh=(Integer) ret.get("isZh");
 		Integer state=(Integer) ret.get("state");
@@ -34,9 +35,11 @@ public class LoyTstServiceImpl implements LoyTstService {
 		String issueNum=(String)ret.get("issueNum");
 		String userName=(String) ret.get("userName");
 		String orderNum=(String) ret.get("orderNum");
+		Integer pageIndex=(Integer) ret.get("pageIndex");
+		Integer pageSize=(Integer) ret.get("pageSize");
 		String codeTypeName=Constants.SysCodeTypes.LOTTERY_TYPES.getCode();
 		SysCode sysCode=cacheRedisService.getSysCode(codeTypeName,codeTypeName);
 		Integer codeTypeNameId=sysCode.getId();
-		return loyTstDao.queryLoyTst(codeTypeNameId,lotteryType,isZh,state,terminalType,startTime,endTime,issueNum,userName,orderNum);
+		return loyTstDao.queryLoyTst(codeTypeNameId,lotteryType,isZh,state,terminalType,startTime,endTime,issueNum,userName,orderNum,pageIndex,pageSize);
 	}
 }

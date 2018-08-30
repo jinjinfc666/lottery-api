@@ -16,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class OrderSourceServiceImpl implements OrderSourceService {
 	@Resource
 	OrderSourceDao orderSourceDao;
-	//添加
 	@Override
 	public Map<String,Object> queryOrderSource(Map<String, Object> ret) {
 		String codeName=(String) ret.get("codeName");

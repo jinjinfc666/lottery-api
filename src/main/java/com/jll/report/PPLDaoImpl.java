@@ -55,11 +55,7 @@ public class PPLDaoImpl extends HibernateDaoSupport implements PPLDao {
             }  
         }
 		List<?> list = new ArrayList();
-		try {
-			list = query.list();
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
+		list = query.list();
 		List<PlatformSummary> list1=new ArrayList<PlatformSummary>();
 		PlatformSummary p=new PlatformSummary();
 		Iterator it=list.iterator();

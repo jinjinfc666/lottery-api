@@ -25,11 +25,7 @@ public class WithdrawApplicationDaoImpl extends DefaultGenericDaoImpl<WithdrawAp
 		WithdrawApplication dep = null;
 		Query<WithdrawApplication> query = currentSession().createQuery(sql, WithdrawApplication.class);
 		query.setParameter("id", id);
-		try {
-			dep = query.getSingleResult();
-		}catch(NoResultException ex) {
-			
-		}
+		dep = query.getSingleResult();
 		return dep;
 	}
 	
