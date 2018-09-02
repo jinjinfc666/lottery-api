@@ -49,11 +49,11 @@ public class SysInitLoader {
 	PayChannelService payChannelService;
 	
 	public void init() {
-		/*initSysCode();
+		initSysCode();
 		initPlayType();
 		initIpBlackList();
 		initPayType();
-		initPayChannel();*/
+		initPayChannel();
 	}
 	
 

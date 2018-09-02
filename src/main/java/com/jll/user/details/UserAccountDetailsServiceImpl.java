@@ -1,5 +1,7 @@
 package com.jll.user.details;
 
+import java.util.Date;
+
 import javax.annotation.Resource;
 
 import org.apache.log4j.Logger;
@@ -24,6 +26,11 @@ public class UserAccountDetailsServiceImpl implements UserAccountDetailsService
 	@Override
 	public void saveAccDetails(UserAccountDetails userDetails) {
 		accDetailsDao.saveAccDetails(userDetails);
+	}
+
+	@Override
+	public double getUserOperAmountTotal(int userId, int walletId,String operationType, Date start, Date end) {
+		return accDetailsDao.getUserOperAmountTotal(userId,walletId, operationType, start, end);
 	}
 	
 	

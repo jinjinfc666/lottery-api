@@ -1,8 +1,8 @@
 package com.jll.game.order;
 
+import java.util.Date;
 import java.util.List;
 
-import com.jll.entity.Issue;
 import com.jll.entity.OrderInfo;
 
 public interface OrderService
@@ -22,5 +22,6 @@ public interface OrderService
 	void saveOrder(OrderInfo order);
 	
 	
+	double getUserBetTotalByDate(int walletId,int userId,Date start,Date end);
 	
 }

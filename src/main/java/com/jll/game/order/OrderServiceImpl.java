@@ -279,4 +279,9 @@ public class OrderServiceImpl implements OrderService
 		orders.add(order);*/
 		orderDao.saveOrders(order);
 	}
+
+	@Override
+	public double getUserBetTotalByDate(int walletId, int userId, Date start, Date end) {
+		return orderDao.getUserBetTotalByDate(walletId, userId, start, end);
+	}
 }

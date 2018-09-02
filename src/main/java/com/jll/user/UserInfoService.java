@@ -115,4 +115,6 @@ public interface UserInfoService
 	Float calPrizeRate(UserInfo user, String lottoType);
 	
 	PageBean<UserInfo> queryAllUserInfoByPage(PageBean<UserInfo> reqPage);
+	
+	Map<String, Object> userRedWalletAmountTransfer(String userName, double amount);
 }

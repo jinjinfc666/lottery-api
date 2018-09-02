@@ -28,6 +28,7 @@ import com.jll.dao.PageBean;
 import com.jll.dao.PageQueryDao;
 import com.jll.entity.SiteMessFeedback;
 import com.jll.entity.SiteMessage;
+import com.jll.entity.UserBankCard;
 import com.jll.entity.UserInfo;
 import com.jll.entity.WithdrawApplication;
 import com.jll.tp.EmailService;
@@ -778,7 +779,7 @@ public class UserController {
 	@RequestMapping(value="/{userName}/profit-report", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> userProfitReport(
 			@PathVariable("userName") String userName,
-			PageQueryDao page) {
+			@RequestBody PageQueryDao page) {
 		return userInfoService.userProfitReport(userName,page);
 	}	
 	
@@ -806,7 +807,7 @@ public class UserController {
    	@RequestMapping(value="/{userName}/withdraw/notices", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
    	public Map<String, Object> userWithdrawNotices(
    			@PathVariable("userName") String userName,
-   			WithdrawApplication wtd) {
+   			@RequestBody WithdrawApplication wtd) {
    		return userInfoService.userWithdrawNotices(userName,wtd);
    	}
     
@@ -881,4 +882,34 @@ public class UserController {
 			return ret;
 		}
 	}
+	
+	@ApiComment(value="User Red Wallet Amount Transfer",seeClass=WithdrawApplication.class)
+   	@RequestMapping(value="/red-wallet/amount/transfer", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
+   	public Map<String, Object> userRedWalletAmountTransfer(
+   			@RequestParam("userName") String userName,
+   			@RequestParam("amount") double amount) {
+   		return userInfoService.userRedWalletAmountTransfer(userName,amount);
+   	}
+	
+	@ApiComment(value="User Add Bank",seeClass=WithdrawApplication.class)
+   	@RequestMapping(value="/{userId}/bank/add", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
+   	public Map<String, Object> addUserBank(
+   			@PathVariable("userId") int userId,
+   			@RequestBody UserBankCard bank) {
+   		return userInfoService.addUserBank(userId, bank);
+   	}
+	
+	@ApiComment(value="User Bank Lists",seeClass=WithdrawApplication.class)
+   	@RequestMapping(value="/{userId}/bank/lists", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
+   	public Map<String, Object> addUserBank(
+   			@PathVariable("userId") int userId) {
+   		return userInfoService.getUserBankLists(userId);
+   	}
+	
+	@ApiComment(value="User Bank Code Lists",seeClass=WithdrawApplication.class)
+   	@RequestMapping(value="/bank/code", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
+   	public Map<String, Object> getBankCodeList() {
+   		return userInfoService.getBankCodeList();
+   	}
+	
 }

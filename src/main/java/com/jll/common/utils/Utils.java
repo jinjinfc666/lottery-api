@@ -189,7 +189,15 @@ public class Utils {
 			return Integer.valueOf(val.toString());
 		}catch (Exception e) {
 		}
-		return null;
+		return 0;
+	}
+	
+	public static Double toDouble(Object val){
+		try{
+			return Double.valueOf(val.toString());
+		}catch (Exception e) {
+		}
+		return 0.00;
 	}
 	
 	public static String toString(Object val){

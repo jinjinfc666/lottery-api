@@ -90,7 +90,8 @@ public class Constants {
 		
 		MIN_WITHDRAWAL_AMT("min_withdrawal_amt","最低提款金额"),
 		MAX_WITHDRAWAL_AMT("max_withdrawal_amt","最高提款金额"),
-		DAY_COUNT("day_count","每日可提款次数");
+		DAY_COUNT("day_count","每日可提款次数"),
+		RED_PACKET_WALLET_RATE("red_packet_wallet_rate","红包余额转主钱包的流水倍数");
 		private String code;
 		private String value;
 		
@@ -474,6 +475,7 @@ public class Constants {
 	public static enum SysCodeTypes{
 		LOTTERY_TYPES("lottery_type"),
 		BANK_LIST("number_of_bank_cards"),
+		BANK_CODE_LIST("bank_code_list"),
 		FLOW_TYPES("flow_type"),
 		PAYMENT_PLATFORM("payment_platform"),
 		SITE_MSG_VALID_DAY("site_msg_valid_day"),

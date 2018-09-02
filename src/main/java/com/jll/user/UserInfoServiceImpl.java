@@ -68,8 +68,10 @@ import com.jll.entity.UserAccountDetails;
 import com.jll.entity.UserBankCard;
 import com.jll.entity.UserInfo;
 import com.jll.entity.WithdrawApplication;
+import com.jll.game.order.OrderService;
 import com.jll.report.WithdrawApplicationService;
 import com.jll.sysSettings.syscode.SysCodeService;
+import com.jll.user.details.UserAccountDetailsService;
 import com.jll.user.wallet.WalletService;
 
 @Configuration
@@ -88,6 +90,12 @@ public class UserInfoServiceImpl implements UserInfoService
 
 	@Resource
 	WalletService walletServ;
+	
+	@Resource
+	OrderService orderService;
+	
+	@Resource
+	UserAccountDetailsService userAccountDetailsService;
 	
 	@Resource
 	SysCodeService sysCodeService;
@@ -411,9 +419,8 @@ public class UserInfoServiceImpl implements UserInfoService
 	@Override
 	public Map<String, Object> getBankCodeList() {
 		Map<String, Object> ret = new HashMap<>();
-		List<SysCode> types = sysCodeService.queryAllSmallType(SysCodeTypes.LOTTERY_TYPES.getCode());
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-		ret.put("data", types);
+		ret.put("data",cacheServ.getSysCode(SysCodeTypes.BANK_CODE_LIST.getCode()));
 		return ret;
 	}
 
@@ -1119,6 +1126,60 @@ public class UserInfoServiceImpl implements UserInfoService
 		PageBean<UserInfo> retPage = userDao.queryAllUserInfoByPage(reqPage);
 		
 		return retPage;
+	}
+
+	@Override
+	public Map<String, Object> userRedWalletAmountTransfer(String userName, double amount) {
+		
+		Map<String, Object> ret = new HashMap<String, Object>();
+		UserInfo fromUserInfo = getUserByUserName(userName);
+		if(null == fromUserInfo
+				|| amount < 0){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+			return ret;
+		}
+		
+		UserAccount redAcc = (UserAccount) supserDao.findByName(UserAccount.class, "userId", fromUserInfo.getId(), "accType", WalletType.RED_PACKET_WALLET.getCode()).get(0);
+		
+		if(redAcc.getBalance().doubleValue() < amount){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_BALANCE_NOT_ENOUGH.getCode());
+			ret.put(Message.KEY_ERROR_MES,Message.Error.ERROR_USER_BALANCE_NOT_ENOUGH.getErrorMes());
+			return ret;
+		}
+		
+		double userSumBet = orderService.getUserBetTotalByDate(redAcc.getId(),redAcc.getUserId(), fromUserInfo.getCreateTime(), new Date());
+		
+		double wtdRate = Double.valueOf(cacheRedisService.getSysCode(SysCodeTypes.WITHDRAWAL_CFG.getCode(), WithdrawConif.RED_PACKET_WALLET_RATE.getCode()).getCodeVal());
+		
+		double userSumWtd = userAccountDetailsService.getUserOperAmountTotal(redAcc.getId(),redAcc.getUserId(), CreditRecordType.USER_RED_ENVELOPE_WITHDRAWAL_DEDUCTION.getCode(),fromUserInfo.getCreateTime(), new Date());
+		
+		//总投注 - (提取金额 +以提取金额)*流水倍数  < 0 ,不可提取
+		double curCheckAMt = BigDecimalUtil.sub(userSumBet,  BigDecimalUtil.mul(BigDecimalUtil.add(userSumWtd,amount),wtdRate));
+		if(curCheckAMt < 0){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_TRANS_RED_WALLET_FAIL.getCode());
+			ret.put(Message.KEY_ERROR_MES,String.format(Message.Error.ERROR_USER_TRANS_RED_WALLET_FAIL.getErrorMes(), curCheckAMt,BigDecimalUtil.mul(amount,wtdRate)));
+			return ret;
+		}
+		
+		UserAccount mainAcc = (UserAccount) supserDao.findByName(UserAccount.class, "userId", fromUserInfo.getId(), "accType", WalletType.MAIN_WALLET.getCode()).get(0);
+		
+		
+		UserAccountDetails mainDtl = initCreidrRecord(fromUserInfo, mainAcc, mainAcc.getBalance().doubleValue(), amount, CreditRecordType.USER_RED_BAG_WITHDRAWAL.getCode());
+		mainAcc.setBalance(new BigDecimal(mainDtl.getPostAmount()));
+		
+		UserAccountDetails subDtl = initCreidrRecord(fromUserInfo, redAcc, redAcc.getBalance().doubleValue(), -amount, CreditRecordType.USER_RED_ENVELOPE_WITHDRAWAL_DEDUCTION.getCode());
+		redAcc.setBalance(new BigDecimal(subDtl.getPostAmount()));
+		
+		supserDao.save(mainDtl);
+		supserDao.save(subDtl);
+		supserDao.update(redAcc);
+		supserDao.update(mainAcc);
+		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		return ret;
 	}
 	
 }
