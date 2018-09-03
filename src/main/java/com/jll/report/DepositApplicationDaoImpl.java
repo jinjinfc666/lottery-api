@@ -1,27 +1,15 @@
 package com.jll.report;
 
 
-import java.sql.Date;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
-import javax.persistence.NoResultException;
-
-import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
-import org.hibernate.type.DateType;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.hibernate5.support.HibernateDaoSupport;
 import org.springframework.stereotype.Repository;
 
 import com.jll.dao.DefaultGenericDaoImpl;
 import com.jll.entity.DepositApplication;
-import com.jll.entity.IpBlackList;
 
 
 
@@ -94,6 +82,17 @@ public class DepositApplicationDaoImpl extends DefaultGenericDaoImpl<DepositAppl
 	    query.setParameter("id", id);
 	    List<DepositApplication> list = query.list();
 	    return list;
+	}
+	@Override
+	public DepositApplication getDepositInfoByOrderNum(String orderNum) {
+		String sql = "from DepositApplication where orderNum=?";
+		List<Object> params = new ArrayList<>();
+		params.add(orderNum);
+		List<DepositApplication> ret =  this.query(sql, params, DepositApplication.class);
+		if(ret != null && !ret.isEmpty()){
+			return ret.get(0);
+		}
+		return null;
 	}
 	
 }

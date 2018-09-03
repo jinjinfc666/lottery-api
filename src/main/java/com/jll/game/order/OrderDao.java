@@ -13,4 +13,6 @@ public interface OrderDao
 	List<OrderInfo> queryOrdersByIssue(Integer issueId);
 	
 	double getUserBetTotalByDate(int walletId,int userId,Date start,Date end);
+	
+	OrderInfo getOrderInfo(String orderNum);
 }

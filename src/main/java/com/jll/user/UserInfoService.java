@@ -8,6 +8,8 @@ import com.jll.dao.PageBean;
 import com.jll.dao.PageQueryDao;
 import com.jll.entity.SiteMessFeedback;
 import com.jll.entity.SiteMessage;
+import com.jll.entity.UserAccount;
+import com.jll.entity.UserAccountDetails;
 import com.jll.entity.UserBankCard;
 import com.jll.entity.UserInfo;
 import com.jll.entity.WithdrawApplication;
@@ -117,4 +119,6 @@ public interface UserInfoService
 	PageBean<UserInfo> queryAllUserInfoByPage(PageBean<UserInfo> reqPage);
 	
 	Map<String, Object> userRedWalletAmountTransfer(String userName, double amount);
+	Map<String, Object> directOperationUserAmount(UserAccountDetails dtl);
+	Map<String, Object> userWalletLock(UserAccount dtl);
 }

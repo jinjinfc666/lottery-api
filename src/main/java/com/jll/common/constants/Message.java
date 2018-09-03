@@ -88,6 +88,7 @@ public class Message {
 		ERROR_WTD_TIMES_ERROR("010036", "Daily withdrawals can be %s times,You can withdrawals %s times today!!!"),
 		ERROR_USER_BALANCE_NOT_ENOUGH("010037", "User balance not enough !!!"),
 		ERROR_USER_TRANS_RED_WALLET_FAIL("010038", "The current user flow is %s, less than %s, transaction fail !!!"),
+		ERROR_WALLET_IS_FREEZE("010031", "This wallet is freeze!!!!"),
 		
 		/**************third party*************************/
 		ERROR_TP_INVALID_SMS("020001", "Invalid SMS!!"),

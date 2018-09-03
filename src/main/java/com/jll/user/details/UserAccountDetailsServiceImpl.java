@@ -10,7 +10,10 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.jll.common.utils.BigDecimalUtil;
+import com.jll.entity.UserAccount;
 import com.jll.entity.UserAccountDetails;
+import com.jll.entity.UserInfo;
 
 @Configuration
 @PropertySource("classpath:sys-setting.properties")
@@ -33,5 +36,17 @@ public class UserAccountDetailsServiceImpl implements UserAccountDetailsService
 		return accDetailsDao.getUserOperAmountTotal(userId,walletId, operationType, start, end);
 	}
 	
+	@Override
+	public UserAccountDetails initCreidrRecord(int userId,UserAccount userAcc,double beforAmt,double addAmt,String operType){
+		UserAccountDetails addRedDtl = new UserAccountDetails();
+		addRedDtl.setUserId(userId);
+		addRedDtl.setCreateTime(new Date());
+		addRedDtl.setAmount(Math.abs(Double.valueOf(addAmt).floatValue()));
+		addRedDtl.setPreAmount(Double.valueOf(beforAmt).floatValue());
+		addRedDtl.setPostAmount(Double.valueOf(BigDecimalUtil.add(addRedDtl.getPreAmount(),addAmt)).floatValue());
+		addRedDtl.setWalletId(userAcc.getId());
+		addRedDtl.setOperationType(operType);
+		return addRedDtl;
+	}
 	
 }

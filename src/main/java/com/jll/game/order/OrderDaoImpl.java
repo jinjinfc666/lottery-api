@@ -56,5 +56,18 @@ public class OrderDaoImpl extends DefaultGenericDaoImpl<OrderInfo> implements Or
 	    }
 		return Utils.toDouble(query.getSingleResult());
 	}
+
+	@Override
+	public OrderInfo getOrderInfo(String orderNum) {
+		String sql = "from OrderInfo where orderNum=?";
+		List<Object> params = new ArrayList<>();
+		params.add(orderNum);
+		
+		List<OrderInfo> ret =  this.query(sql, params, OrderInfo.class);
+		if(ret != null && !ret.isEmpty()){
+			return ret.get(0);
+		}
+		return null;
+	}
 	
 }
