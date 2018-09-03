@@ -1,11 +1,13 @@
 package com.jll.sysSettings.syscode;
 
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -92,7 +94,7 @@ public class BackstageSysController {
 	}
 	//修改大类的值
 	@RequestMapping(value={"/updateBigType"}, method={RequestMethod.PUT}, produces={"application/json"})
-	public Map<String, Object> updateBigType(@RequestParam(name = "id", required = false) Integer id,
+	public Map<String, Object> updateBigType(@RequestParam(name = "id", required = true) Integer id,
 			  @RequestParam(name = "codeName", required = true) String codeName,//和id一样不能修改只需要传过来
 			  @RequestParam(name = "codeVal", required = false) String codeVal,
 			  @RequestParam(name = "remark", required = false) String remark,
@@ -204,10 +206,18 @@ public class BackstageSysController {
 		Map<String, Object> ret = new HashMap<>();
 		String bigCodeName=Constants.SysCodeTypes.LOTTERY_TYPES.getCode();
 		try {
-			Map<String,SysCode> sysCode=cacheRedisService.getSysCode(bigCodeName);
+			Map<String,SysCode> sysCodeMaps=cacheRedisService.getSysCode(bigCodeName);
+			Map<Integer,SysCode> sysCodeMaps1=new HashMap<Integer, SysCode>();
+			for(String key:sysCodeMaps.keySet()) {
+				SysCode sysCode=sysCodeMaps.get(key);
+				if(sysCode.getSeq()!=null) {
+					sysCodeMaps1.put(sysCode.getSeq(), sysCode);
+				}
+			}
+			TreeMap treemap = new TreeMap(sysCodeMaps1);
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-			ret.put("data", sysCode);
+			ret.put("data", treemap);
 		}catch(Exception e){
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
@@ -345,10 +355,18 @@ public class BackstageSysController {
 		Map<String, Object> ret = new HashMap<>();
 		String bigCodeName=Constants.SysCodeTypes.FLOW_TYPES.getCode();
 		try {
-			Map<String,SysCode> sysCode=cacheRedisService.getSysCode(bigCodeName);
+			Map<String,SysCode> sysCodeMaps=cacheRedisService.getSysCode(bigCodeName);
+			Map<Integer,SysCode> sysCodeMaps1=new HashMap<Integer, SysCode>();
+			for(String key:sysCodeMaps.keySet()) {
+				SysCode sysCode=sysCodeMaps.get(key);
+				if(sysCode.getSeq()!=null) {
+					sysCodeMaps1.put(sysCode.getSeq(), sysCode);
+				}
+			}
+			TreeMap treemap = new TreeMap(sysCodeMaps1);
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-			ret.put("data", sysCode);
+			ret.put("data", treemap);
 		}catch(Exception e){
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
@@ -486,10 +504,18 @@ public class BackstageSysController {
 		Map<String, Object> ret = new HashMap<>();
 		String bigCodeName=Constants.SysCodeTypes.LUCKY_DRAW.getCode();
 		try {
-			Map<String,SysCode> sysCode=cacheRedisService.getSysCode(bigCodeName);
+			Map<String,SysCode> sysCodeMaps=cacheRedisService.getSysCode(bigCodeName);
+			Map<Integer,SysCode> sysCodeMaps1=new HashMap<Integer, SysCode>();
+			for(String key:sysCodeMaps.keySet()) {
+				SysCode sysCode=sysCodeMaps.get(key);
+				if(sysCode.getSeq()!=null) {
+					sysCodeMaps1.put(sysCode.getSeq(), sysCode);
+				}
+			}
+			TreeMap treemap = new TreeMap(sysCodeMaps1);
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-			ret.put("data", sysCode);
+			ret.put("data", treemap);
 		}catch(Exception e){
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
@@ -627,10 +653,18 @@ public class BackstageSysController {
 		Map<String, Object> ret = new HashMap<>();
 		String bigCodeName=Constants.SysCodeTypes.PAYMENT_PLATFORM.getCode();
 		try {
-			Map<String,SysCode> sysCode=cacheRedisService.getSysCode(bigCodeName);
+			Map<String,SysCode> sysCodeMaps=cacheRedisService.getSysCode(bigCodeName);
+			Map<Integer,SysCode> sysCodeMaps1=new HashMap<Integer, SysCode>();
+			for(String key:sysCodeMaps.keySet()) {
+				SysCode sysCode=sysCodeMaps.get(key);
+				if(sysCode.getSeq()!=null) {
+					sysCodeMaps1.put(sysCode.getSeq(), sysCode);
+				}
+			}
+			TreeMap treemap = new TreeMap(sysCodeMaps1);
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-			ret.put("data", sysCode);
+			ret.put("data", treemap);
 		}catch(Exception e){
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
@@ -750,10 +784,10 @@ public class BackstageSysController {
 			sysCode.setCodeType(codeType);	
 			ret.clear();
 			ret=sysCodeService.addSmallSysCode(bigCodeName,sysCode);
-			//存储到缓存
-			List<SysCode> sysCode1=sysCodeService.querySmallType(bigCodeName, codeName);
-			SysCode sysCode2=sysCode1.get(0);
-			cacheRedisService.setSysCode(bigCodeName, sysCode2);
+//			//存储到缓存
+//			List<SysCode> sysCode1=sysCodeService.querySmallType(bigCodeName, codeName);
+//			SysCode sysCode2=sysCode1.get(0);
+//			cacheRedisService.setSysCode(bigCodeName, sysCode2);
 		}catch(Exception e){
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
@@ -768,10 +802,18 @@ public class BackstageSysController {
 		Map<String, Object> ret = new HashMap<>();
 		String bigCodeName=Constants.SysCodeTypes.SIGN_IN_DAY.getCode();
 		try {
-			Map<String,SysCode> sysCode=cacheRedisService.getSysCode(bigCodeName);
+			List<SysCode> sysCodeMaps=sysCodeService.queryAllSmallType(bigCodeName);
+			Map<Integer,SysCode> sysCodeMaps1=new HashMap<Integer, SysCode>();
+			for(int i=0;i<sysCodeMaps.size();i++) {
+				SysCode sysCode=sysCodeMaps.get(i);
+				if(sysCode.getSeq()!=null) {
+					sysCodeMaps1.put(sysCode.getSeq(), sysCode);
+				}
+			}
+			TreeMap treemap = new TreeMap(sysCodeMaps1);
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-			ret.put("data", sysCode);
+			ret.put("data", treemap);
 		}catch(Exception e){
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
@@ -792,12 +834,12 @@ public class BackstageSysController {
 			ret.put("id", id);
 			ret.put("state", state);
 			sysCodeService.updateSmallTypeState(id, state);	
-			//存储到缓存
-			SysCode sysCode=cacheRedisService.getSysCode(bigCodeName, codeName);
-			if(sysCode!=null) {
-				sysCode.setState(state);
-				cacheRedisService.setSysCode(bigCodeName, sysCode);	
-			}
+//			//存储到缓存
+//			SysCode sysCode=cacheRedisService.getSysCode(bigCodeName, codeName);
+//			if(sysCode!=null) {
+//				sysCode.setState(state);
+//				cacheRedisService.setSysCode(bigCodeName, sysCode);	
+//			}
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		}catch(Exception e){
@@ -828,17 +870,17 @@ public class BackstageSysController {
 		ret.put("remark", remark);
 		try {
 			sysCodeService.updateSmallType(ret);
-			//存储到缓存
-			SysCode sysCode1=cacheRedisService.getSysCode(bigCodeName, codeName);
-			if(sysCode1!=null) {
-				if(!StringUtils.isBlank(codeVal)) {
-					sysCode1.setCodeVal(codeVal);
-				}
-				if(!StringUtils.isBlank(remark)) {
-					sysCode1.setRemark(remark);
-				}
-				cacheRedisService.setSysCode(bigCodeName, sysCode1);
-			}
+//			//存储到缓存
+//			SysCode sysCode1=cacheRedisService.getSysCode(bigCodeName, codeName);
+//			if(sysCode1!=null) {
+//				if(!StringUtils.isBlank(codeVal)) {
+//					sysCode1.setCodeVal(codeVal);
+//				}
+//				if(!StringUtils.isBlank(remark)) {
+//					sysCode1.setRemark(remark);
+//				}
+//				cacheRedisService.setSysCode(bigCodeName, sysCode1);
+//			}
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		}catch(Exception e){
@@ -856,7 +898,7 @@ public class BackstageSysController {
 		Map<String, Object> ret = new HashMap<>();
 		String bigCodeName=Constants.SysCodeTypes.SIGN_IN_DAY.getCode();
 		try {
-			Map<String,Object> map=sysCodeService.updateSmallTypeSeq(bigCodeName, allId);
+			Map<String,Object> map=sysCodeService.updateSmallSignInDaySeq(bigCodeName, allId);
 			return map;
 		}catch(Exception e){
 			ret.clear();
@@ -909,10 +951,18 @@ public class BackstageSysController {
 		Map<String, Object> ret = new HashMap<>();
 		String bigCodeName=Constants.SysCodeTypes.CT_PLAY_TYPE_CLASSICFICATION.getCode();
 		try {
-			Map<String,SysCode> sysCode=cacheRedisService.getSysCode(bigCodeName);
+			Map<String,SysCode> sysCodeMaps=cacheRedisService.getSysCode(bigCodeName);
+			Map<Integer,SysCode> sysCodeMaps1=new HashMap<Integer, SysCode>();
+			for(String key:sysCodeMaps.keySet()) {
+				SysCode sysCode=sysCodeMaps.get(key);
+				if(sysCode.getSeq()!=null) {
+					sysCodeMaps1.put(sysCode.getSeq(), sysCode);
+				}
+			}
+			TreeMap treemap = new TreeMap(sysCodeMaps1);
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-			ret.put("data", sysCode);
+			ret.put("data", treemap);
 		}catch(Exception e){
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
@@ -1011,9 +1061,9 @@ public class BackstageSysController {
 	 *彩种属性类型的增删改查
 	 * @author Silence 
 	 */
-	//增加玩法类型小类
+	//增加彩种属性类型小类
 	@RequestMapping(value={"/SmallLotteryConfig"}, method={RequestMethod.POST}, produces={"application/json"})
-	public Map<String, Object> addSmallLotteryConfig(@RequestParam(name = "bigcodeName", required = true) String bigcodeName,
+	public Map<String, Object> addSmallLotteryConfig(@RequestParam(name = "bigCodeName", required = true) String bigCodeName,
 			  @RequestParam(name = "codeName", required = true) String codeName,
 			  @RequestParam(name = "codeVal", required = true) String codeVal,
 			  @RequestParam(name = "remark", required = false) String remark,
@@ -1027,7 +1077,7 @@ public class BackstageSysController {
 		if(!StringUtils.isBlank(remark)) {
 			sysCode.setRemark(remark);
 		}
-		String lotteryConfigCodeName=bigcodeName;
+		String lotteryConfigCodeName=Constants.KEY_LOTTO_ATTRI_PREFIX+bigCodeName;
 		try {
 			Integer codeType=sysCodeService.queryByCodeName(lotteryConfigCodeName);
 			sysCode.setCodeType(codeType);	
@@ -1045,17 +1095,25 @@ public class BackstageSysController {
 		}
 		return ret;
 	}
-	//查询玩法类型下的所有值
+	//查询彩种属性类型下的所有值
 	@RequestMapping(value={"/querySmallLotteryConfig"}, method={RequestMethod.GET}, produces={"application/json"})
-	public Map<String, Object> querySmallLotteryConfig(@RequestParam(name = "bigcodeName", required = true) String bigcodeName,
+	public Map<String, Object> querySmallLotteryConfig(@RequestParam(name = "bigCodeName", required = true) String bigCodeName,
 			  HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
-		String lotteryConfigCodeName=bigcodeName;
+		String lotteryConfigCodeName=Constants.KEY_LOTTO_ATTRI_PREFIX+bigCodeName;
 		try {
-			Map<String,SysCode> sysCode=cacheRedisService.getSysCode(lotteryConfigCodeName);
+			Map<String,SysCode> sysCodeMaps=cacheRedisService.getSysCode(lotteryConfigCodeName);
+			Map<Integer,SysCode> sysCodeMaps1=new HashMap<Integer, SysCode>();
+			for(String key:sysCodeMaps.keySet()) {
+				SysCode sysCode=sysCodeMaps.get(key);
+				if(sysCode.getSeq()!=null) {
+					sysCodeMaps1.put(sysCode.getSeq(), sysCode);
+				}
+			}
+			TreeMap treemap = new TreeMap(sysCodeMaps1);
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-			ret.put("data", sysCode);
+			ret.put("data", treemap);
 		}catch(Exception e){
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
@@ -1064,15 +1122,15 @@ public class BackstageSysController {
 		}
 		return ret;
 	}
-	//软删除玩法类型下的某个小类
+	//软删除彩种属性类型下的某个小类
 	@RequestMapping(value={"/updateSmallLotteryConfigState"}, method={RequestMethod.PUT}, produces={"application/json"})
-	public Map<String, Object> updateSmallLotteryConfigState(@RequestParam(name = "bigcodeName", required = true) String bigcodeName,
+	public Map<String, Object> updateSmallLotteryConfigState(@RequestParam(name = "bigCodeName", required = true) String bigCodeName,
 			  @RequestParam(name = "id", required = true) Integer id,
 			  @RequestParam(name = "codeName", required = true) String codeName,//不能修改只传值
 			  @RequestParam(name = "state", required = true) Integer state,//1为有效0为无效
 			  HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
-		String lotteryConfigCodeName=bigcodeName;
+		String lotteryConfigCodeName=Constants.KEY_LOTTO_ATTRI_PREFIX+bigCodeName;
 		try {
 			ret.put("id", id);
 			ret.put("state", state);
@@ -1093,9 +1151,9 @@ public class BackstageSysController {
 		}
 		return ret;
 	}
-	//修改玩法类型下的某一条数据
+	//修改彩种属性类型下的某一条数据
 	@RequestMapping(value={"/updateSmallLotteryConfig"}, method={RequestMethod.PUT}, produces={"application/json"})
-	public Map<String, Object> updateSmallLotteryConfig(@RequestParam(name = "bigcodeName", required = true) String bigcodeName,
+	public Map<String, Object> updateSmallLotteryConfig(@RequestParam(name = "bigCodeName", required = true) String bigCodeName,
 			  @RequestParam(name = "id", required = true) Integer id,
 			  @RequestParam(name = "codeName", required = true) String codeName,//不能修改只传值
 			  @RequestParam(name = "codeVal", required = false) String codeVal,
@@ -1108,7 +1166,7 @@ public class BackstageSysController {
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
 	    	return ret;
 		}
-		String lotteryConfigCodeName=bigcodeName;
+		String lotteryConfigCodeName=Constants.KEY_LOTTO_ATTRI_PREFIX+bigCodeName;
 		ret.put("id", id);
 		ret.put("codeVal", codeVal);
 		ret.put("remark", remark);
@@ -1137,12 +1195,13 @@ public class BackstageSysController {
 	}
 	//修改排序
 	@RequestMapping(value={"/updateSmallLotteryConfigSeq"}, method={RequestMethod.PUT}, produces={"application/json"})
-	public Map<String, Object> updateSmallLotteryConfigSeq(@RequestParam(name = "bigcodeName", required = true) String bigCodeName,
+	public Map<String, Object> updateSmallLotteryConfigSeq(@RequestParam(name = "bigCodeName", required = true) String bigCodeName,
 			@RequestParam(name = "allId", required = true) String allId,
 			  HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
+		String lotteryConfigCodeName=Constants.KEY_LOTTO_ATTRI_PREFIX+bigCodeName;
 		try {
-			Map<String,Object> map=sysCodeService.updateSmallTypeSeq(bigCodeName, allId);
+			Map<String,Object> map=sysCodeService.updateSmallTypeSeq(lotteryConfigCodeName, allId);
 			return map;
 		}catch(Exception e){
 			ret.clear();
@@ -1157,7 +1216,7 @@ public class BackstageSysController {
 	 * @author Silence 
 	 */
 	//增加充值方式类型小类
-	@RequestMapping(value={"/addSmallPayType"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/SmallPayType"}, method={RequestMethod.POST}, produces={"application/json"})
 	public Map<String, Object> addSmallPayType(@RequestParam(name = "codeName", required = true) String codeName,
 			  @RequestParam(name = "codeVal", required = true) String codeVal,
 			  @RequestParam(name = "remark", required = false) String remark,
@@ -1195,10 +1254,18 @@ public class BackstageSysController {
 		Map<String, Object> ret = new HashMap<>();
 		String bigCodeName=Constants.SysCodeTypes.PAY_TYPE.getCode();
 		try {
-			Map<String,SysCode> sysCode=cacheRedisService.getSysCode(bigCodeName);
+			Map<String,SysCode> sysCodeMaps=cacheRedisService.getSysCode(bigCodeName);
+			Map<Integer,SysCode> sysCodeMaps1=new HashMap<Integer, SysCode>();
+			for(String key:sysCodeMaps.keySet()) {
+				SysCode sysCode=sysCodeMaps.get(key);
+				if(sysCode.getSeq()!=null) {
+					sysCodeMaps1.put(sysCode.getSeq(), sysCode);
+				}
+			}
+			TreeMap treemap = new TreeMap(sysCodeMaps1);
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-			ret.put("data", sysCode);
+			ret.put("data", treemap);
 		}catch(Exception e){
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
