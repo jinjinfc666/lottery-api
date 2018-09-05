@@ -2,6 +2,7 @@ package com.jll.game.order;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import com.jll.entity.OrderInfo;
 
@@ -23,5 +24,7 @@ public interface OrderService
 	
 	
 	double getUserBetTotalByDate(int walletId,int userId,Date start,Date end);
+
+	Map<String, Object> getOrderInfo(String orderNum);
 	
 }

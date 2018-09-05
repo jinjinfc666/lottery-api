@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.jll.common.cache.CacheRedisService;
 import com.jll.common.constants.Constants;
 import com.jll.common.constants.Message;
+import com.jll.common.constants.Constants.SysCodeTypes;
 import com.jll.common.utils.MathUtil;
 import com.jll.common.utils.Utils;
 import com.jll.common.utils.sequence.GenSequenceService;
@@ -283,5 +284,13 @@ public class OrderServiceImpl implements OrderService
 	@Override
 	public double getUserBetTotalByDate(int walletId, int userId, Date start, Date end) {
 		return orderDao.getUserBetTotalByDate(walletId, userId, start, end);
+	}
+
+	@Override
+	public Map<String, Object> getOrderInfo(String orderNum) {
+		Map<String, Object> ret = new HashMap<>();
+		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		ret.put("data",orderDao.getOrderInfo(orderNum));
+		return ret;
 	}
 }

@@ -10,4 +10,5 @@ public interface DepositApplicationDao {
 	public void updateState(Integer id,Integer state);
 	//查询是否存在
 	List<DepositApplication> queryById(Integer id);
+	DepositApplication getDepositInfoByOrderNum(String orderNum);
 }

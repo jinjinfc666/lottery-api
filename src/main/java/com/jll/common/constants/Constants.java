@@ -921,7 +921,9 @@ public class Constants {
 		SYSTEM_REBATE("system_rebate","系统返点"),
 		SYSTEM_WITHDRAWAL("system_withdrawal","系统撤单"),
 		USER_DEPOSIT("deposit","用户存款"),
-		SYSTEM_RECHARGE("system_recharge","系统充值"),
+		SYS_ADD("sys_add","系统加钱"),
+		SYS_DEDUCTION("sys_deduction","系统扣除"),
+		THIRD_RECHARGE("third_recharge","三方补单充值"),
 		USER_WITHDRAWAL("withdrawal","用户提现"),
 		RECHARGE_DEDUCTION("recharge_deduction","充值扣除"),
 		ACTIVITY_GIFT_RED("activity_gift_red","活动红包礼金"),
@@ -935,8 +937,8 @@ public class Constants {
 		RMB_AGAINST_GOLD_COINS("RMB_against_gold_coins","人民币兑金币"),
 		BANK_FEES("bank_fees","银行手续费"),
 		TRANSFER_OF_FUNDS("transfer","资金转移"),
-		ACTIVITY_GIFT_CASH("activity_gift_cash","活动现金礼金"),
-		ACTIVITY_GIFT_POINT("activity_gift_point","活动积分礼金"),
+		ACTIVITY_GIFT_CASH("promo_cash","活动现金礼金"),
+		ACTIVITY_GIFT_POINT("promo_points","活动积分礼金"),
 		ACC_UNFREEZE("acc_unfreeze","账户资金解冻"),
 		ACC_FREEZE("acc_freeze","账户资金冻结"),
 		WITHDRAWAL_BACK("withdrawal_back","提款退还"),
@@ -958,6 +960,16 @@ public class Constants {
 
 		public String getDesc() {
 			return desc;
+		}
+		
+		public static CreditRecordType getValueByCode(String code) {
+			CreditRecordType[] names = CreditRecordType.values();
+			for(CreditRecordType name: names) {
+				if(name.getCode().equals(code)) {
+					return name;
+				}
+			}
+			return null;
 		}
 	}	
 	/**
@@ -1479,6 +1491,7 @@ public class Constants {
 		ACC_UNFREEZE("acc_unfreeze"),
 		SYS_DEDUCTION("sys_deduction"),
 		SYS_ADD("sys_add"),
+		THIRD_RECHARGE("third_recharge"),
 		DAILY_SIGN_IN("daily_sign_in"),
 		POINTS_EXCHANGE("points_exchange");
 		

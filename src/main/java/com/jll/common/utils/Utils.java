@@ -1,5 +1,6 @@
 package com.jll.common.utils;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -205,7 +206,7 @@ public class Utils {
 			return String.valueOf(val.toString());
 		}catch (Exception e) {
 		}
-		return null;
+		return "";
 	}
 	
 	public static Date toDate(Object val){
@@ -214,5 +215,9 @@ public class Utils {
 		}catch (Exception e) {
 		}
 		return null;
+	}
+	public static void main(String[] args) {
+		BigDecimal sd = new BigDecimal(0.00);
+		System.out.println(toDouble(sd));
 	}
 }

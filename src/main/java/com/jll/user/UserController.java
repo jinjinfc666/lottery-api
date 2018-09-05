@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.jll.common.constants.Constants.BankCardState;
 import com.jll.common.constants.Constants.UserType;
 import com.jll.common.constants.Message;
 import com.jll.common.utils.StringUtils;
@@ -28,6 +29,9 @@ import com.jll.dao.PageBean;
 import com.jll.dao.PageQueryDao;
 import com.jll.entity.SiteMessFeedback;
 import com.jll.entity.SiteMessage;
+import com.jll.entity.SysCode;
+import com.jll.entity.UserAccount;
+import com.jll.entity.UserAccountDetails;
 import com.jll.entity.UserBankCard;
 import com.jll.entity.UserInfo;
 import com.jll.entity.WithdrawApplication;
@@ -891,7 +895,7 @@ public class UserController {
    		return userInfoService.userRedWalletAmountTransfer(userName,amount);
    	}
 	
-	@ApiComment(value="User Add Bank",seeClass=WithdrawApplication.class)
+	@ApiComment(value="User Add Bank",seeClass=BankCardState.class)
    	@RequestMapping(value="/{userId}/bank/add", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
    	public Map<String, Object> addUserBank(
    			@PathVariable("userId") int userId,
@@ -899,17 +903,53 @@ public class UserController {
    		return userInfoService.addUserBank(userId, bank);
    	}
 	
-	@ApiComment(value="User Bank Lists",seeClass=WithdrawApplication.class)
+	@ApiComment(value="User Bank Lists",seeClass=BankCardState.class)
    	@RequestMapping(value="/{userId}/bank/lists", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
-   	public Map<String, Object> addUserBank(
+   	public Map<String, Object> getUserBankLists(
    			@PathVariable("userId") int userId) {
    		return userInfoService.getUserBankLists(userId);
    	}
 	
-	@ApiComment(value="User Bank Code Lists",seeClass=WithdrawApplication.class)
+	@ApiComment(value="User Bank Code Lists",seeClass=SysCode.class)
    	@RequestMapping(value="/bank/code", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
    	public Map<String, Object> getBankCodeList() {
    		return userInfoService.getBankCodeList();
+   	}
+	
+	/**
+	 * userId 用户ID
+	 * 
+	 * amount 操纵金额
+	 * 
+	 * operationType 流水类型
+	 * 
+	 * @param dtl
+	 * @return
+	 */
+	
+	@ApiComment(value="Direct Operation User Amount",seeClass=UserAccountDetails.class)
+   	@RequestMapping(value="/operation/amount", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
+   	public Map<String, Object> directOperationUserAmount(
+   			@RequestBody UserAccountDetails dtl) {
+   		return userInfoService.directOperationUserAmount(dtl);
+   	}
+	
+	
+	/**
+	 * userId 用户ID
+	 * 
+	 * accType 钱包类型，若为<0,则冻结所有钱包
+	 * 
+	 * state 状态
+	 * 
+	 * @param dtl
+	 * @return
+	 */
+	@ApiComment(value="Direct Operation User Amount",seeClass=UserAccount.class)
+   	@RequestMapping(value="/wallet/lock", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
+   	public Map<String, Object> userWalletLock(
+   			@RequestBody UserAccount dtl) {
+   		return userInfoService.userWalletLock(dtl);
    	}
 	
 }

@@ -42,6 +42,7 @@ import com.jll.common.constants.Constants.SysNotifyType;
 import com.jll.common.constants.Constants.UserLevel;
 import com.jll.common.constants.Constants.UserState;
 import com.jll.common.constants.Constants.UserType;
+import com.jll.common.constants.Constants.WalletState;
 import com.jll.common.constants.Constants.WalletType;
 import com.jll.common.constants.Constants.WithdrawConif;
 import com.jll.common.constants.Constants.WithdrawOrderState;
@@ -892,6 +893,13 @@ public class UserInfoServiceImpl implements UserInfoService
 			return ret;
 		}
 		
+		if(mainAcc.getState() == WalletState.FROZEN.getCode()){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_WALLET_IS_FREEZE.getCode());
+			ret.put(Message.KEY_ERROR_MES,Message.Error.ERROR_WALLET_IS_FREEZE.getErrorMes());
+			return ret;
+		}
+		
 		//资金密码
 		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 		if(encoder.encode(passoword).equals(dbInfo.getFundPwd())){
@@ -933,11 +941,11 @@ public class UserInfoServiceImpl implements UserInfoService
 			return ret;
 		}
 		
-		UserAccountDetails accDtal1 = initCreidrRecord(dbInfo, mainAcc, mainAcc.getBalance().doubleValue(), -amount, CreditRecordType.USER_WITHDRAWAL.getCode());
+		UserAccountDetails accDtal1 = userAccountDetailsService.initCreidrRecord(dbInfo.getId(), mainAcc, mainAcc.getBalance().doubleValue(), -amount, CreditRecordType.USER_WITHDRAWAL.getCode());
 		mainAcc.setBalance(new BigDecimal(accDtal1.getPostAmount()));
 		supserDao.save(accDtal1);
 		
-		UserAccountDetails accDtal2 = initCreidrRecord(dbInfo, mainAcc, mainAcc.getFreeze().doubleValue(), amount, CreditRecordType.ACC_FREEZE.getCode());
+		UserAccountDetails accDtal2 = userAccountDetailsService.initCreidrRecord(dbInfo.getId(), mainAcc, mainAcc.getFreeze().doubleValue(), amount, CreditRecordType.ACC_FREEZE.getCode());
 		mainAcc.setFreeze(new BigDecimal(accDtal2.getPostAmount()));
 		
 		supserDao.save(accDtal2);
@@ -962,7 +970,7 @@ public class UserInfoServiceImpl implements UserInfoService
 		Map<String, Object> ret = new HashMap<String, Object>();
 		UserInfo dbInfo = getUserByUserName(userName);
 		if(null == dbInfo
-				|| wtd.getId() < 0
+				|| StringUtils.isEmpty(wtd.getOrderNum())
 				|| null == WithdrawOrderState.getValueByCode(wtd.getState())
 				|| WithdrawOrderState.ORDER_INIT.getCode() == wtd.getState()){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
@@ -984,7 +992,7 @@ public class UserInfoServiceImpl implements UserInfoService
 		}
 		
 		UserAccount mainAcc = (UserAccount) supserDao.findByName(UserAccount.class, "userId", dbInfo.getId(), "accType", WalletType.MAIN_WALLET.getCode()).get(0);
-		UserAccountDetails addDtail1 = initCreidrRecord(dbInfo,mainAcc, mainAcc.getFreeze().doubleValue(), -mainAcc.getFreeze().doubleValue(), CreditRecordType.ACC_UNFREEZE.getCode());
+		UserAccountDetails addDtail1 = userAccountDetailsService.initCreidrRecord(dbInfo.getId(),mainAcc, mainAcc.getFreeze().doubleValue(), -mainAcc.getFreeze().doubleValue(), CreditRecordType.ACC_UNFREEZE.getCode());
 		supserDao.save(addDtail1);
 		mainAcc.setFreeze(new BigDecimal(addDtail1.getPostAmount()));
 		
@@ -996,7 +1004,7 @@ public class UserInfoServiceImpl implements UserInfoService
 		
 		//审核不通过，退还金额，
 		if(WithdrawOrderState.ORDER_END.getCode() != wtd.getState()){
-			UserAccountDetails addDtail2 = initCreidrRecord(dbInfo,mainAcc, mainAcc.getBalance().doubleValue(), mainAcc.getFreeze().doubleValue(), CreditRecordType.WITHDRAWAL_BACK.getCode());
+			UserAccountDetails addDtail2 = userAccountDetailsService.initCreidrRecord(dbInfo.getId(),mainAcc, mainAcc.getBalance().doubleValue(), mainAcc.getFreeze().doubleValue(), CreditRecordType.WITHDRAWAL_BACK.getCode());
 			supserDao.save(addDtail2);
 			mainAcc.setBalance(new BigDecimal(addDtail2.getPostAmount()));
 		}
@@ -1006,17 +1014,7 @@ public class UserInfoServiceImpl implements UserInfoService
 		return ret;
 	}
 	
-	private UserAccountDetails initCreidrRecord(UserInfo dbInfo,UserAccount userAcc,double beforAmt,double addAmt,String operType){
-		UserAccountDetails addRedDtl = new UserAccountDetails();
-		addRedDtl.setUserId(dbInfo.getId());
-		addRedDtl.setCreateTime(new Date());
-		addRedDtl.setAmount(Math.abs(Double.valueOf(addAmt).floatValue()));
-		addRedDtl.setPreAmount(Double.valueOf(beforAmt).floatValue());
-		addRedDtl.setPostAmount(Double.valueOf(BigDecimalUtil.add(addRedDtl.getPreAmount(),addAmt)).floatValue());
-		addRedDtl.setWalletId(userAcc.getId());
-		addRedDtl.setOperationType(operType);
-		return addRedDtl;
-	}
+	
 
 	@Override
 	public Map<String, Object> userAmountTransfer(String fromUser, String toUser, double amount) {
@@ -1046,10 +1044,10 @@ public class UserInfoServiceImpl implements UserInfoService
 		
 		UserAccount subAcc = (UserAccount) supserDao.findByName(UserAccount.class, "userId", toUserInfo.getId(), "accType", WalletType.MAIN_WALLET.getCode()).get(0);
 		
-		UserAccountDetails mainDtl = initCreidrRecord(fromUserInfo, mainAcc, mainAcc.getBalance().doubleValue(), -amount, CreditRecordType.TRANSFER_OF_FUNDS.getCode());
+		UserAccountDetails mainDtl = userAccountDetailsService.initCreidrRecord(fromUserInfo.getId(), mainAcc, mainAcc.getBalance().doubleValue(), -amount, CreditRecordType.TRANSFER_OF_FUNDS.getCode());
 		mainAcc.setBalance(new BigDecimal(mainDtl.getPostAmount()));
 		
-		UserAccountDetails subDtl = initCreidrRecord(toUserInfo, subAcc, subAcc.getBalance().doubleValue(), amount, CreditRecordType.TRANSFER_OF_FUNDS.getCode());
+		UserAccountDetails subDtl = userAccountDetailsService.initCreidrRecord(toUserInfo.getId(), subAcc, subAcc.getBalance().doubleValue(), amount, CreditRecordType.TRANSFER_OF_FUNDS.getCode());
 		subAcc.setBalance(new BigDecimal(subDtl.getPostAmount()));
 		
 		supserDao.save(mainDtl);
@@ -1142,6 +1140,12 @@ public class UserInfoServiceImpl implements UserInfoService
 		}
 		
 		UserAccount redAcc = (UserAccount) supserDao.findByName(UserAccount.class, "userId", fromUserInfo.getId(), "accType", WalletType.RED_PACKET_WALLET.getCode()).get(0);
+		if(redAcc.getState() == WalletState.FROZEN.getCode()){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_WALLET_IS_FREEZE.getCode());
+			ret.put(Message.KEY_ERROR_MES,Message.Error.ERROR_WALLET_IS_FREEZE.getErrorMes());
+			return ret;
+		}
 		
 		if(redAcc.getBalance().doubleValue() < amount){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
@@ -1168,16 +1172,94 @@ public class UserInfoServiceImpl implements UserInfoService
 		UserAccount mainAcc = (UserAccount) supserDao.findByName(UserAccount.class, "userId", fromUserInfo.getId(), "accType", WalletType.MAIN_WALLET.getCode()).get(0);
 		
 		
-		UserAccountDetails mainDtl = initCreidrRecord(fromUserInfo, mainAcc, mainAcc.getBalance().doubleValue(), amount, CreditRecordType.USER_RED_BAG_WITHDRAWAL.getCode());
+		UserAccountDetails mainDtl = userAccountDetailsService.initCreidrRecord(fromUserInfo.getId(), mainAcc, mainAcc.getBalance().doubleValue(), amount, CreditRecordType.USER_RED_BAG_WITHDRAWAL.getCode());
 		mainAcc.setBalance(new BigDecimal(mainDtl.getPostAmount()));
 		
-		UserAccountDetails subDtl = initCreidrRecord(fromUserInfo, redAcc, redAcc.getBalance().doubleValue(), -amount, CreditRecordType.USER_RED_ENVELOPE_WITHDRAWAL_DEDUCTION.getCode());
+		UserAccountDetails subDtl = userAccountDetailsService.initCreidrRecord(fromUserInfo.getId(), redAcc, redAcc.getBalance().doubleValue(), -amount, CreditRecordType.USER_RED_ENVELOPE_WITHDRAWAL_DEDUCTION.getCode());
 		redAcc.setBalance(new BigDecimal(subDtl.getPostAmount()));
 		
 		supserDao.save(mainDtl);
 		supserDao.save(subDtl);
 		supserDao.update(redAcc);
 		supserDao.update(mainAcc);
+		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		return ret;
+	}
+	
+
+	@Override
+	public Map<String, Object> directOperationUserAmount(UserAccountDetails dtl) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+		List<String> operTypes = new ArrayList<>();
+		operTypes.add(CreditRecordType.SYS_ADD.getCode());
+		operTypes.add(CreditRecordType.SYS_DEDUCTION.getCode());
+		operTypes.add(CreditRecordType.CUSTOMER_CLAIMS.getCode());
+		operTypes.add(CreditRecordType.PLATFORM_REWARD.getCode());
+		operTypes.add(CreditRecordType.BANK_FEES.getCode());
+		
+		UserInfo userInfo = userDao.getUserById(dtl.getId());
+		if(null == CreditRecordType.getValueByCode(dtl.getOperationType())
+				|| null == userInfo
+				|| Utils.toDouble(dtl.getAmount()) == 0.00){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+			return ret;
+		}
+		UserAccount mainAcc = null;
+		//操作主账号
+		if(operTypes.contains(dtl.getOperationType())){
+			mainAcc = (UserAccount) supserDao.findByName(UserAccount.class, "userId",userInfo.getUserId(), "accType", WalletType.MAIN_WALLET.getCode()).get(0);
+		}else{
+			mainAcc = (UserAccount) supserDao.findByName(UserAccount.class, "userId",userInfo.getUserId(), "accType", WalletType.RED_PACKET_WALLET.getCode()).get(0);
+		}
+		
+		if(dtl.getAmount() < 0
+				&& Utils.toDouble(mainAcc.getBalance()) < Math.abs(dtl.getAmount())){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_BALANCE_NOT_ENOUGH.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_BALANCE_NOT_ENOUGH.getErrorMes());
+			return ret;
+		}
+		UserAccountDetails accDtal1 = userAccountDetailsService.initCreidrRecord(mainAcc.getUserId(), mainAcc, mainAcc.getBalance().doubleValue(), dtl.getAmount(),dtl.getOperationType());
+		mainAcc.setBalance(new BigDecimal(accDtal1.getPostAmount()));
+		supserDao.save(accDtal1);
+		supserDao.update(mainAcc);
+		
+		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		return ret;
+		
+	}
+
+	@Override
+	public Map<String, Object> userWalletLock(UserAccount dtl) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+		UserInfo userInfo = userDao.getUserById(dtl.getId());
+		
+		if((dtl.getAccType() > 0 && null == WalletType.getWalletTypeByCode(dtl.getAccType()))
+				|| null == userInfo
+				|| null == WalletState.geByCode(dtl.getState())){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+			return ret;
+		}
+		
+		
+		
+		if(dtl.getAccType() < 0
+				|| dtl.getAccType()  == WalletType.RED_PACKET_WALLET.getCode()){
+			UserAccount mainAcc = (UserAccount) supserDao.findByName(UserAccount.class, "userId",userInfo.getUserId(), "accType", WalletType.RED_PACKET_WALLET.getCode()).get(0);
+			mainAcc.setState(dtl.getState());
+			supserDao.update(mainAcc);
+		}
+		
+		if(dtl.getAccType() < 0
+				|| dtl.getAccType()  == WalletType.MAIN_WALLET.getCode()){
+			UserAccount mainAcc = (UserAccount) supserDao.findByName(UserAccount.class, "userId",userInfo.getUserId(), "accType", WalletType.MAIN_WALLET.getCode()).get(0);
+			mainAcc.setState(dtl.getState());
+			supserDao.update(mainAcc);
+		}
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		return ret;
 	}
