@@ -65,8 +65,8 @@ public class IpBlackListServiceImpl implements IpBlackListService
 	}
 	//通过ip查询
 	@Override
-	public IpBlackList queryByIp(String ip) {
-		return iPRestrictionsDao.query(ip);
+	public Map<String,Object> queryByIp(Integer pageIndex,Integer pageSize,String ip) {
+		return iPRestrictionsDao.query(pageIndex,pageSize,ip);
 	}
 	
 	//通过id查询
@@ -76,8 +76,8 @@ public class IpBlackListServiceImpl implements IpBlackListService
 	}
 	//查询所有
 	@Override
-	public List<IpBlackList> query() {
-		return iPRestrictionsDao.query();
+	public Map<String,Object> queryByPageIndex(Integer pageIndex,Integer pageSize) {
+		return iPRestrictionsDao.queryByPageIndex(pageIndex,pageSize);
 	}
 	//修改
 	@Override
@@ -117,6 +117,14 @@ public class IpBlackListServiceImpl implements IpBlackListService
 			map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
 		}
 		return map;
+	}
+	@Override
+	public List<IpBlackList> query() {
+		return iPRestrictionsDao.query();
+	}
+	@Override
+	public IpBlackList queryByIp(String ip) {
+		return iPRestrictionsDao.query(ip);
 	}
 	
 }

@@ -55,4 +55,6 @@ public interface SysCodeService {
 	List<SysCode> querySmallType(String bigCodeName, String smallCodeName);
 	//修改排序
 	Map<String,Object> updateSmallTypeSeq(String BigcodeName,String allId);
+	//修改签到活动的排序
+	Map<String,Object> updateSmallSignInDaySeq(String BigcodeName,String allId);
 }

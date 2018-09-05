@@ -20,18 +20,16 @@ import org.springframework.orm.hibernate5.support.HibernateDaoSupport;
 import org.springframework.stereotype.Repository;
 
 import com.jll.common.constants.Constants;
+import com.jll.dao.DefaultGenericDaoImpl;
+import com.jll.dao.PageBean;
 import com.jll.entity.MemberPlReport;
 import com.jll.entity.UserInfo;
 
 @Repository
-public class MReportDaoImpl extends HibernateDaoSupport implements MReportDao {
-	@Autowired
-	public void setSuperSessionFactory(SessionFactory sessionFactory){
-		super.setSessionFactory(sessionFactory);
-	}
+public class MReportDaoImpl extends DefaultGenericDaoImpl<MemberPlReport> implements MReportDao {
 	//会员盈亏报表
 	@Override
-	public List<MemberPlReport> queryAll(String startTime,String endTime,String userName) {
+	public PageBean queryAll(String startTime,String endTime,String userName,Integer pageIndex,Integer pageSize) {
 		String userNameSql="";
 		String timeSql="";
 		Map<String,Object> map=new HashMap<String,Object>();
@@ -48,27 +46,33 @@ public class MReportDaoImpl extends HibernateDaoSupport implements MReportDao {
 		}
 		String sql = "from MemberPlReport "+timeSql+userNameSql+" order by id";
 		logger.debug(sql+"-----------------------------queryLoyTst----SQL--------------------------------");
-		Query<MemberPlReport> query = getSessionFactory().getCurrentSession().createQuery(sql,MemberPlReport.class);
-		if (map != null) {  
-            Set<String> keySet = map.keySet();  
-            for (String string : keySet) {  
-                Object obj = map.get(string);  
-            	if(obj instanceof Date){  
-                	query.setParameter(string, (Date)obj,DateType.INSTANCE); //query.setParameter(string, (Date)obj,DateType.INSTANCE);   此方法为setDate的替代方法 
-                }else if(obj instanceof Object[]){  
-                    query.setParameterList(string, (Object[])obj);  
-                }else{  
-                    query.setParameter(string, obj);  
-                }  
-            }  
-        }
-		List<MemberPlReport> list1 = new ArrayList<MemberPlReport>();
-		try {			
-			list1 = query.list();
-		}catch(NoResultException ex) {
-			
-		}
-		return list1;
+		PageBean page=new PageBean();
+		page.setPageIndex(pageIndex);
+		page.setPageSize(pageSize);
+		PageBean pageBean=queryByPagination(page, sql,map);
+		return pageBean;
+		
+//		Query<MemberPlReport> query = getSessionFactory().getCurrentSession().createQuery(sql,MemberPlReport.class);
+//		if (map != null) {  
+//            Set<String> keySet = map.keySet();  
+//            for (String string : keySet) {  
+//                Object obj = map.get(string);  
+//            	if(obj instanceof Date){  
+//                	query.setParameter(string, (Date)obj,DateType.INSTANCE); //query.setParameter(string, (Date)obj,DateType.INSTANCE);   此方法为setDate的替代方法 
+//                }else if(obj instanceof Object[]){  
+//                    query.setParameterList(string, (Object[])obj);  
+//                }else{  
+//                    query.setParameter(string, obj);  
+//                }  
+//            }  
+//        }
+//		List<MemberPlReport> list1 = new ArrayList<MemberPlReport>();
+//		try {			
+//			list1 = query.list();
+//		}catch(NoResultException ex) {
+//			
+//		}
+//		return list1;
 	}
 	@Override
 	public Map<String, Object> querySum(String startTime, String endTime, String userName) {
@@ -137,13 +141,16 @@ public class MReportDaoImpl extends HibernateDaoSupport implements MReportDao {
 	}
 	//团队盈亏报表
 	@Override
-	public List<MemberPlReport> queryTeamAll(String startTime, String endTime, String userName) {
+	public PageBean queryTeamAll(String startTime, String endTime, String userName,Integer pageIndex,Integer pageSize,List<?> userNameList) {
 		String userNameSql="";
 		String timeSql="";
 		Map<String,Object> map=new HashMap<String,Object>();
 		if(!StringUtils.isBlank(userName)) {
 			userNameSql=" and userName=:userName";
 			map.put("userName", userName);
+		}else {
+			userNameSql=" and  user_name in(:userNameList)";
+			map.put("userNameList", userNameList);
 		}
 		if(!StringUtils.isBlank(startTime)&&!StringUtils.isBlank(endTime)) {
 			timeSql="createTime >:startTime and createTime <=:endTime";
@@ -156,39 +163,43 @@ public class MReportDaoImpl extends HibernateDaoSupport implements MReportDao {
 		if(!StringUtils.isBlank(userName)) {
 			sql="from MemberPlReport  where "+timeSql+userNameSql+" order by id";
 		}else {
-			sql= "from MemberPlReport  where userType=:userType and "+timeSql+" order by id";
+			sql= "from MemberPlReport  where "+timeSql+userNameSql+" order by id";
 		}
 		logger.debug(sql+"-----------------------------queryLoyTst----SQL--------------------------------");
-		Query<MemberPlReport> query = getSessionFactory().getCurrentSession().createQuery(sql,MemberPlReport.class);
-		if(StringUtils.isBlank(userName)) {
-			Integer userType=Constants.UserTypes.GENERAL_AGENT.getCode();
-			query.setParameter("userType", userType);  
-		}
-		if (map != null) {  
-            Set<String> keySet = map.keySet();  
-            for (String string : keySet) {  
-                Object obj = map.get(string);  
-            	if(obj instanceof Date){  
-                	query.setParameter(string, (Date)obj,DateType.INSTANCE); //query.setParameter(string, (Date)obj,DateType.INSTANCE);   此方法为setDate的替代方法 
-                }else if(obj instanceof Object[]){  
-                    query.setParameterList(string, (Object[])obj);  
-                }else{  
-                    query.setParameter(string, obj);  
-                }  
-            }  
-        }
-		List<MemberPlReport> list1 = new ArrayList<MemberPlReport>();	
-		list1 = query.list();
-		return list1;
+		PageBean page=new PageBean();
+		page.setPageIndex(pageIndex);
+		page.setPageSize(pageSize);
+		PageBean pageBean=queryByPagination(page, sql,map);
+		return pageBean;
+//		Query<MemberPlReport> query = getSessionFactory().getCurrentSession().createQuery(sql,MemberPlReport.class);
+//		if (map != null) {  
+//            Set<String> keySet = map.keySet();  
+//            for (String string : keySet) {  
+//                Object obj = map.get(string);  
+//            	if(obj instanceof Date){  
+//                	query.setParameter(string, (Date)obj,DateType.INSTANCE); //query.setParameter(string, (Date)obj,DateType.INSTANCE);   此方法为setDate的替代方法 
+//                }else if(obj instanceof Object[]){  
+//                    query.setParameterList(string, (Object[])obj);  
+//                }else{  
+//                    query.setParameter(string, obj);  
+//                }  
+//            }  
+//        }
+//		List<MemberPlReport> list1 = new ArrayList<MemberPlReport>();	
+//		list1 = query.list();
+//		return list1;
 	}
 	@Override
-	public Map<String, Object> queryTeamSum(String startTime, String endTime, String userName) {
+	public Map<String, Object> queryTeamSum(String startTime, String endTime, String userName,List<?> userNameList) {
 		String userNameSql="";
 		String timeSql="";
 		Map<String,Object> map=new HashMap<String,Object>();
 		if(!StringUtils.isBlank(userName)) {
 			userNameSql=" and user_name=:userName";
 			map.put("userName", userName);
+		}else{
+			userNameSql=" and  user_name in(:userNameList)";
+			map.put("userNameList", userNameList);
 		}
 		if(!StringUtils.isBlank(startTime)&&!StringUtils.isBlank(endTime)) {
 			timeSql=" create_time >:startTime and create_time <=:endTime";
@@ -201,14 +212,10 @@ public class MReportDaoImpl extends HibernateDaoSupport implements MReportDao {
 		if(!StringUtils.isBlank(userName)) {
 			sql="SELECT sum(deposit) as sumDeposit,sum(system_recharge) as sumSystemRecharge, sum(withdrawal) as sumWithdrawal, sum(deduction) as sumDeduction, sum(consumption) as sumConsumption, sum(cancel_amount) as sumCancelAmount, sum(return_prize) as sumReturnPrize, sum(rebate) as sumRebate, sum(current_balance) as sumCurrentBalance,sum(recharge_member) as sumRechargeMember,sum(new_members) as sumNewMembers,sum(profit) as sumProfit FROM member_pl_report where "+timeSql+userNameSql;
 		}else {
-			sql="SELECT sum(deposit) as sumDeposit,sum(system_recharge) as sumSystemRecharge, sum(withdrawal) as sumWithdrawal, sum(deduction) as sumDeduction, sum(consumption) as sumConsumption, sum(cancel_amount) as sumCancelAmount, sum(return_prize) as sumReturnPrize, sum(rebate) as sumRebate, sum(current_balance) as sumCurrentBalance,sum(recharge_member) as sumRechargeMember,sum(new_members) as sumNewMembers,sum(profit) as sumProfit FROM member_pl_report where user_type=:userType and"+timeSql;
+			sql="SELECT sum(deposit) as sumDeposit,sum(system_recharge) as sumSystemRecharge, sum(withdrawal) as sumWithdrawal, sum(deduction) as sumDeduction, sum(consumption) as sumConsumption, sum(cancel_amount) as sumCancelAmount, sum(return_prize) as sumReturnPrize, sum(rebate) as sumRebate, sum(current_balance) as sumCurrentBalance,sum(recharge_member) as sumRechargeMember,sum(new_members) as sumNewMembers,sum(profit) as sumProfit FROM member_pl_report where "+timeSql+userNameSql;
 		}
 		logger.debug(sql+"-----------------------------queryLoyTst----SQL--------------------------------");
 	    Query<?> query = getSessionFactory().getCurrentSession().createNativeQuery(sql);
-	    if(StringUtils.isBlank(userName)) {
-			Integer userType=Constants.UserTypes.GENERAL_AGENT.getCode();
-			query.setParameter("userType", userType);  
-		}
 	    if (map != null) {  
             Set<String> keySet = map.keySet();  
             for (String string : keySet) {  
@@ -279,12 +286,8 @@ public class MReportDaoImpl extends HibernateDaoSupport implements MReportDao {
 	    query2.setParameter("startTime", beginDate,DateType.INSTANCE);
 	    query2.setParameter("endTime", endDate,DateType.INSTANCE);
     	List<?> memberPlReportList=null;
-	    try {
-	    	memberPlReportList=query2.list();
-		    logger.debug(memberPlReportList.size()+"-----------------------------queryNextTeamAll----SQL--------------------------------");
-	    }catch(Exception e) {
-	    	e.printStackTrace();
-	    }
+    	memberPlReportList=query2.list();
+	    logger.debug(memberPlReportList.size()+"-----------------------------queryNextTeamAll----SQL--------------------------------");
 	    Iterator<?> it=memberPlReportList.iterator();
 	    List<MemberPlReport> listRecord=new ArrayList<MemberPlReport>();
 		while(it.hasNext()) {

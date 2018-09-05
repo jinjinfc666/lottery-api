@@ -4,7 +4,9 @@ package com.jll.report;
 import java.util.List;
 import java.util.Map;
 
+import com.jll.dao.PageBean;
+
 
 public interface LoyTstService {
-	List<?> queryLoyTst(Map<String,Object> ret);
+	PageBean queryLoyTst(Map<String,Object> ret);
 }

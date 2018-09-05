@@ -1,13 +1,17 @@
 package com.jll.sys.blacklist;
 
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.hibernate.query.Query;
 import org.springframework.stereotype.Repository;
 
 import com.jll.dao.DefaultGenericDaoImpl;
+import com.jll.dao.PageBean;
 import com.jll.entity.IpBlackList;
 @Repository
 public class IpBlackListDaoImpl extends DefaultGenericDaoImpl<IpBlackList> implements IpBlackListDao
@@ -47,11 +51,16 @@ public class IpBlackListDaoImpl extends DefaultGenericDaoImpl<IpBlackList> imple
 	}
 	//查询所有
 	@Override
-	public List<IpBlackList> query() {
+	public Map<String,Object> queryByPageIndex(Integer pageIndex,Integer pageSize) {
+		Map<String,Object> map=new HashMap<String,Object>();
 		String sql = "from IpBlackList";
-	    Query<IpBlackList> query = getSessionFactory().getCurrentSession().createQuery(sql,IpBlackList.class);
-	    List<IpBlackList> list = query.list();
-	    return list;
+		PageBean page=new PageBean();
+		page.setPageIndex(pageIndex);
+		page.setPageSize(pageSize);
+		PageBean pageBean=queryByPagination(page,sql,map);
+		map.clear();
+		map.put("data",pageBean);
+	    return map;
 	}
 	//修改
 	@Override
@@ -65,6 +74,26 @@ public class IpBlackListDaoImpl extends DefaultGenericDaoImpl<IpBlackList> imple
 		Query query = getSessionFactory().getCurrentSession().createQuery(sql);
 		query.setParameter("id", id);
 		query.executeUpdate();
+	}
+	@Override
+	public List<IpBlackList> query() {
+		String sql = "from IpBlackList";
+	    Query<IpBlackList> query = getSessionFactory().getCurrentSession().createQuery(sql,IpBlackList.class);
+	    List<IpBlackList> list = query.list();
+	    return list;
+	}
+	@Override
+	public Map<String,Object> query(Integer pageIndex, Integer pageSize, String ip) {
+		Map<String,Object> map=new HashMap<String,Object>();
+		String sql = "from IpBlackList where ip=:ip";
+		PageBean page=new PageBean();
+		page.setPageIndex(pageIndex);
+		page.setPageSize(pageSize);
+	    map.put("ip", ip);
+		PageBean pageBean=queryByPagination(page,sql,map);
+		map.clear();
+		map.put("data",pageBean);
+	    return map;
 	}
 	
 }

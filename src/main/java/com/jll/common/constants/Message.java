@@ -77,11 +77,18 @@ public class Message {
 		ERROR_PROMS_OTHER_CONDITION_FLOWING_DISSATISFY("010025", "Participation in activities must meet the minimum flowing water rate of %s times, your current flowing water rate of %s times!!"),
 		ERROR_PROMS_ONLY_ONCE_DISSATISFY("010026", "The activity can only take part in one time!!"),
 		ERROR_PROMS_OTHER_CONDITION_BET_AMT_DISSATISFY("010027", "Participation in activities must meet the minimum bet amount of %s times, your current bet amount of %s times!!"),
-		ERROR_USER__WALLET_INVALID("010030", "Wallet is invalid!!"),
-		ERROR_USER_POINT_NOT_ENOUGH("010028", "User point not enough!!!"),
-
-		ERROR_USER_INVALID_WALLET("010030", "Invalid wallet!!!"),
-		ERROR_PROMS_INVALID("010031", "This promo invalid!!!"),
+		ERROR_USER__WALLET_INVALID("010028", "Wallet is invalid!!"),
+		ERROR_USER_POINT_NOT_ENOUGH("010029", "User point not enough!!!"),
+		ERROR_PROMS_INVALID("010030", "This promo invalid!!!"),
+		ERROR_ORDER_ERROR("010031", "This order info error!!!"),
+		ERROR_WTD_PWD_ERROR("010032", "Withdrawal password error!!!"),
+		ERROR_WTD_BIND_BANK_CARD("010033", "Withdrawal befor please bind bank card!!!"),
+		ERROR_WTD_BANK_CARD_ERROR("010034", "Withdrawal bank card info error!!!"),
+		ERROR_WTD_AMT_ERROR("010035", "Minimum withdrawals %s, maximum withdrawals %s!!!"),
+		ERROR_WTD_TIMES_ERROR("010036", "Daily withdrawals can be %s times,You can withdrawals %s times today!!!"),
+		ERROR_USER_BALANCE_NOT_ENOUGH("010037", "User balance not enough !!!"),
+		ERROR_USER_TRANS_RED_WALLET_FAIL("010038", "The current user flow is %s, less than %s, transaction fail !!!"),
+		ERROR_WALLET_IS_FREEZE("010031", "This wallet is freeze!!!!"),
 		
 		/**************third party*************************/
 		ERROR_TP_INVALID_SMS("020001", "Invalid SMS!!"),

@@ -45,7 +45,74 @@ public class Constants {
 		public int getCode() {
 			return value;
 		}
-	}	
+	}
+	
+	public static enum WithdrawOrderState{
+		ORDER_INIT(0,"等待付款"),
+		ORDER_END(1,"付款成功"),
+		ORDER_APPLY_FAILED(2,"审核不通过"),
+		ORDER_BANK_ERROR(3,"银行故障"),
+		ORDER_USER_INFO_ERROR(4,"账户信息错误"),
+		ORDER_OTHER_ERROR(5,"其它错误");
+		
+		private int code;
+		private String value;
+		private WithdrawOrderState(int code, String value) {
+			this.code = code;
+			this.value = value;
+		}
+		public int getCode() {
+			return code;
+		}
+		public void setCode(int code) {
+			this.code = code;
+		}
+		public String getValue() {
+			return value;
+		}
+		public void setValue(String value) {
+			this.value = value;
+		}
+		
+		public static WithdrawOrderState getValueByCode(int code) {
+			WithdrawOrderState[] walletTypes = WithdrawOrderState.values();
+			for(WithdrawOrderState walletType: walletTypes) {
+				if(walletType.getCode() == code) {
+					return walletType;
+				}
+			}
+			return null;
+		}
+		
+	}
+	
+	public static enum WithdrawConif{
+		
+		MIN_WITHDRAWAL_AMT("min_withdrawal_amt","最低提款金额"),
+		MAX_WITHDRAWAL_AMT("max_withdrawal_amt","最高提款金额"),
+		DAY_COUNT("day_count","每日可提款次数"),
+		RED_PACKET_WALLET_RATE("red_packet_wallet_rate","红包余额转主钱包的流水倍数");
+		private String code;
+		private String value;
+		
+		private WithdrawConif(String code, String value) {
+			this.code = code;
+			this.value = value;
+		}
+		public String getCode() {
+			return code;
+		}
+		public void setCode(String code) {
+			this.code = code;
+		}
+		public String getValue() {
+			return value;
+		}
+		public void setValue(String value) {
+			this.value = value;
+		}
+		
+	}
 	
 	/**
 	 *The state required to set the code
@@ -408,6 +475,7 @@ public class Constants {
 	public static enum SysCodeTypes{
 		LOTTERY_TYPES("lottery_type"),
 		BANK_LIST("number_of_bank_cards"),
+		BANK_CODE_LIST("bank_code_list"),
 		FLOW_TYPES("flow_type"),
 		PAYMENT_PLATFORM("payment_platform"),
 		SITE_MSG_VALID_DAY("site_msg_valid_day"),
@@ -424,6 +492,7 @@ public class Constants {
 		SIGN_IN_DAY("sign_in_day"),
 		POINT_EXCHANGE_SCALE("point_exchange_scale"),
 		CT_PLAY_TYPE_CLASSICFICATION("ct_play_type_classicfication"),//"玩法类型"
+		WITHDRAWAL_CFG("withdrawal_cfg"),
 		PAY_TYPE("pay_type");//充值方式
 		private String value;
 		
@@ -851,9 +920,11 @@ public class Constants {
 		SYSTEM_AWARD("system_award","系统派奖"),
 		SYSTEM_REBATE("system_rebate","系统返点"),
 		SYSTEM_WITHDRAWAL("system_withdrawal","系统撤单"),
-		USER_DEPOSIT("user_deposit","用户存款"),
-		SYSTEM_RECHARGE("system_recharge","系统充值"),
-		USER_WITHDRAWAL("user_withdrawal","用户提现"),
+		USER_DEPOSIT("deposit","用户存款"),
+		SYS_ADD("sys_add","系统加钱"),
+		SYS_DEDUCTION("sys_deduction","系统扣除"),
+		THIRD_RECHARGE("third_recharge","三方补单充值"),
+		USER_WITHDRAWAL("withdrawal","用户提现"),
 		RECHARGE_DEDUCTION("recharge_deduction","充值扣除"),
 		ACTIVITY_GIFT_RED("activity_gift_red","活动红包礼金"),
 		CUSTOMER_CLAIMS("customer_claims","客户理赔"),
@@ -865,9 +936,12 @@ public class Constants {
 		GOLD_COINS_AGAINST_THE_RENMINBI("gold_coins_against_the_renminbi","金币兑人民币"),
 		RMB_AGAINST_GOLD_COINS("RMB_against_gold_coins","人民币兑金币"),
 		BANK_FEES("bank_fees","银行手续费"),
-		TRANSFER_OF_FUNDS("transfer_of_funds","资金转移"),
-		ACTIVITY_GIFT_CASH("activity_gift_cash","活动现金礼金"),
-		ACTIVITY_GIFT_POINT("activity_gift_point","活动积分礼金"),
+		TRANSFER_OF_FUNDS("transfer","资金转移"),
+		ACTIVITY_GIFT_CASH("promo_cash","活动现金礼金"),
+		ACTIVITY_GIFT_POINT("promo_points","活动积分礼金"),
+		ACC_UNFREEZE("acc_unfreeze","账户资金解冻"),
+		ACC_FREEZE("acc_freeze","账户资金冻结"),
+		WITHDRAWAL_BACK("withdrawal_back","提款退还"),
 		POINT_EXCHANGE("point_exchange","积分兑换");
 
 		
@@ -886,6 +960,16 @@ public class Constants {
 
 		public String getDesc() {
 			return desc;
+		}
+		
+		public static CreditRecordType getValueByCode(String code) {
+			CreditRecordType[] names = CreditRecordType.values();
+			for(CreditRecordType name: names) {
+				if(name.getCode().equals(code)) {
+					return name;
+				}
+			}
+			return null;
 		}
 	}	
 	/**
@@ -1407,6 +1491,7 @@ public class Constants {
 		ACC_UNFREEZE("acc_unfreeze"),
 		SYS_DEDUCTION("sys_deduction"),
 		SYS_ADD("sys_add"),
+		THIRD_RECHARGE("third_recharge"),
 		DAILY_SIGN_IN("daily_sign_in"),
 		POINTS_EXCHANGE("points_exchange");
 		
@@ -1518,7 +1603,8 @@ public class Constants {
 	//系统内部使用的充值渠道
 	public static enum PayChannelType{
 		ADMIN_SEND_USER("admin_send_user", "管理员的充值申请"),
-		AGENT_SEND_USER("agent_send_user", "代理给用户充值");
+		AGENT_SEND_USER("agent_send_user", "代理给用户充值"),
+		USER_TRANS("user_trans", "会员转账");
 
 		private PayChannelType(String code, String desc) {
 			this.code = code;
@@ -1561,10 +1647,10 @@ public class Constants {
 	
 	   //支付方式
 		public static enum PayType{
-			SYS_PAY("sys_pay"),
-			ZHI_HUI_FU_PAY("zhi_hui_fu_pay"),
+			SELF_PAY("self_pay"),
+			WISDOM_PAYMENT("wisdom_payment"),//智慧付
 			CAI_PAY("cai_pay"),
-			TONG_YUN("tong_yun");
+			TLY_PAY("tly_pay");
 			
 			private String code;
 
@@ -1805,6 +1891,22 @@ public class Constants {
 				map.add(name.getCode());
 			}
 			return map;
+		}
+	}
+	/**
+	 * 分页需要的数据：每页显示多少条数据
+	 */
+	public static enum Pagination{
+		SUM_NUMBER(10);
+		
+		private Integer code;
+		
+		private Pagination(Integer code) {
+			this.code = code;
+		}
+		
+		public Integer getCode() {
+			return this.code;
 		}
 	}
 }

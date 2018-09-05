@@ -1,7 +1,6 @@
 package com.jll.report;
 
 
-import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -27,12 +26,14 @@ public class DWDetailsServiceImpl implements DWDetailsService {
 		Float amountEnd=(Float) ret.get("amountEnd");
 		String startTime=(String) ret.get("startTime");
 		String endTime=(String) ret.get("endTime");
-		return dWDetailsDao.queryDetails(type,state,userName,orderNum,amountStart,amountEnd,startTime,endTime);
+		Integer pageIndex=(Integer) ret.get("pageIndex");
+		Integer pageSize=(Integer) ret.get("pageSize");
+		return dWDetailsDao.queryDetails(type,state,userName,orderNum,amountStart,amountEnd,startTime,endTime,pageIndex,pageSize);
 	}
-	@Override
-	public List<?> queryDWDetails(Map<String, Object> ret) {
-		String type=(String)ret.get("type");
-		Integer id=(Integer) ret.get("id");
-		return dWDetailsDao.queryDWDetails(type, id);
-	}
+//	@Override
+//	public List<?> queryDWDetails(Map<String, Object> ret) {
+//		String type=(String)ret.get("type");
+//		Integer id=(Integer) ret.get("id");
+//		return dWDetailsDao.queryDWDetails(type, id);
+//	}
 }

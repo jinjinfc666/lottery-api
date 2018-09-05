@@ -5,11 +5,13 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
-
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.jll.dao.PageBean;
 import com.jll.entity.MemberPlReport;
+import com.jll.user.UserInfoDao;
 
 
 
@@ -18,13 +20,17 @@ import com.jll.entity.MemberPlReport;
 public class MReportServiceImpl implements MReportService {
 	@Resource
 	MReportDao mReportDao;
+	@Resource
+	UserInfoDao userInfoDao;
 	//会员盈亏报表
 	@Override
-	public List<MemberPlReport> queryAll(Map<String,Object> ret) {
+	public PageBean queryAll(Map<String,Object> ret) {
 		String startTime=(String) ret.get("startTime");
 		String endTime=(String) ret.get("endTime");
 		String userName=(String) ret.get("userName");
-		return mReportDao.queryAll(startTime, endTime, userName);
+		Integer pageIndex=(Integer) ret.get("pageIndex");
+		Integer pageSize=(Integer) ret.get("pageSize");
+		return mReportDao.queryAll(startTime, endTime, userName,pageIndex,pageSize);
 	}
 	@Override
 	public Map<String, Object> querySum(Map<String, Object> ret) {
@@ -35,18 +41,28 @@ public class MReportServiceImpl implements MReportService {
 	}
 	//团队盈亏报表
 	@Override
-	public List<MemberPlReport> queryTeamAll(Map<String, Object> ret) {
+	public PageBean queryTeamAll(Map<String, Object> ret) {
 		String startTime=(String) ret.get("startTime");
 		String endTime=(String) ret.get("endTime");
 		String userName=(String) ret.get("userName");
-		return mReportDao.queryTeamAll(startTime, endTime, userName);
+		Integer pageIndex=(Integer) ret.get("pageIndex");
+		Integer pageSize=(Integer) ret.get("pageSize");
+		List<?> userNameList=null;
+		if(StringUtils.isBlank(userName)) {
+			userNameList=userInfoDao.queryByAll();
+		}
+		return mReportDao.queryTeamAll(startTime, endTime, userName,pageIndex,pageSize,userNameList);
 	}
 	@Override
 	public Map<String, Object> querySumTeam(Map<String, Object> ret) {
 		String startTime=(String) ret.get("startTime");
 		String endTime=(String) ret.get("endTime");
 		String userName=(String) ret.get("userName");
-		return mReportDao.queryTeamSum(startTime, endTime, userName);
+		List<?> userNameList=null;
+		if(StringUtils.isBlank(userName)) {
+			userNameList=userInfoDao.queryByAll();
+		}
+		return mReportDao.queryTeamSum(startTime, endTime, userName,userNameList);
 	}
 	//查找下级
 	@Override

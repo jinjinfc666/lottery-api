@@ -5,21 +5,25 @@ import java.util.List;
 import java.util.Map;
 
 import com.jll.dao.PageBean;
+import com.jll.dao.PageQueryDao;
 import com.jll.entity.SiteMessFeedback;
 import com.jll.entity.SiteMessage;
+import com.jll.entity.UserAccount;
+import com.jll.entity.UserAccountDetails;
 import com.jll.entity.UserBankCard;
 import com.jll.entity.UserInfo;
+import com.jll.entity.WithdrawApplication;
 
 public interface UserInfoService
 {
 	int getUserId(String userName);
 	boolean isUserInfo(String userName);
-	boolean isUserInfoByUid(int userId);
+	boolean isUserInfoByUid(int userId); 
 	Map<String, Object> updateFundPwd(String userName,String oldPwd,String newPwd);
 	Map<String, Object> updateLoginPwd(String userName,String oldPwd,String newPwd);
 	Map<String, Object> getUserInfoByUserName(String userName);
 	Map<String, Object> updateUserInfoInfo(UserInfo userInfo);
-	
+	 
 	/**
 	 * query the user by userName
 	 * @param name
@@ -95,7 +99,14 @@ public interface UserInfoService
 	
 	//获取登陆用户信息，如果OK，返回用户信息
 	UserInfo getCurLoginInfo();
-	Map<String, Object> userProfitReport(String userName);
+	
+	Map<String, Object> userProfitReport(String userName,PageQueryDao page);
+
+	Map<String, Object> userWithdrawApply(String userName, int bankId, double amount, String passoword);
+	Map<String, Object> userWithdrawNotices(String userName, WithdrawApplication wtd);
+	Map<String, Object> userAmountTransfer(String fromUser, String toUser, double amount);
+
+	
 	//查询总代下面的所有一级代理
 	List<UserInfo> queryAllAgent();
 	//点击代理查询下一级代理
@@ -106,4 +117,8 @@ public interface UserInfoService
 	Float calPrizeRate(UserInfo user, String lottoType);
 	
 	PageBean<UserInfo> queryAllUserInfoByPage(PageBean<UserInfo> reqPage);
+	
+	Map<String, Object> userRedWalletAmountTransfer(String userName, double amount);
+	Map<String, Object> directOperationUserAmount(UserAccountDetails dtl);
+	Map<String, Object> userWalletLock(UserAccount dtl);
 }

@@ -19,6 +19,10 @@ public class PageBean<T> {
 	 * 每页记录数
 	 */
 	private Integer pageSize;
+	/**
+	 * 总记录数
+	 */
+	private Long totalNumber;
 	
 	private List<T> content;
 
@@ -52,6 +56,14 @@ public class PageBean<T> {
 
 	public void setContent(List<T> content) {
 		this.content = content;
+	}
+
+	public Long getTotalNumber() {
+		return totalNumber;
+	}
+
+	public void setTotalNumber(Long totalNumber) {
+		this.totalNumber = totalNumber;
 	}
 	
 	

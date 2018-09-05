@@ -10,26 +10,20 @@ import java.util.Set;
 import javax.persistence.NoResultException;
 
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 import org.hibernate.type.DateType;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.hibernate5.support.HibernateDaoSupport;
 import org.springframework.stereotype.Repository;
 
-import com.jll.common.constants.Constants;
+import com.jll.dao.DefaultGenericDaoImpl;
+import com.jll.dao.PageBean;
+import com.jll.entity.UserAccountDetails;
 
 
 @Repository
-public class FlowDetailDaoImpl extends HibernateDaoSupport implements FlowDetailDao {
-	@Autowired
-	public void setSuperSessionFactory(SessionFactory sessionFactory){
-		super.setSessionFactory(sessionFactory);
-	}
+public class FlowDetailDaoImpl extends DefaultGenericDaoImpl<UserAccountDetails> implements FlowDetailDao {
 	@Override
-	public Map<String,Object> queryUserAccountDetails(Integer codeTypeNameId,String userName,String orderNum,Float amountStart,Float amountEnd,String operationType,String startTime,String endTime) {
+	public Map<String,Object> queryUserAccountDetails(Integer codeTypeNameId,String userName,Float amountStart,Float amountEnd,String operationType,String startTime,String endTime,Integer pageIndex,Integer pageSize) {
 		String userNameSql="";
-		String orderNumSql="";
 		String amountStartSql="";
 		String amountEndSql="";
 		String operationTypeSql="";
@@ -39,10 +33,6 @@ public class FlowDetailDaoImpl extends HibernateDaoSupport implements FlowDetail
 		if(!StringUtils.isBlank(userName)) {
 			userNameSql=" and b.userName=:userName";
 			map.put("userName", userName);
-		}
-		if(!StringUtils.isBlank(orderNum)) {
-			orderNumSql=" and d.orderNum=:orderNum";
-			map.put("orderNum", orderNum);
 		}
 		if(amountStart!=null) {
 			amountStartSql=" and a.amount>:amount";
@@ -67,42 +57,33 @@ public class FlowDetailDaoImpl extends HibernateDaoSupport implements FlowDetail
 			map.put("startTime", beginDate);
 			map.put("endTime", endDate);
 		}
-		Integer userType=Constants.UserTypes.SYSTEM_USER.getCode();
-		String sql="from UserAccountDetails a,UserInfo b,SysCode c,OrderInfo d where a.userId=b.id and a.operationType=c.codeName and a.orderId=d.id and c.codeType=:codeTypeNameId and b.userType !=:userType"+userNameSql+orderNumSql+amountStartSql+amountEndSql+operationTypeSql+timeSql+" order by a.id";
-		String sql1="select coalesce(SUM(a.amount),0) from UserAccountDetails a,UserInfo b,SysCode c,OrderInfo d where a.userId=b.id and a.operationType=c.codeName and a.orderId=d.id and c.codeType=:codeTypeNameId and b.userType !=:userType"+userNameSql+orderNumSql+amountStartSql+amountEndSql+operationTypeSql+timeSql+" order by a.id";
-		Query<?> query = getSessionFactory().getCurrentSession().createQuery(sql);
+		String sql="from UserAccountDetails a,UserInfo b,SysCode c where a.userId=b.id and a.operationType=c.codeName and c.codeType=:codeTypeNameId "+userNameSql+amountStartSql+amountEndSql+operationTypeSql+timeSql+" order by a.id";
+		String sql1="select coalesce(SUM(a.amount),0) from UserAccountDetails a,UserInfo b,SysCode c where a.userId=b.id and a.operationType=c.codeName and c.codeType=:codeTypeNameId "+userNameSql+amountStartSql+amountEndSql+operationTypeSql+timeSql+" order by a.id";
+		
 		Query<?> query1 = getSessionFactory().getCurrentSession().createQuery(sql1);
-		query.setParameter("userType", userType);
-		query1.setParameter("userType", userType);
-		query.setParameter("codeTypeNameId", codeTypeNameId);
-		query1.setParameter("codeTypeNameId", codeTypeNameId);
+		map.put("codeTypeNameId", codeTypeNameId);
+		PageBean page=new PageBean();
+		page.setPageIndex(pageIndex);
+		page.setPageSize(pageSize);
+		PageBean pageBean=queryByPagination(page,sql,map);
 		if (map != null) {  
             Set<String> keySet = map.keySet();  
             for (String string : keySet) {  
                 Object obj = map.get(string);  
             	if(obj instanceof Date){  
-                	query.setParameter(string, (Date)obj,DateType.INSTANCE); //query.setParameter(string, (Date)obj,DateType.INSTANCE);   此方法为setDate的替代方法 
-                	query1.setParameter(string, (Date)obj,DateType.INSTANCE);
+                	query1.setParameter(string, (Date)obj,DateType.INSTANCE);//query.setParameter(string, (Date)obj,DateType.INSTANCE);   此方法为setDate的替代方法 
                 }else if(obj instanceof Object[]){  
-                    query.setParameterList(string, (Object[])obj);  
                     query1.setParameterList(string, (Object[])obj);
                 }else{  
-                    query.setParameter(string, obj); 
                     query1.setParameter(string, obj); 
                 }  
             }  
         }
 		map.clear();
-		List<?> cards = new ArrayList<>();
-		Float sumAmount=null;
-		try {			
-			cards = query.list();
-			sumAmount = ((Number)query1.iterate().next()).floatValue();
-			map.put("record", cards);
-			map.put("sumAmount", sumAmount);
-		}catch(NoResultException ex) {
-			
-		}
+		Float sumAmount=null;	
+		sumAmount = ((Number)query1.iterate().next()).floatValue();
+		map.put("sumAmount", sumAmount);
+		map.put("data", pageBean);
 		return map;
 	}
 	

@@ -208,4 +208,17 @@ public class CacheRedisDaoImpl  extends AbstractBaseRedisDao implements CacheRed
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public PageBean queryByPagination(PageBean page, String HQL, Map<String, Object> params) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public long queryCount(String HQL, Map<String, Object> params) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 }

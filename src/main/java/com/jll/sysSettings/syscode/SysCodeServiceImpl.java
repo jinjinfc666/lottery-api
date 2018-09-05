@@ -304,5 +304,39 @@ public class SysCodeServiceImpl implements SysCodeService {
 			return map;
 		}
 	}
+	//修改签到活动的排序
+	@Override
+	public Map<String, Object> updateSmallSignInDaySeq(String BigcodeName, String allId) {
+		Map<String,Object> map=new HashMap<String,Object>();
+		String[] strArray = null;   
+		strArray = allId.split(",");//把字符串转为String数组
+		if(strArray.length>0) {
+			for(int a=0;a<strArray.length;a++) {
+				Integer id=Integer.valueOf(strArray[a]);
+				List<SysCode> list=sysCodeDao.queryById(id);
+				SysCode sysCode=null;
+				SysCode sysCodeCache=null;
+				if(list!=null&&list.size()>=0) {
+					sysCode=list.get(0);
+					sysCode.setSeq(a+1);
+					String codeName=sysCode.getCodeName();
+					sysCodeDao.updateSmallTypeSeq(sysCode);
+//					sysCodeCache=cacheRedisService.getSysCode(BigcodeName, codeName);
+//					sysCodeCache.setSeq(a+1);
+//					cacheRedisService.setSysCode(BigcodeName, sysCodeCache);
+				}
+			}
+			map.clear();
+			map.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+			return map;
+		}else {
+			map.clear();
+			map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			return map;
+		}
+	}
+	
 	
 }

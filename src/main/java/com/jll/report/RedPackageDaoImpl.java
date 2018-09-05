@@ -67,12 +67,8 @@ public class RedPackageDaoImpl extends HibernateDaoSupport implements RedPackage
                 }  
             }  
         }
-		List<?> cards = new ArrayList<>();
-		try {			
-			cards = query.list();
-		}catch(NoResultException ex) {
-			
-		}
+		List<?> cards = new ArrayList<>();	
+		cards = query.list();
 		return cards;
 	}
 	

@@ -1,6 +1,5 @@
 package com.jll.user;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import com.jll.dao.PageBean;
@@ -17,7 +16,7 @@ public interface UserInfoDao
 	 */
 	int getUserId(String userName);
 	long getCountUser(String userName);
-	
+	  
 	UserInfo getUserByUserName(String userName);
 	
 	UserInfo getUserById(Integer userId);
@@ -46,6 +45,14 @@ public interface UserInfoDao
 	boolean checkUserIds(String UserIds);
 	
 	List<UserInfo> queryAllUserInfo(Integer id,String userName,Integer proxyId,String startTime,String endTime);
+	//查询总代下面的所有一级代理
+	List<UserInfo> queryAllAgent(Integer id);
+	//点击代理查询下一级代理
+	List<UserInfo> queryAgentByAgent(Integer id);
+	//查询总代
+	UserInfo querySumAgent();
 	
 	PageBean<UserInfo> queryAllUserInfoByPage(PageBean<UserInfo> reqPage);
+	
+	List<?> queryByAll();
 }

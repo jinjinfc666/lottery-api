@@ -1,7 +1,6 @@
 package com.jll.user;
 
 
-import java.math.BigDecimal;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,7 +17,6 @@ import com.jll.common.constants.Constants.UserType;
 import com.jll.common.utils.StringUtils;
 import com.jll.dao.DefaultGenericDaoImpl;
 import com.jll.dao.PageBean;
-import com.jll.entity.MemberPlReport;
 import com.jll.entity.UserInfo;
 
 @Repository
@@ -26,7 +24,7 @@ public class UserInfoDaoImpl extends DefaultGenericDaoImpl<UserInfo> implements 
 {
 	private Logger logger = Logger.getLogger(UserInfoDaoImpl.class);
 
-
+ 
 	@Override
 	public int getUserId(String userName) {
 		UserInfo userInfo=null;
@@ -202,6 +200,34 @@ public class UserInfoDaoImpl extends DefaultGenericDaoImpl<UserInfo> implements 
 		}
 	}
 
+	//查询总代下面的所有一级代理
+	@Override
+	public List<UserInfo> queryAllAgent(Integer id) {
+		String sql="select * from(select *,FIND_IN_SET(:id,superior) as aa from user_info)a where a.aa=1";
+		Query<UserInfo> query1 = getSessionFactory().getCurrentSession().createNativeQuery(sql,UserInfo.class);
+	    query1.setParameter("id", id);
+	    List<UserInfo> list=query1.list();
+	    return list;
+	}
+	//点击代理查询下一级代理
+	@Override
+	public List<UserInfo> queryAgentByAgent(Integer id) {
+		String sql="select * from(select *,FIND_IN_SET(:id,superior) as aa from user_info)a where a.aa=1";
+		Query<UserInfo> query1 = getSessionFactory().getCurrentSession().createNativeQuery(sql,UserInfo.class);
+	    query1.setParameter("id", id);
+	    List<UserInfo> list=query1.list();
+	    return list;
+	} 
+	//查询总代
+	@Override
+	public UserInfo querySumAgent() {
+		List<Object> params = new ArrayList<>();
+		String sql="from UserInfo where userType=?";
+		params.add(3);
+		List<UserInfo> list=query(sql, params, UserInfo.class);
+		return list.get(0);
+	}
+	
 	@Override
 	public PageBean<UserInfo> queryAllUserInfoByPage(PageBean<UserInfo> reqPage) {
 		String sql = "from UserInfo";
@@ -209,6 +235,18 @@ public class UserInfoDaoImpl extends DefaultGenericDaoImpl<UserInfo> implements 
 		
 		return this.queryByPagination(reqPage, sql, params, UserInfo.class);
 	}
-  
+
+	@Override
+	public List<?> queryByAll() {
+		List<Object> params = new ArrayList<>();
+		String sql="from UserInfo where userType=?";
+		params.add(3);
+		List<UserInfo> list=query(sql, params, UserInfo.class);
+		String sql1="select a.user_name from(select *,FIND_IN_SET(:id,superior) as aa from user_info)a where a.aa=1";
+	    Query<?> query1 = getSessionFactory().getCurrentSession().createNativeQuery(sql1);
+	    query1.setParameter("id", list.get(0).getId());
+	    List<?> userNameList=query1.list();
+	    return userNameList;
+	}
   
 }

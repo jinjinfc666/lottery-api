@@ -20,6 +20,8 @@ import org.springframework.orm.hibernate5.support.HibernateDaoSupport;
 import org.springframework.stereotype.Repository;
 
 import com.jll.common.constants.Constants;
+import com.jll.dao.DefaultGenericDaoImpl;
+import com.jll.dao.PageBean;
 import com.jll.entity.LotteryPlReport;
 import com.jll.entity.MemberPlReport;
 import com.jll.entity.UserInfo;
@@ -29,14 +31,11 @@ import com.jll.entity.UserInfo;
 
 
 @Repository
-public class LReportDaoImpl extends HibernateDaoSupport implements LReportDao {
-	@Autowired
-	public void setSuperSessionFactory(SessionFactory sessionFactory){
-		super.setSessionFactory(sessionFactory);
-	}
+public class LReportDaoImpl extends DefaultGenericDaoImpl<LotteryPlReport> implements LReportDao {
 	//团队盈亏报表(按彩种查询)
+	
 	@Override
-	public List<LotteryPlReport> queryLReport(String codeName, String startTime, String endTime, String userName) {
+	public PageBean queryLReport(String codeName, String startTime, String endTime, String userName,Integer pageIndex,Integer pageSize,List<?> userNameList) {
 		String userNameSql="";
 		String timeSql="";
 		String codeNameSql="";
@@ -48,6 +47,9 @@ public class LReportDaoImpl extends HibernateDaoSupport implements LReportDao {
 		if(!StringUtils.isBlank(userName)) {
 			userNameSql=" and userName=:userName";
 			map.put("userName", userName);
+		}else {
+			userNameSql=" and  userName in(:userNameList)";
+			map.put("userNameList", userNameList);
 		}
 		if(!StringUtils.isBlank(startTime)&&!StringUtils.isBlank(endTime)) {
 			timeSql=" createTime >:startTime and createTime <=:endTime";
@@ -60,34 +62,41 @@ public class LReportDaoImpl extends HibernateDaoSupport implements LReportDao {
 		if(!StringUtils.isBlank(userName)) {
 			sql="from LotteryPlReport  where "+timeSql+userNameSql+codeNameSql+" order by id";
 		}else {
-			sql = "from LotteryPlReport where userType=:userType and"+timeSql+codeNameSql+" order by id";
+			sql = "from LotteryPlReport where "+timeSql+userNameSql+codeNameSql+" order by id";
 		} 
 		logger.debug(sql+"-----------------------------queryLoyTst----SQL--------------------------------");
-		Query<LotteryPlReport> query = getSessionFactory().getCurrentSession().createQuery(sql,LotteryPlReport.class);
-		if(StringUtils.isBlank(userName)) {
-			Integer userType=Constants.UserTypes.GENERAL_AGENT.getCode();
-			query.setParameter("userType", userType);  
-		}
-		if (map != null) {  
-            Set<String> keySet = map.keySet();  
-            for (String string : keySet) {  
-                Object obj = map.get(string);  
-            	if(obj instanceof Date){  
-                	query.setParameter(string, (Date)obj,DateType.INSTANCE); //query.setParameter(string, (Date)obj,DateType.INSTANCE);   此方法为setDate的替代方法 
-                }else if(obj instanceof Object[]){  
-                    query.setParameterList(string, (Object[])obj);  
-                }else{  
-                    query.setParameter(string, obj);  
-                }  
-            }  
-        }
-		List<LotteryPlReport> list1 = new ArrayList<LotteryPlReport>();	
-		list1 = query.list();
-		return list1;
+		PageBean page=new PageBean();
+		page.setPageIndex(pageIndex);
+		page.setPageSize(pageSize);
+		PageBean pageBean=queryByPagination(page, sql,map);
+		return pageBean;
+		
+		
+//		Query<LotteryPlReport> query = getSessionFactory().getCurrentSession().createQuery(sql,LotteryPlReport.class);
+//		if(StringUtils.isBlank(userName)) {
+//			Integer userType=Constants.UserTypes.GENERAL_AGENT.getCode();
+//			query.setParameter("userType", userType);  
+//		}
+//		if (map != null) {  
+//            Set<String> keySet = map.keySet();  
+//            for (String string : keySet) {  
+//                Object obj = map.get(string);  
+//            	if(obj instanceof Date){  
+//                	query.setParameter(string, (Date)obj,DateType.INSTANCE); //query.setParameter(string, (Date)obj,DateType.INSTANCE);   此方法为setDate的替代方法 
+//                }else if(obj instanceof Object[]){  
+//                    query.setParameterList(string, (Object[])obj);  
+//                }else{  
+//                    query.setParameter(string, obj);  
+//                }  
+//            }  
+//        }
+//		List<LotteryPlReport> list1 = new ArrayList<LotteryPlReport>();	
+//		list1 = query.list();
+//		return list1;
 	}
 	//团队盈亏报表(按彩种查询)总计
 	@Override
-	public Map<String,Object> queryLReportSum(String codeName, String startTime, String endTime, String userName) {
+	public Map<String,Object> queryLReportSum(String codeName, String startTime, String endTime, String userName,List<?> userNameList) {
 		String userNameSql="";
 		String timeSql="";
 		String codeNameSql="";
@@ -99,6 +108,9 @@ public class LReportDaoImpl extends HibernateDaoSupport implements LReportDao {
 		if(!StringUtils.isBlank(userName)) {
 			userNameSql=" and user_name=:userName";
 			map.put("userName", userName);
+		}else {
+			userNameSql=" and  user_name in(:userNameList)";
+			map.put("userNameList", userNameList);
 		}
 		if(!StringUtils.isBlank(startTime)&&!StringUtils.isBlank(endTime)) {
 			timeSql=" create_time >:startTime and create_time <=:endTime";
@@ -111,14 +123,10 @@ public class LReportDaoImpl extends HibernateDaoSupport implements LReportDao {
 		if(!StringUtils.isBlank(userName)) {
 			sql="select sum(consumption) as sumConsumption,sum(cancel_amount) as sumCancelAmount,sum(return_prize) as sumSeturnPrize,sum(rebate) as sumRebate,sum(profit) as sumProfit from lottery_pl_report where "+timeSql+userNameSql+codeNameSql;
 		}else {
-			sql = "select sum(consumption) as sumConsumption,sum(cancel_amount) as sumCancelAmount,sum(return_prize) as sumSeturnPrize,sum(rebate) as sumRebate,sum(profit) as sumProfit from lottery_pl_report where user_type=:userType and "+timeSql+codeNameSql;
+			sql = "select sum(consumption) as sumConsumption,sum(cancel_amount) as sumCancelAmount,sum(return_prize) as sumSeturnPrize,sum(rebate) as sumRebate,sum(profit) as sumProfit from lottery_pl_report where "+timeSql+userNameSql+codeNameSql;
 		} 
 		logger.debug(sql+"-----------------------------queryLoyTst----SQL--------------------------------");
 		Query<?> query = getSessionFactory().getCurrentSession().createSQLQuery(sql);
-		if(StringUtils.isBlank(userName)) {
-			Integer userType=Constants.UserTypes.GENERAL_AGENT.getCode();
-			query.setParameter("userType", userType);  
-		}
 		if (map != null) {  
             Set<String> keySet = map.keySet();  
             for (String string : keySet) {  
@@ -165,7 +173,7 @@ public class LReportDaoImpl extends HibernateDaoSupport implements LReportDao {
 	    query.setParameter("userName", userName);
 	    List<UserInfo> list = query.list();
 	    Integer id=list.get(0).getId();
-	    String sql1="select a.user_name from(select *,FIND_IN_SET(:id,superior) as aa from user_info)a where a.aa=1";
+	    String sql1="select a.user_name from (select *,FIND_IN_SET(:id,superior) as aa from user_info)a where a.aa=1";
 	    Query<?> query1 = getSessionFactory().getCurrentSession().createNativeQuery(sql1);
 	    query1.setParameter("id", id);
 	    List<?> userNameList=query1.list();
@@ -178,12 +186,8 @@ public class LReportDaoImpl extends HibernateDaoSupport implements LReportDao {
 	    query2.setParameter("startTime", beginDate,DateType.INSTANCE);
 	    query2.setParameter("endTime", endDate,DateType.INSTANCE);
     	List<?> LReportList=null;
-	    try {
-	    	LReportList=query2.list();
-		    logger.debug(LReportList.size()+"-----------------------------queryNextTeamAll----SQL--------------------------------");
-	    }catch(Exception e) {
-	    	e.printStackTrace();
-	    }
+    	LReportList=query2.list();
+	    logger.debug(LReportList.size()+"-----------------------------queryNextTeamAll----SQL--------------------------------");	    
 	    Iterator<?> it=LReportList.iterator();
 	    List<LotteryPlReport> listRecord=new ArrayList<LotteryPlReport>();
 		while(it.hasNext()) {
@@ -211,12 +215,8 @@ public class LReportDaoImpl extends HibernateDaoSupport implements LReportDao {
 		querysum.setParameter("startTime", beginDate,DateType.INSTANCE);
 		querysum.setParameter("endTime", endDate,DateType.INSTANCE);
     	List<?> ListSum=null;
-	    try {
-	    	ListSum=querysum.list();
-		    logger.debug(ListSum.size()+"-----------------------------queryNextTeamAll----SQL--------------------------------");
-	    }catch(Exception e) {
-	    	e.printStackTrace();
-	    }
+    	ListSum=querysum.list();
+	    logger.debug(ListSum.size()+"-----------------------------queryNextTeamAll----SQL--------------------------------");
 	    Iterator<?> itSum=ListSum.iterator();
 	    List<LotteryPlReport> listRecordSum=new ArrayList<LotteryPlReport>();
 	    LotteryPlReport l=new LotteryPlReport();
