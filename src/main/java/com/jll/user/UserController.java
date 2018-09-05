@@ -711,7 +711,7 @@ public class UserController {
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
 		}
-		return ret;
+		return ret; 
 	}
 	//查询用户详细信息
 	@RequestMapping(value={"/queryUserInfo"}, method={RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)

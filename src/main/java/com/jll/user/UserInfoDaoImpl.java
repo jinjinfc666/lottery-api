@@ -217,7 +217,7 @@ public class UserInfoDaoImpl extends DefaultGenericDaoImpl<UserInfo> implements 
 	    query1.setParameter("id", id);
 	    List<UserInfo> list=query1.list();
 	    return list;
-	}
+	} 
 	//查询总代
 	@Override
 	public UserInfo querySumAgent() {

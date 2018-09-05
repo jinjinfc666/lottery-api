@@ -17,7 +17,11 @@ public interface PayTypeDao
 	//通过id查找存不存在
 	List<PayType> queryById(Integer id);
 	//查询所有数据
-	List<PayType> queryAllPayType();
+	List<?> queryAllPayType(Integer bigCodeNameId);
 	//通过seq  查询数据
 	PayType queryBySeq(Integer seq);
+	//查询所有数据
+	List<PayType> queryAllPayType();
+	//通过id查询某一条数据
+	List<?> queryPayTypeById(Integer id,Integer bigCodeNameId);
 }

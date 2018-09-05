@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -353,9 +354,17 @@ public class PlayTypeController {
 		Map<String, Object> ret = new HashMap<>();
 		try {
 			List<PlayType> list=playTypeService.queryByLotteryType(lotteryType);
+			Map<Integer,PlayType> sysCodeMaps1=new HashMap<Integer, PlayType>();
+			for(int i=0;i<list.size();i++) {
+				PlayType sysCode=list.get(i);
+				if(sysCode.getSeq()!=null) {
+					sysCodeMaps1.put(sysCode.getSeq(), sysCode);
+				}
+			}
+			TreeMap treemap = new TreeMap(sysCodeMaps1);
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-			ret.put("data", list);
+			ret.put("data", treemap);
 			return ret;
 		}catch(Exception e){
 			ret.clear();

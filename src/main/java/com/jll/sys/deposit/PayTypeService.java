@@ -18,9 +18,13 @@ public interface PayTypeService
 	//通过id查找存不存在
 	boolean isNull(Integer id);
 	//查询所有数据
-	List<PayType> queryAllPayType();
+	List<?> queryAllPayType(Integer bigCodeNameId);
 	//修改排序
 	Map<String,Object> updatePayTypeState(String allId);
 	//通过id查找
 	PayType queryById(Integer id);
+	//查询所有数据
+	List<PayType> queryAllPayType();
+	//通过id查询某一条数据
+	List<?> queryPayTypeById(Integer id,Integer bigCodeNameId);
 }

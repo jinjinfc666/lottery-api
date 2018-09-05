@@ -1,5 +1,6 @@
 package com.jll.sys.blacklist;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -67,13 +68,14 @@ public class IpBlackListController {
 	}
 	//查询所有
 	@RequestMapping(value={"/queryAllIpBlackList"}, method={RequestMethod.GET}, produces={"application/json"})
-	public Map<String, Object> queryAllIpBlackList() {
+	public Map<String, Object> queryAllIpBlackList(@RequestParam(name = "pageIndex", required = true) Integer pageIndex,//当前请求页
+			  HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
 		try {
 			ret.clear();
-			List<IpBlackList> list=ipBlackListService.query();
+			Integer pageSize=Constants.Pagination.SUM_NUMBER.getCode();
+			ret=ipBlackListService.queryByPageIndex(pageIndex,pageSize);
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-			ret.put("data", list);
 		}catch(Exception e){
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
@@ -86,7 +88,7 @@ public class IpBlackListController {
 	@RequestMapping(value={"/updateIpBlackList"}, method={RequestMethod.PUT}, produces={"application/json"})
 	public Map<String, Object> updateIpBlackList(@RequestParam(name = "id", required = true) Integer id,
 			  @RequestParam(name = "ip1", required = true) String ip1,
-			  @RequestParam(name = "ip2", required = true) String ip2,
+			  @RequestParam(name = "ip2", required = false) String ip2,
 			  HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
 		IpBlackList ipBlackList=new IpBlackList();
@@ -133,6 +135,33 @@ public class IpBlackListController {
 			}
 			return ret;
 		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+		}
+		return ret;
+	}
+	@RequestMapping(value={"/queryByIp"}, method={RequestMethod.GET}, produces={"application/json"})
+	public Map<String, Object> queryByIp(@RequestParam(name = "ip1", required = true) String ip1,
+			  @RequestParam(name = "ip2", required = false) String ip2,
+			  @RequestParam(name = "pageIndex", required = true) Integer pageIndex,//当前请求页
+			  HttpServletRequest request) {
+		Map<String, Object> ret = new HashMap<>();
+		String ip=null;
+		if(!StringUtils.isBlank(ip2)) {
+			ip=ip1+","+ip2;
+		}else {
+			ip=ip1;
+		}
+		try {
+			Integer pageSize=Constants.Pagination.SUM_NUMBER.getCode();
+			ret.clear();
+			ret=ipBlackListService.queryByIp(pageIndex,pageSize,ip);
+			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+			return ret;
+		}catch(Exception e){
+			e.printStackTrace();
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());

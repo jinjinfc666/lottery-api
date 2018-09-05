@@ -21,7 +21,7 @@ public interface UserInfoService
 	Map<String, Object> updateLoginPwd(String userName,String oldPwd,String newPwd);
 	Map<String, Object> getUserInfoByUserName(String userName);
 	Map<String, Object> updateUserInfoInfo(UserInfo userInfo);
-	
+	 
 	/**
 	 * query the user by userName
 	 * @param name

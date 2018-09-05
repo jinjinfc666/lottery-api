@@ -1080,7 +1080,7 @@ public class UserInfoServiceImpl implements UserInfoService
 			map.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 			if(list!=null&&list.size()>0) { 
 				map.put("data", list);
-			}else {
+			}else { 
 				map.put("data", null);
 			}
 			return map;

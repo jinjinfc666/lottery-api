@@ -3,6 +3,7 @@ package com.jll.sys.deposit;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.springframework.stereotype.Repository;
 
@@ -63,5 +64,24 @@ public class PayChannelDaoImpl extends DefaultGenericDaoImpl<PayChannel> impleme
 	    List<PayChannel> list = query.list();
 		return list;
 	}
-	
+	//修改排序
+	@Override
+	public void updatePayChannelState(Integer id, Integer state) {
+		Session session=getSessionFactory().getCurrentSession();
+		String hql = ("update PayChannel set state=:state where id=:id");  
+		Query query = session.createQuery(hql);
+		query.setParameter("state", state);
+		query.setParameter("id", id);
+		query.executeUpdate();
+	}
+	//修改激活
+	@Override
+	public void updatePayChannelEnableMaxAmount(Integer id, Integer enableMaxAmount) {
+		Session session=getSessionFactory().getCurrentSession();
+		String hql = ("update PayChannel set enableMaxAmount=:enableMaxAmount where id=:id");  
+		Query query = session.createQuery(hql);
+		query.setParameter("enableMaxAmount", enableMaxAmount);
+		query.setParameter("id", id);
+		query.executeUpdate();
+	}
 }
