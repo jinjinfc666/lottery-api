@@ -1197,7 +1197,7 @@ public class UserInfoServiceImpl implements UserInfoService
 		operTypes.add(CreditRecordType.PLATFORM_REWARD.getCode());
 		operTypes.add(CreditRecordType.BANK_FEES.getCode());
 		
-		UserInfo userInfo = userDao.getUserById(dtl.getId());
+		UserInfo userInfo = userDao.getUserById(dtl.getUserId());
 		if(null == CreditRecordType.getValueByCode(dtl.getOperationType())
 				|| null == userInfo
 				|| Utils.toDouble(dtl.getAmount()) == 0.00){
@@ -1234,7 +1234,7 @@ public class UserInfoServiceImpl implements UserInfoService
 	@Override
 	public Map<String, Object> userWalletLock(UserAccount dtl) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		UserInfo userInfo = userDao.getUserById(dtl.getId());
+		UserInfo userInfo = userDao.getUserById(dtl.getUserId());
 		
 		if((dtl.getAccType() > 0 && null == WalletType.getWalletTypeByCode(dtl.getAccType()))
 				|| null == userInfo
