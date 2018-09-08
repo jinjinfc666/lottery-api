@@ -114,7 +114,7 @@ public interface UserInfoService
 	//通过id查看这个用户是否存在
 	boolean isOrNoUserInfo(Integer id);
 	
-	Float calPrizeRate(UserInfo user, String lottoType);
+	Float calPrizePattern(UserInfo user, String lottoType);
 	
 	PageBean<UserInfo> queryAllUserInfoByPage(PageBean<UserInfo> reqPage);
 	

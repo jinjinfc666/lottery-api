@@ -37,6 +37,7 @@ import com.jll.game.LotteryTypeService;
 import com.jll.game.order.OrderService;
 import com.jll.game.playtype.PlayTypeFacade;
 import com.jll.game.playtype.PlayTypeService;
+import com.jll.game.playtypefacade.PlayTypeFactory;
 import com.jll.spring.extend.SpringContextUtil;
 import com.jll.user.UserInfoService;
 import com.jll.user.details.UserAccountDetailsService;

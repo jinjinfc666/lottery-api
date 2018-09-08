@@ -24,9 +24,9 @@ import com.jll.entity.Issue;
 import com.jll.entity.PlayType;
 import com.jll.entity.SysCode;
 import com.jll.entity.UserInfo;
-import com.jll.game.cqssc.PlayTypeFactory;
 import com.jll.game.playtype.PlayTypeFacade;
 import com.jll.game.playtype.PlayTypeService;
+import com.jll.game.playtypefacade.PlayTypeFactory;
 import com.jll.user.UserInfoService;
 
 @Configuration
@@ -147,6 +147,7 @@ public class LotteryCenterServiceImpl implements LotteryCenterService
 	 */
 	
 	public synchronized void processScheduleIssue() {
+		logger.debug(String.format("It's ready to process schedule....."));
 		Map<String, SysCode> lottoTypes = cacheServ.getSysCode(Constants.SysCodeTypes.LOTTERY_TYPES.getCode());
 		if(lottoTypes == null || lottoTypes.size() == 0) {
 			return ;
@@ -163,18 +164,22 @@ public class LotteryCenterServiceImpl implements LotteryCenterService
 	}
 
 	private void processBulletinBoard(SysCode lottoType) {
+		logger.debug(String.format("It's ready to process bulletinBoard....."));
 		Issue currIssue = null;
 		initBulletinBoard(lottoType);
 		
 		if(!isPlanExisting(lottoType.getCodeName())) {
+			logger.debug(String.format("%s plan no more...", lottoType));
 			return ;
 		}
-						
+		
+		
 		currIssue = changeIssueState(lottoType.getCodeName());
 		
 		if(currIssue != null && 
 				currIssue.getState() == Constants.IssueState.END_ISSUE.getCode()
 				&& hasMoreIssue(lottoType.getCodeName())) {
+			logger.debug(String.format("move to next issue...."));
 			cacheServ.publishMessage(Constants.TOPIC_WINNING_NUMBER, currIssue.getIssueNum());
 			
 			currIssue = moveToNext(currIssue, lottoType.getCodeName());
@@ -182,6 +187,8 @@ public class LotteryCenterServiceImpl implements LotteryCenterService
 	}
 
 	private Issue changeIssueState(String lottoType) {
+		logger.debug(String.format("Trying to change state..."));
+		
 		BulletinBoard bulletinBoard = cacheServ.getBulletinBoard(lottoType);
 		Issue currIssue = null;
 		Date currTime = new Date();
@@ -226,16 +233,27 @@ public class LotteryCenterServiceImpl implements LotteryCenterService
 			currIssue.setState(Constants.IssueState.END_BETTING.getCode());
 			temp.setState(Constants.IssueState.END_BETTING.getCode());
 			hasChanged = true;
+			logger.debug(String.format("Converting state from %s to %s",
+					Constants.IssueState.BETTING.getCode(), 
+					Constants.IssueState.END_BETTING.getCode()));
 		}else if(currIssue.getState() == Constants.IssueState.END_BETTING.getCode()
 				&& endTime.getTime() <= currTime.getTime()) {
 			currIssue.setState(Constants.IssueState.END_ISSUE.getCode());
 			temp.setState(Constants.IssueState.END_ISSUE.getCode());
 			hasChanged = true;
+			
+			logger.debug(String.format("Converting state from %s to %s",
+					Constants.IssueState.END_BETTING.getCode(), 
+					Constants.IssueState.END_ISSUE.getCode()));
 		}else if(currIssue.getState() == Constants.IssueState.INIT.getCode()
 				&& startTime.getTime() <= currTime.getTime()) {
 			currIssue.setState(Constants.IssueState.BETTING.getCode());
 			temp.setState(Constants.IssueState.BETTING.getCode());
 			hasChanged = true;
+			
+			logger.debug(String.format("Converting state from %s to %s",
+					Constants.IssueState.INIT.getCode(), 
+					Constants.IssueState.BETTING.getCode()));
 		}
 		
 		if(hasChanged) {
@@ -349,7 +367,11 @@ public class LotteryCenterServiceImpl implements LotteryCenterService
 		String userName = SecurityContextHolder.getContext().getAuthentication().getName();
 		UserInfo user = userServ.getUserByUserName(userName);
 		
-		playTypeName = lotteryType + "/" + playType.getClassification() + "/" + playType.getPtName();
+		if(playType.getPtName().equals("fs") || playType.getPtName().equals("ds")) {
+			playTypeName = lotteryType + "/" + playType.getClassification() + "/fs-ds";
+		}else {
+			playTypeName = lotteryType + "/" + playType.getClassification() + "/" + playType.getPtName();			
+		}
 		playTypeFacade = PlayTypeFactory.getInstance().getPlayTypeFacade(playTypeName);
 		
 		Map<String, Object> retData = playTypeFacade.preProcessNumber(params, user);

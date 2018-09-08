@@ -1100,14 +1100,30 @@ public class UserInfoServiceImpl implements UserInfoService
 		return false;
 	}
 	@Override
-	public Float calPrizeRate(UserInfo user, String lottoType) {
-		String lottoAttrType = Constants.KEY_LOTTO_ATTRI_PREFIX + lottoType;
-		SysCode prizeRange = cacheServ.getSysCode(lottoAttrType, Constants.LotteryAttributes.LOTTO_PRIZE_RATE.getCode());
+	public Float calPrizePattern(UserInfo user, String lottoType) {
+		String keyRunTimeArg = Constants.SysCodeTypes.SYS_RUNTIME_ARGUMENT.getCode();
+		String keyPrizeRange = Constants.SysRuntimeArgument.LOTTO_PRIZE_RATE.getCode();
+		String keyMaxPlatRebate = Constants.SysRuntimeArgument.MAX_PLAT_REBATE.getCode();
+		SysCode prizeRange = cacheServ.getSysCode(keyRunTimeArg, keyPrizeRange);
+		SysCode maxPlatRebate = cacheServ.getSysCode(keyRunTimeArg, keyMaxPlatRebate);
 		String[] prizeRanges = prizeRange.getCodeVal().split(",");
-		Float prizeRate = MathUtil.multiply(user.getPlatRebate().floatValue(), 
-				Constants.VAL_REBATE_PRIZE_RATE, Float.class);
-		prizeRate = MathUtil.subtract(Float.valueOf(prizeRanges[1]), prizeRate, Float.class);
-		return prizeRate;
+		Double valRebatePrizeRate = null;
+		Float minPrize = Float.valueOf(prizeRanges[0]);
+		Float maxPrize = Float.valueOf(prizeRanges[1]);
+		Float prizePattern = null;
+		
+		valRebatePrizeRate = MathUtil.subtract(maxPrize, minPrize, Double.class);
+		valRebatePrizeRate = MathUtil.divide(valRebatePrizeRate, 
+				Float.valueOf(maxPlatRebate.getCodeVal()).floatValue(), 
+				2);
+		valRebatePrizeRate = MathUtil.multiply(valRebatePrizeRate.floatValue(), 
+				user.getPlatRebate().floatValue(), 
+				Double.class);
+		
+		prizePattern = MathUtil.subtract(Float.valueOf(prizeRanges[1]), 
+				valRebatePrizeRate.floatValue(), 
+				Float.class);
+		return prizePattern;
 	}
 
 	@Override

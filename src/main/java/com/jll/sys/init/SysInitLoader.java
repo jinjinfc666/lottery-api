@@ -66,7 +66,9 @@ public class SysInitLoader {
 		initLuckyDraw();
 		initSignInDay();
 		initSysCodePayType();
+		initSysRuntimeArgument();
 	}
+	
 	//加载签到活动
 	private void initSignInDay() {
 		String codeTypeName = Constants.SysCodeTypes.SIGN_IN_DAY.getCode();
@@ -215,6 +217,7 @@ public class SysInitLoader {
 			cacheServ.setSysCode(codeTypeName, sysCodes);
 		}
 	}
+	
 	//加载ip限制
 	private void initIpBlackList() {
 		String codeTypeName = Constants.IpBlackList.IP_BLACK_LIST.getCode();
@@ -317,6 +320,22 @@ public class SysInitLoader {
 				return ;
 			}
 			cacheServ.setPayChannel(payChannelName, payChannelLists);
+		}
+	}
+	
+	private void initSysRuntimeArgument() {
+		String keySysRuntimeArg = Constants.SysCodeTypes.SYS_RUNTIME_ARGUMENT.getCode();
+		Map<String, SysCode> sysRuntimeArgs = cacheServ.getSysRuntimeArg(keySysRuntimeArg);
+		List<SysCode> sysRuntimeArgList = sysCodeServ.queryAllSmallType(keySysRuntimeArg);
+		
+		if(sysRuntimeArgList == null || sysRuntimeArgList.size() == 0) {
+			return ;
+		}
+		
+		if(sysRuntimeArgs == null 
+				|| sysRuntimeArgs.size() != sysRuntimeArgList.size()) {
+			
+			cacheServ.setSysCode(keySysRuntimeArg, sysRuntimeArgList);
 		}
 	}
 		

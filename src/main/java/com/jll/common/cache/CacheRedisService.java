@@ -173,4 +173,11 @@ public interface CacheRedisService {
 	void setPayChannel(String codeName, PayChannel payChannel);
 	
 	void setPayChannel(String codeName, List<PayChannel> payChannelLists);
+
+	/**
+	 * 系统运行参数
+	 * @param keySysRuntimeArg
+	 * @return
+	 */
+	Map<String, SysCode> getSysRuntimeArg(String keySysRuntimeArg);
 }

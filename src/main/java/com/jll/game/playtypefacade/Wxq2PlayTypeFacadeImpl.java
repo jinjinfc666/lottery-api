@@ -1,4 +1,4 @@
-package com.jll.game.cqssc;
+package com.jll.game.playtypefacade;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -7,31 +7,17 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import com.jll.common.cache.CacheRedisService;
-import com.jll.common.constants.Constants;
 import com.jll.common.utils.MathUtil;
 import com.jll.common.utils.StringUtils;
 import com.jll.entity.Issue;
 import com.jll.entity.OrderInfo;
-import com.jll.entity.SysCode;
 import com.jll.entity.UserInfo;
-import com.jll.game.playtype.PlayTypeFacade;
-import com.jll.spring.extend.SpringContextUtil;
-import com.jll.user.UserInfoService;
 
-/**
- * bet number like : 1[;2],2,3---->万 千 百位
- * @author Administrator
- *
- */
-public class QszxPlayTypeFacadeImpl implements PlayTypeFacade {
-	private Logger logger = Logger.getLogger(QszxPlayTypeFacadeImpl.class);
+public class Wxq2PlayTypeFacadeImpl  extends DefaultPlayTypeFacadeImpl {
 	
-	private String playTypeDesc = "cqssc/qszx|前三直选";
+	private Logger logger = Logger.getLogger(Wxq2PlayTypeFacadeImpl.class);
 	
-	CacheRedisService cacheServ = (CacheRedisService)SpringContextUtil.getBean("cacheRedisServiceImpl");
-	
-	UserInfoService userServ = (UserInfoService)SpringContextUtil.getBean("userInfoServiceImpl");
+	protected String playTypeDesc = "cqssc/wxq2|五星前二/fs-ds";
 	
 	@Override
 	public boolean isMatchWinningNum(Issue issue, OrderInfo order) {
@@ -48,7 +34,6 @@ public class QszxPlayTypeFacadeImpl implements PlayTypeFacade {
 		betNum = order.getBetNum();
 		winNum = winNum.substring(0,3);
 		winNumSet = winNum.split(",");
-		//betNumSet = betNum.split(",");
 		betNumMul = betNum.split(";");
 		
 		for(String temp : betNumMul) {
@@ -64,13 +49,6 @@ public class QszxPlayTypeFacadeImpl implements PlayTypeFacade {
 			}else {
 				betNumSet[1] = betNumSet[1] + tempSet[1];
 			}
-			
-			if(StringUtils.isBlank(betNumSet[2])) {
-				betNumSet[2] = tempSet[2];
-			}else {
-				betNumSet[2] = betNumSet[2] + tempSet[2];
-			}			
-			
 		}
 		
 		logger.debug("proced bet number is :: " + Arrays.asList(betNumSet));
@@ -86,14 +64,16 @@ public class QszxPlayTypeFacadeImpl implements PlayTypeFacade {
 	}
 
 	@Override
-	public Map<String, Object> preProcessNumber(Map<String, Object> params, UserInfo user) {		
+	public Map<String, Object> preProcessNumber(Map<String, Object> params, UserInfo user) {
 		Map<String, Object> ret = new HashMap<>();
 		String betNum = (String)params.get("betNum");
 		Integer times = (Integer)params.get("times");
 		Float monUnit = (Float)params.get("monUnit");
 		Integer playType = (Integer)params.get("playType");
 		String lottoType = (String)params.get("lottoType");
-		Float prizeRate = userServ.calPrizeRate(user, lottoType);
+		Float prizePattern = userServ.calPrizePattern(user, lottoType);
+		BigDecimal winningRate = calWinningRate();
+		BigDecimal singleBettingPrize = calSingleBettingPrize(prizePattern, winningRate);
 		String[] betNumSet = null;
 		int betTotal = 1;
 		Float betAmount = 0F;
@@ -107,13 +87,13 @@ public class QszxPlayTypeFacadeImpl implements PlayTypeFacade {
 		
 		betAmount = MathUtil.multiply(betTotal, times, Float.class);
 		betAmount = MathUtil.multiply(betAmount, monUnit, Float.class);
-		maxWinAmount = MathUtil.multiply(betAmount, prizeRate, Float.class);
+		maxWinAmount = MathUtil.multiply(betAmount, singleBettingPrize.floatValue(), Float.class);
 		
 		ret.put("playType", playType);
 		ret.put("betAmount", betAmount);
 		ret.put("maxWinAmount", maxWinAmount);
 		ret.put("betTotal", betTotal);
-		ret.put("prizeRate", prizeRate);
+		ret.put("singleBettingPrize", singleBettingPrize);
 		return ret;
 	}
 
@@ -128,16 +108,26 @@ public class QszxPlayTypeFacadeImpl implements PlayTypeFacade {
 	public boolean validBetNum(OrderInfo order) {
 		String betNum = null;
 		String[] betNumSet = null;
-		
+		String[] betNumMul = null;
 		betNum = order.getBetNum();
 		if(StringUtils.isBlank(betNum)) {
 			return false;
 		}
 		
-		betNumSet = betNum.split(",");
-		if(betNumSet == null || betNumSet.length != 3) {
-			return false;
+		betNumMul = betNum.split(";");
+		for(String betNumTemp : betNumMul) {
+			betNumSet = betNumTemp.split(",");
+			if(betNumSet == null || betNumSet.length != 2) {
+				return false;
+			}
+			
+			for(String temp : betNumSet) {
+				if(StringUtils.isBlank(temp)) {
+					return false;
+				}
+			}			
 		}
+		
 		
 		return true;
 	}
@@ -153,13 +143,16 @@ public class QszxPlayTypeFacadeImpl implements PlayTypeFacade {
 		String betNum = null;
 		String winNum = null;
 		int winningBetAmount = 0;
-		/*BigDecimal prize = null;
-		int betTotal = 1;*/
 		Float betAmount = 0F;
 		Float maxWinAmount = 0F;
 		Integer times = order.getTimes();
 		BigDecimal monUnit = order.getPattern();
-		Float prizeRate = userServ.calPrizeRate(user, issue.getLotteryType());
+		BigDecimal singleBettingPrize = null;
+		
+		//1700 --- 1960
+		Float prizePattern = userServ.calPrizePattern(user, issue.getLotteryType());
+		BigDecimal winningRate = calWinningRate();
+		singleBettingPrize =  calSingleBettingPrize(prizePattern, winningRate);
 		
 		winNum = issue.getRetNum();
 		betNum = order.getBetNum();
@@ -167,22 +160,37 @@ public class QszxPlayTypeFacadeImpl implements PlayTypeFacade {
 		winNumSet = winNum.split(",");
 		betNumMul = betNum.split(";");
 		
-
+		
 		for(String singleSel : betNumMul) {
 			betNumSet = singleSel.split(",");
 			if(betNumSet[0].contains(winNumSet[0])
-					&& betNumSet[1].contains(winNumSet[1])
-					&& betNumSet[2].contains(winNumSet[2])) {
+					&& betNumSet[1].contains(winNumSet[1])) {
 				winningBetAmount++;
 			}
 		}
 		
 		betAmount = MathUtil.multiply(winningBetAmount, times, Float.class);
 		betAmount = MathUtil.multiply(betAmount, monUnit, Float.class);
-		maxWinAmount = MathUtil.multiply(betAmount, prizeRate, Float.class);
-		
-		
+		maxWinAmount = MathUtil.multiply(betAmount, singleBettingPrize, Float.class);
 		
 		return new BigDecimal(maxWinAmount);
+	}
+
+	/* (non-Javadoc)
+	 * @see com.jll.game.playtype.PlayTypeFacade#calWinningRate()
+	 * 
+	 * 1/1000
+	 */
+	@Override
+	public BigDecimal calWinningRate() {
+		BigDecimal winningRate = null;
+		BigDecimal winCount = new BigDecimal(1);
+		BigDecimal totalCount = null;
+		Double tempVal = Double.parseDouble(Long.toString(MathUtil.combination(1, 10)));
+		
+		tempVal = Math.pow(tempVal, 2);
+		totalCount = new BigDecimal(tempVal);
+		winningRate = winCount.divide(totalCount);
+		return winningRate;
 	}
 }
