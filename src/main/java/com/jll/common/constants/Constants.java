@@ -493,7 +493,8 @@ public class Constants {
 		POINT_EXCHANGE_SCALE("point_exchange_scale"),
 		CT_PLAY_TYPE_CLASSICFICATION("ct_play_type_classicfication"),//"玩法类型"
 		WITHDRAWAL_CFG("withdrawal_cfg"),
-		PAY_TYPE("pay_type");//充值方式
+		PAY_TYPE("pay_type"),//充值方式
+		SYS_RUNTIME_ARGUMENT("sys_runtime_argument");
 		private String value;
 		
 		private SysCodeTypes(String value) {
@@ -1977,5 +1978,24 @@ public class Constants {
 			}
 			return map;
 		}
+	}
+
+	/**
+	 * 系统运行时参数
+	 */
+	public static enum SysRuntimeArgument{
+		LOTTO_PRIZE_RATE("lotto_prize_rate"),
+		MAX_PLAT_REBATE("max_plat_rebate");
+		
+		private String code;
+		
+		private SysRuntimeArgument(String code) {
+			this.code = code;
+		}
+		
+		public String getCode() {
+			return this.code;
+		}
+		
 	}
 }

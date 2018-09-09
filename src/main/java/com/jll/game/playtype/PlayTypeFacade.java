@@ -8,7 +8,7 @@ import com.jll.entity.OrderInfo;
 import com.jll.entity.UserInfo;
 
 public interface PlayTypeFacade
-{
+{	
 	String getPlayTypeDesc();
 	
 	/**
@@ -33,6 +33,18 @@ public interface PlayTypeFacade
 	 * @return
 	 */
 	boolean validBetNum(OrderInfo order);
+	
+	/**
+	 * 计算赢的概率
+	 * @return
+	 */
+	BigDecimal calWinningRate();
+	
+	/**
+	 * 计算1注奖金
+	 * @return
+	 */
+	BigDecimal calSingleBettingPrize(Float prizePattern, BigDecimal winningRate);
 	
 	/**
 	 * 计算中奖的投注数

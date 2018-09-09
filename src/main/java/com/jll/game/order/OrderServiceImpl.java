@@ -30,9 +30,9 @@ import com.jll.entity.SysCode;
 import com.jll.entity.UserAccount;
 import com.jll.entity.UserAccountDetails;
 import com.jll.entity.UserInfo;
-import com.jll.game.cqssc.PlayTypeFactory;
 import com.jll.game.playtype.PlayTypeFacade;
 import com.jll.game.playtype.PlayTypeService;
+import com.jll.game.playtypefacade.PlayTypeFactory;
 import com.jll.user.UserInfoService;
 import com.jll.user.details.UserAccountDetailsService;
 import com.jll.user.wallet.WalletService;
@@ -83,13 +83,13 @@ public class OrderServiceImpl implements OrderService
 		String seqVal = null;
 		int bettingBlockTimes = 1000;
 		int bettingBlockCounter = 0;
-		PlayTypeFacade playTypeFacade = null;
-		Integer playTypeId = null;
+		/*PlayTypeFacade playTypeFacade = null;*/
+		/*Integer playTypeId = null;
 		PlayType playType = null;
-		Map<String, Object> betInfo = null;
-		Map<String, Object> params = null;
-		String playTypeName = null;
-		boolean isBetNumValid = false;
+		Map<String, Object> betInfo = null;*/
+		/*Map<String, Object> params = null;*/
+		//String playTypeName = null;
+		/*boolean isBetNumValid = false;*/
 		
 				
 		isWalletValid = isWalletValid(walletId);
@@ -102,7 +102,7 @@ public class OrderServiceImpl implements OrderService
 			return String.valueOf(Message.Error.ERROR_GAME_EXPIRED_ISSUE.getCode());
 		}
 		
-		isBalValid = verifyBal(orders, wallet);
+		isBalValid = verifyBal(orders, wallet, lotteryType, user);
 		if(!isBalValid) {
 			return String.valueOf(Message.Error.ERROR_GAME_BAL_INSUFFICIENT.getCode());
 		}
@@ -132,7 +132,7 @@ public class OrderServiceImpl implements OrderService
 		
 		for(OrderInfo order : orders) {
 			
-			if(playTypeFacade == null) {
+			/*if(playTypeFacade == null) {
 				playTypeId = order.getPlayType();
 				if(playTypeId == null) {
 					return String.valueOf(Message.Error.ERROR_GAME_NO_PLAY_TYPE.getCode());
@@ -144,29 +144,29 @@ public class OrderServiceImpl implements OrderService
 				
 				playTypeName = lotteryType + "/" + playType.getClassification() + "/" + playType.getPtName();
 				playTypeFacade = PlayTypeFactory.getInstance().getPlayTypeFacade(playTypeName);
-			}
+			}*/
 			
-			isBetNumValid = playTypeFacade.validBetNum(order);
+			/*isBetNumValid = playTypeFacade.validBetNum(order);
 			if(!isBetNumValid) {
 				return String.valueOf(Message.Error.ERROR_GAME_INVALID_BET_NUM.getCode());
-			}
+			}*/
 			
-			params = new HashMap<>();
+			/*params = new HashMap<>();
 			params.put("betNum", order.getBetNum());
 			params.put("times", order.getTimes());
 			params.put("monUnit", order.getPattern().floatValue());
-			params.put("lottoType", lotteryType);
+			params.put("lottoType", lotteryType);*/
 			
-			betInfo = playTypeFacade.preProcessNumber(params, user);
+			//betInfo = playTypeFacade.preProcessNumber(params, user);
 			seqVal = Utils.gen16DigitsSeq(getSeq());
 			order.setWalletId(walletId);
 			order.setOrderNum(seqVal);
 			order.setUserId(user.getId());
 			order.setCreateTime(currTime);
 			order.setState(Constants.OrderState.WAITTING_PAYOUT.getCode());
-			order.setBetAmount((Float)betInfo.get("betAmount"));
+			/*order.setBetAmount((Float)betInfo.get("betAmount"));
 			order.setBetTotal((Integer)betInfo.get("betTotal"));
-			order.setPrizeRate(new BigDecimal((Float)betInfo.get("prizeRate")));
+			order.setPrizeRate(new BigDecimal((Float)betInfo.get("singleBettingPrize")));*/
 			orderDao.saveOrders(order);
 			
 			UserAccountDetails userDetails = new UserAccountDetails();
@@ -217,10 +217,53 @@ public class OrderServiceImpl implements OrderService
 		return false;
 	}
 
-	private boolean verifyBal(List<OrderInfo> orders, UserAccount wallet) {
+	private boolean verifyBal(List<OrderInfo> orders, UserAccount wallet, String lotteryType, UserInfo user) {
 		BigDecimal bal = wallet.getBalance();
 		BigDecimal totalAmount = new BigDecimal(0);
+		PlayTypeFacade playTypeFacade = null;
+		Integer playTypeId = null;
+		PlayType playType = null;
+		String playTypeName = null;
+		Map<String, Object> params = null;
+		Map<String, Object> betInfo = null;
+		boolean isBetNumValid = false;
+		
 		for(OrderInfo order : orders) {
+			
+			if(playTypeFacade == null) {
+				playTypeId = order.getPlayType();
+				if(playTypeId == null) {
+					return false;
+				}
+				playType = playTypeServ.queryById(playTypeId);
+				if(playType == null) {
+					return false;
+				}
+				
+				if(playType.getPtName().equals("fs") || playType.getPtName().equals("ds")) {
+					playTypeName = playType.getClassification() + "/fs-ds";
+				}else {
+					playTypeName = playType.getClassification() + "/" + playType.getPtName();			
+				}
+				playTypeFacade = PlayTypeFactory.getInstance().getPlayTypeFacade(playTypeName);
+			}
+			
+			isBetNumValid = playTypeFacade.validBetNum(order);
+			if(!isBetNumValid) {
+				return false;
+			}
+			
+			params = new HashMap<>();
+			params.put("betNum", order.getBetNum());
+			params.put("times", order.getTimes());
+			params.put("monUnit", order.getPattern().floatValue());
+			params.put("lottoType", lotteryType);
+			
+			betInfo = playTypeFacade.preProcessNumber(params, user);
+			order.setBetAmount((Float)betInfo.get("betAmount"));
+			order.setBetTotal((Integer)betInfo.get("betTotal"));
+			order.setPrizeRate((BigDecimal)betInfo.get("singleBettingPrize"));
+			
 			BigDecimal betAmount = new BigDecimal(order.getBetAmount());
 			totalAmount = totalAmount.add(betAmount);
 		}

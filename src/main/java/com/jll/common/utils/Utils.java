@@ -216,6 +216,12 @@ public class Utils {
 		}
 		return null;
 	}
+
+	public static boolean validateNum(String betNumTemp) {
+		String regex = "[0-9]+";
+		return Pattern.matches(regex, betNumTemp);
+	}
+
 	public static void main(String[] args) {
 		BigDecimal sd = new BigDecimal(0.00);
 		System.out.println(toDouble(sd));
