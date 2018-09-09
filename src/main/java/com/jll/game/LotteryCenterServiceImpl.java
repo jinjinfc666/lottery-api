@@ -147,6 +147,7 @@ public class LotteryCenterServiceImpl implements LotteryCenterService
 	 */
 	
 	public synchronized void processScheduleIssue() {
+		logger.debug("---------------遍历开始-----------------------");	
 		Map<String, SysCode> lottoTypes = cacheServ.getSysCode(Constants.SysCodeTypes.LOTTERY_TYPES.getCode());
 		if(lottoTypes == null || lottoTypes.size() == 0) {
 			return ;
@@ -165,13 +166,14 @@ public class LotteryCenterServiceImpl implements LotteryCenterService
 	private void processBulletinBoard(SysCode lottoType) {
 		Issue currIssue = null;
 		initBulletinBoard(lottoType);
-		
+		logger.debug(!isPlanExisting(lottoType.getCodeName())+"---------------进入changeIssueState（）-----------------------");		
 		if(!isPlanExisting(lottoType.getCodeName())) {
 			return ;
 		}
-						
+		logger.debug("---------------进入changeIssueState（）-----------------------");			
 		currIssue = changeIssueState(lottoType.getCodeName());
-		
+		logger.debug(currIssue+"-----------------------------------");
+		logger.debug(currIssue.getState()+"--------------state---------------------"+Constants.IssueState.END_ISSUE.getCode());
 		if(currIssue != null && 
 				currIssue.getState() == Constants.IssueState.END_ISSUE.getCode()
 				&& hasMoreIssue(lottoType.getCodeName())) {
@@ -196,16 +198,18 @@ public class LotteryCenterServiceImpl implements LotteryCenterService
 		String codeValName = Constants.LotteryAttributes.BETTING_END_TIME.getCode();
 		SysCode lottoAttri = cacheServ.getSysCode(codeTypeName, codeValName);
 		boolean hasChanged = false;
-		
+
+		logger.debug(lottoAttri+"---------------lottoAttri-----------------------");
 		if(lottoAttri == null) {
 			return null;
 		}
-		
+		logger.debug(bulletinBoard+"---------------bulletinBoard-----------------------");
 		if(bulletinBoard == null) {
 			return null;
 		}
 		currIssue = bulletinBoard.getCurrIssue();
-		
+
+		logger.debug(currIssue+"---------------currIssue-----------------------");
 		if(currIssue == null) {
 			return null;
 		}
@@ -216,11 +220,13 @@ public class LotteryCenterServiceImpl implements LotteryCenterService
 				Integer.valueOf(lottoAttri.getCodeVal())*-1);
 		endTime = DateUtils.addSeconds(endTime, -5);
 		temp = issueServ.getIssueById(currIssue.getId());
-		
+		logger.debug(temp+"---------------temp-----------------------");
 		if(temp == null) {
 			return null;
 		}
-		
+		logger.debug(currIssue.getState()+"-----------currIssue.getState()------------"+endBettingTime.getTime()+"--------endBettingTime.getTime()-----------"+currTime.getTime()+"-------------currTime.getTime()------------");
+		logger.debug(endTime.getTime()+"------------------endTime.getTime()--------------------");
+		logger.debug(startTime.getTime()+"------------startTime.getTime()---------------");
 		if(currIssue.getState() == Constants.IssueState.BETTING.getCode()
 				&& endBettingTime.getTime() <= currTime.getTime()) {
 			currIssue.setState(Constants.IssueState.END_BETTING.getCode());
@@ -274,6 +280,7 @@ public class LotteryCenterServiceImpl implements LotteryCenterService
 		nextIssue = plans.get(indx);
 		nextIssue.setState(Constants.IssueState.BETTING.getCode());
 		plans.set(indx, nextIssue);
+		logger.debug(nextIssue);
 		issueServ.saveIssue(nextIssue);
 		cacheServ.setPlan(cacheKey, plans);
 		
