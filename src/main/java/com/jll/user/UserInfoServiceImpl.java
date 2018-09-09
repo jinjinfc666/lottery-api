@@ -2,9 +2,11 @@ package com.jll.user;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -452,14 +454,12 @@ public class UserInfoServiceImpl implements UserInfoService
 	public void resetLoginPwd(UserInfo user) {
 		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();		
 		user.setLoginPwd(encoder.encode(defaultPwd));
-		
 		userDao.saveUser(user);
 	}
 	@Override
 	public void resetFundPwd(UserInfo user) {
 		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();		
 		user.setFundPwd(encoder.encode(defaultPwd));
-		
 		userDao.saveUser(user);
 	}
 	@Override
@@ -754,22 +754,40 @@ public class UserInfoServiceImpl implements UserInfoService
 	//修改用户状态
 	@Override
 	public void updateUserType(UserInfo user) {
+		Integer state=user.getState();
+		Calendar calendar = new GregorianCalendar();
+		Date date = new Date();
+		if(state==0) {
+			user.setUnlockTime(date);
+		}else if(state==1){
+			calendar.setTime(date);
+			calendar.add(calendar.YEAR, 10);//把日期往后增加一年.整数往后推,负数往前移动
+			date=calendar.getTime();
+			user.setUnlockTime(date);
+		}else if(state==2) {
+			calendar.setTime(date);
+			calendar.add(calendar.YEAR, 10);//把日期往后增加一年.整数往后推,负数往前移动
+			date=calendar.getTime();
+			user.setUnlockTime(date);
+		}
 		userDao.saveUser(user);
 	}
 	//查询所有的用户
 	@Override
-	public List<UserInfo> queryAllUserInfo(Map<String, Object> map) {
+	public Map<String,Object> queryAllUserInfo(Map<String, Object> map) {
 		Integer id=(Integer) map.get("id");
 		String userName=(String) map.get("userName");
 		String proxyName=(String) map.get("proxyName");
 		String startTime=(String) map.get("startTime");
 		String endTime=(String) map.get("endTime");
+		Integer pageIndex=(Integer) map.get("pageIndex");
+		Integer pageSize=(Integer) map.get("pageSize");
 		UserInfo userInfo=userDao.getUserByUserName(proxyName);
 		Integer proxyId=null;
 		if(userInfo!=null) {
 			proxyId=userInfo.getId();
 		}
-		List<UserInfo> userInfoList=userDao.queryAllUserInfo(id, userName, proxyId, startTime, endTime);
+		Map<String,Object> userInfoList=userDao.queryAllUserInfo(id, userName, proxyId, startTime, endTime,pageIndex,pageSize);
 		return userInfoList;
 	}
 	
@@ -1197,7 +1215,7 @@ public class UserInfoServiceImpl implements UserInfoService
 		operTypes.add(CreditRecordType.PLATFORM_REWARD.getCode());
 		operTypes.add(CreditRecordType.BANK_FEES.getCode());
 		
-		UserInfo userInfo = userDao.getUserById(dtl.getId());
+		UserInfo userInfo = userDao.getUserById(dtl.getUserId());
 		if(null == CreditRecordType.getValueByCode(dtl.getOperationType())
 				|| null == userInfo
 				|| Utils.toDouble(dtl.getAmount()) == 0.00){
@@ -1209,9 +1227,9 @@ public class UserInfoServiceImpl implements UserInfoService
 		UserAccount mainAcc = null;
 		//操作主账号
 		if(operTypes.contains(dtl.getOperationType())){
-			mainAcc = (UserAccount) supserDao.findByName(UserAccount.class, "userId",userInfo.getUserId(), "accType", WalletType.MAIN_WALLET.getCode()).get(0);
+			mainAcc = (UserAccount) supserDao.findByName(UserAccount.class, "userId",userInfo.getId(), "accType", WalletType.MAIN_WALLET.getCode()).get(0);
 		}else{
-			mainAcc = (UserAccount) supserDao.findByName(UserAccount.class, "userId",userInfo.getUserId(), "accType", WalletType.RED_PACKET_WALLET.getCode()).get(0);
+			mainAcc = (UserAccount) supserDao.findByName(UserAccount.class, "userId",userInfo.getId(), "accType", WalletType.RED_PACKET_WALLET.getCode()).get(0);
 		}
 		
 		if(dtl.getAmount() < 0
@@ -1221,7 +1239,23 @@ public class UserInfoServiceImpl implements UserInfoService
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_BALANCE_NOT_ENOUGH.getErrorMes());
 			return ret;
 		}
-		UserAccountDetails accDtal1 = userAccountDetailsService.initCreidrRecord(mainAcc.getUserId(), mainAcc, mainAcc.getBalance().doubleValue(), dtl.getAmount(),dtl.getOperationType());
+		int userId=mainAcc.getUserId();
+		UserAccount userAcc=mainAcc;
+		double beforAmt=mainAcc.getBalance().doubleValue();
+		double addAmt=dtl.getAmount();
+		String operType=dtl.getOperationType();
+		
+		Map<String,Integer> map=Constants.CreditRecordType.getNumberMap();
+		boolean isNo=map.containsKey(operType);
+		if(isNo) {
+			addAmt=addAmt*(map.get(operType));
+		}else {
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+			return ret;
+		}
+		UserAccountDetails accDtal1 = userAccountDetailsService.initCreidrRecord(userId,userAcc,beforAmt,addAmt,operType);
 		mainAcc.setBalance(new BigDecimal(accDtal1.getPostAmount()));
 		supserDao.save(accDtal1);
 		supserDao.update(mainAcc);
