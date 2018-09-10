@@ -49,6 +49,18 @@ public class PlayTypeFactory {
 		EleIn5Rx6PlayTypeFacadeImpl eleIn5Rx6PlayTypeFacadeImpl = new EleIn5Rx6PlayTypeFacadeImpl();
 		EleIn5Rx7PlayTypeFacadeImpl eleIn5Rx7PlayTypeFacadeImpl = new EleIn5Rx7PlayTypeFacadeImpl();
 		EleIn5Rx8PlayTypeFacadeImpl eleIn5Rx8PlayTypeFacadeImpl = new EleIn5Rx8PlayTypeFacadeImpl();
+		Pk10QyzxPlayTypeFacadeImpl pk10QyzxPlayTypeFacadeImpl = new Pk10QyzxPlayTypeFacadeImpl();
+		Pk10QezxPlayTypeFacadeImpl pk10QezxPlayTypeFacadeImpl = new Pk10QezxPlayTypeFacadeImpl();
+		Pk10QszxPlayTypeFacadeImpl pk10QszxPlayTypeFacadeImpl = new Pk10QszxPlayTypeFacadeImpl();
+		Pk10DwdPlayTypeFacadeImpl pk10DwdPlayTypeFacadeImpl = new Pk10DwdPlayTypeFacadeImpl();
+		Pk10Lh1V10PlayTypeFacadeImpl pk10Lh1V10PlayTypeFacadeImpl = new Pk10Lh1V10PlayTypeFacadeImpl();
+		Pk10Lh2V9PlayTypeFacadeImpl pk10Lh2V9PlayTypeFacadeImpl = new Pk10Lh2V9PlayTypeFacadeImpl();
+		Pk10Lh3V8PlayTypeFacadeImpl pk10Lh3V8PlayTypeFacadeImpl = new Pk10Lh3V8PlayTypeFacadeImpl();
+		Pk10Lh4V7PlayTypeFacadeImpl pk10Lh4V7PlayTypeFacadeImpl = new Pk10Lh4V7PlayTypeFacadeImpl();
+		Pk10Lh5V6PlayTypeFacadeImpl pk10Lh5V6PlayTypeFacadeImpl = new Pk10Lh5V6PlayTypeFacadeImpl();
+		Pk10Ds1PlayTypeFacadeImpl pk10Ds1PlayTypeFacadeImpl = new Pk10Ds1PlayTypeFacadeImpl();
+		Pk10Ds2PlayTypeFacadeImpl pk10Ds2PlayTypeFacadeImpl = new Pk10Ds2PlayTypeFacadeImpl();
+		Pk10Ds3PlayTypeFacadeImpl pk10Ds3PlayTypeFacadeImpl = new Pk10Ds3PlayTypeFacadeImpl();
 		
 		playTypeFacades.add(qszxPlayTypeFacadeImpl);
 		playTypeFacades.add(zszxPlayTypeFacadeImpl);
@@ -86,6 +98,18 @@ public class PlayTypeFactory {
 		playTypeFacades.add(eleIn5Rx6PlayTypeFacadeImpl);
 		playTypeFacades.add(eleIn5Rx7PlayTypeFacadeImpl);
 		playTypeFacades.add(eleIn5Rx8PlayTypeFacadeImpl);
+		playTypeFacades.add(pk10QyzxPlayTypeFacadeImpl);
+		playTypeFacades.add(pk10QezxPlayTypeFacadeImpl);
+		playTypeFacades.add(pk10QszxPlayTypeFacadeImpl);
+		playTypeFacades.add(pk10DwdPlayTypeFacadeImpl);
+		playTypeFacades.add(pk10Lh1V10PlayTypeFacadeImpl);
+		playTypeFacades.add(pk10Lh2V9PlayTypeFacadeImpl);
+		playTypeFacades.add(pk10Lh3V8PlayTypeFacadeImpl);
+		playTypeFacades.add(pk10Lh4V7PlayTypeFacadeImpl);
+		playTypeFacades.add(pk10Lh5V6PlayTypeFacadeImpl);
+		playTypeFacades.add(pk10Ds1PlayTypeFacadeImpl);
+		playTypeFacades.add(pk10Ds2PlayTypeFacadeImpl);
+		playTypeFacades.add(pk10Ds3PlayTypeFacadeImpl);
 	}
 	
 	public static PlayTypeFactory getInstance() {

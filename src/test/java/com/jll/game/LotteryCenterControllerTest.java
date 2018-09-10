@@ -3570,7 +3570,7 @@ public class LotteryCenterControllerTest extends ControllerJunitBase{
 	}
 	
 	
-	public void testBetting_guanDong11In5_Rx8() throws Exception{
+	public void ItestBetting_guanDong11In5_Rx8() throws Exception{
 		int maxTimes = 10000;
 		int counter = 0;
 		
@@ -3664,6 +3664,1438 @@ public class LotteryCenterControllerTest extends ControllerJunitBase{
 			
 		}
 	}
+	
+	public void ItestBetting_pk10_qy() throws Exception{
+		int maxTimes = 10000;
+		int counter = 0;
+		
+		while(counter < maxTimes) {
+			Thread.sleep(1000);
+			
+			if(counter == 0) {
+				Thread exe = new Thread(new Runnable(){
+					@Override
+					public void run() {
+						
+						try {
+							Thread.sleep(1*60*1000);
+						} catch (InterruptedException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						String userName = "test001";
+						String pwd = "test001";
+						
+						String token = queryToken(userName, pwd);
+						ObjectMapper mapper = new ObjectMapper();
+						ByteArrayInputStream bis = null;
+						try {
+							Issue currIssue = queryCurrIssue(token);
+							int counter = 0;
+							while(currIssue == null && counter <= 200) {
+								counter++;
+								
+								currIssue = queryCurrIssue(token);
+							}
+							
+							if(currIssue == null) {
+								Assert.fail("Can't obtain the current issue!!!!");
+							}
+							
+							ArrayNode array = mapper.createArrayNode();
+							
+							ObjectNode node = array.addObject();
+							node.putPOJO("issueId", currIssue.getId());
+							node.putPOJO("playType", 63);
+							node.putPOJO("betNum", "0203");
+							node.putPOJO("times", "1");
+							node.putPOJO("pattern", "1");
+							node.putPOJO("isZh", "0");
+							node.putPOJO("terminalType", "0");
+							
+							bis = new ByteArrayInputStream(mapper.writeValueAsBytes(array));
+							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/cqssc/bet/zh/1/wallet/15",
+									bis,
+									MediaType.APPLICATION_JSON_VALUE);
+							WebConversation wc = new WebConversation();
+							
+							request.setHeaderField("Authorization", "Bearer " + token);
+							
+							WebResponse response = wc.sendRequest(request);
+							
+							int  status = response.getResponseCode();
+							
+							Assert.assertEquals(HttpServletResponse.SC_OK, status);
+							String result = response.getText();
+							
+							Map<String, Object> retItems = null;
+							
+							retItems = mapper.readValue(result, HashMap.class);
+							
+							Assert.assertNotNull(retItems);
+							
+							Assert.assertEquals(Message.status.SUCCESS.getCode(), retItems.get(Message.KEY_STATUS));
+						} catch (Exception e) {
+							e.printStackTrace();
+							//throw e;
+						}finally {
+							if(bis != null) {
+								try {
+									bis.close();
+								} catch (IOException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+							}
+						}
+						
+					}
+				});
+				
+				exe.start();
+			}
+			
+			counter++;
+			
+		}
+	}
+	
+	
+	public void ItestBetting_pk10_qe() throws Exception{
+		int maxTimes = 10000;
+		int counter = 0;
+		
+		while(counter < maxTimes) {
+			Thread.sleep(1000);
+			
+			if(counter == 0) {
+				Thread exe = new Thread(new Runnable(){
+					@Override
+					public void run() {
+						
+						try {
+							Thread.sleep(1*60*1000);
+						} catch (InterruptedException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						String userName = "test001";
+						String pwd = "test001";
+						
+						String token = queryToken(userName, pwd);
+						ObjectMapper mapper = new ObjectMapper();
+						ByteArrayInputStream bis = null;
+						try {
+							Issue currIssue = queryCurrIssue(token);
+							int counter = 0;
+							while(currIssue == null && counter <= 200) {
+								counter++;
+								
+								currIssue = queryCurrIssue(token);
+							}
+							
+							if(currIssue == null) {
+								Assert.fail("Can't obtain the current issue!!!!");
+							}
+							
+							ArrayNode array = mapper.createArrayNode();
+							
+							ObjectNode node = array.addObject();
+							node.putPOJO("issueId", currIssue.getId());
+							node.putPOJO("playType", 64);
+							node.putPOJO("betNum", "0203,0405");
+							node.putPOJO("times", "1");
+							node.putPOJO("pattern", "1");
+							node.putPOJO("isZh", "0");
+							node.putPOJO("terminalType", "0");
+							
+							bis = new ByteArrayInputStream(mapper.writeValueAsBytes(array));
+							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/cqssc/bet/zh/1/wallet/15",
+									bis,
+									MediaType.APPLICATION_JSON_VALUE);
+							WebConversation wc = new WebConversation();
+							
+							request.setHeaderField("Authorization", "Bearer " + token);
+							
+							WebResponse response = wc.sendRequest(request);
+							
+							int  status = response.getResponseCode();
+							
+							Assert.assertEquals(HttpServletResponse.SC_OK, status);
+							String result = response.getText();
+							
+							Map<String, Object> retItems = null;
+							
+							retItems = mapper.readValue(result, HashMap.class);
+							
+							Assert.assertNotNull(retItems);
+							
+							Assert.assertEquals(Message.status.SUCCESS.getCode(), retItems.get(Message.KEY_STATUS));
+						} catch (Exception e) {
+							e.printStackTrace();
+							//throw e;
+						}finally {
+							if(bis != null) {
+								try {
+									bis.close();
+								} catch (IOException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+							}
+						}
+						
+					}
+				});
+				
+				exe.start();
+			}
+			
+			counter++;
+			
+		}
+	}
+	
+	public void ItestBetting_pk10_qs() throws Exception{
+		int maxTimes = 10000;
+		int counter = 0;
+		
+		while(counter < maxTimes) {
+			Thread.sleep(1000);
+			
+			if(counter == 0) {
+				Thread exe = new Thread(new Runnable(){
+					@Override
+					public void run() {
+						
+						try {
+							Thread.sleep(1*60*1000);
+						} catch (InterruptedException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						String userName = "test001";
+						String pwd = "test001";
+						
+						String token = queryToken(userName, pwd);
+						ObjectMapper mapper = new ObjectMapper();
+						ByteArrayInputStream bis = null;
+						try {
+							Issue currIssue = queryCurrIssue(token);
+							int counter = 0;
+							while(currIssue == null && counter <= 200) {
+								counter++;
+								
+								currIssue = queryCurrIssue(token);
+							}
+							
+							if(currIssue == null) {
+								Assert.fail("Can't obtain the current issue!!!!");
+							}
+							
+							ArrayNode array = mapper.createArrayNode();
+							
+							ObjectNode node = array.addObject();
+							node.putPOJO("issueId", currIssue.getId());
+							node.putPOJO("playType", 65);
+							node.putPOJO("betNum", "0203,0405,0608");
+							node.putPOJO("times", "1");
+							node.putPOJO("pattern", "1");
+							node.putPOJO("isZh", "0");
+							node.putPOJO("terminalType", "0");
+							
+							bis = new ByteArrayInputStream(mapper.writeValueAsBytes(array));
+							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/cqssc/bet/zh/1/wallet/15",
+									bis,
+									MediaType.APPLICATION_JSON_VALUE);
+							WebConversation wc = new WebConversation();
+							
+							request.setHeaderField("Authorization", "Bearer " + token);
+							
+							WebResponse response = wc.sendRequest(request);
+							
+							int  status = response.getResponseCode();
+							
+							Assert.assertEquals(HttpServletResponse.SC_OK, status);
+							String result = response.getText();
+							
+							Map<String, Object> retItems = null;
+							
+							retItems = mapper.readValue(result, HashMap.class);
+							
+							Assert.assertNotNull(retItems);
+							
+							Assert.assertEquals(Message.status.SUCCESS.getCode(), retItems.get(Message.KEY_STATUS));
+						} catch (Exception e) {
+							e.printStackTrace();
+							//throw e;
+						}finally {
+							if(bis != null) {
+								try {
+									bis.close();
+								} catch (IOException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+							}
+						}
+						
+					}
+				});
+				
+				exe.start();
+			}
+			
+			counter++;
+			
+		}
+	}
+	
+	
+	
+	public void ItestBetting_pk10_Lh_1v10() throws Exception{
+		int maxTimes = 10000;
+		int counter = 0;
+		
+		while(counter < maxTimes) {
+			Thread.sleep(1000);
+			
+			if(counter == 0) {
+				Thread exe = new Thread(new Runnable(){
+					@Override
+					public void run() {
+						
+						try {
+							Thread.sleep(1*60*1000);
+						} catch (InterruptedException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						String userName = "test001";
+						String pwd = "test001";
+						
+						String token = queryToken(userName, pwd);
+						ObjectMapper mapper = new ObjectMapper();
+						ByteArrayInputStream bis = null;
+						try {
+							Issue currIssue = queryCurrIssue(token);
+							int counter = 0;
+							while(currIssue == null && counter <= 200) {
+								counter++;
+								
+								currIssue = queryCurrIssue(token);
+							}
+							
+							if(currIssue == null) {
+								Assert.fail("Can't obtain the current issue!!!!");
+							}
+							
+							ArrayNode array = mapper.createArrayNode();
+							
+							ObjectNode node = array.addObject();
+							node.putPOJO("issueId", currIssue.getId());
+							node.putPOJO("playType", 68);
+							node.putPOJO("betNum", "01");
+							node.putPOJO("times", "1");
+							node.putPOJO("pattern", "1");
+							node.putPOJO("isZh", "0");
+							node.putPOJO("terminalType", "0");
+							
+							bis = new ByteArrayInputStream(mapper.writeValueAsBytes(array));
+							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/cqssc/bet/zh/1/wallet/15",
+									bis,
+									MediaType.APPLICATION_JSON_VALUE);
+							WebConversation wc = new WebConversation();
+							
+							request.setHeaderField("Authorization", "Bearer " + token);
+							
+							WebResponse response = wc.sendRequest(request);
+							
+							int  status = response.getResponseCode();
+							
+							Assert.assertEquals(HttpServletResponse.SC_OK, status);
+							String result = response.getText();
+							
+							Map<String, Object> retItems = null;
+							
+							retItems = mapper.readValue(result, HashMap.class);
+							
+							Assert.assertNotNull(retItems);
+							
+							Assert.assertEquals(Message.status.SUCCESS.getCode(), retItems.get(Message.KEY_STATUS));
+						} catch (Exception e) {
+							e.printStackTrace();
+							//throw e;
+						}finally {
+							if(bis != null) {
+								try {
+									bis.close();
+								} catch (IOException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+							}
+						}
+						
+					}
+				});
+				
+				exe.start();
+			}
+			
+			counter++;
+			
+		}
+	}
+	
+	public void ItestBetting_pk10_Lh_2v9() throws Exception{
+		int maxTimes = 10000;
+		int counter = 0;
+		
+		while(counter < maxTimes) {
+			Thread.sleep(1000);
+			
+			if(counter == 0) {
+				Thread exe = new Thread(new Runnable(){
+					@Override
+					public void run() {
+						
+						try {
+							Thread.sleep(1*60*1000);
+						} catch (InterruptedException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						String userName = "test001";
+						String pwd = "test001";
+						
+						String token = queryToken(userName, pwd);
+						ObjectMapper mapper = new ObjectMapper();
+						ByteArrayInputStream bis = null;
+						try {
+							Issue currIssue = queryCurrIssue(token);
+							int counter = 0;
+							while(currIssue == null && counter <= 200) {
+								counter++;
+								
+								currIssue = queryCurrIssue(token);
+							}
+							
+							if(currIssue == null) {
+								Assert.fail("Can't obtain the current issue!!!!");
+							}
+							
+							ArrayNode array = mapper.createArrayNode();
+							
+							ObjectNode node = array.addObject();
+							node.putPOJO("issueId", currIssue.getId());
+							node.putPOJO("playType", 69);
+							node.putPOJO("betNum", "01");
+							node.putPOJO("times", "1");
+							node.putPOJO("pattern", "1");
+							node.putPOJO("isZh", "0");
+							node.putPOJO("terminalType", "0");
+							
+							bis = new ByteArrayInputStream(mapper.writeValueAsBytes(array));
+							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/cqssc/bet/zh/1/wallet/15",
+									bis,
+									MediaType.APPLICATION_JSON_VALUE);
+							WebConversation wc = new WebConversation();
+							
+							request.setHeaderField("Authorization", "Bearer " + token);
+							
+							WebResponse response = wc.sendRequest(request);
+							
+							int  status = response.getResponseCode();
+							
+							Assert.assertEquals(HttpServletResponse.SC_OK, status);
+							String result = response.getText();
+							
+							Map<String, Object> retItems = null;
+							
+							retItems = mapper.readValue(result, HashMap.class);
+							
+							Assert.assertNotNull(retItems);
+							
+							Assert.assertEquals(Message.status.SUCCESS.getCode(), retItems.get(Message.KEY_STATUS));
+						} catch (Exception e) {
+							e.printStackTrace();
+							//throw e;
+						}finally {
+							if(bis != null) {
+								try {
+									bis.close();
+								} catch (IOException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+							}
+						}
+						
+					}
+				});
+				
+				exe.start();
+			}
+			
+			counter++;
+			
+		}
+	}
+	
+	
+	public void ItestBetting_pk10_Lh_3v8() throws Exception{
+		int maxTimes = 10000;
+		int counter = 0;
+		
+		while(counter < maxTimes) {
+			Thread.sleep(1000);
+			
+			if(counter == 0) {
+				Thread exe = new Thread(new Runnable(){
+					@Override
+					public void run() {
+						
+						try {
+							Thread.sleep(1*60*1000);
+						} catch (InterruptedException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						String userName = "test001";
+						String pwd = "test001";
+						
+						String token = queryToken(userName, pwd);
+						ObjectMapper mapper = new ObjectMapper();
+						ByteArrayInputStream bis = null;
+						try {
+							Issue currIssue = queryCurrIssue(token);
+							int counter = 0;
+							while(currIssue == null && counter <= 200) {
+								counter++;
+								
+								currIssue = queryCurrIssue(token);
+							}
+							
+							if(currIssue == null) {
+								Assert.fail("Can't obtain the current issue!!!!");
+							}
+							
+							ArrayNode array = mapper.createArrayNode();
+							
+							ObjectNode node = array.addObject();
+							node.putPOJO("issueId", currIssue.getId());
+							node.putPOJO("playType", 70);
+							node.putPOJO("betNum", "01");
+							node.putPOJO("times", "1");
+							node.putPOJO("pattern", "1");
+							node.putPOJO("isZh", "0");
+							node.putPOJO("terminalType", "0");
+							
+							bis = new ByteArrayInputStream(mapper.writeValueAsBytes(array));
+							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/cqssc/bet/zh/1/wallet/15",
+									bis,
+									MediaType.APPLICATION_JSON_VALUE);
+							WebConversation wc = new WebConversation();
+							
+							request.setHeaderField("Authorization", "Bearer " + token);
+							
+							WebResponse response = wc.sendRequest(request);
+							
+							int  status = response.getResponseCode();
+							
+							Assert.assertEquals(HttpServletResponse.SC_OK, status);
+							String result = response.getText();
+							
+							Map<String, Object> retItems = null;
+							
+							retItems = mapper.readValue(result, HashMap.class);
+							
+							Assert.assertNotNull(retItems);
+							
+							Assert.assertEquals(Message.status.SUCCESS.getCode(), retItems.get(Message.KEY_STATUS));
+						} catch (Exception e) {
+							e.printStackTrace();
+							//throw e;
+						}finally {
+							if(bis != null) {
+								try {
+									bis.close();
+								} catch (IOException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+							}
+						}
+						
+					}
+				});
+				
+				exe.start();
+			}
+			
+			counter++;
+			
+		}
+	}
+	
+	public void ItestBetting_pk10_Lh_4v7() throws Exception{
+		int maxTimes = 10000;
+		int counter = 0;
+		
+		while(counter < maxTimes) {
+			Thread.sleep(1000);
+			
+			if(counter == 0) {
+				Thread exe = new Thread(new Runnable(){
+					@Override
+					public void run() {
+						
+						try {
+							Thread.sleep(1*60*1000);
+						} catch (InterruptedException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						String userName = "test001";
+						String pwd = "test001";
+						
+						String token = queryToken(userName, pwd);
+						ObjectMapper mapper = new ObjectMapper();
+						ByteArrayInputStream bis = null;
+						try {
+							Issue currIssue = queryCurrIssue(token);
+							int counter = 0;
+							while(currIssue == null && counter <= 200) {
+								counter++;
+								
+								currIssue = queryCurrIssue(token);
+							}
+							
+							if(currIssue == null) {
+								Assert.fail("Can't obtain the current issue!!!!");
+							}
+							
+							ArrayNode array = mapper.createArrayNode();
+							
+							ObjectNode node = array.addObject();
+							node.putPOJO("issueId", currIssue.getId());
+							node.putPOJO("playType", 71);
+							node.putPOJO("betNum", "01");
+							node.putPOJO("times", "1");
+							node.putPOJO("pattern", "1");
+							node.putPOJO("isZh", "0");
+							node.putPOJO("terminalType", "0");
+							
+							bis = new ByteArrayInputStream(mapper.writeValueAsBytes(array));
+							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/cqssc/bet/zh/1/wallet/15",
+									bis,
+									MediaType.APPLICATION_JSON_VALUE);
+							WebConversation wc = new WebConversation();
+							
+							request.setHeaderField("Authorization", "Bearer " + token);
+							
+							WebResponse response = wc.sendRequest(request);
+							
+							int  status = response.getResponseCode();
+							
+							Assert.assertEquals(HttpServletResponse.SC_OK, status);
+							String result = response.getText();
+							
+							Map<String, Object> retItems = null;
+							
+							retItems = mapper.readValue(result, HashMap.class);
+							
+							Assert.assertNotNull(retItems);
+							
+							Assert.assertEquals(Message.status.SUCCESS.getCode(), retItems.get(Message.KEY_STATUS));
+						} catch (Exception e) {
+							e.printStackTrace();
+							//throw e;
+						}finally {
+							if(bis != null) {
+								try {
+									bis.close();
+								} catch (IOException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+							}
+						}
+						
+					}
+				});
+				
+				exe.start();
+			}
+			
+			counter++;
+			
+		}
+	}
+	
+	
+	public void ItestBetting_pk10_Lh_5v6() throws Exception{
+		int maxTimes = 10000;
+		int counter = 0;
+		
+		while(counter < maxTimes) {
+			Thread.sleep(1000);
+			
+			if(counter == 0) {
+				Thread exe = new Thread(new Runnable(){
+					@Override
+					public void run() {
+						
+						try {
+							Thread.sleep(1*60*1000);
+						} catch (InterruptedException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						String userName = "test001";
+						String pwd = "test001";
+						
+						String token = queryToken(userName, pwd);
+						ObjectMapper mapper = new ObjectMapper();
+						ByteArrayInputStream bis = null;
+						try {
+							Issue currIssue = queryCurrIssue(token);
+							int counter = 0;
+							while(currIssue == null && counter <= 200) {
+								counter++;
+								
+								currIssue = queryCurrIssue(token);
+							}
+							
+							if(currIssue == null) {
+								Assert.fail("Can't obtain the current issue!!!!");
+							}
+							
+							ArrayNode array = mapper.createArrayNode();
+							
+							ObjectNode node = array.addObject();
+							node.putPOJO("issueId", currIssue.getId());
+							node.putPOJO("playType", 72);
+							node.putPOJO("betNum", "01");
+							node.putPOJO("times", "1");
+							node.putPOJO("pattern", "1");
+							node.putPOJO("isZh", "0");
+							node.putPOJO("terminalType", "0");
+							
+							bis = new ByteArrayInputStream(mapper.writeValueAsBytes(array));
+							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/cqssc/bet/zh/1/wallet/15",
+									bis,
+									MediaType.APPLICATION_JSON_VALUE);
+							WebConversation wc = new WebConversation();
+							
+							request.setHeaderField("Authorization", "Bearer " + token);
+							
+							WebResponse response = wc.sendRequest(request);
+							
+							int  status = response.getResponseCode();
+							
+							Assert.assertEquals(HttpServletResponse.SC_OK, status);
+							String result = response.getText();
+							
+							Map<String, Object> retItems = null;
+							
+							retItems = mapper.readValue(result, HashMap.class);
+							
+							Assert.assertNotNull(retItems);
+							
+							Assert.assertEquals(Message.status.SUCCESS.getCode(), retItems.get(Message.KEY_STATUS));
+						} catch (Exception e) {
+							e.printStackTrace();
+							//throw e;
+						}finally {
+							if(bis != null) {
+								try {
+									bis.close();
+								} catch (IOException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+							}
+						}
+						
+					}
+				});
+				
+				exe.start();
+			}
+			
+			counter++;
+			
+		}
+	}
+	
+	public void ItestBetting_pk10_Dx_1() throws Exception{
+		int maxTimes = 10000;
+		int counter = 0;
+		
+		while(counter < maxTimes) {
+			Thread.sleep(1000);
+			
+			if(counter == 0) {
+				Thread exe = new Thread(new Runnable(){
+					@Override
+					public void run() {
+						
+						try {
+							Thread.sleep(1*60*1000);
+						} catch (InterruptedException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						String userName = "test001";
+						String pwd = "test001";
+						
+						String token = queryToken(userName, pwd);
+						ObjectMapper mapper = new ObjectMapper();
+						ByteArrayInputStream bis = null;
+						try {
+							Issue currIssue = queryCurrIssue(token);
+							int counter = 0;
+							while(currIssue == null && counter <= 200) {
+								counter++;
+								
+								currIssue = queryCurrIssue(token);
+							}
+							
+							if(currIssue == null) {
+								Assert.fail("Can't obtain the current issue!!!!");
+							}
+							
+							ArrayNode array = mapper.createArrayNode();
+							
+							ObjectNode node = array.addObject();
+							node.putPOJO("issueId", currIssue.getId());
+							node.putPOJO("playType", 73);
+							node.putPOJO("betNum", "01");
+							node.putPOJO("times", "1");
+							node.putPOJO("pattern", "1");
+							node.putPOJO("isZh", "0");
+							node.putPOJO("terminalType", "0");
+							
+							bis = new ByteArrayInputStream(mapper.writeValueAsBytes(array));
+							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/cqssc/bet/zh/1/wallet/15",
+									bis,
+									MediaType.APPLICATION_JSON_VALUE);
+							WebConversation wc = new WebConversation();
+							
+							request.setHeaderField("Authorization", "Bearer " + token);
+							
+							WebResponse response = wc.sendRequest(request);
+							
+							int  status = response.getResponseCode();
+							
+							Assert.assertEquals(HttpServletResponse.SC_OK, status);
+							String result = response.getText();
+							
+							Map<String, Object> retItems = null;
+							
+							retItems = mapper.readValue(result, HashMap.class);
+							
+							Assert.assertNotNull(retItems);
+							
+							Assert.assertEquals(Message.status.SUCCESS.getCode(), retItems.get(Message.KEY_STATUS));
+						} catch (Exception e) {
+							e.printStackTrace();
+							//throw e;
+						}finally {
+							if(bis != null) {
+								try {
+									bis.close();
+								} catch (IOException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+							}
+						}
+						
+					}
+				});
+				
+				exe.start();
+			}
+			
+			counter++;
+			
+		}
+	}
+	
+	public void ItestBetting_pk10_Dx_2() throws Exception{
+		int maxTimes = 10000;
+		int counter = 0;
+		
+		while(counter < maxTimes) {
+			Thread.sleep(1000);
+			
+			if(counter == 0) {
+				Thread exe = new Thread(new Runnable(){
+					@Override
+					public void run() {
+						
+						try {
+							Thread.sleep(1*60*1000);
+						} catch (InterruptedException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						String userName = "test001";
+						String pwd = "test001";
+						
+						String token = queryToken(userName, pwd);
+						ObjectMapper mapper = new ObjectMapper();
+						ByteArrayInputStream bis = null;
+						try {
+							Issue currIssue = queryCurrIssue(token);
+							int counter = 0;
+							while(currIssue == null && counter <= 200) {
+								counter++;
+								
+								currIssue = queryCurrIssue(token);
+							}
+							
+							if(currIssue == null) {
+								Assert.fail("Can't obtain the current issue!!!!");
+							}
+							
+							ArrayNode array = mapper.createArrayNode();
+							
+							ObjectNode node = array.addObject();
+							node.putPOJO("issueId", currIssue.getId());
+							node.putPOJO("playType", 74);
+							node.putPOJO("betNum", "01");
+							node.putPOJO("times", "1");
+							node.putPOJO("pattern", "1");
+							node.putPOJO("isZh", "0");
+							node.putPOJO("terminalType", "0");
+							
+							bis = new ByteArrayInputStream(mapper.writeValueAsBytes(array));
+							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/cqssc/bet/zh/1/wallet/15",
+									bis,
+									MediaType.APPLICATION_JSON_VALUE);
+							WebConversation wc = new WebConversation();
+							
+							request.setHeaderField("Authorization", "Bearer " + token);
+							
+							WebResponse response = wc.sendRequest(request);
+							
+							int  status = response.getResponseCode();
+							
+							Assert.assertEquals(HttpServletResponse.SC_OK, status);
+							String result = response.getText();
+							
+							Map<String, Object> retItems = null;
+							
+							retItems = mapper.readValue(result, HashMap.class);
+							
+							Assert.assertNotNull(retItems);
+							
+							Assert.assertEquals(Message.status.SUCCESS.getCode(), retItems.get(Message.KEY_STATUS));
+						} catch (Exception e) {
+							e.printStackTrace();
+							//throw e;
+						}finally {
+							if(bis != null) {
+								try {
+									bis.close();
+								} catch (IOException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+							}
+						}
+						
+					}
+				});
+				
+				exe.start();
+			}
+			
+			counter++;
+			
+		}
+	}
+	
+	
+	public void ItestBetting_pk10_Dx_3() throws Exception{
+		int maxTimes = 10000;
+		int counter = 0;
+		
+		while(counter < maxTimes) {
+			Thread.sleep(1000);
+			
+			if(counter == 0) {
+				Thread exe = new Thread(new Runnable(){
+					@Override
+					public void run() {
+						
+						try {
+							Thread.sleep(1*60*1000);
+						} catch (InterruptedException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						String userName = "test001";
+						String pwd = "test001";
+						
+						String token = queryToken(userName, pwd);
+						ObjectMapper mapper = new ObjectMapper();
+						ByteArrayInputStream bis = null;
+						try {
+							Issue currIssue = queryCurrIssue(token);
+							int counter = 0;
+							while(currIssue == null && counter <= 200) {
+								counter++;
+								
+								currIssue = queryCurrIssue(token);
+							}
+							
+							if(currIssue == null) {
+								Assert.fail("Can't obtain the current issue!!!!");
+							}
+							
+							ArrayNode array = mapper.createArrayNode();
+							
+							ObjectNode node = array.addObject();
+							node.putPOJO("issueId", currIssue.getId());
+							node.putPOJO("playType", 75);
+							node.putPOJO("betNum", "01");
+							node.putPOJO("times", "1");
+							node.putPOJO("pattern", "1");
+							node.putPOJO("isZh", "0");
+							node.putPOJO("terminalType", "0");
+							
+							bis = new ByteArrayInputStream(mapper.writeValueAsBytes(array));
+							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/cqssc/bet/zh/1/wallet/15",
+									bis,
+									MediaType.APPLICATION_JSON_VALUE);
+							WebConversation wc = new WebConversation();
+							
+							request.setHeaderField("Authorization", "Bearer " + token);
+							
+							WebResponse response = wc.sendRequest(request);
+							
+							int  status = response.getResponseCode();
+							
+							Assert.assertEquals(HttpServletResponse.SC_OK, status);
+							String result = response.getText();
+							
+							Map<String, Object> retItems = null;
+							
+							retItems = mapper.readValue(result, HashMap.class);
+							
+							Assert.assertNotNull(retItems);
+							
+							Assert.assertEquals(Message.status.SUCCESS.getCode(), retItems.get(Message.KEY_STATUS));
+						} catch (Exception e) {
+							e.printStackTrace();
+							//throw e;
+						}finally {
+							if(bis != null) {
+								try {
+									bis.close();
+								} catch (IOException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+							}
+						}
+						
+					}
+				});
+				
+				exe.start();
+			}
+			
+			counter++;
+			
+		}
+	}
+	
+	public void ItestBetting_pk10_Ds_1() throws Exception{
+		int maxTimes = 10000;
+		int counter = 0;
+		
+		while(counter < maxTimes) {
+			Thread.sleep(1000);
+			
+			if(counter == 0) {
+				Thread exe = new Thread(new Runnable(){
+					@Override
+					public void run() {
+						
+						try {
+							Thread.sleep(1*60*1000);
+						} catch (InterruptedException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						String userName = "test001";
+						String pwd = "test001";
+						
+						String token = queryToken(userName, pwd);
+						ObjectMapper mapper = new ObjectMapper();
+						ByteArrayInputStream bis = null;
+						try {
+							Issue currIssue = queryCurrIssue(token);
+							int counter = 0;
+							while(currIssue == null && counter <= 200) {
+								counter++;
+								
+								currIssue = queryCurrIssue(token);
+							}
+							
+							if(currIssue == null) {
+								Assert.fail("Can't obtain the current issue!!!!");
+							}
+							
+							ArrayNode array = mapper.createArrayNode();
+							
+							ObjectNode node = array.addObject();
+							node.putPOJO("issueId", currIssue.getId());
+							node.putPOJO("playType", 76);
+							node.putPOJO("betNum", "01");
+							node.putPOJO("times", "1");
+							node.putPOJO("pattern", "1");
+							node.putPOJO("isZh", "0");
+							node.putPOJO("terminalType", "0");
+							
+							bis = new ByteArrayInputStream(mapper.writeValueAsBytes(array));
+							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/cqssc/bet/zh/1/wallet/15",
+									bis,
+									MediaType.APPLICATION_JSON_VALUE);
+							WebConversation wc = new WebConversation();
+							
+							request.setHeaderField("Authorization", "Bearer " + token);
+							
+							WebResponse response = wc.sendRequest(request);
+							
+							int  status = response.getResponseCode();
+							
+							Assert.assertEquals(HttpServletResponse.SC_OK, status);
+							String result = response.getText();
+							
+							Map<String, Object> retItems = null;
+							
+							retItems = mapper.readValue(result, HashMap.class);
+							
+							Assert.assertNotNull(retItems);
+							
+							Assert.assertEquals(Message.status.SUCCESS.getCode(), retItems.get(Message.KEY_STATUS));
+						} catch (Exception e) {
+							e.printStackTrace();
+							//throw e;
+						}finally {
+							if(bis != null) {
+								try {
+									bis.close();
+								} catch (IOException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+							}
+						}
+						
+					}
+				});
+				
+				exe.start();
+			}
+			
+			counter++;
+			
+		}
+	}
+	
+	public void ItestBetting_pk10_Ds_2() throws Exception{
+		int maxTimes = 10000;
+		int counter = 0;
+		
+		while(counter < maxTimes) {
+			Thread.sleep(1000);
+			
+			if(counter == 0) {
+				Thread exe = new Thread(new Runnable(){
+					@Override
+					public void run() {
+						
+						try {
+							Thread.sleep(1*60*1000);
+						} catch (InterruptedException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						String userName = "test001";
+						String pwd = "test001";
+						
+						String token = queryToken(userName, pwd);
+						ObjectMapper mapper = new ObjectMapper();
+						ByteArrayInputStream bis = null;
+						try {
+							Issue currIssue = queryCurrIssue(token);
+							int counter = 0;
+							while(currIssue == null && counter <= 200) {
+								counter++;
+								
+								currIssue = queryCurrIssue(token);
+							}
+							
+							if(currIssue == null) {
+								Assert.fail("Can't obtain the current issue!!!!");
+							}
+							
+							ArrayNode array = mapper.createArrayNode();
+							
+							ObjectNode node = array.addObject();
+							node.putPOJO("issueId", currIssue.getId());
+							node.putPOJO("playType", 77);
+							node.putPOJO("betNum", "01");
+							node.putPOJO("times", "1");
+							node.putPOJO("pattern", "1");
+							node.putPOJO("isZh", "0");
+							node.putPOJO("terminalType", "0");
+							
+							bis = new ByteArrayInputStream(mapper.writeValueAsBytes(array));
+							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/cqssc/bet/zh/1/wallet/15",
+									bis,
+									MediaType.APPLICATION_JSON_VALUE);
+							WebConversation wc = new WebConversation();
+							
+							request.setHeaderField("Authorization", "Bearer " + token);
+							
+							WebResponse response = wc.sendRequest(request);
+							
+							int  status = response.getResponseCode();
+							
+							Assert.assertEquals(HttpServletResponse.SC_OK, status);
+							String result = response.getText();
+							
+							Map<String, Object> retItems = null;
+							
+							retItems = mapper.readValue(result, HashMap.class);
+							
+							Assert.assertNotNull(retItems);
+							
+							Assert.assertEquals(Message.status.SUCCESS.getCode(), retItems.get(Message.KEY_STATUS));
+						} catch (Exception e) {
+							e.printStackTrace();
+							//throw e;
+						}finally {
+							if(bis != null) {
+								try {
+									bis.close();
+								} catch (IOException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+							}
+						}
+						
+					}
+				});
+				
+				exe.start();
+			}
+			
+			counter++;
+			
+		}
+	}
+	
+	public void testBetting_pk10_Ds_3() throws Exception{
+		int maxTimes = 10000;
+		int counter = 0;
+		
+		while(counter < maxTimes) {
+			Thread.sleep(1000);
+			
+			if(counter == 0) {
+				Thread exe = new Thread(new Runnable(){
+					@Override
+					public void run() {
+						
+						try {
+							Thread.sleep(1*60*1000);
+						} catch (InterruptedException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						String userName = "test001";
+						String pwd = "test001";
+						
+						String token = queryToken(userName, pwd);
+						ObjectMapper mapper = new ObjectMapper();
+						ByteArrayInputStream bis = null;
+						try {
+							Issue currIssue = queryCurrIssue(token);
+							int counter = 0;
+							while(currIssue == null && counter <= 200) {
+								counter++;
+								
+								currIssue = queryCurrIssue(token);
+							}
+							
+							if(currIssue == null) {
+								Assert.fail("Can't obtain the current issue!!!!");
+							}
+							
+							ArrayNode array = mapper.createArrayNode();
+							
+							ObjectNode node = array.addObject();
+							node.putPOJO("issueId", currIssue.getId());
+							node.putPOJO("playType", 78);
+							node.putPOJO("betNum", "01");
+							node.putPOJO("times", "1");
+							node.putPOJO("pattern", "1");
+							node.putPOJO("isZh", "0");
+							node.putPOJO("terminalType", "0");
+							
+							bis = new ByteArrayInputStream(mapper.writeValueAsBytes(array));
+							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/cqssc/bet/zh/1/wallet/15",
+									bis,
+									MediaType.APPLICATION_JSON_VALUE);
+							WebConversation wc = new WebConversation();
+							
+							request.setHeaderField("Authorization", "Bearer " + token);
+							
+							WebResponse response = wc.sendRequest(request);
+							
+							int  status = response.getResponseCode();
+							
+							Assert.assertEquals(HttpServletResponse.SC_OK, status);
+							String result = response.getText();
+							
+							Map<String, Object> retItems = null;
+							
+							retItems = mapper.readValue(result, HashMap.class);
+							
+							Assert.assertNotNull(retItems);
+							
+							Assert.assertEquals(Message.status.SUCCESS.getCode(), retItems.get(Message.KEY_STATUS));
+						} catch (Exception e) {
+							e.printStackTrace();
+							//throw e;
+						}finally {
+							if(bis != null) {
+								try {
+									bis.close();
+								} catch (IOException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+							}
+						}
+						
+					}
+				});
+				
+				exe.start();
+			}
+			
+			counter++;
+			
+		}
+	}
+	
+	public void ItestBetting_pk10_dwd() throws Exception{
+		int maxTimes = 10000;
+		int counter = 0;
+		
+		while(counter < maxTimes) {
+			Thread.sleep(1000);
+			
+			if(counter == 0) {
+				Thread exe = new Thread(new Runnable(){
+					@Override
+					public void run() {
+						
+						try {
+							Thread.sleep(1*60*1000);
+						} catch (InterruptedException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						String userName = "test001";
+						String pwd = "test001";
+						
+						String token = queryToken(userName, pwd);
+						ObjectMapper mapper = new ObjectMapper();
+						ByteArrayInputStream bis = null;
+						try {
+							Issue currIssue = queryCurrIssue(token);
+							int counter = 0;
+							while(currIssue == null && counter <= 200) {
+								counter++;
+								
+								currIssue = queryCurrIssue(token);
+							}
+							
+							if(currIssue == null) {
+								Assert.fail("Can't obtain the current issue!!!!");
+							}
+							
+							ArrayNode array = mapper.createArrayNode();
+							
+							ObjectNode node = array.addObject();
+							node.putPOJO("issueId", currIssue.getId());
+							node.putPOJO("playType", 66);
+							node.putPOJO("betNum", "0203,0405,0608");
+							node.putPOJO("times", "1");
+							node.putPOJO("pattern", "1");
+							node.putPOJO("isZh", "0");
+							node.putPOJO("terminalType", "0");
+							
+							bis = new ByteArrayInputStream(mapper.writeValueAsBytes(array));
+							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/cqssc/bet/zh/1/wallet/15",
+									bis,
+									MediaType.APPLICATION_JSON_VALUE);
+							WebConversation wc = new WebConversation();
+							
+							request.setHeaderField("Authorization", "Bearer " + token);
+							
+							WebResponse response = wc.sendRequest(request);
+							
+							int  status = response.getResponseCode();
+							
+							Assert.assertEquals(HttpServletResponse.SC_OK, status);
+							String result = response.getText();
+							
+							Map<String, Object> retItems = null;
+							
+							retItems = mapper.readValue(result, HashMap.class);
+							
+							Assert.assertNotNull(retItems);
+							
+							Assert.assertEquals(Message.status.SUCCESS.getCode(), retItems.get(Message.KEY_STATUS));
+						} catch (Exception e) {
+							e.printStackTrace();
+							//throw e;
+						}finally {
+							if(bis != null) {
+								try {
+									bis.close();
+								} catch (IOException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+							}
+						}
+						
+					}
+				});
+				
+				exe.start();
+			}
+			
+			counter++;
+			
+		}
+	}
+	
 	
 	public Issue queryCurrIssue(String token) throws Exception{
 		
