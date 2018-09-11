@@ -23,10 +23,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.jll.common.constants.Constants.BankCardState;
 import com.jll.common.constants.Constants.UserType;
+import com.jll.common.constants.Constants;
 import com.jll.common.constants.Message;
 import com.jll.common.utils.StringUtils;
 import com.jll.dao.PageBean;
 import com.jll.dao.PageQueryDao;
+import com.jll.entity.PayType;
 import com.jll.entity.SiteMessFeedback;
 import com.jll.entity.SiteMessage;
 import com.jll.entity.SysCode;
@@ -698,16 +700,22 @@ public class UserController {
 		}
 		return ret;
 	}
-	//用户状态修改
+	//用户修改
 	@RequestMapping(value={"/updateUserType"}, method={RequestMethod.PUT}, produces=MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> updateUserType(@RequestParam(name = "userId", required = true) Integer userId,
-			  @RequestParam(name = "userType", required = true) Integer userType,
-			  HttpServletRequest request) {
+	public Map<String, Object> updateUserType(@RequestBody UserInfo userInfo) {
 		Map<String, Object> ret = new HashMap<>();
 		try {
+			Integer userId=userInfo.getId();
+			Integer state=userInfo.getState();
+			Integer userType=userInfo.getUserType();
 			UserInfo user = userInfoService.getUserById(userId);
 			user.setId(userId);
-			user.setUserType(userType);
+			if(userType!=null) {
+				user.setUserType(userType);
+			}
+			if(state!=null) {
+				user.setState(state);
+			}
 			userInfoService.updateUserType(user);
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		}catch(Exception e){
@@ -741,8 +749,10 @@ public class UserController {
 			  @RequestParam(name = "proxyName", required = false) String proxyName,//代理的名字
 			  @RequestParam(name = "startTime", required = true) String startTime,
 			  @RequestParam(name = "endTime", required = true) String endTime,
+			  @RequestParam(name = "pageIndex", required = true) Integer pageIndex,//当前请求页
 			  HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
+		Map<String, Object> map = new HashMap<>();
 		if(!StringUtils.isBlank(proxyName)) {
 			if(id!=null||!StringUtils.isBlank(userName)) {
 				ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
@@ -751,23 +761,48 @@ public class UserController {
 		    	return ret;
 			}
 		}
+		Integer pageSize=Constants.Pagination.SUM_NUMBER.getCode();
+		ret.put("pageSize", pageSize);
+		ret.put("pageIndex", pageIndex);
 		ret.put("id", id);
 		ret.put("userName", userName);
 		ret.put("proxyName", proxyName);
 		ret.put("startTime", startTime);
 		ret.put("endTime", endTime);
 		try {
-			List<UserInfo> userInfoList=userInfoService.queryAllUserInfo(ret);
-			ret.clear();
-			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-			ret.put("data", userInfoList);
+			map=userInfoService.queryAllUserInfo(ret);
+			map.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+			return map;
 		}catch(Exception e){
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			return ret;
 		}
-		return ret;
+	}
+	//查询所有代理
+	@RequestMapping(value={"/queryAllUserAgent"}, method={RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> queryAllUserAgent(@RequestParam(name = "userName", required = false) String userName,
+			  @RequestParam(name = "pageIndex", required = true) Integer pageIndex,//当前请求页
+			  HttpServletRequest request) {
+		Map<String, Object> ret = new HashMap<>();
+		Map<String, Object> map = new HashMap<>();
+		Integer pageSize=Constants.Pagination.SUM_NUMBER.getCode();
+		ret.put("pageSize", pageSize);
+		ret.put("pageIndex", pageIndex);
+		ret.put("userName", userName);
+		try {
+			map=userInfoService.queryAllAgent(ret);
+			map.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+			return map;
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			return ret;
+		}
 	}
 	
 	@ApiComment("User exchange point")

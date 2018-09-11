@@ -104,7 +104,7 @@ public class SysUserServiceImpl implements SysUserService
 		String userName=(String)ret.get("userName");
 		Integer pageIndex=(Integer) ret.get("pageIndex");
 		Integer pageSize=(Integer) ret.get("pageSize");
-		return userDao.querySysUser(userName,pageIndex,pageSize);
+		return userDao.querySysUser(userName,pageIndex,pageSize); 
 	}
 	
 }

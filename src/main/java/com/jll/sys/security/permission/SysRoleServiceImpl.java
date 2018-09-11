@@ -33,9 +33,9 @@ public class SysRoleServiceImpl implements SysRoleService
 		String roleName=(String) ret.get("roleName");
 		String roleDesc=(String) ret.get("roleDesc");
 		Integer state=(Integer) ret.get("state");
-		String userName=SecurityContextHolder.getContext().getAuthentication().getName();//当前登录的用户
-		Integer creator=sysUserService.queryByUserName(userName).getId();
-//		Integer creator=1;
+//		String userName=SecurityContextHolder.getContext().getAuthentication().getName();//当前登录的用户
+//		Integer creator=sysUserService.queryByUserName(userName).getId();
+		Integer creator=1;
 		SysRole sysRole=new SysRole();
 		sysRole.setRoleName(roleName);
 		sysRole.setRoleDesc(roleDesc);

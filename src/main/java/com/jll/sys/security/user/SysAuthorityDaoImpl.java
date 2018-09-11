@@ -19,23 +19,21 @@ public class SysAuthorityDaoImpl extends DefaultGenericDaoImpl<SysAuthority> imp
 		this.saveOrUpdate(sysAuthority);
 		
 	}
-	//删除
+	//通过userId查询用户所拥有的权限
 	@Override
-	public void deleteById(Integer id) {
-		String sql="delete from SysAuthority where id=:id";
+	public List<SysAuthority> queryByUserId(Integer userId) {
+		String sql="from SysAuthority where userId=:userId";
+		Query<SysAuthority> query = getSessionFactory().getCurrentSession().createQuery(sql,SysAuthority.class);
+		query.setParameter("userId", userId);
+		List<SysAuthority> list=query.list();
+		return list;
+	}
+	//通过userId删除授权
+	@Override
+	public void deleteByUserId(Integer userId) {
+		String sql="delete SysAuthority where userId=:userId";
 		Query query = getSessionFactory().getCurrentSession().createQuery(sql);
-		query.setParameter("id", id);
+		query.setParameter("userId", userId);
 		query.executeUpdate();
 	}
-	//通过id查询
-	@Override
-	public List<SysAuthority> queryById(Integer id) {
-		String sql = "from SysAuthority where id=:id";
-	    Query<SysAuthority> query = getSessionFactory().getCurrentSession().createQuery(sql,SysAuthority.class);
-	    query.setParameter("id", id);
-	    List<SysAuthority> list = query.list();
-	    return list;
-	}
-
-	
 }

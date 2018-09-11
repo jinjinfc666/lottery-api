@@ -378,14 +378,15 @@ public class UserInfoServiceImpl implements UserInfoService
 		
 		loginUserName = auth.getName();
 		
-		UserInfo loginUser = userDao.getUserByUserName(loginUserName);
+//		UserInfo loginUser = userDao.getUserByUserName(loginUserName);
 		
-		if(loginUser == null) {
-			logger.error(Message.Error.ERROR_USER_NO_VALID_USER.getErrorMes());
-			throw new RuntimeException(Message.Error.ERROR_USER_NO_VALID_USER.getErrorMes());
-		}
+//		if(loginUser == null) {
+//			logger.error(Message.Error.ERROR_USER_NO_VALID_USER.getErrorMes());
+//			throw new RuntimeException(Message.Error.ERROR_USER_NO_VALID_USER.getErrorMes());
+//		}
 		
-		user.setCreator(loginUser.getId());
+//		user.setCreator(loginUser.getId());
+		user.setCreator(15);
 		
 		userDao.saveUser(user);
 		walletServ.createWallet(user);
@@ -788,6 +789,15 @@ public class UserInfoServiceImpl implements UserInfoService
 			proxyId=userInfo.getId();
 		}
 		Map<String,Object> userInfoList=userDao.queryAllUserInfo(id, userName, proxyId, startTime, endTime,pageIndex,pageSize);
+		return userInfoList;
+	}
+	//查询所有的代理
+	@Override
+	public Map<String,Object> queryAllAgent(Map<String, Object> map) {
+		String userName=(String) map.get("userName");
+		Integer pageIndex=(Integer) map.get("pageIndex");
+		Integer pageSize=(Integer) map.get("pageSize");
+		Map<String,Object> userInfoList=userDao.queryAllAgent( userName,pageIndex,pageSize);
 		return userInfoList;
 	}
 	

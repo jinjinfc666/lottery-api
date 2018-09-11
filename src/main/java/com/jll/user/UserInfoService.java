@@ -95,6 +95,8 @@ public interface UserInfoService
 	double getUserTotalBetAmt(Date startDate,Date endDate,UserInfo user);
 	//查询所有的用户
 	Map<String,Object> queryAllUserInfo(Map<String,Object> map);
+	//查询所有的代理
+	Map<String,Object> queryAllAgent(Map<String,Object> map);
 	Map<String, Object> exchangePoint(int userId, double amount);
 	
 	//获取登陆用户信息，如果OK，返回用户信息
