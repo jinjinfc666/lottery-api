@@ -1,4 +1,4 @@
-package com.jll.game.cqssc;
+package com.jll.game.lotterytypeservice;
 
 import java.io.IOException;
 import java.math.BigDecimal;

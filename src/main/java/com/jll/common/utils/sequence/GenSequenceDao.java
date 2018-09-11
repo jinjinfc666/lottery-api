@@ -10,6 +10,8 @@ public interface GenSequenceDao
 {
 	GenSequence querySeqVal();
 
+	GenSequence queryPK10SeqVal();
+	
 	void saveSeq(GenSequence seq);
 		
 	

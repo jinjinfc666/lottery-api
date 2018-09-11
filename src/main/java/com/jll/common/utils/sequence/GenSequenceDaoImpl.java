@@ -33,5 +33,18 @@ public class GenSequenceDaoImpl extends DefaultGenericDaoImpl<GenSequence> imple
 		this.saveOrUpdate(seq);
 	}
 
+	@Override
+	public GenSequence queryPK10SeqVal() {
+		String sql = "from GenSequence where seqName='seq_num_bjpk10'";
+		List<Object> params = new ArrayList<>();
+		
+		List<GenSequence> seqs = this.query(sql, params, GenSequence.class);
+		if(seqs == null || seqs.size() == 0) {
+			return null;
+		}
+		
+		return seqs.get(0);
+	}
+
 	
 }

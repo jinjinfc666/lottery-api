@@ -30,5 +30,10 @@ public class GenSequenceServiceImpl implements GenSequenceService
 	public void saveSeq(GenSequence seq) {
 		genSeqDao.saveSeq(seq);
 	}
+
+	@Override
+	public GenSequence queryPK10SeqVal() {
+		return genSeqDao.queryPK10SeqVal();
+	}
 		
 }
