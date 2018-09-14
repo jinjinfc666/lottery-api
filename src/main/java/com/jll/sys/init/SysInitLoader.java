@@ -322,7 +322,7 @@ public class SysInitLoader {
 			cacheServ.setPayChannel(payChannelName, payChannelLists);
 		}
 	}
-	
+	//系统参数
 	private void initSysRuntimeArgument() {
 		String keySysRuntimeArg = Constants.SysCodeTypes.SYS_RUNTIME_ARGUMENT.getCode();
 		Map<String, SysCode> sysRuntimeArgs = cacheServ.getSysRuntimeArg(keySysRuntimeArg);

@@ -266,5 +266,14 @@ public class UserInfoDaoImpl extends DefaultGenericDaoImpl<UserInfo> implements 
 		map.put("data", pageBean);
 		return map;
 	}
+	//通过用户Id查询用户银行卡数量
+	@Override
+	public long queryUserBankCount(Integer userId) {
+		String sql="select count(*) from UserBankCard where userId=:userId";
+		Query query = getSessionFactory().getCurrentSession().createQuery(sql);
+	    query.setParameter("userId", userId);
+	    long count = ((Number)query.iterate().next()).longValue();
+	    return count;
+	}
   
 }

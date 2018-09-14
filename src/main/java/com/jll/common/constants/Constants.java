@@ -474,7 +474,6 @@ public class Constants {
 	 */
 	public static enum SysCodeTypes{
 		LOTTERY_TYPES("lottery_type"),
-		BANK_LIST("number_of_bank_cards"),
 		BANK_CODE_LIST("bank_code_list"),
 		FLOW_TYPES("flow_type"),
 		PAYMENT_PLATFORM("payment_platform"),
@@ -1616,7 +1615,6 @@ public class Constants {
 		
 	}
 	
-	//系统内部使用的充值渠道
 	public static enum PayChannelType{
 		ADMIN_SEND_USER("admin_send_user", "管理员的充值申请"),
 		AGENT_SEND_USER("agent_send_user", "代理给用户充值"),
@@ -1985,7 +1983,8 @@ public class Constants {
 	 */
 	public static enum SysRuntimeArgument{
 		LOTTO_PRIZE_RATE("lotto_prize_rate"),
-		MAX_PLAT_REBATE("max_plat_rebate");
+		MAX_PLAT_REBATE("max_plat_rebate"),
+		NUMBER_OF_BANK_CARDS("number_of_bank_cards");
 		
 		private String code;
 		

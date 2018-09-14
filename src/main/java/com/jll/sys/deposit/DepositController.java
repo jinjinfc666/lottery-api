@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import javax.annotation.Resource;
@@ -183,7 +184,6 @@ public class DepositController {
 			return ret;
 		}catch(Exception e){
 			ret.clear();
-			e.printStackTrace();
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
@@ -471,5 +471,69 @@ public class DepositController {
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
 		}
 		return ret;
+	}
+	/**
+	 * 前端需要的充值方式(全部为有效)
+	 * */
+	@RequestMapping(value={"/QDPayType"}, method={RequestMethod.GET}, produces={"application/json"})
+	public Map<String, Object> queryQDPayTypeName() {
+		Map<String, Object> ret = new HashMap<>();
+		try {
+			String payTypeName=Constants.PayTypeName.PAY_TYPE_CLASS.getCode();
+			List<PayType> payTypeList=cacheServ.getPayType(payTypeName);
+			List<PayType> payTypeLists=new ArrayList<PayType>();
+			for(int i=0; i<payTypeList.size();i++)    {   
+				PayType payType=payTypeList.get(i);
+			    if(payType.getState().intValue()==Constants.BankCardState.ENABLED.getCode()) {
+			    	payTypeLists.add(payType);
+			    }else {
+			    	continue;
+			    }
+			 }
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+			ret.put("data", payTypeLists);
+			return ret;
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			return ret;
+		}
+	}
+	/**
+	 * 前端需要的充值渠道(全部为有效)
+	 * */
+	@RequestMapping(value={"/QDPayChannel"}, method={RequestMethod.GET}, produces={"application/json"})
+	public Map<String, Object> queryQDPayChannel(@RequestParam(name = "payType", required = true) Integer payType,
+			  HttpServletRequest request) {
+		Map<String, Object> ret = new HashMap<>();
+		try {
+			String payChannelName=Constants.PayChannel.PAY_CHANNEL.getCode();
+			Map<Integer, PayChannel> payChannelList=cacheServ.getPayChannel(payChannelName);
+			List<PayChannel> payChannelLists=new ArrayList<PayChannel>();
+			if (payChannelList != null) {  
+	            Set<Integer> keySet = payChannelList.keySet();  
+	            for (Integer integer : keySet) {  
+	            	PayChannel payChannel = payChannelList.get(integer);  
+	            	if(payChannel.getPayType().intValue()==payType.intValue()&&payChannel.getState().intValue()==Constants.BankCardState.ENABLED.getCode()) {
+	            		payChannelLists.add(payChannel);
+	            	}else {
+	            		continue;
+	            	}
+	            }  
+	        }
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+			ret.put("data", payChannelLists);
+			return ret;
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			return ret;
+		}
 	}
 }

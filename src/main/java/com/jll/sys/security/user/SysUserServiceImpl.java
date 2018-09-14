@@ -28,9 +28,9 @@ public class SysUserServiceImpl implements SysUserService
 	public Map<String,Object> addUserInfo(UserInfo userInfo) {
 		Map<String,Object> map=new HashMap<String,Object>();
 		String loginPwd=userInfo.getLoginPwd();
-//		String userName=SecurityContextHolder.getContext().getAuthentication().getName();//当前登录的用户
-//		Integer creator=userDao.queryByUserName(userName).get(0).getId();
-		Integer creator=1;
+		String userName=SecurityContextHolder.getContext().getAuthentication().getName();//当前登录的用户
+		Integer creator=userDao.queryByUserName(userName).get(0).getId();
+//		Integer creator=1;
 		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();		
 		userInfo.setLoginPwd(encoder.encode(loginPwd));
 		userInfo.setCreateTime(new Date());

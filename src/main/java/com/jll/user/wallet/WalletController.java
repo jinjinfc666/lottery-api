@@ -125,4 +125,20 @@ public class WalletController {
 			return ret;
 		}
 	}
+	//通过当前登录的用户名查询当前用户的钱包   给前端用 
+	@RequestMapping(value={"/ByUserNameUserAccount"}, method={RequestMethod.GET}, produces={"application/json"})
+	public Map<String, Object> queryByUserNameUserAccount() {
+		Map<String, Object> ret = new HashMap<>();
+		try {
+			Map<String,Object> map=walletService.queryUserAccount();
+			map.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+			return map;
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			return ret;
+		}
+	}
 }

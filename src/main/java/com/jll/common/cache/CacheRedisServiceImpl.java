@@ -568,7 +568,6 @@ public class CacheRedisServiceImpl implements CacheRedisService
 		if(cache == null) {
 			return null;
 		}
-		
 		return cache.getContent();
 	}
 }

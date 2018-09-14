@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.jll.common.constants.Message;
 import com.jll.dao.PageQueryDao;
 import com.jll.entity.DepositApplication;
+import com.jll.entity.UserInfo;
+import com.jll.user.UserInfoService;
 import com.terran4j.commons.api2doc.annotations.Api2Doc;
 import com.terran4j.commons.api2doc.annotations.ApiComment;
 
@@ -31,6 +34,8 @@ public class PaymentController
   
   @Resource
   PaymentService paymentService;
+  @Resource
+  UserInfoService userInfoService;
   
 	  @ApiComment("Get User Deposit Times")
 	  @RequestMapping(value={"/depositTimes/{userId}"}, method={org.springframework.web.bind.annotation.RequestMethod.GET}, produces={"application/json"})
@@ -67,9 +72,8 @@ public class PaymentController
 	  }
 	  
 	  @ApiComment("User Pay Order To System")
-	  @RequestMapping(value={"/{userId}/pay-loading"}, method={org.springframework.web.bind.annotation.RequestMethod.GET}, produces={"application/json"})
-	  public Map<String, Object> payOrderToSystem(@PathVariable("userId") int userId,
-				@RequestBody DepositApplication info,
+	  @RequestMapping(value={"/pay-loading"}, method={org.springframework.web.bind.annotation.RequestMethod.POST}, produces={"application/json"})
+	  public Map<String, Object> payOrderToSystem(@RequestBody DepositApplication info,
 				@RequestParam(name="payerName") String payerName,
 				@RequestParam(name="payCardNumber") String payCardNumber,
 				HttpServletRequest request,
@@ -80,8 +84,13 @@ public class PaymentController
 		  params.put("reqIP", request.getRemoteAddr());
 		  params.put("payerName",payerName);
 		  params.put("payCardNumber",payCardNumber);
-		  
-		  Map<String,Object> ret = paymentService.payOrderToSystem(userId,info,params);
+//		  String userName=SecurityContextHolder.getContext().getAuthentication().getName();//当前登录的用户
+		  String userName="Silence";
+		  UserInfo userInfo=userInfoService.getUserByUserName(userName);
+		  Map<String,Object> ret =null;
+		  if(userInfo!=null) {
+			  ret= paymentService.payOrderToSystem(userInfo.getId(),info,params);
+		  }
 		  if(null != ret.get("isRedirect")){
 			  try {
 				response.sendRedirect(ret.get("isRedirect").toString());

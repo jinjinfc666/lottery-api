@@ -74,6 +74,7 @@ import com.jll.entity.WithdrawApplication;
 import com.jll.game.order.OrderService;
 import com.jll.report.WithdrawApplicationService;
 import com.jll.sysSettings.syscode.SysCodeService;
+import com.jll.user.bank.UserBankCardService;
 import com.jll.user.details.UserAccountDetailsService;
 import com.jll.user.wallet.WalletService;
 
@@ -112,6 +113,9 @@ public class UserInfoServiceImpl implements UserInfoService
 	@Resource
 	CacheRedisService cacheServ;
 	
+	@Resource
+	UserBankCardService userBankCardService;
+ 	
 	@Value("${sys_reset_pwd_default_pwd}")
 	String defaultPwd;
 	
@@ -417,7 +421,10 @@ public class UserInfoServiceImpl implements UserInfoService
 		bank.setCreateTime(new Date());
 		bank.setCreator(userId);
 		bank.setState(Constants.BankCardState.ENABLED.getCode());
-		return null;
+		userBankCardService.addUserBankCard(bank);
+		bankInfo.clear();
+		bankInfo.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		return bankInfo; 
 	}
 
 	@Override
@@ -433,8 +440,8 @@ public class UserInfoServiceImpl implements UserInfoService
 		Map<String, Object> ret = new HashMap<String, Object>();
 		Map<String, Object> bankInfo =  getUserBankLists(userId);
 		List<?> bankList = (List<?>) bankInfo.get(Message.KEY_DATA);
-		
-		int maxCardNum = Integer.valueOf(((SysCode)cacheServ.getSysCode(SysCodeTypes.BANK_LIST.getCode()).get(SysCodeTypes.BANK_LIST.getCode())).getCodeVal());
+		SysCode sysCode=cacheServ.getSysCode(Constants.SysCodeTypes.SYS_RUNTIME_ARGUMENT.getCode(),Constants.SysRuntimeArgument.NUMBER_OF_BANK_CARDS.getCode());
+		int maxCardNum = Integer.valueOf(sysCode.getCodeVal());
 		if(bankList.size() == maxCardNum){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_MORE_BIND_BANK_CARD.getCode());
@@ -891,7 +898,7 @@ public class UserInfoServiceImpl implements UserInfoService
 	
 
 	@Override
-	public Map<String, Object> userWithdrawApply(String userName, int bankId, double amount, String passoword) {
+	public Map<String, Object> userWithdrawApply(int bankId, double amount, String passoword) {
 		
 		Map<String, Object> ret = new HashMap<String, Object>();
 		UserInfo dbInfo = getCurLoginInfo();
@@ -1319,6 +1326,60 @@ public class UserInfoServiceImpl implements UserInfoService
 		}
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		return ret;
+	}
+	//用户登录后查询用户银行卡信息
+	@Override
+	public Map<String, Object> queryByUserNameBankList() {
+		String userName=SecurityContextHolder.getContext().getAuthentication().getName();//当前登录的用户
+		UserInfo userInfo=userDao.getUserByUserName(userName);
+		Map<String, Object> ret = new HashMap<String, Object>();
+		DetachedCriteria dc = DetachedCriteria.forClass(UserBankCard.class);
+		dc.add(Restrictions.eq("userId",userInfo.getId()));
+		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		ret.put(Message.KEY_DATA,supserDao.findByCriteria(dc));
+		return ret;
+	}
+	//判断用户是否可以添加银行卡
+	@Override
+	public Map<String, Object> isOrAddBank() {
+		Map<String, Object> ret = new HashMap<String, Object>();
+		String userName=SecurityContextHolder.getContext().getAuthentication().getName();//当前登录的用户
+		UserInfo userInfo=userDao.getUserByUserName(userName);
+		long count=userDao.queryUserBankCount(userInfo.getId());
+		String keySysRuntimeArg = Constants.SysCodeTypes.SYS_RUNTIME_ARGUMENT.getCode();
+		String numBank = Constants.SysRuntimeArgument.NUMBER_OF_BANK_CARDS.getCode();
+		SysCode sysCode=cacheServ.getSysCode(keySysRuntimeArg, numBank);
+		String codeVal=sysCode.getCodeVal();
+		Integer codeValNew = Integer.valueOf(codeVal);
+		Integer countNew=Integer.valueOf((int)count);
+		Integer t=null;
+		if(countNew>=codeValNew) {
+			t=1;
+		}else {
+			t=0;
+		}
+		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		ret.put("data", t);
+		return ret;
+	}
+	//前台用户自己添加银行卡
+	@Override
+	public Map<String, Object> addUserBank(UserBankCard bank) {
+		String userName=SecurityContextHolder.getContext().getAuthentication().getName();//当前登录的用户
+		UserInfo userInfo=userDao.getUserByUserName(userName);
+		Map<String, Object> bankInfo = verifyUserBankInfo(userInfo.getId(), bank);
+		if(null == bankInfo.get(Message.KEY_DATA)){
+			return bankInfo;
+		}
+		bank.setUserId(userInfo.getId());
+		bank.setBankCode(bankInfo.get(Message.KEY_DATA).toString());
+		bank.setCreateTime(new Date());
+		bank.setCreator(userInfo.getId());
+		bank.setState(Constants.BankCardState.ENABLED.getCode());
+		userBankCardService.addUserBankCard(bank);
+		bankInfo.clear();
+		bankInfo.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		return bankInfo; 
 	}
 	
 }

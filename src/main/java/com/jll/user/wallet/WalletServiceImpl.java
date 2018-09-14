@@ -9,6 +9,7 @@ import javax.annotation.Resource;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -143,6 +144,16 @@ public class WalletServiceImpl implements WalletService
 		Integer userId=(Integer) ret.get("userId");
 		Map<String,Object> map=new HashMap<String,Object>();
 		Map<String,Object> userAccountLists=walletDao.queryByUserIdUserAccount(userId);
+		return userAccountLists;
+	}
+	//通过用户名查询用户的主钱包
+	@Override
+	public Map<String, Object> queryUserAccount() {
+//		String userName=SecurityContextHolder.getContext().getAuthentication().getName();//当前登录的用户
+		String userName="Silence";
+		UserInfo userInfo=userInfoService.getUserByUserName(userName);
+		Map<String,Object> map=new HashMap<String,Object>();
+		Map<String,Object> userAccountLists=walletDao.queryUserAccount(userInfo.getId(),Constants.WalletType.MAIN_WALLET.getCode());
 		return userAccountLists;
 	}
 }
