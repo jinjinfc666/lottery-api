@@ -15,4 +15,8 @@ public interface OrderDao
 	double getUserBetTotalByDate(int walletId,int userId,Date start,Date end);
 	
 	OrderInfo getOrderInfo(String orderNum);
+	
+	List<OrderInfo> getOrderInfoByPrams(Integer issueId, String userName, String orderNum,Integer delayPayoutFlag);
+	
+	List<OrderInfo> queryWinOrdersByIssue(Integer issueId);
 }

@@ -1,6 +1,7 @@
 package com.jll.game;
 
 import java.util.List;
+import java.util.Map;
 
 import com.jll.entity.Issue;
 
@@ -24,4 +25,20 @@ public interface IssueService
 	
 	//通过彩种和期次数量来查找
 	List<Issue> queryByLTNumber(String lotteryType,Integer number);
+
+	Map<String, Object> updateIssueOpenNum(String issueNum, Map<String, String> params);
+
+	Map<String, Object> betOrderPayout(String issueNum);
+
+	Map<String, Object> calcelIssuePayout(String issueNum);
+
+	Map<String, Object> betOrderRePayout(String issueNum);
+
+	Map<String, Object> issueDisbale(String issueNum);
+
+	Map<String, Object> issueDelayePayout(String issueNum, Map<String, String> params);
+
+	Map<String, Object> orderCancel(String orderNum);
+
+	Map<String, Object> manualPayoutOrder(String orderNum);
 }

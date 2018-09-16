@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.jll.common.utils.Utils;
 import com.jll.dao.PageQueryDao;
 import com.jll.entity.Promo;
 import com.jll.entity.SysNotification;
@@ -37,7 +38,17 @@ public class PromoController {
 	@RequestMapping(value="/sys/lists", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> sysPromolist(
 			@RequestBody Promo po,
-			@RequestBody PageQueryDao page) {
+			@RequestBody PageQueryDao page
+			/*@RequestBody Map<String, String> params*/) {
+		/*PageQueryDao page = new PageQueryDao();
+		page.setStartDate(Utils.toDate(params.get("startDate")));
+		page.setEndDate(Utils.toDate(params.get("endDate")));
+		page.setPageIndex(Utils.toInteger(params.get("pageIndex")));
+		page.setPageSize(Utils.toInteger(params.get("pageSize")));
+		
+		promoType
+		
+		isMultiple*/
 		return promoService.getPromoLists(po, page);
 	}
 	

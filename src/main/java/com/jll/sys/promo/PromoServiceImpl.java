@@ -126,7 +126,7 @@ public class PromoServiceImpl implements PromoService
 				ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_PROMS_ONLY_ONCE_DISSATISFY.getErrorMes());
 				return ret;
 			}
-			if(SysCodeTypes.LOTTERY_TYPES.getCode().equals(po.getPromoType())){
+			if(SysCodeTypes.LUCKY_DRAW.getCode().equals(po.getPromoType())){
 				return accedeToLuckyDrwPromo(dbPro,dbInfo);
 			}else if(SysCodeTypes.SIGN_IN_DAY.getCode().equals(po.getPromoType())){
 				return accedeTodaySingInDayPromo(dbPro,dbInfo);

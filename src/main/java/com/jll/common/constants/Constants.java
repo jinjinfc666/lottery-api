@@ -857,7 +857,9 @@ public class Constants {
 		END_BETTING(2, "结束投注"),
 		END_ISSUE(3, "期次结束"),
 		LOTTO_DARW(4, "已开奖"),
-		PAYOUT(5, "已派奖");
+		PAYOUT(5, "已派奖"),
+		RE_PAYOUT(6, "重新派奖"),
+		DISABLE(7, "期次作废");
 		
 		private int code;
 		
@@ -918,7 +920,7 @@ public class Constants {
 	public static enum CreditRecordType{
 		INITIATE_PURCHASING("initiate_purchasing","发起代购"),
 		SYSTEM_AWARD("system_award","系统派奖"),
-		SYSTEM_REBATE("system_rebate","系统返点"),
+		SYSTEM_REBATE("rebate","系统返点"),
 		SYSTEM_WITHDRAWAL("system_withdrawal","系统撤单"),
 		USER_DEPOSIT("deposit","用户存款"),
 		SYS_ADD("sys_add","系统加钱"),
@@ -942,7 +944,10 @@ public class Constants {
 		ACC_UNFREEZE("acc_unfreeze","账户资金解冻"),
 		ACC_FREEZE("acc_freeze","账户资金冻结"),
 		WITHDRAWAL_BACK("withdrawal_back","提款退还"),
-		POINT_EXCHANGE("point_exchange","积分兑换");
+		POINT_EXCHANGE("point_exchange","积分兑换"),
+		RECOVERY_PAYOUT("recovery_payout","派奖回收"),
+		ISSUE_DISBALE("issue_disbale","期次作废"),
+		CANCEL_REBATE("cancel_rebate","撤单扣除返点"),;
 
 		
 		private String code;
@@ -1549,7 +1554,9 @@ public class Constants {
 		WINNING(1, "赢"),
 		LOSTING(2, "输"),
 		USER_CANCEL(3, "用户取消订单"),
-		SYS_CANCEL(4, "系统取消订单");
+		SYS_CANCEL(4, "系统取消订单"),
+		RE_PAYOUT(5, "重新派奖"),
+		DISABLE(6, "订单作废");
 		
 		private String desc;
 		

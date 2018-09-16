@@ -69,5 +69,48 @@ public class OrderDaoImpl extends DefaultGenericDaoImpl<OrderInfo> implements Or
 		}
 		return null;
 	}
+
+	@Override
+	public List<OrderInfo> queryWinOrdersByIssue(Integer issueId) {
+		String sql = "from OrderInfo where issueId=? and state = ?";
+		List<Object> params = new ArrayList<>();
+		params.add(issueId);
+		params.add(OrderState.WINNING.getCode());
+		return this.query(sql, params, OrderInfo.class);
+	
+	}
+
+	@Override
+	public List<OrderInfo> getOrderInfoByPrams(Integer issueId, String userName, String orderNum,Integer delayPayoutFlag) {
+		List<Object> params = new ArrayList<>();
+		String sql = "select order from OrderInfo order,UserInfo u where u.id = order.userId and state = ? ";
+		if(issueId > -1){
+			sql += (" and order.issueId=?  ");
+			params.add(issueId);
+		}
+		
+		params.add(OrderState.WAITTING_PAYOUT.getCode());
+		
+		if(delayPayoutFlag > -1){
+			sql += ("  and order.delayPayoutFlag = ? ");
+			params.add(delayPayoutFlag);
+		}
+		
+		if(StringUtils.isEmpty(orderNum)){
+			sql += ("  and order.orderNum = ? ");
+			params.add(orderNum);
+		}
+		if(StringUtils.isEmpty(userName)){
+			sql += ("  and u.userName = ? ");
+			params.add(userName);
+		}
+		
+		if(StringUtils.isEmpty(userName)){
+			sql += ("  and u.userName = ? ");
+			params.add(userName);
+		}
+		
+		return this.query(sql, params, OrderInfo.class);
+	}
 	
 }
