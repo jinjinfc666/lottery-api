@@ -33,4 +33,6 @@ public interface WalletService
 	boolean isNo(Integer id);
 	//通过用户ID查询当前用户的钱包
 	Map<String,Object> queryByUserIdUserAccount(Map<String,Object> ret);
+	//通过用户名查询用户的主钱包
+	Map<String, Object> queryUserAccount();
 }

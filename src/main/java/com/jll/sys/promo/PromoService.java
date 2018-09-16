@@ -10,7 +10,7 @@ public interface PromoService
 {
 	Map<String, Object> getUserPromoLists(PageQueryDao page);
 	Map<String, Object> getPromoLists(Promo po, PageQueryDao page);
-	Map<String, Object> accedeToPromo(int userId,Promo po);
+	Map<String, Object> accedeToPromo(Promo po);
 	Map<String, Object> accedeToLuckyDrwPromo(Promo dbPro,UserInfo userInfo);
 	Map<String, Object> accedeTodaySingInDayPromo(Promo dbPro,UserInfo userInfo);
 	Promo getPromoByCode(String pCode);

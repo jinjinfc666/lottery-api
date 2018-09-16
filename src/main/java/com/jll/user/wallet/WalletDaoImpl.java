@@ -142,4 +142,16 @@ public class WalletDaoImpl extends DefaultGenericDaoImpl<UserAccount> implements
 		map.put("data", list);
 		return map;
 	}
+	//通过用户ID查询用户的主钱包
+	@Override
+	public Map<String, Object> queryUserAccount(Integer userId, Integer accType) {
+		Map<String,Object> map=new HashMap<String,Object>();
+		String sql="from UserAccount where userId=:userId and accType=:accType";
+		Query<?> query = getSessionFactory().getCurrentSession().createQuery(sql);
+		query.setParameter("userId", userId);
+		query.setParameter("accType", accType);
+		List<?> list=query.list();
+		map.put("data", list);
+		return map;
+	}
 }

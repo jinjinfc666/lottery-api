@@ -12,10 +12,12 @@ import javax.annotation.Resource;
 import org.apache.log4j.Logger;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.jll.common.cache.CacheRedisService;
+import com.jll.common.constants.Constants;
 import com.jll.common.constants.Constants.CreditRecordType;
 import com.jll.common.constants.Constants.PromoMultipleType;
 import com.jll.common.constants.Constants.PromoValueType;
@@ -80,8 +82,10 @@ public class PromoServiceImpl implements PromoService
 	}
 
 	@Override
-	public Map<String, Object> accedeToPromo(int userId, Promo po) {
-		
+	public Map<String, Object> accedeToPromo(Promo po) {
+		String userName=SecurityContextHolder.getContext().getAuthentication().getName();//当前登录的用户
+		UserInfo userInfo=userDao.getUserByUserName(userName);
+		Integer userId=userInfo.getId();
 		Map<String, Object> ret = new HashMap<String, Object>(); 
 		UserInfo dbInfo = (UserInfo) supserDao.get(UserInfo.class,userId);
 		

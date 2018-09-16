@@ -104,7 +104,7 @@ public interface UserInfoService
 	
 	Map<String, Object> userProfitReport(String userName,PageQueryDao page);
 
-	Map<String, Object> userWithdrawApply(String userName, int bankId, double amount, String passoword);
+	Map<String, Object> userWithdrawApply(int bankId, double amount, String passoword);
 	Map<String, Object> userWithdrawNotices(String userName, WithdrawApplication wtd);
 	Map<String, Object> userAmountTransfer(String fromUser, String toUser, double amount);
 
@@ -123,4 +123,10 @@ public interface UserInfoService
 	Map<String, Object> userRedWalletAmountTransfer(String userName, double amount);
 	Map<String, Object> directOperationUserAmount(UserAccountDetails dtl);
 	Map<String, Object> userWalletLock(UserAccount dtl);
+	//用户登录后查询用户银行卡信息
+	Map<String, Object> queryByUserNameBankList();
+	//判断用户是否可以添加银行卡
+	Map<String,Object> isOrAddBank();
+	//前台用户自己添加银行卡
+	Map<String, Object> addUserBank(UserBankCard bank);
 }

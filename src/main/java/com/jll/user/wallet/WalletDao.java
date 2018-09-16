@@ -32,4 +32,6 @@ public interface WalletDao
 	Map<String,Object> queryByIdUserAccount(Integer id);
 	//通过用户ID查询当前用户的钱包
 	Map<String,Object> queryByUserIdUserAccount(Integer userId);
+	//通过用户ID查询用户的主钱包
+	Map<String,Object> queryUserAccount(Integer userId,Integer accType);
 }

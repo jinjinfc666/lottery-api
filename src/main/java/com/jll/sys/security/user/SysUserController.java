@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.jll.common.constants.Constants;
 import com.jll.common.constants.Message;
+import com.jll.common.constants.Constants.UserType;
 import com.jll.entity.SysAuthority;
 import com.jll.entity.SysRole;
 import com.jll.entity.UserAccountDetails;
@@ -47,7 +48,7 @@ public class SysUserController {
 			  HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
 		try {
-			Integer userType=2;
+			Integer userType=UserType.SYS_ADMIN.getCode();
 			Integer state=0;
 			Integer loginCount=0;
 			UserInfo userInfo=new UserInfo();

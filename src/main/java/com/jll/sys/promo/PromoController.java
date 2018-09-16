@@ -27,14 +27,14 @@ public class PromoController {
 	PromoService promoService;
 
 	@ApiComment("Get Promo Lists")
-	@RequestMapping(value="/lists", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value="/lists", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> list(
 			@RequestBody PageQueryDao page) {
 		return promoService.getUserPromoLists(page);
 	}
 	
 	@ApiComment("Get System Promo Lists")
-	@RequestMapping(value="/sys/lists", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value="/sys/lists", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> sysPromolist(
 			@RequestBody Promo po,
 			@RequestBody PageQueryDao page) {
@@ -42,11 +42,10 @@ public class PromoController {
 	}
 	
 	@ApiComment("User accede promo")
-	@RequestMapping(value="/accede-promo/{userId}", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value="/accede-promo", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> accedeToPromo(
-			@PathVariable("userId") int userId,
 			@RequestBody Promo po) {
-		return promoService.accedeToPromo(userId, po);
+		return promoService.accedeToPromo(po);
 	}
 	
 }
