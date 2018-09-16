@@ -23,10 +23,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.jll.common.constants.Constants.BankCardState;
 import com.jll.common.constants.Constants.UserType;
+import com.jll.common.constants.Constants;
 import com.jll.common.constants.Message;
 import com.jll.common.utils.StringUtils;
 import com.jll.dao.PageBean;
 import com.jll.dao.PageQueryDao;
+import com.jll.entity.PayType;
 import com.jll.entity.SiteMessFeedback;
 import com.jll.entity.SiteMessage;
 import com.jll.entity.SysCode;
@@ -37,6 +39,7 @@ import com.jll.entity.UserInfo;
 import com.jll.entity.WithdrawApplication;
 import com.jll.tp.EmailService;
 import com.jll.tp.SMSService;
+import com.jll.user.bank.UserBankCardService;
 import com.terran4j.commons.api2doc.annotations.Api2Doc;
 import com.terran4j.commons.api2doc.annotations.ApiComment;
 
@@ -55,6 +58,9 @@ public class UserController {
 	
 	@Resource
 	UserInfoService userInfoService;
+	
+	@Resource
+	UserBankCardService userBankCardService;
 	
 	@Resource
 	SMSService smsServ;
@@ -97,7 +103,7 @@ public class UserController {
 	/**
 	 * register the user who can login front-end web application
 	 * this will be only called  by the agent
-	 * @param request
+	 * @param request   给前台代理开户用的
 	 */
 	@RequestMapping(value="/players", method = { RequestMethod.POST }, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> regUser(@RequestBody UserInfo user) {
@@ -180,7 +186,7 @@ public class UserController {
 	/**
 	 * register the agent
 	 * this will be only called  by the user with role:role_admin
-	 * @param request
+	 * @param request   给后台用的  代理开户
 	 */
 	@RequestMapping(value="/agents/{agent-id}", method = { RequestMethod.POST }, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> regAgent(@PathVariable("agent-id") Integer agentId,
@@ -237,7 +243,61 @@ public class UserController {
 		resp.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		return resp;
 	}
-	
+//	//给前台用的
+//	@RequestMapping(value="/nextAgents", method = { RequestMethod.POST }, produces=MediaType.APPLICATION_JSON_VALUE)
+//	public Map<String, Object> regNextAgent(@RequestBody UserInfo user) {
+//		Map<String, Object> resp = new HashMap<String, Object>();
+//				
+//		UserInfo generalAgency = userInfoService.getGeneralAgency();
+//		if(generalAgency == null) {
+//			resp.put(Message.KEY_STATUS, Message.status.FAILED);
+//			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_NO_GENERAL_AGENCY.getCode());
+//			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_NO_GENERAL_AGENCY.getErrorMes());
+//			return resp;
+//		}
+//		
+//		user.setSuperior(Integer.toString(generalAgency.getId()));
+//		user.setUserType(UserType.AGENCY.getCode());
+//		String ret = userInfoService.validUserInfo(user, generalAgency);
+//		if(StringUtils.isBlank(ret) ) {
+//			resp.put(Message.KEY_STATUS, Message.status.FAILED);
+//			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+//			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+//			return resp;
+//		}
+//		
+//		if(!Integer.toString(Message.status.SUCCESS.getCode()).equals(ret)) {
+//			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+//			resp.put(Message.KEY_ERROR_CODE, ret);
+//			resp.put(Message.KEY_ERROR_MES, Message.Error.getErrorByCode(ret).getErrorMes());
+//			return resp;
+//		}
+//		
+//		if(StringUtils.isBlank(user.getFundPwd())) {
+//			user.setFundPwd(user.getLoginPwd());
+//		}
+//		
+//		boolean isExisting = userInfoService.isUserExisting(user);
+//		if(isExisting) {
+//			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+//			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_EXISTING.getCode());
+//			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_EXISTING.getErrorMes());
+//			return resp;
+//		}		
+//		
+//		user.setRebate(generalAgency.getPlatRebate().subtract(user.getPlatRebate()));
+//		try {
+//			userInfoService.regUser(user);
+//		}catch(Exception ex) {
+//			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+//			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_FAILED_REGISTER.getCode());
+//			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_FAILED_REGISTER.getErrorMes());
+//			return resp;
+//		}
+//		
+//		resp.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+//		return resp;
+//	}
 	/**
 	 * register the system users
 	 * this will be only called  by the user with role:role_admin
@@ -288,7 +348,7 @@ public class UserController {
 	/**
 	 * update the basic information of user
 	 * @param user
-	 * @return
+	 * @return  更新用户的基本信息  前台用的
 	 */
 	@ApiComment("update the basic information of user[real name,wechar,qq,phone,email]")
 	@RequestMapping(value="/{userName}", method = { RequestMethod.PUT}, produces=MediaType.APPLICATION_JSON_VALUE)
@@ -620,28 +680,48 @@ public class UserController {
 	
 	@ApiComment("Get User notify lists")
 	@RequestMapping(value="/{userId}/notify", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> getUserNotifyLists(@PathVariable("userId") int userId) {
+	public Map<String, Object> getUserNotifyLists(@PathVariable("userId") Integer userId) {
+		if(userId==null) {
+			String userName=SecurityContextHolder.getContext().getAuthentication().getName();//当前登录的用户
+			UserInfo userInfo=userInfoService.getUserByUserName(userName);
+			userId=userInfo.getId();
+		}
 		return userInfoService.getUserNotifyLists(userId);
 	}
 	
 	@ApiComment("Get User Site Message lists")
 	@RequestMapping(value="/{userId}/site-message/list", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> getUserSiteMessageLists(@PathVariable("userId") int userId) {
+	public Map<String, Object> getUserSiteMessageLists(@PathVariable("userId") Integer userId) {
+		if(userId.intValue()==-1) {
+			String userName=SecurityContextHolder.getContext().getAuthentication().getName();//当前登录的用户
+			UserInfo userInfo=userInfoService.getUserByUserName(userName);
+			userId=userInfo.getId();
+		}
 		return userInfoService.getUserSiteMessageLists(userId);
 	}
 	
 	@ApiComment("Show Site Message History Feedback")
 	@RequestMapping(value="/{userId}/site-message/history-feedback", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> showSiteMessageFeedback(@PathVariable("userId") int userId,
-			 @RequestParam(name = "msgId", required = true) int msgId) {
+	public Map<String, Object> showSiteMessageFeedback(@PathVariable("userId") Integer userId,
+			 @RequestParam(name = "msgId", required = true) Integer msgId) {
+		if(userId.intValue()==-1) {
+			String userName=SecurityContextHolder.getContext().getAuthentication().getName();//当前登录的用户
+			UserInfo userInfo=userInfoService.getUserByUserName(userName);
+			userId=userInfo.getId();
+		}
 		return userInfoService.showSiteMessageFeedback(userId,msgId);
 	}
 	
 	@ApiComment("Feedback Site Message ")
 	@RequestMapping(value="/{userId}/site-message/feedback", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> siteMessageFeedback(@PathVariable("userId") int userId,
+	public Map<String, Object> siteMessageFeedback(@PathVariable("userId") Integer userId,
 			@RequestBody SiteMessFeedback back,
-			@RequestParam(name = "msgId", required = true) int msgId) {
+			@RequestParam(name = "msgId", required = true) Integer msgId) {
+		if(userId.intValue()==-1) {
+			String userName=SecurityContextHolder.getContext().getAuthentication().getName();//当前登录的用户
+			UserInfo userInfo=userInfoService.getUserByUserName(userName);
+			userId=userInfo.getId();
+		}
 		return userInfoService.siteMessageFeedback(userId,msgId,back);
 	}
 	
@@ -661,9 +741,14 @@ public class UserController {
 	
 	@ApiComment("Add Site Message ")
 	@RequestMapping(value="/{userId}/site-message/add", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> addSiteMessage(@PathVariable("userId") int userId,
+	public Map<String, Object> addSiteMessage(@PathVariable("userId") Integer userId,
 			@RequestBody SiteMessage msg,
 			@RequestParam("sendIds") String sendIds) {
+		if(userId.intValue()==-1) {
+			String userName=SecurityContextHolder.getContext().getAuthentication().getName();//当前登录的用户
+			UserInfo userInfo=userInfoService.getUserByUserName(userName);
+			userId=userInfo.getId();
+		}
 		return userInfoService.addSiteMessage(userId,sendIds,msg);
 	}
 	//重置登录密码
@@ -698,16 +783,22 @@ public class UserController {
 		}
 		return ret;
 	}
-	//用户状态修改
+	//用户修改
 	@RequestMapping(value={"/updateUserType"}, method={RequestMethod.PUT}, produces=MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> updateUserType(@RequestParam(name = "userId", required = true) Integer userId,
-			  @RequestParam(name = "userType", required = true) Integer userType,
-			  HttpServletRequest request) {
+	public Map<String, Object> updateUserType(@RequestBody UserInfo userInfo) {
 		Map<String, Object> ret = new HashMap<>();
 		try {
+			Integer userId=userInfo.getId();
+			Integer state=userInfo.getState();
+			Integer userType=userInfo.getUserType();
 			UserInfo user = userInfoService.getUserById(userId);
 			user.setId(userId);
-			user.setUserType(userType);
+			if(userType!=null) {
+				user.setUserType(userType);
+			}
+			if(state!=null) {
+				user.setState(state);
+			}
 			userInfoService.updateUserType(user);
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		}catch(Exception e){
@@ -715,7 +806,7 @@ public class UserController {
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
 		}
-		return ret;
+		return ret; 
 	}
 	//查询用户详细信息
 	@RequestMapping(value={"/queryUserInfo"}, method={RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
@@ -741,8 +832,10 @@ public class UserController {
 			  @RequestParam(name = "proxyName", required = false) String proxyName,//代理的名字
 			  @RequestParam(name = "startTime", required = true) String startTime,
 			  @RequestParam(name = "endTime", required = true) String endTime,
+			  @RequestParam(name = "pageIndex", required = true) Integer pageIndex,//当前请求页
 			  HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
+		Map<String, Object> map = new HashMap<>();
 		if(!StringUtils.isBlank(proxyName)) {
 			if(id!=null||!StringUtils.isBlank(userName)) {
 				ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
@@ -751,23 +844,48 @@ public class UserController {
 		    	return ret;
 			}
 		}
+		Integer pageSize=Constants.Pagination.SUM_NUMBER.getCode();
+		ret.put("pageSize", pageSize);
+		ret.put("pageIndex", pageIndex);
 		ret.put("id", id);
 		ret.put("userName", userName);
 		ret.put("proxyName", proxyName);
 		ret.put("startTime", startTime);
 		ret.put("endTime", endTime);
 		try {
-			List<UserInfo> userInfoList=userInfoService.queryAllUserInfo(ret);
-			ret.clear();
-			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-			ret.put("data", userInfoList);
+			map=userInfoService.queryAllUserInfo(ret);
+			map.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+			return map;
 		}catch(Exception e){
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			return ret;
 		}
-		return ret;
+	}
+	//查询所有代理
+	@RequestMapping(value={"/queryAllUserAgent"}, method={RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> queryAllUserAgent(@RequestParam(name = "userName", required = false) String userName,
+			  @RequestParam(name = "pageIndex", required = true) Integer pageIndex,//当前请求页
+			  HttpServletRequest request) {
+		Map<String, Object> ret = new HashMap<>();
+		Map<String, Object> map = new HashMap<>();
+		Integer pageSize=Constants.Pagination.SUM_NUMBER.getCode();
+		ret.put("pageSize", pageSize);
+		ret.put("pageIndex", pageIndex);
+		ret.put("userName", userName);
+		try {
+			map=userInfoService.queryAllAgent(ret);
+			map.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+			return map;
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			return ret;
+		}
 	}
 	
 	@ApiComment("User exchange point")
@@ -780,7 +898,7 @@ public class UserController {
 	
 	
 	@ApiComment("User Profit Report")
-	@RequestMapping(value="/{userName}/profit-report", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value="/{userName}/profit-report", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> userProfitReport(
 			@PathVariable("userName") String userName,
 			@RequestBody PageQueryDao page) {
@@ -789,7 +907,6 @@ public class UserController {
 	
 	/**
 	 * 
-	 * @param userName 用户名
 	 * @param bankId   银行卡ID ,若小于0,则使用默认第一张银行卡，若为为银行卡id，则使用该id对应的银行卡
 	 * @param amount   提款金额
 	 * @param passoword 提款密码
@@ -797,13 +914,12 @@ public class UserController {
 	 */
 	
     @ApiComment("User Withdraw apply")
-	@RequestMapping(value="/{userName}/withdraw/apply", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value="/withdraw/apply", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> userWithdrawApply(
-			 @PathVariable("userName") String userName,
 			 @RequestParam("bankId") int bankId,
 			 @RequestParam("amount") double amount,
 			 @RequestParam("passoword") String passoword) {
-		return userInfoService.userWithdrawApply(userName, bankId, amount,passoword);
+		return userInfoService.userWithdrawApply(bankId, amount,passoword);
 	}
     
     
@@ -886,7 +1002,27 @@ public class UserController {
 			return ret;
 		}
 	}
-	
+	//前端登录的代理查询下一级代理
+	@RequestMapping(value={"/QDAgentNextAgent"}, method={RequestMethod.GET}, produces={"application/json"})
+	public Map<String, Object> queryQDAgentNextAgent(@RequestParam(name = "id", required = false) Integer id,
+			  HttpServletRequest request) {
+		if(id==null) {
+			String userName=SecurityContextHolder.getContext().getAuthentication().getName();//当前登录的用户
+			UserInfo userInfo=userInfoService.getUserByUserName(userName);
+			id=userInfo.getId();
+		}
+		Map<String, Object> ret = new HashMap<>();
+		try {
+			Map<String,Object> map=userInfoService.queryAgentByAgent(id);
+			return map;
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			return ret;
+		}
+	}
 	@ApiComment(value="User Red Wallet Amount Transfer",seeClass=WithdrawApplication.class)
    	@RequestMapping(value="/red-wallet/amount/transfer", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
    	public Map<String, Object> userRedWalletAmountTransfer(
@@ -951,5 +1087,79 @@ public class UserController {
    			@RequestBody UserAccount dtl) {
    		return userInfoService.userWalletLock(dtl);
    	}
-	
+	//通过用户名查询用户详细信息
+	@RequestMapping(value={"/byUserNameUserInfo"}, method={RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> queryByUserNameUserInfo() {
+		Map<String, Object> ret = new HashMap<>();
+		try {
+			String userName=SecurityContextHolder.getContext().getAuthentication().getName();//当前登录的用户
+			UserInfo userInfo=userInfoService.getUserByUserName(userName);
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+			ret.put("data", userInfo);
+		}catch(Exception e){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+		}
+		return ret;
+	}
+	//通过用户名查询用户银行卡
+	@RequestMapping(value={"/byUNUBankList"}, method={RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> queryByUserNameBankList() {
+		Map<String, Object> ret = new HashMap<>();
+		try {
+			return userInfoService.queryByUserNameBankList();
+		}catch(Exception e){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+		}
+		return ret;
+	}
+	//返回给前台用户是否可以添加银行卡
+	@RequestMapping(value={"/isOrAddBank"}, method={RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> isOrAddBank() {
+		Map<String, Object> ret = new HashMap<>();
+		try {
+			return userInfoService.isOrAddBank();
+		}catch(Exception e){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+		}
+		return ret;
+	}
+	//前台用户自己添加银行卡
+	@RequestMapping(value={"/userAddBank"}, method={RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> addBank(@RequestBody UserBankCard bank) {
+		Map<String, Object> ret = new HashMap<>();
+		try {
+			return userInfoService.addUserBank(bank);
+		}catch(Exception e){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+		}
+		return ret;
+	}
+	//前台用户自己删除银行卡
+	@RequestMapping(value={"/deleteBank"}, method={RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> deleteBank(@RequestParam(name = "bankId", required = true) Integer bankId,
+			  HttpServletRequest request) {
+		Map<String, Object> ret = new HashMap<>();
+		try {
+			return userBankCardService.deleteBank(bankId);
+		}catch(Exception e){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+		}
+		return ret;
+	}
+	//用户自己修改信息
+	@RequestMapping(value={"/updateUserInfo"}, method={RequestMethod.PUT}, produces=MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> updateUserInfo(@RequestBody UserInfo user) {
+		return userInfoService.updateUserInfoInfo(user);
+	}
 }

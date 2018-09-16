@@ -145,8 +145,8 @@ public class DefaultGenericDaoImpl<T> extends HibernateDaoSupport implements Gen
 		Long totalNumber=null;
 		Integer pageIndex = page.getPageIndex();
 		Integer pageSize = page.getPageSize();
-	    Query query = getSessionFactory().getCurrentSession().createQuery(sql);
-	    
+		Query  query=null;
+		query= getSessionFactory().getCurrentSession().createQuery(sql);
 	    
 	    totalNumber =  queryCount(HQL, params);
 	    
@@ -190,6 +190,77 @@ public class DefaultGenericDaoImpl<T> extends HibernateDaoSupport implements Gen
 		String sql = HQL;
 		
 	    Query query = getSessionFactory().getCurrentSession().createQuery(sql);
+
+	    if(params != null) {
+	    	Set<String> keySet = params.keySet();  
+            for (String string : keySet) {  
+                Object obj = params.get(string);  
+            	if(obj instanceof Date){  
+                	query.setParameter(string, (Date)obj,DateType.INSTANCE); //query.setParameter(string, (Date)obj,DateType.INSTANCE);   此方法为setDate的替代方法 
+                }else if(obj instanceof Object[]){  
+                    query.setParameterList(string, (Object[])obj);  
+                }else{  
+                    query.setParameter(string, obj);  
+                }  
+            }
+	    }
+	    List<?> list=query.list();
+	    return list.size();
+	}
+	@Override
+	public PageBean queryBySqlPagination(PageBean page, String SQL, Map<String,Object> params) {
+		PageBean ret = new PageBean();
+		List<?> content = null;
+		String sql = SQL;
+		Long totalPages =  null;
+		Long totalNumber=null;
+		Integer pageIndex = page.getPageIndex();
+		Integer pageSize = page.getPageSize();
+	    Query query = getSessionFactory().getCurrentSession().createNativeQuery(sql);
+	    
+	    
+	    totalNumber =  querySqlCount(SQL, params);
+	    
+	    if(totalNumber % pageSize == 0) {
+	    	totalPages = totalNumber / pageSize;
+	    }else {
+	    	totalPages = totalNumber / pageSize + 1; 
+	    }
+	    if(params != null) {
+	    	Set<String> keySet = params.keySet();  
+            for (String string : keySet) {  
+                Object obj = params.get(string);  
+            	if(obj instanceof Date){  
+                	query.setParameter(string, (Date)obj,DateType.INSTANCE); //query.setParameter(string, (Date)obj,DateType.INSTANCE);   此方法为setDate的替代方法 
+                }else if(obj instanceof Object[]){  
+                    query.setParameterList(string, (Object[])obj);  
+                }else{  
+                    query.setParameter(string, obj);  
+                }  
+            }
+	    }
+	    
+
+		Integer startPosition = pageIndex==1 ? 0 : pageIndex*pageSize-pageSize;
+	    
+	    
+	    query.setFirstResult(startPosition);
+	    query.setMaxResults(pageSize);
+	    content = query.list();
+	    
+	    ret.setContent(content);
+	    ret.setPageIndex(pageIndex);
+	    ret.setPageSize(pageSize);
+	    ret.setTotalPages(totalPages);
+	    ret.setTotalNumber(totalNumber);
+	    
+		return ret;
+	}
+	@Override
+	public long querySqlCount(String HQL, Map<String,Object> params) {
+		String sql = HQL;
+		
+	    Query query = getSessionFactory().getCurrentSession().createNativeQuery(sql);
 
 	    if(params != null) {
 	    	Set<String> keySet = params.keySet();  

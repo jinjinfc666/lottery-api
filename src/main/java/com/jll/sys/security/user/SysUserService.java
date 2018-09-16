@@ -16,4 +16,6 @@ public interface SysUserService
 	Map<String,Object> updateSysUser(Map<String,Object> ret);
 	//查询要添加的数据存不存在
 	boolean isOrNo(String userName);
+	//查询所有的管理员
+	Map<String,Object> querySysUser(Map<String, Object> ret); 
 }

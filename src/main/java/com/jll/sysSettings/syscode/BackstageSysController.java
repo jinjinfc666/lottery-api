@@ -1360,4 +1360,24 @@ public class BackstageSysController {
 			return ret;
 		}
 	}
+	//查询充值方式类型下的某一个值
+	@RequestMapping(value={"/queryPayTypeByCodeName"}, method={RequestMethod.GET}, produces={"application/json"})
+	public Map<String, Object> queryPayTypeByCodeName(@RequestParam(name = "codeName", required = true) String codeName,
+			  HttpServletRequest request) {
+		Map<String, Object> ret = new HashMap<>();
+		String bigCodeName=Constants.SysCodeTypes.PAY_TYPE.getCode();
+		try {
+			SysCode sysCodeMaps=cacheRedisService.getSysCode(bigCodeName, codeName);
+			
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+			ret.put("data", sysCodeMaps);
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+		}
+		return ret;
+	}
 }

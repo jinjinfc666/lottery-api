@@ -18,6 +18,7 @@ import org.hibernate.type.DateType;
 import org.springframework.stereotype.Repository;
 
 import com.jll.dao.DefaultGenericDaoImpl;
+import com.jll.dao.PageBean;
 import com.jll.entity.UserAccount;
 import com.jll.entity.UserInfo;
 
@@ -62,7 +63,7 @@ public class WalletDaoImpl extends DefaultGenericDaoImpl<UserAccount> implements
 	}
 	//通过用户名(false)或时间去查询(true)
 	@Override
-	public List<?> queryUserAccount(String userName, String startTime, String endTime) {
+	public Map<String,Object> queryUserAccount(String userName, String startTime, String endTime,Integer pageIndex,Integer pageSize) {
 		Map<String,Object> map=new HashMap<String,Object>();
 		String userNameSql="";
 		if(!StringUtils.isBlank(userName)) {
@@ -76,22 +77,13 @@ public class WalletDaoImpl extends DefaultGenericDaoImpl<UserAccount> implements
 			map.put("endTime", endDate);
 		}
 		String sql="from UserInfo a,UserAccount b where a.id=b.userId and a.createTime >:startTime and a.createTime <=:endTime"+userNameSql;
-		Query<?> query = getSessionFactory().getCurrentSession().createQuery(sql);
-		if (map != null) {  
-            Set<String> keySet = map.keySet();  
-            for (String string : keySet) {  
-                Object obj = map.get(string);  
-            	if(obj instanceof Date){  
-                	query.setParameter(string, (Date)obj,DateType.INSTANCE); //query.setParameter(string, (Date)obj,DateType.INSTANCE);   此方法为setDate的替代方法 
-                }else if(obj instanceof Object[]){  
-                    query.setParameterList(string, (Object[])obj);  
-                }else{  
-                    query.setParameter(string, obj); 
-                }  
-            }  
-        }
-		List<?> cards = query.list();
-		return cards;
+		PageBean page=new PageBean();
+		page.setPageIndex(pageIndex);
+		page.setPageSize(pageSize);
+		PageBean pageBean=queryByPagination(page,sql,map);
+		map.clear();
+		map.put("data", pageBean);
+		return map;
 	}
 	//修改用户的状态
 	@Override
@@ -115,6 +107,51 @@ public class WalletDaoImpl extends DefaultGenericDaoImpl<UserAccount> implements
 	public void updateWallet(UserAccount wallet) {
 		this.saveOrUpdate(wallet);
 	}
-  
-  
+	//通过id查询该用户是否存在
+	@Override
+	public List<UserAccount> queryById(Integer id) {
+		String sql = "from UserAccount where id=?";
+		List<Object> params = new ArrayList<>();
+		params.add(id);
+		return this.query(sql, params, UserAccount.class);
+	}
+	//通过id
+	@Override
+	public Map<String, Object> queryByIdUserAccount(Integer id) {
+		Map<String,Object> map=new HashMap<String,Object>();
+		String idSql="";
+		if(id!=null) {
+			idSql=" and b.id=:id";
+			map.put("id", id);
+		}
+		String sql="from UserInfo a,UserAccount b where a.id=b.userId "+idSql;
+		Query<?> query = getSessionFactory().getCurrentSession().createQuery(sql);
+		query.setParameter("id", id);
+		List<?> list=query.list();
+		map.put("data", list);
+		return map;
+	}
+	//通过用户ID查询当前用户的钱包
+	@Override
+	public Map<String, Object> queryByUserIdUserAccount(Integer userId) {
+		Map<String,Object> map=new HashMap<String,Object>();
+		String sql="from UserAccount where userId=:userId";
+		Query<?> query = getSessionFactory().getCurrentSession().createQuery(sql);
+		query.setParameter("userId", userId);
+		List<?> list=query.list();
+		map.put("data", list);
+		return map;
+	}
+	//通过用户ID查询用户的主钱包
+	@Override
+	public Map<String, Object> queryUserAccount(Integer userId, Integer accType) {
+		Map<String,Object> map=new HashMap<String,Object>();
+		String sql="from UserAccount where userId=:userId and accType=:accType";
+		Query<?> query = getSessionFactory().getCurrentSession().createQuery(sql);
+		query.setParameter("userId", userId);
+		query.setParameter("accType", accType);
+		List<?> list=query.list();
+		map.put("data", list);
+		return map;
+	}
 }

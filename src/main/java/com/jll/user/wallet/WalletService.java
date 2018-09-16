@@ -27,4 +27,12 @@ public interface WalletService
 	Map<String,Object> updateState(Integer userId,Integer state);
 	//判断该用户在userAccount表存不存在
 	boolean isOrNo(Integer userId);
+	//通过id
+	Map<String,Object> queryByIdUserAccount(Map<String,Object> ret);
+	//通过id查询该用户是否存在
+	boolean isNo(Integer id);
+	//通过用户ID查询当前用户的钱包
+	Map<String,Object> queryByUserIdUserAccount(Map<String,Object> ret);
+	//通过用户名查询用户的主钱包
+	Map<String, Object> queryUserAccount();
 }

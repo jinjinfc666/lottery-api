@@ -25,10 +25,6 @@ import com.jll.entity.SysCode;
 @Repository
 public class SysCodeDaoImpl extends DefaultGenericDaoImpl<SysCode> implements SysCodeDao {
 	private final String state="1";
-	@Autowired
-	public void setSuperSessionFactory(SessionFactory sessionFactory){
-		super.setSessionFactory(sessionFactory);
-	}
 	
 
 //	@Override

@@ -146,8 +146,8 @@ public class PayTypeServiceImpl implements PayTypeService
 	}
 	//查询所有数据
 	@Override
-	public List<PayType> queryAllPayType() {
-		return payTypeDao.queryAllPayType();
+	public List<?> queryAllPayType(Integer bigCodeNameId) {
+		return payTypeDao.queryAllPayType(bigCodeNameId);
 	}
 	//修改排序
 	@Override
@@ -199,6 +199,15 @@ public class PayTypeServiceImpl implements PayTypeService
 			return list.get(0);
 		}
 		return null;
+	}
+	@Override
+	public List<PayType> queryAllPayType() {
+		return payTypeDao.queryAllPayType();
+	}
+	//通过id查询某一条数据
+	@Override
+	public List<?> queryPayTypeById(Integer id,Integer bigCodeNameId) {
+		return payTypeDao.queryPayTypeById(id,bigCodeNameId);
 	}
 }
 

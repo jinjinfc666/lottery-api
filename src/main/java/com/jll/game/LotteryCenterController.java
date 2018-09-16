@@ -331,10 +331,10 @@ public class LotteryCenterController {
 		
 		userName = SecurityContextHolder.getContext().getAuthentication().getName();
 		user = userServ.getUserByUserName(userName);
-		prizeRate = userServ.calPrizeRate(user, lotteryType);
+		prizeRate = userServ.calPrizePattern(user, lotteryType);
 		
 		resp.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-		resp.put("prizeRate", prizeRate);
+		resp.put("singleBettingPrize", prizeRate);
 		return resp;
 	}
 }

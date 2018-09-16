@@ -94,13 +94,17 @@ public class CacheRedisServiceImpl implements CacheRedisService
 	public boolean isPlanExisting(String lotteryType) {
 		Date today = new Date();
 		String cacheKey = Constants.KEY_PRE_PLAN + lotteryType;
+		
+		logger.debug(String.format("plan key %s", cacheKey));
 		List<Issue> issues = this.getPlan(cacheKey);
 		if(issues == null || issues.size() == 0) {
+			logger.debug(String.format("No plan existing..."));
 			return false;
 		}
 		
 		Issue lastIssue = issues.get(issues.size() -1);
 		if(lastIssue.getEndTime().getTime() < today.getTime() ) {
+			logger.debug(String.format("Last issue is over..."));
 			return false;
 		}
 		
@@ -556,5 +560,14 @@ public class CacheRedisServiceImpl implements CacheRedisService
 		cacheObj.setContent(payChannelTemp);
 		cacheObj.setKey(codeName);
 		cacheDao.setPayChannel(cacheObj);
+	}
+
+	@Override
+	public Map<String, SysCode> getSysRuntimeArg(String keySysRuntimeArg) {
+		CacheObject<Map<String, SysCode>>  cache = cacheDao.getSysCode(keySysRuntimeArg);
+		if(cache == null) {
+			return null;
+		}
+		return cache.getContent();
 	}
 }

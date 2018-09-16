@@ -23,7 +23,7 @@ public interface UserInfoService
 	Map<String, Object> updateLoginPwd(String userName,String oldPwd,String newPwd);
 	Map<String, Object> getUserInfoByUserName(String userName);
 	Map<String, Object> updateUserInfoInfo(UserInfo userInfo);
-	
+	 
 	/**
 	 * query the user by userName
 	 * @param name
@@ -94,7 +94,9 @@ public interface UserInfoService
 	double getUserTotalDepostAmt(Date startDate,Date endDate,UserInfo user);
 	double getUserTotalBetAmt(Date startDate,Date endDate,UserInfo user);
 	//查询所有的用户
-	List<UserInfo> queryAllUserInfo(Map<String,Object> map);
+	Map<String,Object> queryAllUserInfo(Map<String,Object> map);
+	//查询所有的代理
+	Map<String,Object> queryAllAgent(Map<String,Object> map);
 	Map<String, Object> exchangePoint(int userId, double amount);
 	
 	//获取登陆用户信息，如果OK，返回用户信息
@@ -102,7 +104,7 @@ public interface UserInfoService
 	
 	Map<String, Object> userProfitReport(String userName,PageQueryDao page);
 
-	Map<String, Object> userWithdrawApply(String userName, int bankId, double amount, String passoword);
+	Map<String, Object> userWithdrawApply(int bankId, double amount, String passoword);
 	Map<String, Object> userWithdrawNotices(String userName, WithdrawApplication wtd);
 	Map<String, Object> userAmountTransfer(String fromUser, String toUser, double amount);
 
@@ -114,11 +116,17 @@ public interface UserInfoService
 	//通过id查看这个用户是否存在
 	boolean isOrNoUserInfo(Integer id);
 	
-	Float calPrizeRate(UserInfo user, String lottoType);
+	Float calPrizePattern(UserInfo user, String lottoType);
 	
 	PageBean<UserInfo> queryAllUserInfoByPage(PageBean<UserInfo> reqPage);
 	
 	Map<String, Object> userRedWalletAmountTransfer(String userName, double amount);
 	Map<String, Object> directOperationUserAmount(UserAccountDetails dtl);
 	Map<String, Object> userWalletLock(UserAccount dtl);
+	//用户登录后查询用户银行卡信息
+	Map<String, Object> queryByUserNameBankList();
+	//判断用户是否可以添加银行卡
+	Map<String,Object> isOrAddBank();
+	//前台用户自己添加银行卡
+	Map<String, Object> addUserBank(UserBankCard bank);
 }

@@ -21,4 +21,8 @@ public interface PayChannelService
 	List<PayChannel> queryAll();
 	//修改排序
 	Map<String,Object> updatePayChannelSeq(String allId);
+	//修改状态
+	Map<String, Object> updatePayChannelState(Integer id,Integer state);
+	//修改激活
+	Map<String, Object> updatePayChannelEnableMaxAmount(Integer id,Integer enableMaxAmount);
 }

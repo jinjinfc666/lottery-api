@@ -8,8 +8,8 @@ public interface SysAuthorityDao
 {	
 	//添加
 	void saveOrUpdateSysAuthority(SysAuthority sysAuthority);
-	//删除
-	void deleteById(Integer id);
-	//通过id查询
-	List<SysAuthority> queryById(Integer id);
+	//通过userId查询用户所拥有的权限
+	List<SysAuthority> queryByUserId(Integer userId);
+	//通过userId删除授权
+	void deleteByUserId(Integer userId);
 } 

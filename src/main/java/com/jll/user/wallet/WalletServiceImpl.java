@@ -9,6 +9,7 @@ import javax.annotation.Resource;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -70,6 +71,8 @@ public class WalletServiceImpl implements WalletService
 		String userName=(String) ret.get("userName");
 		String startTime=(String) ret.get("startTime");
 		String endTime=(String) ret.get("endTime");
+		Integer pageIndex=(Integer) ret.get("pageIndex");
+		Integer pageSize=(Integer) ret.get("pageSize");
 		Map<String,Object> map=new HashMap<String,Object>();
 		if(!StringUtils.isBlank(userName)) {
 			boolean isNull=userInfoService.isUserInfo(userName);
@@ -81,11 +84,8 @@ public class WalletServiceImpl implements WalletService
 				return map;
 			}
 		}
-		List<?> userAccountLists=walletDao.queryUserAccount(userName, startTime, endTime);
-		map.clear();
-		map.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-		map.put("data", userAccountLists);
-		return map;
+		Map<String,Object> userAccountLists=walletDao.queryUserAccount(userName, startTime, endTime,pageIndex,pageSize);
+		return userAccountLists;
 	}
 	//修改用户的状态
 	@Override
@@ -113,9 +113,47 @@ public class WalletServiceImpl implements WalletService
 		}
 		return false;
 	}
+	//通过id
+	@Override
+	public Map<String, Object> queryByIdUserAccount(Map<String, Object> ret) {
+		Integer id=(Integer) ret.get("id");
+		Map<String,Object> map=new HashMap<String,Object>();
+		boolean isNull=this.isNo(id);
+		if(!isNull) {
+			map.clear();
+			map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			return map;
+		}
+		Map<String,Object> userAccountLists=walletDao.queryByIdUserAccount(id);
+		return userAccountLists;
+	}
 
-	/*@Override
-	public UserAccount queryByUser(UserInfo user) {
-		return walletDao.queryByUser(user);
-	}*/
+	@Override
+	public boolean isNo(Integer id) {
+		List<UserAccount> list=walletDao.queryById(id);
+		if(list!=null&&list.size()>0) {
+			return true;
+		}
+		return false;
+	}
+	//通过用户ID查询当前用户的钱包
+	@Override
+	public Map<String, Object> queryByUserIdUserAccount(Map<String, Object> ret) {
+		Integer userId=(Integer) ret.get("userId");
+		Map<String,Object> map=new HashMap<String,Object>();
+		Map<String,Object> userAccountLists=walletDao.queryByUserIdUserAccount(userId);
+		return userAccountLists;
+	}
+	//通过用户名查询用户的主钱包
+	@Override
+	public Map<String, Object> queryUserAccount() {
+//		String userName=SecurityContextHolder.getContext().getAuthentication().getName();//当前登录的用户
+		String userName="Silence";
+		UserInfo userInfo=userInfoService.getUserByUserName(userName);
+		Map<String,Object> map=new HashMap<String,Object>();
+		Map<String,Object> userAccountLists=walletDao.queryUserAccount(userInfo.getId(),Constants.WalletType.MAIN_WALLET.getCode());
+		return userAccountLists;
+	}
 }

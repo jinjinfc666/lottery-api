@@ -1,6 +1,7 @@
 package com.jll.user;
 
 import java.util.List;
+import java.util.Map;
 
 import com.jll.dao.PageBean;
 import com.jll.entity.UserInfo;
@@ -16,7 +17,7 @@ public interface UserInfoDao
 	 */
 	int getUserId(String userName);
 	long getCountUser(String userName);
-	 
+	  
 	UserInfo getUserByUserName(String userName);
 	
 	UserInfo getUserById(Integer userId);
@@ -43,8 +44,10 @@ public interface UserInfoDao
 	String queryUnSystemUsers();
 	
 	boolean checkUserIds(String UserIds);
-	
-	List<UserInfo> queryAllUserInfo(Integer id,String userName,Integer proxyId,String startTime,String endTime);
+	//查询所有的用户
+	Map<String,Object>  queryAllUserInfo(Integer id,String userName,Integer proxyId,String startTime,String endTime,Integer pageIndex,Integer pageSize);
+	//查询所有的代理
+	Map<String,Object>  queryAllAgent(String userName,Integer pageIndex,Integer pageSize);
 	//查询总代下面的所有一级代理
 	List<UserInfo> queryAllAgent(Integer id);
 	//点击代理查询下一级代理
@@ -55,4 +58,6 @@ public interface UserInfoDao
 	PageBean<UserInfo> queryAllUserInfoByPage(PageBean<UserInfo> reqPage);
 	
 	List<?> queryByAll();
+	//通过用户Id查询用户银行卡数量
+	long queryUserBankCount(Integer userId);
 }

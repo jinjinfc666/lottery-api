@@ -98,6 +98,14 @@ public class SysUserServiceImpl implements SysUserService
 		}
 		return false;
 	}
+	//查询所有的管理员
+	@Override
+	public Map<String, Object> querySysUser(Map<String, Object> ret) {
+		String userName=(String)ret.get("userName");
+		Integer pageIndex=(Integer) ret.get("pageIndex");
+		Integer pageSize=(Integer) ret.get("pageSize");
+		return userDao.querySysUser(userName,pageIndex,pageSize); 
+	}
 	
 }
 

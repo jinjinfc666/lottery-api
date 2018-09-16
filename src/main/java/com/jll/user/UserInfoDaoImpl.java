@@ -146,27 +146,28 @@ public class UserInfoDaoImpl extends DefaultGenericDaoImpl<UserInfo> implements 
 	}
 
 	@Override
-	public List<UserInfo> queryAllUserInfo(Integer id,String userName,Integer proxyId,String startTime,String endTime) {
+	public Map<String,Object> queryAllUserInfo(Integer id,String userName,Integer proxyId,String startTime,String endTime,Integer pageIndex,Integer pageSize) {
 		Map<String,Object> map=new HashMap<String,Object>();
-		Date beginDate = java.sql.Date.valueOf(startTime);
-	    Date endDate = java.sql.Date.valueOf(endTime);
-		map.put("startTime", beginDate);
-		map.put("endTime", endDate);
+		Integer userType=2;
+		map.put("startTime", startTime);
+		map.put("endTime", endTime);
+		map.put("userType", userType);
 		String hql="";
 		if(proxyId!=null) {
-			hql=("select a.* from (select *,FIND_IN_SET(:proxyId,superior) as aa from user_info)a where a.aa=1 and a.create_time>:startTime and a.create_time<=:endTime");
-			Query<UserInfo> query=null;
-			try {
-				query= getSessionFactory().getCurrentSession().createNativeQuery(hql).addEntity(UserInfo.class);
-			}catch(Exception e) {
-				e.printStackTrace();
-			}
-			query.setParameter("proxyId", proxyId);  
-			query.setParameter("startTime", beginDate,DateType.INSTANCE);
-			query.setParameter("endTime", endDate,DateType.INSTANCE); 
+			hql=("select a.* from (select *,FIND_IN_SET(:proxyId,superior) as aa from user_info)a where a.aa=1 and a.user_type !=:userType and a.create_time>:startTime and a.create_time<=:endTime");
+			map.put("proxyId", proxyId);
+			map.put("startTime", startTime);
+			map.put("endTime", endTime);
+//			query.setParameter("startTime", beginDate,DateType.INSTANCE);
+//			query.setParameter("endTime", endDate,DateType.INSTANCE); 
 			List<UserInfo> list = new ArrayList<UserInfo>();	
-			list = query.list();
-			return list;
+			PageBean page=new PageBean();
+			page.setPageIndex(pageIndex);
+			page.setPageSize(pageSize);
+			PageBean pageBean=queryBySqlPagination(page,hql,map);
+			map.clear();
+			map.put("data", pageBean);
+			return map;
 		}else {
 			String userNameSql="";
 			String idSql="";
@@ -178,25 +179,15 @@ public class UserInfoDaoImpl extends DefaultGenericDaoImpl<UserInfo> implements 
 				userNameSql=" and userName=:userName";
 				map.put("userName", userName);
 			}
-			String timeSql=" where create_time >:startTime and create_time <=:endTime";
+			String timeSql=" where user_type !=:userType and create_time >:startTime and create_time <=:endTime";
 			hql=("from UserInfo"+timeSql+idSql+userNameSql);
-			Query<UserInfo> query = getSessionFactory().getCurrentSession().createQuery(hql,UserInfo.class);
-			if (map != null) {  
-	            Set<String> keySet = map.keySet();  
-	            for (String string : keySet) {  
-	                Object obj = map.get(string);  
-	            	if(obj instanceof Date){  
-	                	query.setParameter(string, (Date)obj,DateType.INSTANCE); //query.setParameter(string, (Date)obj,DateType.INSTANCE);   此方法为setDate的替代方法 
-	                }else if(obj instanceof Object[]){  
-	                    query.setParameterList(string, (Object[])obj);  
-	                }else{  
-	                    query.setParameter(string, obj);  
-	                }  
-	            }  
-	        }
-			List<UserInfo> list = new ArrayList<UserInfo>();	
-			list = query.list();
-			return list;
+			PageBean page=new PageBean();
+			page.setPageIndex(pageIndex);
+			page.setPageSize(pageSize);
+			PageBean pageBean=queryByPagination(page,hql,map);
+			map.clear();
+			map.put("data", pageBean);
+			return map;
 		}
 	}
 
@@ -212,12 +203,16 @@ public class UserInfoDaoImpl extends DefaultGenericDaoImpl<UserInfo> implements 
 	//点击代理查询下一级代理
 	@Override
 	public List<UserInfo> queryAgentByAgent(Integer id) {
-		String sql="select * from(select *,FIND_IN_SET(:id,superior) as aa from user_info)a where a.aa=1";
+		Integer userType=2;
+		Integer userTypea=0;
+		String sql="select * from(select *,FIND_IN_SET(:id,superior) as aa from user_info where user_type !=:userType and user_type !=:userTypea)a where a.aa=1";
 		Query<UserInfo> query1 = getSessionFactory().getCurrentSession().createNativeQuery(sql,UserInfo.class);
 	    query1.setParameter("id", id);
+	    query1.setParameter("userType", userType);
+	    query1.setParameter("userTypea", userTypea);
 	    List<UserInfo> list=query1.list();
 	    return list;
-	}
+	} 
 	//查询总代
 	@Override
 	public UserInfo querySumAgent() {
@@ -247,6 +242,38 @@ public class UserInfoDaoImpl extends DefaultGenericDaoImpl<UserInfo> implements 
 	    query1.setParameter("id", list.get(0).getId());
 	    List<?> userNameList=query1.list();
 	    return userNameList;
+	}
+	//查询所有的代理
+	@Override
+	public Map<String, Object> queryAllAgent(String userName, Integer pageIndex, Integer pageSize) {
+		Map<String,Object> map=new HashMap<String,Object>();
+		Integer userType=2;
+		Integer userTypea=0;
+		map.put("userType", userType);
+		map.put("userTypea", userTypea);
+		String hql="";
+		String userNameSql="";
+		if(!StringUtils.isBlank(userName)) {
+			userNameSql=" and userName=:userName";
+			map.put("userName", userName);
+		}
+		hql=("from UserInfo where userType !=:userType and userType !=:userTypea "+userNameSql);
+		PageBean page=new PageBean();
+		page.setPageIndex(pageIndex);
+		page.setPageSize(pageSize);
+		PageBean pageBean=queryByPagination(page,hql,map);
+		map.clear();
+		map.put("data", pageBean);
+		return map;
+	}
+	//通过用户Id查询用户银行卡数量
+	@Override
+	public long queryUserBankCount(Integer userId) {
+		String sql="select count(*) from UserBankCard where userId=:userId";
+		Query query = getSessionFactory().getCurrentSession().createQuery(sql);
+	    query.setParameter("userId", userId);
+	    long count = ((Number)query.iterate().next()).longValue();
+	    return count;
 	}
   
 }

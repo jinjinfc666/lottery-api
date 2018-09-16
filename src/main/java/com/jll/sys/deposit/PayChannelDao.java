@@ -18,4 +18,8 @@ public interface PayChannelDao
 	List<PayChannel> queryById(Integer id);
 	//查询所有 
 	List<PayChannel> queryAll();
+	//修排序
+	void updatePayChannelState(Integer id,Integer state);
+	//修改激活
+	void updatePayChannelEnableMaxAmount(Integer id, Integer enableMaxAmount);
 }

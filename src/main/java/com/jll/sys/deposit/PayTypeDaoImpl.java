@@ -6,6 +6,7 @@ package com.jll.sys.deposit;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.springframework.stereotype.Repository;
 
@@ -64,10 +65,11 @@ public class PayTypeDaoImpl extends DefaultGenericDaoImpl<PayType> implements Pa
 	}
 	//查询所有数据
 	@Override
-	public List<PayType> queryAllPayType() {
-		String sql="from PayType";
-	    Query<PayType> query = getSessionFactory().getCurrentSession().createQuery(sql,PayType.class);
-	    List<PayType> list = query.list();
+	public List<?> queryAllPayType(Integer bigCodeNameId) {
+		String sql="from PayType a,SysCode b where a.platId=b.codeName and b.codeType=:bigCodeNameId";
+	    Query<?> query = getSessionFactory().getCurrentSession().createQuery(sql);
+	    query.setParameter("bigCodeNameId", bigCodeNameId);
+	    List<?> list = query.list();
 	    return list;
 	}
 	//通过seq  查询数据
@@ -78,5 +80,22 @@ public class PayTypeDaoImpl extends DefaultGenericDaoImpl<PayType> implements Pa
 	    query.setParameter("seq", seq);
 	    List<PayType> list = query.list();
 	    return list.get(0);
+	}
+	@Override
+	public List<PayType> queryAllPayType() {
+		String sql="from PayType";
+	    Query<PayType> query = getSessionFactory().getCurrentSession().createQuery(sql,PayType.class);
+	    List<PayType> list = query.list();
+	    return list;
+	}
+	//通过id查询某一条数据
+	@Override
+	public List<?> queryPayTypeById(Integer id,Integer bigCodeNameId) {
+		String sql="from PayType a,SysCode b where a.platId=b.codeName and b.codeType=:bigCodeNameId and a.id=:id";
+	    Query<?> query = getSessionFactory().getCurrentSession().createQuery(sql);
+	    query.setParameter("bigCodeNameId", bigCodeNameId);
+	    query.setParameter("id", id);
+	    List<?> list = query.list();
+	    return list;
 	}
 }

@@ -33,12 +33,10 @@ public class PermissionController {
 	@RequestMapping(value={"/addSysRole"}, method={RequestMethod.POST}, produces={"application/json"})
 	public Map<String, Object> addSysRole(@RequestParam(name = "roleName", required = true) String roleName,
 			  @RequestParam(name = "roleDesc", required = true) String roleDesc,
-			  @RequestParam(name = "state", required = true) Integer state,
 			  HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
 		if(StringUtils.isBlank(roleName)
-				&&StringUtils.isBlank(roleDesc)
-				&&state==null) 
+				&&StringUtils.isBlank(roleDesc)) 
 		{
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
@@ -47,6 +45,7 @@ public class PermissionController {
 			return ret;
 		}
 		try {
+			Integer state=1;
 			ret.clear();
 			ret.put("roleName", roleName);
 			ret.put("roleDesc", roleDesc);
@@ -73,8 +72,8 @@ public class PermissionController {
 			return ret;
 		}
 		if(StringUtils.isBlank(sysRole.getRoleName())
-				||StringUtils.isBlank(sysRole.getRoleDesc())
-				||sysRole.getState()==null) 
+				&&StringUtils.isBlank(sysRole.getRoleDesc())
+				&&sysRole.getState()==null) 
 		{
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());

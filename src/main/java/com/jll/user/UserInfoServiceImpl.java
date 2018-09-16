@@ -2,9 +2,11 @@ package com.jll.user;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,6 +74,7 @@ import com.jll.entity.WithdrawApplication;
 import com.jll.game.order.OrderService;
 import com.jll.report.WithdrawApplicationService;
 import com.jll.sysSettings.syscode.SysCodeService;
+import com.jll.user.bank.UserBankCardService;
 import com.jll.user.details.UserAccountDetailsService;
 import com.jll.user.wallet.WalletService;
 
@@ -110,6 +113,9 @@ public class UserInfoServiceImpl implements UserInfoService
 	@Resource
 	CacheRedisService cacheServ;
 	
+	@Resource
+	UserBankCardService userBankCardService;
+ 	
 	@Value("${sys_reset_pwd_default_pwd}")
 	String defaultPwd;
 	
@@ -376,14 +382,15 @@ public class UserInfoServiceImpl implements UserInfoService
 		
 		loginUserName = auth.getName();
 		
-		UserInfo loginUser = userDao.getUserByUserName(loginUserName);
+//		UserInfo loginUser = userDao.getUserByUserName(loginUserName);
 		
-		if(loginUser == null) {
-			logger.error(Message.Error.ERROR_USER_NO_VALID_USER.getErrorMes());
-			throw new RuntimeException(Message.Error.ERROR_USER_NO_VALID_USER.getErrorMes());
-		}
+//		if(loginUser == null) {
+//			logger.error(Message.Error.ERROR_USER_NO_VALID_USER.getErrorMes());
+//			throw new RuntimeException(Message.Error.ERROR_USER_NO_VALID_USER.getErrorMes());
+//		}
 		
-		user.setCreator(loginUser.getId());
+//		user.setCreator(loginUser.getId());
+		user.setCreator(15);
 		
 		userDao.saveUser(user);
 		walletServ.createWallet(user);
@@ -414,7 +421,10 @@ public class UserInfoServiceImpl implements UserInfoService
 		bank.setCreateTime(new Date());
 		bank.setCreator(userId);
 		bank.setState(Constants.BankCardState.ENABLED.getCode());
-		return null;
+		userBankCardService.addUserBankCard(bank);
+		bankInfo.clear();
+		bankInfo.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		return bankInfo; 
 	}
 
 	@Override
@@ -430,8 +440,8 @@ public class UserInfoServiceImpl implements UserInfoService
 		Map<String, Object> ret = new HashMap<String, Object>();
 		Map<String, Object> bankInfo =  getUserBankLists(userId);
 		List<?> bankList = (List<?>) bankInfo.get(Message.KEY_DATA);
-		
-		int maxCardNum = Integer.valueOf(((SysCode)cacheServ.getSysCode(SysCodeTypes.BANK_LIST.getCode()).get(SysCodeTypes.BANK_LIST.getCode())).getCodeVal());
+		SysCode sysCode=cacheServ.getSysCode(Constants.SysCodeTypes.SYS_RUNTIME_ARGUMENT.getCode(),Constants.SysRuntimeArgument.NUMBER_OF_BANK_CARDS.getCode());
+		int maxCardNum = Integer.valueOf(sysCode.getCodeVal());
 		if(bankList.size() == maxCardNum){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_MORE_BIND_BANK_CARD.getCode());
@@ -452,14 +462,12 @@ public class UserInfoServiceImpl implements UserInfoService
 	public void resetLoginPwd(UserInfo user) {
 		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();		
 		user.setLoginPwd(encoder.encode(defaultPwd));
-		
 		userDao.saveUser(user);
 	}
 	@Override
 	public void resetFundPwd(UserInfo user) {
 		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();		
 		user.setFundPwd(encoder.encode(defaultPwd));
-		
 		userDao.saveUser(user);
 	}
 	@Override
@@ -754,22 +762,49 @@ public class UserInfoServiceImpl implements UserInfoService
 	//修改用户状态
 	@Override
 	public void updateUserType(UserInfo user) {
+		Integer state=user.getState();
+		Calendar calendar = new GregorianCalendar();
+		Date date = new Date();
+		if(state==0) {
+			user.setUnlockTime(date);
+		}else if(state==1){
+			calendar.setTime(date);
+			calendar.add(calendar.YEAR, 10);//把日期往后增加一年.整数往后推,负数往前移动
+			date=calendar.getTime();
+			user.setUnlockTime(date);
+		}else if(state==2) {
+			calendar.setTime(date);
+			calendar.add(calendar.YEAR, 10);//把日期往后增加一年.整数往后推,负数往前移动
+			date=calendar.getTime();
+			user.setUnlockTime(date);
+		}
 		userDao.saveUser(user);
 	}
 	//查询所有的用户
 	@Override
-	public List<UserInfo> queryAllUserInfo(Map<String, Object> map) {
+	public Map<String,Object> queryAllUserInfo(Map<String, Object> map) {
 		Integer id=(Integer) map.get("id");
 		String userName=(String) map.get("userName");
 		String proxyName=(String) map.get("proxyName");
 		String startTime=(String) map.get("startTime");
 		String endTime=(String) map.get("endTime");
+		Integer pageIndex=(Integer) map.get("pageIndex");
+		Integer pageSize=(Integer) map.get("pageSize");
 		UserInfo userInfo=userDao.getUserByUserName(proxyName);
 		Integer proxyId=null;
 		if(userInfo!=null) {
 			proxyId=userInfo.getId();
 		}
-		List<UserInfo> userInfoList=userDao.queryAllUserInfo(id, userName, proxyId, startTime, endTime);
+		Map<String,Object> userInfoList=userDao.queryAllUserInfo(id, userName, proxyId, startTime, endTime,pageIndex,pageSize);
+		return userInfoList;
+	}
+	//查询所有的代理
+	@Override
+	public Map<String,Object> queryAllAgent(Map<String, Object> map) {
+		String userName=(String) map.get("userName");
+		Integer pageIndex=(Integer) map.get("pageIndex");
+		Integer pageSize=(Integer) map.get("pageSize");
+		Map<String,Object> userInfoList=userDao.queryAllAgent( userName,pageIndex,pageSize);
 		return userInfoList;
 	}
 	
@@ -863,7 +898,7 @@ public class UserInfoServiceImpl implements UserInfoService
 	
 
 	@Override
-	public Map<String, Object> userWithdrawApply(String userName, int bankId, double amount, String passoword) {
+	public Map<String, Object> userWithdrawApply(int bankId, double amount, String passoword) {
 		
 		Map<String, Object> ret = new HashMap<String, Object>();
 		UserInfo dbInfo = getCurLoginInfo();
@@ -1078,7 +1113,7 @@ public class UserInfoServiceImpl implements UserInfoService
 			map.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 			if(list!=null&&list.size()>0) { 
 				map.put("data", list);
-			}else {
+			}else { 
 				map.put("data", null);
 			}
 			return map;
@@ -1100,22 +1135,35 @@ public class UserInfoServiceImpl implements UserInfoService
 		return false;
 	}
 	@Override
-	public Float calPrizeRate(UserInfo user, String lottoType) {
-		String lottoAttrType = Constants.KEY_LOTTO_ATTRI_PREFIX + lottoType;
-		SysCode prizeRange = cacheServ.getSysCode(lottoAttrType, Constants.LotteryAttributes.LOTTO_PRIZE_RATE.getCode());
+	public Float calPrizePattern(UserInfo user, String lottoType) {
+		String keyRunTimeArg = Constants.SysCodeTypes.SYS_RUNTIME_ARGUMENT.getCode();
+		String keyPrizeRange = Constants.SysRuntimeArgument.LOTTO_PRIZE_RATE.getCode();
+		String keyMaxPlatRebate = Constants.SysRuntimeArgument.MAX_PLAT_REBATE.getCode();
+		SysCode prizeRange = cacheServ.getSysCode(keyRunTimeArg, keyPrizeRange);
+		SysCode maxPlatRebate = cacheServ.getSysCode(keyRunTimeArg, keyMaxPlatRebate);
 		String[] prizeRanges = prizeRange.getCodeVal().split(",");
-		Float prizeRate = MathUtil.multiply(user.getPlatRebate().floatValue(), 
-				Constants.VAL_REBATE_PRIZE_RATE, Float.class);
-		prizeRate = MathUtil.subtract(Float.valueOf(prizeRanges[1]), prizeRate, Float.class);
-		return prizeRate;
+		Double valRebatePrizeRate = null;
+		Float minPrize = Float.valueOf(prizeRanges[0]);
+		Float maxPrize = Float.valueOf(prizeRanges[1]);
+		Float prizePattern = null;
+		
+		valRebatePrizeRate = MathUtil.subtract(maxPrize, minPrize, Double.class);
+		valRebatePrizeRate = MathUtil.divide(valRebatePrizeRate, 
+				Float.valueOf(maxPlatRebate.getCodeVal()).floatValue(), 
+				2);
+		valRebatePrizeRate = MathUtil.multiply(valRebatePrizeRate.floatValue(), 
+				user.getPlatRebate().floatValue(), 
+				Double.class);
+		
+		prizePattern = MathUtil.subtract(Float.valueOf(prizeRanges[1]), 
+				valRebatePrizeRate.floatValue(), 
+				Float.class);
+		return prizePattern;
 	}
 
 	@Override
 	public PageBean<UserInfo> queryAllUserInfoByPage(PageBean<UserInfo> reqPage) {
-		/*Integer pageIndex = reqPage.getPageIndex();
-		Long totalPages = reqPage.getTotalPages();*/
 		Integer pageSize = reqPage.getPageSize();
-		
 		
 		if(pageSize > 10000) {
 			return null;
@@ -1209,9 +1257,9 @@ public class UserInfoServiceImpl implements UserInfoService
 		UserAccount mainAcc = null;
 		//操作主账号
 		if(operTypes.contains(dtl.getOperationType())){
-			mainAcc = (UserAccount) supserDao.findByName(UserAccount.class, "userId",userInfo.getUserId(), "accType", WalletType.MAIN_WALLET.getCode()).get(0);
+			mainAcc = (UserAccount) supserDao.findByName(UserAccount.class, "userId",userInfo.getId(), "accType", WalletType.MAIN_WALLET.getCode()).get(0);
 		}else{
-			mainAcc = (UserAccount) supserDao.findByName(UserAccount.class, "userId",userInfo.getUserId(), "accType", WalletType.RED_PACKET_WALLET.getCode()).get(0);
+			mainAcc = (UserAccount) supserDao.findByName(UserAccount.class, "userId",userInfo.getId(), "accType", WalletType.RED_PACKET_WALLET.getCode()).get(0);
 		}
 		
 		if(dtl.getAmount() < 0
@@ -1221,7 +1269,23 @@ public class UserInfoServiceImpl implements UserInfoService
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_BALANCE_NOT_ENOUGH.getErrorMes());
 			return ret;
 		}
-		UserAccountDetails accDtal1 = userAccountDetailsService.initCreidrRecord(mainAcc.getUserId(), mainAcc, mainAcc.getBalance().doubleValue(), dtl.getAmount(),dtl.getOperationType());
+		int userId=mainAcc.getUserId();
+		UserAccount userAcc=mainAcc;
+		double beforAmt=mainAcc.getBalance().doubleValue();
+		double addAmt=dtl.getAmount();
+		String operType=dtl.getOperationType();
+		
+		Map<String,Integer> map=Constants.CreditRecordType.getNumberMap();
+		boolean isNo=map.containsKey(operType);
+		if(isNo) {
+			addAmt=addAmt*(map.get(operType));
+		}else {
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+			return ret;
+		}
+		UserAccountDetails accDtal1 = userAccountDetailsService.initCreidrRecord(userId,userAcc,beforAmt,addAmt,operType);
 		mainAcc.setBalance(new BigDecimal(accDtal1.getPostAmount()));
 		supserDao.save(accDtal1);
 		supserDao.update(mainAcc);
@@ -1262,6 +1326,60 @@ public class UserInfoServiceImpl implements UserInfoService
 		}
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		return ret;
+	}
+	//用户登录后查询用户银行卡信息
+	@Override
+	public Map<String, Object> queryByUserNameBankList() {
+		String userName=SecurityContextHolder.getContext().getAuthentication().getName();//当前登录的用户
+		UserInfo userInfo=userDao.getUserByUserName(userName);
+		Map<String, Object> ret = new HashMap<String, Object>();
+		DetachedCriteria dc = DetachedCriteria.forClass(UserBankCard.class);
+		dc.add(Restrictions.eq("userId",userInfo.getId()));
+		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		ret.put(Message.KEY_DATA,supserDao.findByCriteria(dc));
+		return ret;
+	}
+	//判断用户是否可以添加银行卡
+	@Override
+	public Map<String, Object> isOrAddBank() {
+		Map<String, Object> ret = new HashMap<String, Object>();
+		String userName=SecurityContextHolder.getContext().getAuthentication().getName();//当前登录的用户
+		UserInfo userInfo=userDao.getUserByUserName(userName);
+		long count=userDao.queryUserBankCount(userInfo.getId());
+		String keySysRuntimeArg = Constants.SysCodeTypes.SYS_RUNTIME_ARGUMENT.getCode();
+		String numBank = Constants.SysRuntimeArgument.NUMBER_OF_BANK_CARDS.getCode();
+		SysCode sysCode=cacheServ.getSysCode(keySysRuntimeArg, numBank);
+		String codeVal=sysCode.getCodeVal();
+		Integer codeValNew = Integer.valueOf(codeVal);
+		Integer countNew=Integer.valueOf((int)count);
+		Integer t=null;
+		if(countNew>=codeValNew) {
+			t=1;
+		}else {
+			t=0;
+		}
+		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		ret.put("data", t);
+		return ret;
+	}
+	//前台用户自己添加银行卡
+	@Override
+	public Map<String, Object> addUserBank(UserBankCard bank) {
+		String userName=SecurityContextHolder.getContext().getAuthentication().getName();//当前登录的用户
+		UserInfo userInfo=userDao.getUserByUserName(userName);
+		Map<String, Object> bankInfo = verifyUserBankInfo(userInfo.getId(), bank);
+		if(null == bankInfo.get(Message.KEY_DATA)){
+			return bankInfo;
+		}
+		bank.setUserId(userInfo.getId());
+		bank.setBankCode(bankInfo.get(Message.KEY_DATA).toString());
+		bank.setCreateTime(new Date());
+		bank.setCreator(userInfo.getId());
+		bank.setState(Constants.BankCardState.ENABLED.getCode());
+		userBankCardService.addUserBankCard(bank);
+		bankInfo.clear();
+		bankInfo.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		return bankInfo; 
 	}
 	
 }

@@ -2,9 +2,12 @@ package com.jll.sys.deposit;
 
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -26,6 +29,7 @@ import com.jll.entity.PayChannel;
 import com.jll.entity.PayType;
 import com.jll.entity.SysCode;
 import com.jll.entity.UserAccountDetails;
+import com.jll.sysSettings.syscode.SysCodeService;
 import com.terran4j.commons.api2doc.annotations.Api2Doc;
 import com.terran4j.commons.api2doc.annotations.ApiComment;
 
@@ -43,6 +47,8 @@ public class DepositController {
 	PayChannelService payChannelService;
 	@Resource
 	FTPService fTPService;
+	@Resource
+	SysCodeService sysCodeService;
 	/**
 	 * 充值平台
 	 * */
@@ -137,10 +143,7 @@ public class DepositController {
 	@RequestMapping(value={"/updatePayType"}, method={RequestMethod.PUT}, produces={"application/json"})
 	public Map<String, Object> updatePayType(@RequestBody PayType payType) {
 		Map<String, Object> ret = new HashMap<>();
-		if(StringUtils.isBlank(payType.getName())
-				&&StringUtils.isBlank(payType.getNickName())
-				&&StringUtils.isBlank(payType.getPlatId())
-				&&payType.getIsTp()==null||payType.getState()==null) 
+		if(StringUtils.isBlank(payType.getName())&&StringUtils.isBlank(payType.getNickName())&&StringUtils.isBlank(payType.getTypeClass())) 
 		{
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
@@ -172,10 +175,33 @@ public class DepositController {
 	public Map<String, Object> queryAllPayType() {
 		Map<String, Object> ret = new HashMap<>();
 		try {
-			List<PayType> map=payTypeService.queryAllPayType();
+			String payTypeName=Constants.SysCodeTypes.PAYMENT_PLATFORM.getCode();
+			Integer bigCodeNameId=sysCodeService.queryByCodeName(payTypeName);
+			List<?> lists=payTypeService.queryAllPayType(bigCodeNameId);
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-			ret.put("data", map);
+			ret.put("data", lists);
+			return ret;
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			return ret;
+		}
+	}
+	//通过id查询
+	@RequestMapping(value={"/queryPayTypeById"}, method={RequestMethod.GET}, produces={"application/json"})
+	public Map<String, Object> queryPayTypeById(@RequestParam(name = "id", required = true) Integer id,
+			  HttpServletRequest request) {
+		Map<String, Object> ret = new HashMap<>();
+		try {
+			String payTypeName=Constants.SysCodeTypes.PAYMENT_PLATFORM.getCode();
+			Integer bigCodeNameId=sysCodeService.queryByCodeName(payTypeName);
+			List<?> lists=payTypeService.queryPayTypeById(id, bigCodeNameId);
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+			ret.put("data", lists);
 			return ret;
 		}catch(Exception e){
 			ret.clear();
@@ -193,6 +219,46 @@ public class DepositController {
 		Map<String, Object> ret = new HashMap<>();
 		try {
 			Map<String,Object> map=payTypeService.updatePayTypeState(allId);
+			return map;
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+		}
+		return ret;
+	}
+	//修改状态
+	@RequestMapping(value={"/updatePayTypeState"}, method={RequestMethod.PUT}, produces={"application/json"})
+	public Map<String, Object> updatePayTypeState(@RequestParam(name = "id", required = true) Integer id,
+			  @RequestParam(name = "state", required = true) Integer state,//1为有效0为无效
+			  HttpServletRequest request) {
+		Map<String, Object> ret = new HashMap<>();
+		PayType payType=new PayType();
+		try {
+			payType.setId(id);
+			payType.setState(state);
+			Map<String,Object> map=payTypeService.updatePayType(payType);
+			return map;
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+		}
+		return ret;
+	}
+	//修改是否是第三方
+	@RequestMapping(value={"/updatePayTypeIsTp"}, method={RequestMethod.PUT}, produces={"application/json"})
+	public Map<String, Object> updatePayTypeIsTp(@RequestParam(name = "id", required = true) Integer id,
+			  @RequestParam(name = "isTp", required = true) Integer isTp,
+			  HttpServletRequest request) {
+		Map<String, Object> ret = new HashMap<>();
+		PayType payType=new PayType();
+		try {
+			payType.setId(id);
+			payType.setIsTp(isTp);
+			Map<String,Object> map=payTypeService.updatePayType(payType);
 			return map;
 		}catch(Exception e){
 			ret.clear();
@@ -317,9 +383,17 @@ public class DepositController {
 		Map<String, Object> ret = new HashMap<>();
 		try {
 			List<PayChannel> map=payChannelService.queryAll();
+			Map<Integer,PayChannel> mapPayChannel=new HashMap<Integer, PayChannel>();
+			for(int i=0;i<map.size();i++) {
+				PayChannel payChannel=map.get(i);
+				if(payChannel.getSeq()!=null) {
+					mapPayChannel.put(payChannel.getSeq(), payChannel);
+				}
+			}
+			TreeMap treemap = new TreeMap(mapPayChannel);
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-			ret.put("data", map);
+			ret.put("data", treemap);
 			return ret;
 		}catch(Exception e){
 			ret.clear();
@@ -345,6 +419,40 @@ public class DepositController {
 		}
 		return ret;
 	}
+	//修改状态
+	@RequestMapping(value={"/updatePayChannelState"}, method={RequestMethod.PUT}, produces={"application/json"})
+	public Map<String, Object> updatePayChannelState(@RequestParam(name = "id", required = true) Integer id,
+			  @RequestParam(name = "state", required = true) Integer state,//1为有效0为无效
+			  HttpServletRequest request) {
+		Map<String, Object> ret = new HashMap<>();
+		try {
+			Map<String,Object> map=payChannelService.updatePayChannelState(id,state);
+			return map;
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+		}
+		return ret;
+	}
+	//修改是否激活最大限制
+	@RequestMapping(value={"/updatePayChannelEnable"}, method={RequestMethod.PUT}, produces={"application/json"})
+	public Map<String, Object> updatePayChannelEnable(@RequestParam(name = "id", required = true) Integer id,
+			  @RequestParam(name = "enableMaxAmount", required = true) Integer enableMaxAmount,
+			  HttpServletRequest request) {
+		Map<String, Object> ret = new HashMap<>();
+		try {
+			Map<String,Object> map=payChannelService.updatePayChannelEnableMaxAmount(id, enableMaxAmount);
+			return map;
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+		}
+		return ret;
+	}
 	/**
 	 * 充值二维码上传
 	 * */
@@ -356,11 +464,76 @@ public class DepositController {
 			Map<String,Object> map=fTPService.upload(imgName);
 			return map;
 		}catch(Exception e){
+			e.printStackTrace();
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
 		}
 		return ret;
+	}
+	/**
+	 * 前端需要的充值方式(全部为有效)
+	 * */
+	@RequestMapping(value={"/QDPayType"}, method={RequestMethod.GET}, produces={"application/json"})
+	public Map<String, Object> queryQDPayTypeName() {
+		Map<String, Object> ret = new HashMap<>();
+		try {
+			String payTypeName=Constants.PayTypeName.PAY_TYPE_CLASS.getCode();
+			List<PayType> payTypeList=cacheServ.getPayType(payTypeName);
+			List<PayType> payTypeLists=new ArrayList<PayType>();
+			for(int i=0; i<payTypeList.size();i++)    {   
+				PayType payType=payTypeList.get(i);
+			    if(payType.getState().intValue()==Constants.BankCardState.ENABLED.getCode()) {
+			    	payTypeLists.add(payType);
+			    }else {
+			    	continue;
+			    }
+			 }
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+			ret.put("data", payTypeLists);
+			return ret;
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			return ret;
+		}
+	}
+	/**
+	 * 前端需要的充值渠道(全部为有效)
+	 * */
+	@RequestMapping(value={"/QDPayChannel"}, method={RequestMethod.GET}, produces={"application/json"})
+	public Map<String, Object> queryQDPayChannel(@RequestParam(name = "payType", required = true) Integer payType,
+			  HttpServletRequest request) {
+		Map<String, Object> ret = new HashMap<>();
+		try {
+			String payChannelName=Constants.PayChannel.PAY_CHANNEL.getCode();
+			Map<Integer, PayChannel> payChannelList=cacheServ.getPayChannel(payChannelName);
+			List<PayChannel> payChannelLists=new ArrayList<PayChannel>();
+			if (payChannelList != null) {  
+	            Set<Integer> keySet = payChannelList.keySet();  
+	            for (Integer integer : keySet) {  
+	            	PayChannel payChannel = payChannelList.get(integer);  
+	            	if(payChannel.getPayType().intValue()==payType.intValue()&&payChannel.getState().intValue()==Constants.BankCardState.ENABLED.getCode()) {
+	            		payChannelLists.add(payChannel);
+	            	}else {
+	            		continue;
+	            	}
+	            }  
+	        }
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+			ret.put("data", payChannelLists);
+			return ret;
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			return ret;
+		}
 	}
 }

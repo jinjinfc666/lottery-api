@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.jll.common.constants.Message;
+import com.jll.common.utils.StringUtils;
 import com.jll.entity.SysAuthority;
 import com.jll.entity.SysRole;
 
@@ -23,43 +24,31 @@ public class SysAuthorityServiceImpl implements SysAuthorityService
 	SysAuthorityDao sysAuthorityDao;
 	//添加
 	@Override
-	public void addSysAuthority(Map<String, Object> ret) {
+	public void updateSysAuthority(Map<String, Object> ret) {
 		Integer userId=(Integer)ret.get("userId");
-		List<SysRole> sysRoleList=(List<SysRole>) ret.get("sysRoleList");
-		for(SysRole sysRole:sysRoleList) {
-			SysAuthority sysAuthority=new SysAuthority();
-			sysAuthority.setUserId(userId);
-			sysAuthority.setRoleId(sysRole.getId());
-			sysAuthorityDao.saveOrUpdateSysAuthority(sysAuthority);
+		String roleIds=(String) ret.get("roleIds");
+		List<SysAuthority> list=sysAuthorityDao.queryByUserId(userId);
+		if(list!=null&&list.size()>0) {
+			sysAuthorityDao.deleteByUserId(userId);
+		}
+		if(!StringUtils.isBlank(roleIds)) {
+			String[] arr = roleIds.split(",");
+			for(int i =0;i<arr.length;i++) {
+				SysAuthority sysAuthority=new SysAuthority();
+				sysAuthority.setUserId(userId);
+				sysAuthority.setRoleId(Integer.valueOf(arr[i]));
+				sysAuthorityDao.saveOrUpdateSysAuthority(sysAuthority);
+			}
 		}
 	}
-	//删除
+	//通过userId查询用户所拥有的权限
 	@Override
-	public Map<String,Object> deleteById(Integer id) {
-		Map<String,Object> map=new HashMap<String,Object>();
-		boolean isOrNo=this.isOrNo(id);
-		if(isOrNo) {
-			sysAuthorityDao.deleteById(id);
-			map.clear();
-			map.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-			return map;
-		}else {
-			map.clear();
-			map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
-			map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
-			return map;
+	public List<SysAuthority> queryByUserId(Integer userId) {
+		List<SysAuthority> list=sysAuthorityDao.queryByUserId(userId);
+		if(list!=null&&list.size()>0) {
+			return list;
 		}
+		return null;
 	}
-	//判断这条数据存不存在
-	@Override
-	public boolean isOrNo(Integer id) {
-		List<SysAuthority> list=sysAuthorityDao.queryById(id);
-		if(list!=null&list.size()>0) {
-			return true;
-		}
-		return false;
-	}
-	
 }
 

@@ -13,14 +13,18 @@ public interface IpBlackListService
 	boolean isNull(String ip);
 	//判断id在数据库中存不存在
 	boolean isNullById(Integer id);
-	//查询通过id
-	IpBlackList queryByIp(String ip);
+	//查询通过ip
+	Map<String,Object> queryByIp(Integer pageIndex,Integer pageSize,String ip);
 	//查询通过id
 	IpBlackList query(Integer id);
 	//查询所有
-	List<IpBlackList> query();
+	Map<String,Object> queryByPageIndex(Integer pageIndex,Integer pageSize);
 	//修改
 	Map<String,Object> update(IpBlackList ipBlackList);
 	//删除
 	Map<String,Object> deleteIpBlackList(Integer id);
+	//
+	List<IpBlackList> query();
+	//查询通过ip
+	IpBlackList queryByIp(String ip);
 }
