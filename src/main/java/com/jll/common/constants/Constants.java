@@ -28,6 +28,9 @@ public class Constants {
 	
 	public final static Integer VAL_REBATE_PRIZE_RATE = 26;
 	
+	public final static String KEY_ISSUE_TOTAL_BETTING_AMOUNT = "total";
+	
+	public final static String KEY_LOTTO_TYPE_PROFIT_LOSS = "profit_loss";
 	
 	public static enum DepositOrderState{
 		
@@ -484,7 +487,7 @@ public class Constants {
 		LOTTERY_CONFIG_CQSSC("lottery_config_cqssc"),//,"重庆时时彩属性"
 		LOTTERY_CONFIG_GD11X5("lottery_config_gd11x5"),//,"广东11选5属性"
 		LOTTERY_CONFIG_TXFFC("lottery_config_txffc"),//,"腾讯分分彩属性"
-		LOTTERY_CONFIG_5CC("lottery_config_5cc"),//,"5分彩属性"
+		LOTTERY_CONFIG_5FC("lottery_config_5fc"),//,"5分彩属性"
 		LOTTERY_CONFIG_SFC("lottery_config_sfc"),//,"双分彩属性"
 		LOTTERY_CONFIG_FFC("lottery_config_ffc"),//,"分分彩属性"
 		LOTTERY_CONFIG_MMC("lottery_config_mmc"),//"秒秒彩属性"
@@ -1535,7 +1538,8 @@ public class Constants {
 		URL_WINING_NUMBER_EXTENAL("url_wining_number_extenal"),//外部数据接口
 		LOTTO_PRIZE_RATE("lotto_prize_rate"),//中奖赔率
 		BET_TIMES("bet_times"),
-		MONEY_UNIT("money_unit");
+		MONEY_UNIT("money_unit"),
+		UP_LIMIT_PROFIT_LOSS("up_limit_profit_loss");
 		
 		private String code;
 		
@@ -1820,6 +1824,7 @@ public class Constants {
 			return this.lottoType;
 		}
 	}
+	
 	/**
 	 * payType配置缓存时需要的key名
 	 */
@@ -1995,6 +2000,42 @@ public class Constants {
 		
 		public String getCode() {
 			return this.code;
+		}
+		
+	}
+	
+	/**
+	 * 系统运行时参数
+	 */
+	public static enum PrizeMode{
+		MANUAL("0", "人工开奖模式"),
+		NON_INTERVENTIONAL("1", "非干预模式"),
+		INTERVENTIONAL("2", "系统干预模式"),
+		DAEMO("3", "系统自动值守模式");
+		
+		private String code;
+		
+		private String desc;
+		
+		
+		private PrizeMode(String code, String desc) {
+			this.code = code;
+			this.desc = desc;
+		}
+		
+		public String getCode() {
+			return this.code;
+		}
+		
+		public static PrizeMode getByCode(String code) {
+			PrizeMode[] modes = PrizeMode.values();
+			for(PrizeMode prizeMode : modes) {
+				if(prizeMode.getCode().equals(code)) {
+					return prizeMode;
+				}
+			}
+			
+			return null;
 		}
 		
 	}
