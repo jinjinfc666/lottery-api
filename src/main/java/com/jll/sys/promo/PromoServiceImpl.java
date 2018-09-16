@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.jll.common.cache.CacheRedisService;
+import com.jll.common.constants.Constants;
 import com.jll.common.constants.Constants.CreditRecordType;
 import com.jll.common.constants.Constants.PromoMultipleType;
 import com.jll.common.constants.Constants.PromoValueType;

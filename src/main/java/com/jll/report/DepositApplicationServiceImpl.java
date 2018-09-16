@@ -11,7 +11,7 @@ import javax.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.jll.common.constants.Constants.CreditRecordType;
+import com.jll.common.constants.Constants;
 import com.jll.common.constants.Constants.DepositOrderState;
 import com.jll.common.constants.Constants.WalletType;
 import com.jll.common.constants.Message;
@@ -98,7 +98,7 @@ public class DepositApplicationServiceImpl implements DepositApplicationService 
 		
 		UserAccount mainAcc = (UserAccount) supserDao.findByName(UserAccount.class, "userId",dbDep.getUserId(), "accType", WalletType.MAIN_WALLET.getCode()).get(0);
 		
-		UserAccountDetails accDtal1 = userAccountDetailsService.initCreidrRecord(dbDep.getUserId(), mainAcc, mainAcc.getBalance().doubleValue(), dep.getAmount(), CreditRecordType.THIRD_RECHARGE.getCode());
+		UserAccountDetails accDtal1 = userAccountDetailsService.initCreidrRecord(dbDep.getUserId(), mainAcc, mainAcc.getBalance().doubleValue(), dep.getAmount(), Constants.AccOperationType.DEPOSIT.getCode());
 		mainAcc.setBalance(new BigDecimal(accDtal1.getPostAmount()));
 		supserDao.save(accDtal1);
 		supserDao.update(mainAcc);
