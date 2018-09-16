@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 import org.apache.log4j.Logger;
 
@@ -17,7 +18,7 @@ public class QszxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 	
 	private Logger logger = Logger.getLogger(QszxPlayTypeFacadeImpl.class);
 	
-	protected String playTypeDesc = "cqssc/qszx|前三直选";
+	protected String playTypeDesc = "qszx|前三直选/fs-ds";
 	/*
 	CacheRedisService cacheServ = (CacheRedisService)SpringContextUtil.getBean("cacheRedisServiceImpl");
 	
@@ -203,13 +204,21 @@ public class QszxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 		return winningRate;
 	}
 
-	/*@Override
-	public BigDecimal calSingleBettingPrize(Float prizePattern, BigDecimal winningRate) {
-		BigDecimal singleBettingPrize = null;
-		BigDecimal priP = new BigDecimal(prizePattern);
-		winningRate = winningRate.multiply(new BigDecimal(1000));
-		singleBettingPrize = priP.divide(winningRate);
+	@Override
+	public String produceWinningNumber(String betNum) {
+		String[] betNumSet = betNum.split(",");
+		StringBuffer winningBetNum = new StringBuffer();
+		Random random = new Random();
 		
-		return singleBettingPrize;
-	}*/
+		for(String betNumBit : betNumSet) {
+			winningBetNum.append(betNumBit.substring(0, 1));
+		}
+		
+		for(int i = 0; i < 2; i++) {
+			int currIndex = random.nextInt(10);
+			winningBetNum.append(Integer.toString(currIndex));
+		}
+		
+		return winningBetNum.toString();
+	}
 }

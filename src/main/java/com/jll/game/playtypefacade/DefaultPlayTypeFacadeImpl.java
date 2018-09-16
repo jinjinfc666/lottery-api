@@ -68,4 +68,16 @@ public abstract class DefaultPlayTypeFacadeImpl implements PlayTypeFacade {
 		
 		return singleBettingPrize;
 	}
+	
+	/**
+	 * 计算中奖的投注数
+	 * @param issue
+	 * @param order
+	 * @return
+	 */
+	@Override
+	public String produceWinningNumber(String betNUm) {
+		return null;
+	}
+	
 }
