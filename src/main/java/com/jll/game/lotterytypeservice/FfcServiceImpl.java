@@ -1,31 +1,26 @@
 package com.jll.game.lotterytypeservice;
 
-import java.io.IOException;
 import java.math.BigDecimal;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jll.common.cache.CacheRedisService;
 import com.jll.common.constants.Constants;
 import com.jll.common.constants.Constants.OrderDelayState;
 import com.jll.common.constants.Constants.OrderState;
-import com.jll.common.http.HttpRemoteStub;
-import com.jll.common.utils.sequence.GenSequenceService;
-import com.jll.entity.GenSequence;
+import com.jll.common.constants.Constants.PrizeMode;
+import com.jll.common.utils.MathUtil;
+import com.jll.common.utils.Utils;
 import com.jll.entity.Issue;
 import com.jll.entity.OrderInfo;
 import com.jll.entity.PlayType;
@@ -44,15 +39,16 @@ import com.jll.user.UserInfoService;
 import com.jll.user.details.UserAccountDetailsService;
 import com.jll.user.wallet.WalletService;
 
-/*@Configuration
-@PropertySource("classpath:sys-setting.properties")*/
-//@Service
-//@Transactional
-public class Pk10ServiceImpl extends DefaultLottoTypeServiceImpl
+/**
+ * 双分彩
+ * @author Administrator
+ *
+ */
+public class FfcServiceImpl extends DefaultLottoTypeServiceImpl
 {
-	private Logger logger = Logger.getLogger(Pk10ServiceImpl.class);
+	private Logger logger = Logger.getLogger(FfcServiceImpl.class);
 
-	private final String lotteryType = "bjpk10";
+	private final String lotteryType = "ffc";
 	
 	IssueService issueServ = (IssueService)SpringContextUtil.getBean("issueServiceImpl");
 	
@@ -68,48 +64,29 @@ public class Pk10ServiceImpl extends DefaultLottoTypeServiceImpl
 	
 	UserInfoService userServ = (UserInfoService)SpringContextUtil.getBean("userInfoServiceImpl");
 	
-	GenSequenceService seqServ = (GenSequenceService)SpringContextUtil.getBean("genSequenceServiceImpl");
-	
 	@Override
 	public List<Issue> makeAPlan() {
-		//09:00-23:00（179期）5分钟一期，
+		//00:00-23:59  1分钟一期
 		List<Issue> issues = new ArrayList<>();
-		int maxAmount = 179;
+		int maxAmount = 1440;
 		Calendar calendar = Calendar.getInstance();
-		GenSequence pk10Seq = seqServ.queryPK10SeqVal();
-		
 		calendar.setTime(new Date());
-		calendar.set(Calendar.HOUR_OF_DAY, 9);
+		calendar.set(Calendar.HOUR_OF_DAY, 0);
 		calendar.set(Calendar.MINUTE, 0);
 		calendar.set(Calendar.SECOND, 0);
 		calendar.set(Calendar.MILLISECOND, 0);
 		for(int i = 0; i < maxAmount; i++) {
-			Long seqVal = pk10Seq.getSeqVal().longValue() + 1;
-			pk10Seq.setSeqVal(seqVal);
-			//if(i < 72) {
-				Issue issue = new Issue();
-				issue.setStartTime(calendar.getTime());
-				calendar.add(Calendar.MINUTE, 5);
-				issue.setEndTime(calendar.getTime());
-				issue.setIssueNum(String.valueOf(pk10Seq.getSeqVal().longValue()));
-				issue.setLotteryType(lotteryType);
-				issue.setState(Constants.IssueState.INIT.getCode());
-				
-				issues.add(issue);
-			/*}else{
-				Issue issue = new Issue();
-				issue.setStartTime(calendar.getTime());
-				calendar.add(Calendar.MINUTE, 5);
-				issue.setEndTime(calendar.getTime());
-				issue.setIssueNum(generateLottoNumber(i + 1));
-				issue.setLotteryType(lotteryType);
-				issue.setState(Constants.IssueState.INIT.getCode());
-				
-				issues.add(issue);
-			}*/
+			Issue issue = new Issue();
+			issue.setStartTime(calendar.getTime());
+			calendar.add(Calendar.MINUTE, 1);
+			issue.setEndTime(calendar.getTime());
+			issue.setIssueNum(generateLottoNumber(i + 1));
+			issue.setLotteryType(lotteryType);
+			issue.setState(Constants.IssueState.INIT.getCode());
+			
+			issues.add(issue);
 		}
 		
-		seqServ.saveSeq(pk10Seq);
 		issueServ.savePlan(issues);
 		return issues;
 	}
@@ -135,154 +112,158 @@ public class Pk10ServiceImpl extends DefaultLottoTypeServiceImpl
 	}
 
 	@Override
-	public void queryWinningNum(String issueNum) {
-		String[] urls = null;
-		Map<String, Object> result = null;
-		String response = null;
-		String codeTypeName = Constants.SysCodeTypes.LOTTERY_CONFIG_BJPK10.getCode();
-		String codeName = Constants.LotteryAttributes.URL_WINING_NUMBER_EXTENAL.getCode();
-		SysCode sysCode = cacheServ.getSysCode(codeTypeName, codeName);
-		String winningNum = null;
-		Issue issue = null;
-		int maxCounter = 3600;
-		int currCounter = 0;
+	public void queryWinningNum(String issueNum) {		
+		String codeTypeName = Constants.SysCodeTypes.LOTTERY_CONFIG_5FC.getCode();
+		String codeNamePrizeMode = Constants.LotteryAttributes.PRIZE_MODE.getCode();
+		String codeNameWinningRate = Constants.LotteryAttributes.WINING_RATE.getCode();
+		String codeNameUplimitProfitLoss = Constants.LotteryAttributes.UP_LIMIT_PROFIT_LOSS.getCode();
+		SysCode sysCodePrizeMode = cacheServ.getSysCode(codeTypeName, codeNamePrizeMode);
+		SysCode sysCodeWinningRate = cacheServ.getSysCode(codeTypeName, codeNameWinningRate);
+		SysCode sysCodeUplimitProfitLoss = cacheServ.getSysCode(codeTypeName, codeNameUplimitProfitLoss);
 		
-		if(sysCode == null
-				|| StringUtils.isBlank(sysCode.getCodeVal())) {
+		PrizeMode prizeMode;
+		
+		if(sysCodePrizeMode == null
+				|| StringUtils.isBlank(sysCodePrizeMode.getCodeVal())) {
 			return;
 		}
 		
-		urls = sysCode.getCodeVal().split(",");
-		while(currCounter < maxCounter) {
-			for(String url : urls) {
-				url = url.replace("{issue_id}", issueNum.replace("-", ""));
+		prizeMode = PrizeMode.getByCode(sysCodePrizeMode.getCodeVal());
+		switch(prizeMode) {
+			case MANUAL :{
+				return ;
+			}
+			case NON_INTERVENTIONAL : {
+				nonInterventional(issueNum);
+				return;
+			}
+			case INTERVENTIONAL:{
+				interventional(issueNum, sysCodeWinningRate);
+				return ;
+			}
+			case DAEMO :{
+				Float profitLoss = queryPlatProfitLoss(issueNum);
+				Float upLimitProfitLoss = Float.parseFloat(sysCodeUplimitProfitLoss.getCodeVal());
+				if(profitLoss.floatValue() < upLimitProfitLoss.floatValue()) {
+					//不干涉开奖
+					nonInterventional(issueNum);
+				}else {
+					//干涉开奖
+					interventional(issueNum, sysCodeWinningRate);
+				}
+				return;
+			}
+		}
+	}
+
+	/**
+	 * 计算平台彩种盈亏
+	 * @param issueNum
+	 * @return
+	 */
+	private Float queryPlatProfitLoss(String issueNum) {
+		Float ret = null;
+		Issue issue = issueServ.getIssueByIssueNum(issueNum);
+		
+		Map<String, Object> statInfo = cacheServ
+				.getPlatStat(issue.getLotteryType());
+		
+		if(statInfo == null || statInfo.size() == 0) {
+			return 0F;
+		}
+		
+		ret = (Float)statInfo.get(Constants.KEY_LOTTO_TYPE_PROFIT_LOSS);
+		return ret;
+	}
+
+	private void interventional(String issueNum, SysCode sysCodeWinningRate) {
+		String winningNum;
+		Issue issue;
+		issue = issueServ.getIssueByIssueNum(issueNum);
+		
+		Map<String, Object> statInfo = cacheServ
+				.getStatGroupByBettingNum(issue.getLotteryType(), 
+				issue.getId());
+		Map<String, Object> rateDistribute = new HashMap<>();
+		Double maxRate = null;
+		String playTypeName = null;
+		PlayTypeFacade playTypeFacade = null;
+		
+		if(statInfo == null || statInfo.size() == 0) {
+			nonInterventional(issueNum);
+			return ;
+		}
+		
+		Iterator<String> keys = statInfo.keySet().iterator();
+		while(keys.hasNext()) {
+			String key = keys.next();
+			if(Constants.KEY_ISSUE_TOTAL_BETTING_AMOUNT.equals(key)) {
+				continue;
+			}
+			Float betAmount = (Float)statInfo.get(Constants.KEY_ISSUE_TOTAL_BETTING_AMOUNT);
+			Float prizeAmount = (Float)statInfo.get(key);
+			
+			Double rate = MathUtil.divide(prizeAmount, betAmount, 5);
+			if(rate < Double.parseDouble(sysCodeWinningRate.getCodeVal())){
+				if(rateDistribute.get(String.valueOf(rate)) != null) {
+					key = rateDistribute.get(String.valueOf(rate)) + ";";
+					rateDistribute.put(String.valueOf(rate), key);						
+				}else {
+					rateDistribute.put(String.valueOf(rate), key);
+				}
 				
-				try {
-					result = HttpRemoteStub.synGet(new URI(url), null, null);
-					
-					if(result != null && result.size() > 0) {
-						if(result.get("responseBody") != null) {
-							response = (String)result.get("responseBody");
-							//if(response.contains(issueNum.replace("-", ""))) {
-								if(response.contains("preDrawCode")) {
-									winningNum = parseHuiling(response, issueNum);
-								}else if(response.contains("openNum")) {
-									winningNum = parseCp8033(response, issueNum);
-								}
-								
-								if(!StringUtils.isBlank(winningNum)) {
-									//store into to database
-									issue = issueServ.getIssueByIssueNum(issueNum);
-									issue.setRetNum(winningNum.replaceAll(" ", ","));
-									issueServ.saveIssue(issue);
-									
-									//inform the progress to payout
-									cacheServ.publishMessage(Constants.TOPIC_PAY_OUT, issueNum);
-									return;								
-								}
-							//}
-						}
-					}
-				} catch (URISyntaxException e) {
-					logger.error(e.getMessage());
+				if(maxRate == null
+						|| maxRate.doubleValue() < rate.doubleValue()) {
+					maxRate = rate;
 				}
 			}
 			
-			currCounter++;
-			
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-	}
-
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private String parseCp8033(String response, String issueNum) {
-		ObjectMapper mapper = new ObjectMapper();
-		Map<String, Object> retItems = null;
-		List winningNumberSet = null;
-		Map winningNumMap = null;
-		StringBuffer winningNum = new StringBuffer();
-		
-		try {
-			retItems = mapper.readValue(response, HashMap.class);
-			winningNumberSet = (List)retItems.get("openNum");
-			String winningIssueNum = (String)retItems.get("issue");
-			
-			if(winningNumberSet == null 
-					|| winningNumberSet.size() == 0) {
-				return null;
-			}
-			
-			if(!issueNum.equals(winningIssueNum)) {
-				return null;
-			}
-			
-			for(Object bit : winningNumberSet) {
-				winningNum.append(((Integer)bit).toString()).append(",");
-			}
-			
-			if(winningNum.toString().endsWith(",")) {
-				winningNum.delete(winningNum.length() - 1, winningNum.length() + 1);
-			}
-			
-			return winningNum.toString();
-		} catch (JsonParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (JsonMappingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 		
-		return null;
-	}
-
-	private String parseHuiling(String response, String issueNum) {
-		ObjectMapper mapper = new ObjectMapper();
-		Map  winningNumMap = null;
-		Map responseMap = null;
-		Map resultMap = null;
-		Map dataMap = null;
-		List retItems = null;
-		try {
-			responseMap = mapper.readValue(response, Map.class);
-			resultMap = (Map)responseMap.get("result");
-			retItems = (List)resultMap.get("data");
-			if(retItems == null || retItems.size() == 0) {
-				return null;
-			}
-			
-			for(Object temp : retItems) {
-				winningNumMap = (Map)temp;
-				String winningNumber = (String)winningNumMap.get("preDrawCode");
-				Integer winningIssueNum = (Integer)winningNumMap.get("preDrawIssue");
-				
-				if(issueNum.equals(String.valueOf(winningIssueNum))) {
-					return winningNumber;
-				}
-			}
-			
-		} catch (JsonParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (JsonMappingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		if(maxRate == null || statInfo.size() < 10) {
+			nonInterventional(issueNum);
+			return;
 		}
 		
-		return null;
+		String maxBetAmount = (String)rateDistribute.get(String.valueOf(maxRate));
+		if(maxBetAmount.contains(";")) {
+			maxBetAmount = maxBetAmount.substring(0, 
+					maxBetAmount.indexOf(";"));
+		}
+		
+		String playTypeId = maxBetAmount.split("|")[0];
+		String betNum = maxBetAmount.split("|")[1];
+		PlayType playType = playTypeServ.queryById(Integer.parseInt(playTypeId));
+						
+		if(playType.getPtName().equals("fs") || playType.getPtName().equals("ds")) {
+			playTypeName = playType.getClassification() + "/fs-ds";
+		}else {
+			playTypeName = playType.getClassification() + "/" + playType.getPtName();
+		}
+		playTypeFacade = PlayTypeFactory.getInstance().getPlayTypeFacade(playTypeName);
+		
+		winningNum = playTypeFacade.produceWinningNumber(betNum);
+		
+		issue.setRetNum(winningNum);
+		issueServ.saveIssue(issue);
+		
+		//inform the progress to payout
+		cacheServ.publishMessage(Constants.TOPIC_PAY_OUT, issueNum);
 	}
 
+	private void nonInterventional(String issueNum) {
+		String winningNum;
+		Issue issue;
+		winningNum = Utils.produce5Digits0to9Number();
+		issue = issueServ.getIssueByIssueNum(issueNum);
+		issue.setRetNum(winningNum);
+		issueServ.saveIssue(issue);
+		
+		//inform the progress to payout
+		cacheServ.publishMessage(Constants.TOPIC_PAY_OUT, issueNum);
+	}
+
+	
 	/*@Override
 	public void payout(String issueNum) {
 		String userName = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -333,6 +314,8 @@ public class Pk10ServiceImpl extends DefaultLottoTypeServiceImpl
 				
 				//TODO 修改订单状态
 				modifyOrderState(order, Constants.OrderState.WINNING);
+				
+				setProfitLoss(issue, prize);
 			}else {
 				//TODO 修改订单状态
 				modifyOrderState(order, Constants.OrderState.LOSTING);
@@ -344,6 +327,20 @@ public class Pk10ServiceImpl extends DefaultLottoTypeServiceImpl
 		}
 		
 		modifyIssueState(issue);
+	}
+
+	private void setProfitLoss(Issue issue, BigDecimal prize) {
+		Float profitLoss = queryPlatProfitLoss(issue.getIssueNum());
+		if(profitLoss == null) {
+			profitLoss = 0F;
+		}
+		
+		profitLoss = MathUtil.subtract(profitLoss, 
+				prize.floatValue(), 
+				Float.class);
+		Map<String, Object> items = new HashMap<>();
+		items.put(Constants.KEY_LOTTO_TYPE_PROFIT_LOSS, profitLoss);
+		cacheServ.setPlatStat(issue.getLotteryType(), items);
 	}
 
 	private void modifyIssueState(Issue issue) {
@@ -368,7 +365,10 @@ public class Pk10ServiceImpl extends DefaultLottoTypeServiceImpl
 		
 		modifyBal(order, user, prize);
 		
+		setProfitLoss(issue, prize);
+		
 		rebate(issue, superiorUser, order);
+		
 	}
 
 	private BigDecimal calRebate(UserInfo user, OrderInfo order) {
@@ -455,6 +455,6 @@ public class Pk10ServiceImpl extends DefaultLottoTypeServiceImpl
 		return playTypeFacade.isMatchWinningNum(issue, order);
 	}
 	
-	
 	*/
+	
 }

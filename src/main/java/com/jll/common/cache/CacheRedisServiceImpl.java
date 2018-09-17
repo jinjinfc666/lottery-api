@@ -2,8 +2,10 @@ package com.jll.common.cache;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -642,5 +644,57 @@ public class CacheRedisServiceImpl implements CacheRedisService
 		}
 		
 		return cacheObj.getContent();
+	}
+
+	@Override
+	public Map<String, Object> getPlatStat(String lotteryType) {
+		SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
+		Date currDay = new Date();
+		String currDayStr = format.format(currDay);
+		StringBuffer cacheKey = new StringBuffer();
+		Map<String, Object> ret = null;
+		CacheObject<Map<String, Object>> cacheObj = null;
+		
+		cacheKey.append(Constants.KEY_LOTTO_TYPE_PLAT_STAT)
+		.append(lotteryType).append("_")
+		.append(currDayStr);
+		
+		cacheObj = cacheDao.getPlatStat(cacheKey.toString());
+		
+		if(cacheObj == null) {
+			return null;
+		}
+		return cacheObj.getContent();
+	}
+
+	@Override
+	public void setPlatStat(String lotteryType, Map<String, Object> items) {
+		SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
+		Date currDay = new Date();
+		String currDayStr = format.format(currDay);
+		StringBuffer cacheKey = new StringBuffer();
+		CacheObject<Map<String, Object>> cacheObj = new CacheObject<>();
+		Map<String, Object> cacheContent = null;
+		
+		cacheKey.append(Constants.KEY_LOTTO_TYPE_PLAT_STAT)
+		.append(lotteryType).append("_")
+		.append(currDayStr);
+		
+		cacheContent = getPlatStat(lotteryType);
+		if(cacheContent == null) {
+			cacheContent = new HashMap<>();
+		}
+		
+		Iterator<String> keys = items.keySet().iterator();
+		while(keys.hasNext()) {
+			String key = keys.next();
+			Object val = items.get(key);
+			
+			cacheContent.put(key, val);
+		}
+		cacheObj.setContent(cacheContent);
+		cacheObj.setKey(cacheKey.toString());
+		
+		cacheDao.setPlatStat(cacheObj);
 	}
 }

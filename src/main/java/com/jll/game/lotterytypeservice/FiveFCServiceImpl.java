@@ -39,7 +39,7 @@ import com.jll.user.UserInfoService;
 import com.jll.user.details.UserAccountDetailsService;
 import com.jll.user.wallet.WalletService;
 
-public class FiveFCServiceImpl implements LotteryTypeService
+public class FiveFCServiceImpl extends DefaultLottoTypeServiceImpl
 {
 	private Logger logger = Logger.getLogger(FiveFCServiceImpl.class);
 
@@ -137,7 +137,7 @@ public class FiveFCServiceImpl implements LotteryTypeService
 				return ;
 			}
 			case DAEMO :{
-				Float profitLoss = calPlatProfitLoss(issueNum);
+				Float profitLoss = queryPlatProfitLoss(issueNum);
 				Float upLimitProfitLoss = Float.parseFloat(sysCodeUplimitProfitLoss.getCodeVal());
 				if(profitLoss.floatValue() < upLimitProfitLoss.floatValue()) {
 					//不干涉开奖
@@ -156,7 +156,7 @@ public class FiveFCServiceImpl implements LotteryTypeService
 	 * @param issueNum
 	 * @return
 	 */
-	private Float calPlatProfitLoss(String issueNum) {
+	private Float queryPlatProfitLoss(String issueNum) {
 		Float ret = null;
 		Issue issue = issueServ.getIssueByIssueNum(issueNum);
 		
@@ -259,9 +259,9 @@ public class FiveFCServiceImpl implements LotteryTypeService
 	}
 
 	
-	@Override
+	/*@Override
 	public void payout(String issueNum) {
-		/*String userName = SecurityContextHolder.getContext().getAuthentication().getName();*/
+		String userName = SecurityContextHolder.getContext().getAuthentication().getName();
 		UserInfo user = null;
 		
 		Issue issue = issueServ.getIssueByIssueNum(issueNum);
@@ -309,6 +309,8 @@ public class FiveFCServiceImpl implements LotteryTypeService
 				
 				//TODO 修改订单状态
 				modifyOrderState(order, Constants.OrderState.WINNING);
+				
+				setProfitLoss(issue, prize);
 			}else {
 				//TODO 修改订单状态
 				modifyOrderState(order, Constants.OrderState.LOSTING);
@@ -320,6 +322,20 @@ public class FiveFCServiceImpl implements LotteryTypeService
 		}
 		
 		modifyIssueState(issue);
+	}
+
+	private void setProfitLoss(Issue issue, BigDecimal prize) {
+		Float profitLoss = queryPlatProfitLoss(issue.getIssueNum());
+		if(profitLoss == null) {
+			profitLoss = 0F;
+		}
+		
+		profitLoss = MathUtil.subtract(profitLoss, 
+				prize.floatValue(), 
+				Float.class);
+		Map<String, Object> items = new HashMap<>();
+		items.put(Constants.KEY_LOTTO_TYPE_PROFIT_LOSS, profitLoss);
+		cacheServ.setPlatStat(issue.getLotteryType(), items);
 	}
 
 	private void modifyIssueState(Issue issue) {
@@ -344,7 +360,10 @@ public class FiveFCServiceImpl implements LotteryTypeService
 		
 		modifyBal(order, user, prize);
 		
+		setProfitLoss(issue, prize);
+		
 		rebate(issue, superiorUser, order);
+		
 	}
 
 	private BigDecimal calRebate(UserInfo user, OrderInfo order) {
@@ -432,5 +451,5 @@ public class FiveFCServiceImpl implements LotteryTypeService
 	}
 	
 	
-	
+	*/
 }

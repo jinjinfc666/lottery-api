@@ -32,6 +32,8 @@ public class Constants {
 	
 	public final static String KEY_LOTTO_TYPE_PROFIT_LOSS = "profit_loss";
 	
+	public final static String KEY_LOTTO_TYPE_PLAT_STAT = "plat_stat_";
+	
 	public static enum DepositOrderState{
 		
 		INIT_OR_PUSHED(0),

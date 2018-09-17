@@ -113,6 +113,7 @@ public interface CacheRedisService {
 //	void setPayType(List<PayType> payTypes);
 	
 	/**
+	 * 
 	 * 想消息队列发布消息
 	 * @param channel  接收消息的队列名称 或者 主题
 	 * @param mes 需要发布的消息
@@ -186,4 +187,16 @@ public interface CacheRedisService {
 	 * @return
 	 */
 	Map<String, SysCode> getSysRuntimeArg(String keySysRuntimeArg);
+
+	/** 
+	 * 获取平台统计信息  --->针对彩种，日期
+	 * 目前包含:
+	 * 1,平台盈利统计
+	 *  
+	 * @param lotteryType
+	 * @return
+	 */
+	Map<String, Object> getPlatStat(String lotteryType);
+	
+	void setPlatStat(String lotteryType, Map<String, Object> items);
 }
