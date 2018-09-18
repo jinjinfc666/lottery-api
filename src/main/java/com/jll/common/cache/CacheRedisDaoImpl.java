@@ -233,4 +233,14 @@ public class CacheRedisDaoImpl  extends AbstractBaseRedisDao implements CacheRed
 		return 0;
 	}
 
+	@Override
+	public CacheObject<Map<String, Object>> getPlatStat(String cacheKey) {
+		return get(cacheKey);
+	}
+
+	@Override
+	public void setPlatStat(CacheObject<Map<String, Object>> cacheObj) {
+		saveOrUpdate(cacheObj);
+	}
+
 }

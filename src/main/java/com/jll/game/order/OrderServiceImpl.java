@@ -74,7 +74,7 @@ public class OrderServiceImpl implements OrderService
 		boolean isWalletValid = false;
 		boolean isBetting = false;
 		Date currTime = new Date();
-		String opeType = Constants.AccOperationType.BETTING.getDesc();
+		String opeType = Constants.AccOperationType.BETTING.getCode();
 		String sysCodeType = Constants.SysCodeTypes.FLOW_TYPES.getCode();
 		Map<String, SysCode> accOpetioans = cacheServ.getSysCode(sysCodeType);
 		String userName = SecurityContextHolder.getContext().getAuthentication().getName();

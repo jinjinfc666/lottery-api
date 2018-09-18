@@ -47,7 +47,7 @@ import com.jll.user.wallet.WalletService;
 @PropertySource("classpath:sys-setting.properties")*/
 //@Service
 //@Transactional
-public class CqsscServiceImpl implements LotteryTypeService
+public class CqsscServiceImpl extends DefaultLottoTypeServiceImpl
 {
 	private Logger logger = Logger.getLogger(CqsscServiceImpl.class);
 
@@ -250,9 +250,9 @@ public class CqsscServiceImpl implements LotteryTypeService
 		return null;
 	}
 
-	@Override
+	/*@Override
 	public void payout(String issueNum) {
-		/*String userName = SecurityContextHolder.getContext().getAuthentication().getName();*/
+		String userName = SecurityContextHolder.getContext().getAuthentication().getName();
 		UserInfo user = null;
 		
 		Issue issue = issueServ.getIssueByIssueNum(issueNum);
@@ -437,5 +437,5 @@ public class CqsscServiceImpl implements LotteryTypeService
 	}
 	
 	
-	
+	*/
 }

@@ -96,5 +96,9 @@ public interface CacheRedisDao {
 	PayChannel getPayChannel(String codeTypeName, Integer codeName);
 	
 	void setPayChannel(CacheObject<Map<Integer, PayChannel>> cacheObj);
+
+	CacheObject<Map<String, Object>> getPlatStat(String string);
+
+	void setPlatStat(CacheObject<Map<String, Object>> cacheObj);
 }
 
