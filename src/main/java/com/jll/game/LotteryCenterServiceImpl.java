@@ -373,9 +373,9 @@ public class LotteryCenterServiceImpl implements LotteryCenterService
 		UserInfo user = userServ.getUserByUserName(userName);
 		
 		if(playType.getPtName().equals("fs") || playType.getPtName().equals("ds")) {
-			playTypeName = lotteryType + "/" + playType.getClassification() + "/fs-ds";
+			playTypeName = playType.getClassification() + "/fs-ds";
 		}else {
-			playTypeName = lotteryType + "/" + playType.getClassification() + "/" + playType.getPtName();			
+			playTypeName = playType.getClassification() + "/" + playType.getPtName();			
 		}
 		playTypeFacade = PlayTypeFactory.getInstance().getPlayTypeFacade(playTypeName);
 		

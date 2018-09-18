@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.jll.common.constants.Constants;
-import com.jll.common.constants.Constants.CreditRecordType;
 import com.jll.common.constants.Constants.DepositOrderState;
 import com.jll.common.constants.Constants.WalletType;
 import com.jll.common.utils.BigDecimalUtil;
@@ -51,7 +50,7 @@ public class DepositOrderServiceImpl implements DepositOrderService
 		addDtl.setPreAmount(mainAcc.getBalance().floatValue());
 		addDtl.setPostAmount(Double.valueOf(BigDecimalUtil.add(addDtl.getPreAmount(),addDtl.getAmount())).floatValue());
 		addDtl.setWalletId(mainAcc.getId());
-		addDtl.setOperationType(CreditRecordType.USER_DEPOSIT.getCode());
+		addDtl.setOperationType(Constants.AccOperationType.DEPOSIT.getCode());
 		supserDao.save(addDtl);
 		mainAcc.setBalance(new BigDecimal(addDtl.getPostAmount()));
 		supserDao.update(mainAcc);

@@ -31,7 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.jll.common.cache.CacheRedisService;
 import com.jll.common.constants.Constants;
-import com.jll.common.constants.Constants.CreditRecordType;
+import com.jll.common.constants.Constants.AccOperationType;
 import com.jll.common.constants.Constants.DepositOrderState;
 import com.jll.common.constants.Constants.EmailValidState;
 import com.jll.common.constants.Constants.PhoneValidState;
@@ -841,7 +841,7 @@ public class UserInfoServiceImpl implements UserInfoService
 		addDtl.setPreAmount(dbAcc.getRewardPoints().floatValue());
 		addDtl.setPostAmount(Double.valueOf(BigDecimalUtil.sub(addDtl.getPreAmount(),addDtl.getAmount())).floatValue());
 		addDtl.setWalletId(dbAcc.getId());
-		addDtl.setOperationType(CreditRecordType.POINT_EXCHANGE.getCode());
+		addDtl.setOperationType(AccOperationType.POINT_EXCHANGE.getCode());
 		supserDao.save(addDtl);
 		dbAcc.setRewardPoints(addDtl.getPostAmount().longValue());
 		supserDao.update(dbAcc);
@@ -863,7 +863,7 @@ public class UserInfoServiceImpl implements UserInfoService
 		addRedDtl.setPreAmount(redAcc.getBalance().floatValue());
 		addRedDtl.setPostAmount(Double.valueOf(BigDecimalUtil.add(addRedDtl.getPreAmount(),addRedDtl.getAmount())).floatValue());
 		addRedDtl.setWalletId(redAcc.getId());
-		addRedDtl.setOperationType(CreditRecordType.POINT_EXCHANGE.getCode());
+		addRedDtl.setOperationType(AccOperationType.POINT_EXCHANGE.getCode());
 		supserDao.save(addRedDtl);
 		redAcc.setRewardPoints(addRedDtl.getPostAmount().longValue());
 		supserDao.update(redAcc);
@@ -976,11 +976,11 @@ public class UserInfoServiceImpl implements UserInfoService
 			return ret;
 		}
 		
-		UserAccountDetails accDtal1 = userAccountDetailsService.initCreidrRecord(dbInfo.getId(), mainAcc, mainAcc.getBalance().doubleValue(), -amount, CreditRecordType.USER_WITHDRAWAL.getCode());
+		UserAccountDetails accDtal1 = userAccountDetailsService.initCreidrRecord(dbInfo.getId(), mainAcc, mainAcc.getBalance().doubleValue(), -amount, AccOperationType.WITHDRAW.getCode());
 		mainAcc.setBalance(new BigDecimal(accDtal1.getPostAmount()));
 		supserDao.save(accDtal1);
 		
-		UserAccountDetails accDtal2 = userAccountDetailsService.initCreidrRecord(dbInfo.getId(), mainAcc, mainAcc.getFreeze().doubleValue(), amount, CreditRecordType.ACC_FREEZE.getCode());
+		UserAccountDetails accDtal2 = userAccountDetailsService.initCreidrRecord(dbInfo.getId(), mainAcc, mainAcc.getFreeze().doubleValue(), amount, AccOperationType.ACC_FREEZE.getCode());
 		mainAcc.setFreeze(new BigDecimal(accDtal2.getPostAmount()));
 		
 		supserDao.save(accDtal2);
@@ -1027,7 +1027,7 @@ public class UserInfoServiceImpl implements UserInfoService
 		}
 		
 		UserAccount mainAcc = (UserAccount) supserDao.findByName(UserAccount.class, "userId", dbInfo.getId(), "accType", WalletType.MAIN_WALLET.getCode()).get(0);
-		UserAccountDetails addDtail1 = userAccountDetailsService.initCreidrRecord(dbInfo.getId(),mainAcc, mainAcc.getFreeze().doubleValue(), -mainAcc.getFreeze().doubleValue(), CreditRecordType.ACC_UNFREEZE.getCode());
+		UserAccountDetails addDtail1 = userAccountDetailsService.initCreidrRecord(dbInfo.getId(),mainAcc, mainAcc.getFreeze().doubleValue(), -mainAcc.getFreeze().doubleValue(), AccOperationType.ACC_UNFREEZE.getCode());
 		supserDao.save(addDtail1);
 		mainAcc.setFreeze(new BigDecimal(addDtail1.getPostAmount()));
 		
@@ -1039,7 +1039,7 @@ public class UserInfoServiceImpl implements UserInfoService
 		
 		//审核不通过，退还金额，
 		if(WithdrawOrderState.ORDER_END.getCode() != wtd.getState()){
-			UserAccountDetails addDtail2 = userAccountDetailsService.initCreidrRecord(dbInfo.getId(),mainAcc, mainAcc.getBalance().doubleValue(), mainAcc.getFreeze().doubleValue(), CreditRecordType.WITHDRAWAL_BACK.getCode());
+			UserAccountDetails addDtail2 = userAccountDetailsService.initCreidrRecord(dbInfo.getId(),mainAcc, mainAcc.getBalance().doubleValue(), mainAcc.getFreeze().doubleValue(), AccOperationType.WITHDRAWAL_BACK.getCode());
 			supserDao.save(addDtail2);
 			mainAcc.setBalance(new BigDecimal(addDtail2.getPostAmount()));
 		}
@@ -1079,10 +1079,10 @@ public class UserInfoServiceImpl implements UserInfoService
 		
 		UserAccount subAcc = (UserAccount) supserDao.findByName(UserAccount.class, "userId", toUserInfo.getId(), "accType", WalletType.MAIN_WALLET.getCode()).get(0);
 		
-		UserAccountDetails mainDtl = userAccountDetailsService.initCreidrRecord(fromUserInfo.getId(), mainAcc, mainAcc.getBalance().doubleValue(), -amount, CreditRecordType.TRANSFER_OF_FUNDS.getCode());
+		UserAccountDetails mainDtl = userAccountDetailsService.initCreidrRecord(fromUserInfo.getId(), mainAcc, mainAcc.getBalance().doubleValue(), -amount, AccOperationType.TRANSFER.getCode());
 		mainAcc.setBalance(new BigDecimal(mainDtl.getPostAmount()));
 		
-		UserAccountDetails subDtl = userAccountDetailsService.initCreidrRecord(toUserInfo.getId(), subAcc, subAcc.getBalance().doubleValue(), amount, CreditRecordType.TRANSFER_OF_FUNDS.getCode());
+		UserAccountDetails subDtl = userAccountDetailsService.initCreidrRecord(toUserInfo.getId(), subAcc, subAcc.getBalance().doubleValue(), amount, AccOperationType.TRANSFER.getCode());
 		subAcc.setBalance(new BigDecimal(subDtl.getPostAmount()));
 		
 		supserDao.save(mainDtl);
@@ -1206,7 +1206,7 @@ public class UserInfoServiceImpl implements UserInfoService
 		
 		double wtdRate = Double.valueOf(cacheRedisService.getSysCode(SysCodeTypes.WITHDRAWAL_CFG.getCode(), WithdrawConif.RED_PACKET_WALLET_RATE.getCode()).getCodeVal());
 		
-		double userSumWtd = userAccountDetailsService.getUserOperAmountTotal(redAcc.getId(),redAcc.getUserId(), CreditRecordType.USER_RED_ENVELOPE_WITHDRAWAL_DEDUCTION.getCode(),fromUserInfo.getCreateTime(), new Date());
+		double userSumWtd = userAccountDetailsService.getUserOperAmountTotal(redAcc.getId(),redAcc.getUserId(), AccOperationType.USER_RED_ENVELOPE_WITHDRAWAL_DEDUCTION.getCode(),fromUserInfo.getCreateTime(), new Date());
 		
 		//总投注 - (提取金额 +以提取金额)*流水倍数  < 0 ,不可提取
 		double curCheckAMt = BigDecimalUtil.sub(userSumBet,  BigDecimalUtil.mul(BigDecimalUtil.add(userSumWtd,amount),wtdRate));
@@ -1220,10 +1220,10 @@ public class UserInfoServiceImpl implements UserInfoService
 		UserAccount mainAcc = (UserAccount) supserDao.findByName(UserAccount.class, "userId", fromUserInfo.getId(), "accType", WalletType.MAIN_WALLET.getCode()).get(0);
 		
 		
-		UserAccountDetails mainDtl = userAccountDetailsService.initCreidrRecord(fromUserInfo.getId(), mainAcc, mainAcc.getBalance().doubleValue(), amount, CreditRecordType.USER_RED_BAG_WITHDRAWAL.getCode());
+		UserAccountDetails mainDtl = userAccountDetailsService.initCreidrRecord(fromUserInfo.getId(), mainAcc, mainAcc.getBalance().doubleValue(), amount, AccOperationType.USER_RED_BAG_WITHDRAWAL.getCode());
 		mainAcc.setBalance(new BigDecimal(mainDtl.getPostAmount()));
 		
-		UserAccountDetails subDtl = userAccountDetailsService.initCreidrRecord(fromUserInfo.getId(), redAcc, redAcc.getBalance().doubleValue(), -amount, CreditRecordType.USER_RED_ENVELOPE_WITHDRAWAL_DEDUCTION.getCode());
+		UserAccountDetails subDtl = userAccountDetailsService.initCreidrRecord(fromUserInfo.getId(), redAcc, redAcc.getBalance().doubleValue(), -amount, AccOperationType.USER_RED_ENVELOPE_WITHDRAWAL_DEDUCTION.getCode());
 		redAcc.setBalance(new BigDecimal(subDtl.getPostAmount()));
 		
 		supserDao.save(mainDtl);
@@ -1239,14 +1239,14 @@ public class UserInfoServiceImpl implements UserInfoService
 	public Map<String, Object> directOperationUserAmount(UserAccountDetails dtl) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		List<String> operTypes = new ArrayList<>();
-		operTypes.add(CreditRecordType.SYS_ADD.getCode());
-		operTypes.add(CreditRecordType.SYS_DEDUCTION.getCode());
-		operTypes.add(CreditRecordType.CUSTOMER_CLAIMS.getCode());
-		operTypes.add(CreditRecordType.PLATFORM_REWARD.getCode());
-		operTypes.add(CreditRecordType.BANK_FEES.getCode());
+		operTypes.add(AccOperationType.SYS_ADD.getCode());
+		operTypes.add(AccOperationType.SYS_DEDUCTION.getCode());
+		operTypes.add(AccOperationType.CUSTOMER_CLAIMS.getCode());
+		operTypes.add(AccOperationType.PLAT_REWARD.getCode());
+		operTypes.add(AccOperationType.BANK_FEES.getCode());
 		
 		UserInfo userInfo = userDao.getUserById(dtl.getUserId());
-		if(null == CreditRecordType.getValueByCode(dtl.getOperationType())
+		if(null == AccOperationType.getValueByCode(dtl.getOperationType())
 				|| null == userInfo
 				|| Utils.toDouble(dtl.getAmount()) == 0.00){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
@@ -1275,7 +1275,7 @@ public class UserInfoServiceImpl implements UserInfoService
 		double addAmt=dtl.getAmount();
 		String operType=dtl.getOperationType();
 		
-		Map<String,Integer> map=Constants.CreditRecordType.getNumberMap();
+		Map<String,Integer> map=Constants.AccOperationType.getNumberMap();
 		boolean isNo=map.containsKey(operType);
 		if(isNo) {
 			addAmt=addAmt*(map.get(operType));

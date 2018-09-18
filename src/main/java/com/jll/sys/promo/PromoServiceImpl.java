@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.jll.common.cache.CacheRedisService;
-import com.jll.common.constants.Constants.CreditRecordType;
+import com.jll.common.constants.Constants.AccOperationType;
 import com.jll.common.constants.Constants.PromoMultipleType;
 import com.jll.common.constants.Constants.PromoValueType;
 import com.jll.common.constants.Constants.SysCodeTypes;
@@ -163,12 +163,12 @@ public class PromoServiceImpl implements PromoService
 		if(PromoValueType.CASH.getCode() == dbPro.getValueType()){
 			addDtl.setPreAmount(dbAcc.getBalance().floatValue());
 			addDtl.setWalletId(dbAcc.getId());
-			addDtl.setOperationType(CreditRecordType.ACTIVITY_GIFT_POINT.getCode());
+			addDtl.setOperationType(AccOperationType.PROMO_CASH.getCode());
 			dbAcc.setBalance(new BigDecimal(addDtl.getPostAmount()));
 		}else{
 			addDtl.setPreAmount(dbAcc.getRewardPoints().floatValue());
 			addDtl.setWalletId(dbAcc.getId());
-			addDtl.setOperationType(CreditRecordType.ACTIVITY_GIFT_POINT.getCode());
+			addDtl.setOperationType(AccOperationType.PROMO_POINTS.getCode());
 			dbAcc.setBalance(new BigDecimal(addDtl.getPostAmount()));
 		}
 		addDtl.setPostAmount(Double.valueOf(BigDecimalUtil.add(addDtl.getAmount(),addDtl.getPreAmount())).floatValue());
@@ -235,7 +235,7 @@ public class PromoServiceImpl implements PromoService
 			addDtl.setPreAmount(dbAcc.getBalance().floatValue());
 			addDtl.setPostAmount(Double.valueOf(BigDecimalUtil.add(addDtl.getAmount(),addDtl.getPreAmount())).floatValue());
 			addDtl.setWalletId(dbAcc.getId());
-			addDtl.setOperationType(CreditRecordType.ACTIVITY_GIFT_RED.getCode());
+			addDtl.setOperationType(AccOperationType.ACTIVITY_GIFT_RED.getCode());
 			supserDao.save(addDtl);
 			dbAcc.setBalance(new BigDecimal(addDtl.getPostAmount()));
 			supserDao.update(dbAcc);
@@ -270,7 +270,7 @@ public class PromoServiceImpl implements PromoService
 		addDtl.setPreAmount(dbAcc.getRewardPoints().floatValue());
 		addDtl.setPostAmount(Double.valueOf(BigDecimalUtil.add(addDtl.getAmount(),addDtl.getPreAmount())).floatValue());
 		addDtl.setWalletId(dbAcc.getId());
-		addDtl.setOperationType(CreditRecordType.ACTIVITY_GIFT_POINT.getCode());
+		addDtl.setOperationType(AccOperationType.PROMO_POINTS.getCode());
 		supserDao.save(addDtl);
 		dbAcc.setRewardPoints(new BigDecimal(addDtl.getPostAmount()).longValue());
 		supserDao.update(dbAcc);

@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.jll.common.constants.Constants;
 import com.jll.common.constants.Constants.SysCodeTypes;
+import com.jll.common.utils.MathUtil;
 import com.jll.entity.IpBlackList;
 import com.jll.entity.Issue;
 import com.jll.entity.OrderInfo;
@@ -27,6 +28,9 @@ import com.jll.entity.PlayType;
 import com.jll.entity.SysCode;
 import com.jll.entity.UserInfo;
 import com.jll.game.BulletinBoard;
+import com.jll.game.playtype.PlayTypeFacade;
+import com.jll.game.playtype.PlayTypeService;
+import com.jll.game.playtypefacade.PlayTypeFactory;
 import com.jll.sysSettings.syscode.SysCodeService;
 
 @Configuration
@@ -60,7 +64,8 @@ public class CacheRedisServiceImpl implements CacheRedisService
 	@Value("${sys_captcha_code_expired_time}")
 	private int captchaCodeExpiredTime;
 	
-	
+	@Resource
+	PlayTypeService playTypeServ;
 	
 	@Override
 	public void setCaptchaCode(String captchaCode, int captchaCodeExpiredTime) {
@@ -220,12 +225,20 @@ public class CacheRedisServiceImpl implements CacheRedisService
 	//playType 玩法--------------------End----------------------------------
 	
 	@Override
-	public synchronized void statGroupByBettingNum(String lotteryType, OrderInfo order) {
+	public synchronized void statGroupByBettingNum(String lotteryType, OrderInfo order, UserInfo user) {
 		StringBuffer cacheKey = new StringBuffer();
 		cacheKey.append(Constants.KEY_STAT_ISSUE_BETTING)
 		.append(lotteryType).append(order.getIssueId());
-		Map<String, Integer> statInfo = null;
-		CacheObject<Map<String, Integer>> cacheObj = null;
+		Map<String, Object> statInfo = null;
+		CacheObject<Map<String, Object>> cacheObj = null;
+		PlayTypeFacade playTypeFacade = null;
+		Integer playTypeId = null;
+		PlayType playType = null;
+		String playTypeName = null;
+		Map<String, Object> params = new HashMap<>();		
+		Map<String, Object> preBetResult = null;
+		String betNums = order.getBetNum();
+		String[] betNumSet = null;
 		
 		cacheObj = cacheDao.getStatGroupByBettingNum(cacheKey.toString());
 		
@@ -237,12 +250,55 @@ public class CacheRedisServiceImpl implements CacheRedisService
 			cacheObj.setExpired(1*60*60);
 		}
 		
-		statInfo = cacheObj.getContent();
-		if(statInfo.get(String.valueOf(order.getBetNum())) == null) {
-			statInfo.put(String.valueOf(order.getBetNum()), 1);
-		}else {
-			statInfo.put(String.valueOf(order.getBetNum()), 
-					statInfo.get(String.valueOf(order.getBetNum()) + 1));
+		if(playTypeFacade == null) {
+			playTypeId = order.getPlayType();
+			if(playTypeId == null) {
+				return ;
+			}
+			playType = playTypeServ.queryById(playTypeId);
+			if(playType == null) {
+				return ;
+			}
+			
+			if(playType.getPtName().equals("fs") || playType.getPtName().equals("ds")) {
+				playTypeName = playType.getClassification() + "/fs-ds";
+			}else {
+				playTypeName = playType.getClassification() + "/" + playType.getPtName();			
+			}
+			playTypeFacade = PlayTypeFactory.getInstance().getPlayTypeFacade(playTypeName);
+		}
+		
+		
+		
+		betNumSet = betNums.split(";");
+		for(String betNum : betNumSet) {
+			params.put("betNum", betNum);
+			params.put("times", order.getTimes());
+			params.put("monUnit", order.getPattern().floatValue());
+			params.put("lottoType", lotteryType);
+			preBetResult = playTypeFacade.preProcessNumber(params, user);
+			
+			statInfo = cacheObj.getContent();
+			if(statInfo.get(playTypeId + "|" + betNum) == null) {
+				statInfo.put(betNum, preBetResult.get("maxWinAmount"));
+			}else {				
+				statInfo.put(playTypeId + "|" + betNum, 
+						MathUtil.add((Float)statInfo.get(betNum), 
+								(Float)preBetResult.get("maxWinAmount"), 
+								Float.class));
+			}
+			
+			if(statInfo.get(Constants.KEY_ISSUE_TOTAL_BETTING_AMOUNT) == null) {
+				statInfo.put(Constants.KEY_ISSUE_TOTAL_BETTING_AMOUNT, 
+						preBetResult.get("betAmount"));
+			}else {
+				Float total = (Float)statInfo.get(Constants.KEY_ISSUE_TOTAL_BETTING_AMOUNT);
+				total = MathUtil.add(total, 
+						(Float)preBetResult.get("betAmount"), 
+						Float.class);
+				statInfo.put(Constants.KEY_ISSUE_TOTAL_BETTING_AMOUNT, 
+						total);
+			}			
 		}
 		
 		cacheObj.setContent(statInfo);
@@ -569,5 +625,22 @@ public class CacheRedisServiceImpl implements CacheRedisService
 			return null;
 		}
 		return cache.getContent();
+	}
+
+	@Override
+	public Map<String, Object> getStatGroupByBettingNum(String lotteryType, Integer issueId) {
+		StringBuffer cacheKey = new StringBuffer();
+		cacheKey.append(Constants.KEY_STAT_ISSUE_BETTING)
+		.append(lotteryType).append(issueId);
+		
+		CacheObject<Map<String, Object>> cacheObj = null;
+		
+		cacheObj = cacheDao.getStatGroupByBettingNum(cacheKey.toString());
+		
+		if(cacheObj == null) {
+			return null;
+		}
+		
+		return cacheObj.getContent();
 	}
 }

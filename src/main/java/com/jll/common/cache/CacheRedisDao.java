@@ -57,9 +57,9 @@ public interface CacheRedisDao {
 	 */
 	List<PlayType> getPlayType(String cacheKey);
 
-	CacheObject<Map<String, Integer>> getStatGroupByBettingNum(String cacheKey);
+	CacheObject<Map<String, Object>> getStatGroupByBettingNum(String cacheKey);
 
-	void setStatGroupByBettingNum(CacheObject<Map<String, Integer>> cacheObj);
+	void setStatGroupByBettingNum(CacheObject<Map<String, Object>> cacheObj);
 
 //	List<PayChannel> getPayChannel(String cacheKey);
 //	void setPayChannel(CacheObject<List<PayChannel>> cache);

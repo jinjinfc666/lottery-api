@@ -83,14 +83,6 @@ public class OrderServiceImpl implements OrderService
 		String seqVal = null;
 		int bettingBlockTimes = 1000;
 		int bettingBlockCounter = 0;
-		/*PlayTypeFacade playTypeFacade = null;*/
-		/*Integer playTypeId = null;
-		PlayType playType = null;
-		Map<String, Object> betInfo = null;*/
-		/*Map<String, Object> params = null;*/
-		//String playTypeName = null;
-		/*boolean isBetNumValid = false;*/
-		
 				
 		isWalletValid = isWalletValid(walletId);
 		if(!isWalletValid) {
@@ -132,41 +124,12 @@ public class OrderServiceImpl implements OrderService
 		
 		for(OrderInfo order : orders) {
 			
-			/*if(playTypeFacade == null) {
-				playTypeId = order.getPlayType();
-				if(playTypeId == null) {
-					return String.valueOf(Message.Error.ERROR_GAME_NO_PLAY_TYPE.getCode());
-				}
-				playType = playTypeServ.queryById(playTypeId);
-				if(playType == null) {
-					return String.valueOf(Message.Error.ERROR_GAME_INVALID_PLAY_TYPE.getCode());
-				}
-				
-				playTypeName = lotteryType + "/" + playType.getClassification() + "/" + playType.getPtName();
-				playTypeFacade = PlayTypeFactory.getInstance().getPlayTypeFacade(playTypeName);
-			}*/
-			
-			/*isBetNumValid = playTypeFacade.validBetNum(order);
-			if(!isBetNumValid) {
-				return String.valueOf(Message.Error.ERROR_GAME_INVALID_BET_NUM.getCode());
-			}*/
-			
-			/*params = new HashMap<>();
-			params.put("betNum", order.getBetNum());
-			params.put("times", order.getTimes());
-			params.put("monUnit", order.getPattern().floatValue());
-			params.put("lottoType", lotteryType);*/
-			
-			//betInfo = playTypeFacade.preProcessNumber(params, user);
 			seqVal = Utils.gen16DigitsSeq(getSeq());
 			order.setWalletId(walletId);
 			order.setOrderNum(seqVal);
 			order.setUserId(user.getId());
 			order.setCreateTime(currTime);
 			order.setState(Constants.OrderState.WAITTING_PAYOUT.getCode());
-			/*order.setBetAmount((Float)betInfo.get("betAmount"));
-			order.setBetTotal((Integer)betInfo.get("betTotal"));
-			order.setPrizeRate(new BigDecimal((Float)betInfo.get("singleBettingPrize")));*/
 			orderDao.saveOrders(order);
 			
 			UserAccountDetails userDetails = new UserAccountDetails();
@@ -192,7 +155,7 @@ public class OrderServiceImpl implements OrderService
 			
 			
 			//update the statistic in cache
-			cacheServ.statGroupByBettingNum(lotteryType, order);
+			cacheServ.statGroupByBettingNum(lotteryType, order, user);
 		}
 		
 		//update balance

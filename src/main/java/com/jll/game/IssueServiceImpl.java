@@ -20,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.alibaba.druid.util.StringUtils;
 import com.jll.common.cache.CacheRedisService;
 import com.jll.common.constants.Constants;
-import com.jll.common.constants.Constants.CreditRecordType;
+import com.jll.common.constants.Constants.AccOperationType;
 import com.jll.common.constants.Constants.IssueState;
 import com.jll.common.constants.Constants.OrderDelayState;
 import com.jll.common.constants.Constants.OrderState;
@@ -172,7 +172,7 @@ public class IssueServiceImpl implements IssueService
 				if(isOk){
 					List<UserAccountDetails> ret = supserDao.findByCriteria(criteria);
 					double prize = Utils.toDouble(ret.get(0).getAmount());
-					UserAccountDetails addDtail1 = userAccountDetailsService.initCreidrRecord(curAcc.getUserId(),curAcc, curAcc.getBalance().doubleValue(), -prize, CreditRecordType.RECOVERY_PAYOUT.getCode());
+					UserAccountDetails addDtail1 = userAccountDetailsService.initCreidrRecord(curAcc.getUserId(),curAcc, curAcc.getBalance().doubleValue(), -prize, AccOperationType.RECOVERY_PAYOUT.getCode());
 					if(addDtail1.getPostAmount() < 0){
 						break;
 					}else{
@@ -199,7 +199,7 @@ public class IssueServiceImpl implements IssueService
 							qAcc = accMaps.get(qDtl.getWalletId());
 						}
 						//收回返点
-						UserAccountDetails addDtail2 = userAccountDetailsService.initCreidrRecord(qAcc.getUserId(),qAcc, qAcc.getBalance().doubleValue(), -qDtl.getAmount().doubleValue(), CreditRecordType.CANCEL_REBATE.getCode());
+						UserAccountDetails addDtail2 = userAccountDetailsService.initCreidrRecord(qAcc.getUserId(),qAcc, qAcc.getBalance().doubleValue(), -qDtl.getAmount().doubleValue(), AccOperationType.CANCEL_REBATE.getCode());
 						if(addDtail2.getPostAmount() < 0){
 							break;
 						}else{

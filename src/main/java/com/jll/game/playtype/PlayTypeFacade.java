@@ -55,4 +55,11 @@ public interface PlayTypeFacade
 	BigDecimal calPrize(Issue issue, OrderInfo order, UserInfo user);
 	
 	
+	/**
+	 * 计算匹配投注号码的中奖号码
+	 * @param issue
+	 * @param order
+	 * @return
+	 */
+	String produceWinningNumber(String betNUm);
 }
