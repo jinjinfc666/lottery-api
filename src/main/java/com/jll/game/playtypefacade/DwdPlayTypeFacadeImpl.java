@@ -18,7 +18,7 @@ public class DwdPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 	
 	private Logger logger = Logger.getLogger(QszxPlayTypeFacadeImpl.class);
 	
-	protected String playTypeDesc = "cqssc/dwd|定位胆/dwdfs";
+	protected String playTypeDesc = "dwd|定位胆/dwdfs";
 	
 	@Override
 	public boolean isMatchWinningNum(Issue issue, OrderInfo order) {

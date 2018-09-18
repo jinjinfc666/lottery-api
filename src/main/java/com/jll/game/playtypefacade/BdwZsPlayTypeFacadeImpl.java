@@ -18,7 +18,7 @@ public class BdwZsPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 	
 	private Logger logger = Logger.getLogger(QszxPlayTypeFacadeImpl.class);
 	
-	protected String playTypeDesc = "cqssc/bdw|不定位/zsbdwfs";
+	protected String playTypeDesc = "bdw|不定位/zsbdwfs";
 	
 	@Override
 	public boolean isMatchWinningNum(Issue issue, OrderInfo order) {

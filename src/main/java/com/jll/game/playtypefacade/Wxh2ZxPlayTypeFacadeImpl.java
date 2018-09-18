@@ -18,7 +18,7 @@ public class Wxh2ZxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl  {
 
 	private Logger logger = Logger.getLogger(QszxPlayTypeFacadeImpl.class);
 	
-	private String playTypeDesc = "cqssc/wxq2|五星后二/zxfs";
+	private String playTypeDesc = "wxq2|五星后二/zxfs/fs-ds";
 
 	@Override
 	public String getPlayTypeDesc() {
