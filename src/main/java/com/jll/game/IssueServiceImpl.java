@@ -118,7 +118,7 @@ public class IssueServiceImpl implements IssueService
 			return ret;
 		}
 		
-		Issue curIssue = issueService.getIssueByIssueNum(lottoType, issueNum);
+		Issue curIssue = issueService.getIssueByIssueNum(Utils.toString(params.get("lottoType")),issueNum);
 		if(null == curIssue){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_GAME_EXPIRED_ISSUE.getCode());
@@ -218,9 +218,9 @@ public class IssueServiceImpl implements IssueService
 		}
 	}
 	@Override
-	public Map<String, Object> betOrderPayout(String lottoType, String issueNum) {
+	public Map<String, Object> betOrderPayout(String lottoType, String issueNum, Map<String, String> params) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		Issue curIssue = issueService.getIssueByIssueNum(lottoType, issueNum);
+		Issue curIssue = issueService.getIssueByIssueNum(Utils.toString(params.get("lottoType")),issueNum);
 		if(null == curIssue){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_GAME_EXPIRED_ISSUE.getCode());
@@ -233,16 +233,15 @@ public class IssueServiceImpl implements IssueService
 	}
 
 	@Override
-	public Map<String, Object> calcelIssuePayout(String lottoType, String issueNum) {
+	public Map<String, Object> calcelIssuePayout(String lottoType, String issueNum, Map<String, String> params) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		Issue curIssue = issueService.getIssueByIssueNum(lottoType, issueNum);
+		Issue curIssue = issueService.getIssueByIssueNum(Utils.toString(params.get("lottoType")),issueNum);
 		if(null == curIssue){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_GAME_EXPIRED_ISSUE.getCode());
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_GAME_EXPIRED_ISSUE.getErrorMes());
 			return ret;
 		}
-		
 		List<OrderInfo> winLists = orderDao.queryWinOrdersByIssue(curIssue.getId());
 		calcelOrderWinAmtAndAccRecord(winLists,false);
 		supserDao.updateList(winLists);
@@ -252,9 +251,9 @@ public class IssueServiceImpl implements IssueService
 	}
 
 	@Override
-	public Map<String, Object> betOrderRePayout(String lottoType, String issueNum) {
+	public Map<String, Object> betOrderRePayout(String lottoType, String issueNum, Map<String, String> params) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		Issue curIssue = issueService.getIssueByIssueNum(lottoType, issueNum);
+		Issue curIssue = issueService.getIssueByIssueNum(Utils.toString(params.get("lottoType")),issueNum);
 		if(null == curIssue){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_GAME_EXPIRED_ISSUE.getCode());
@@ -271,9 +270,9 @@ public class IssueServiceImpl implements IssueService
 	}
 
 	@Override
-	public Map<String, Object> issueDisbale(String lottoType, String issueNum) {
+	public Map<String, Object> issueDisbale(String lottoType, String issueNum, Map<String, String> params) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		Issue curIssue = issueService.getIssueByIssueNum(lottoType, issueNum);
+		Issue curIssue = issueService.getIssueByIssueNum(Utils.toString(params.get("lottoType")),issueNum);
 		if(null == curIssue){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_GAME_EXPIRED_ISSUE.getCode());
@@ -295,17 +294,8 @@ public class IssueServiceImpl implements IssueService
 	@Override
 	public Map<String, Object> issueDelayePayout(String issueNum, Map<String, String> params) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		String lottoType = null;
-		
-		if(params.get("lottoType") == null) {
-			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
-			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
-			return ret;
-		}
-		
-		lottoType = (String)params.get("lottoType");
-		Issue curIssue = issueService.getIssueByIssueNum(lottoType, issueNum);
+
+		Issue curIssue = issueService.getIssueByIssueNum(Utils.toString(params.get("lottoType")),issueNum);
 		if(null == curIssue){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_GAME_EXPIRED_ISSUE.getCode());
