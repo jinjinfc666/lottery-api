@@ -18,7 +18,7 @@ public class ZszuxZlPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl  {
 
 	private Logger logger = Logger.getLogger(QszxPlayTypeFacadeImpl.class);
 	
-	private String playTypeDesc = "cqssc/zszx|中三组选/zlfs";
+	private String playTypeDesc = "zszux|中三组选/zlfs";
 
 	@Override
 	public String getPlayTypeDesc() {

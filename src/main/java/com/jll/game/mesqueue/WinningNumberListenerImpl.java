@@ -32,17 +32,19 @@ public class WinningNumberListenerImpl implements MessageDelegateListener {
 	@Override
 	public void handleMessage(Serializable message) {
 		logger.debug("Its ready to obtain the winning number for issue:::" + message);
-		
+		String[] lottoTypeAndIssueNum = null;
 		Issue issue = null;
 		String lottoType = null;
-		String issueNum = (String)message;
-		issue = issueServ.getIssueByIssueNum(issueNum);
+		String issueNum = null;
+		
+		lottoTypeAndIssueNum = ((String)message).split("\\|");
+		lottoType = lottoTypeAndIssueNum[0];
+		issueNum = lottoTypeAndIssueNum[1];
+		issue = issueServ.getIssueByIssueNum(lottoType, issueNum);
 		if(issue == null || !StringUtils.isBlank(issue.getRetNum())) {
 			return ;
 		}
-		
-		lottoType = issue.getLotteryType();
-		
+				
 		if(StringUtils.isBlank(lotteryTypeImpl)) {
 			return ;
 		}
@@ -62,7 +64,7 @@ public class WinningNumberListenerImpl implements MessageDelegateListener {
 
 					@Override
 					public void run() {
-						lotteryTypeServ.queryWinningNum(issueNum);
+						lotteryTypeServ.queryWinningNum((String)message);
 					}
 					
 				});

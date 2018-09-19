@@ -21,20 +21,20 @@ public interface IssueService
 
 	Issue getIssueById(Integer id);
 
-	Issue getIssueByIssueNum(String issueNum);
+	Issue getIssueByIssueNum(String lottoType, String issueNum);
 	
 	//通过彩种和期次数量来查找
 	List<Issue> queryByLTNumber(String lotteryType,Integer number);
 
 	Map<String, Object> updateIssueOpenNum(String issueNum, Map<String, String> params);
 
-	Map<String, Object> betOrderPayout(String issueNum);
+	Map<String, Object> betOrderPayout(String issueNum, Map<String, String> params);
 
-	Map<String, Object> calcelIssuePayout(String issueNum);
+	Map<String, Object> calcelIssuePayout(String issueNum, Map<String, String> params);
 
-	Map<String, Object> betOrderRePayout(String issueNum);
+	Map<String, Object> betOrderRePayout(String issueNum, Map<String, String> params);
 
-	Map<String, Object> issueDisbale(String issueNum);
+	Map<String, Object> issueDisbale(String issueNum, Map<String, String> params);
 
 	Map<String, Object> issueDelayePayout(String issueNum, Map<String, String> params);
 

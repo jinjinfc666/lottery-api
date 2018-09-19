@@ -249,7 +249,7 @@ public class SysInitLoader {
 					if(sysCodes == null || sysCodes.size() == 0
 							|| sysCodeTypes == null
 							|| sysCodeTypes.size() == 0) {
-						return ;
+						continue ;
 					}
 					
 					sysCodes.add(sysCodeTypes.get(0));

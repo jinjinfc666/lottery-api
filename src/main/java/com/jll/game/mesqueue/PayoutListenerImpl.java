@@ -31,10 +31,14 @@ public class PayoutListenerImpl implements MessageDelegateListener {
 	
 	@Override
 	public void handleMessage(Serializable message) {
+		String[] lottoTypeAndIssueNum = null;
 		Issue issue = null;
 		String lottoType = null;
-		String issueNum = (String)message;
-		issue = issueServ.getIssueByIssueNum(issueNum);
+		String issueNum = null;
+		lottoTypeAndIssueNum = ((String)message).split("|");
+		lottoType = lottoTypeAndIssueNum[0];
+		issueNum = lottoTypeAndIssueNum[1];
+		issue = issueServ.getIssueByIssueNum(lottoType, issueNum);
 		if(issue == null || StringUtils.isBlank(issue.getRetNum())) {
 			return ;
 		}
@@ -60,7 +64,7 @@ public class PayoutListenerImpl implements MessageDelegateListener {
 
 					@Override
 					public void run() {
-						lotteryTypeServ.payout(issueNum);
+						lotteryTypeServ.payout((String)message);
 					}
 					
 				});

@@ -112,7 +112,10 @@ public class FfcServiceImpl extends DefaultLottoTypeServiceImpl
 	}
 
 	@Override
-	public void queryWinningNum(String issueNum) {		
+	public void queryWinningNum(String message) {
+		String[] lottoTypeAndIssueNum = null;
+		String lottoType = null;
+		String issueNum = null;
 		String codeTypeName = Constants.SysCodeTypes.LOTTERY_CONFIG_5FC.getCode();
 		String codeNamePrizeMode = Constants.LotteryAttributes.PRIZE_MODE.getCode();
 		String codeNameWinningRate = Constants.LotteryAttributes.WINING_RATE.getCode();
@@ -122,6 +125,9 @@ public class FfcServiceImpl extends DefaultLottoTypeServiceImpl
 		SysCode sysCodeUplimitProfitLoss = cacheServ.getSysCode(codeTypeName, codeNameUplimitProfitLoss);
 		
 		PrizeMode prizeMode;
+		lottoTypeAndIssueNum = ((String)message).split("|");
+		lottoType = lottoTypeAndIssueNum[0];
+		issueNum = lottoTypeAndIssueNum[1];
 		
 		if(sysCodePrizeMode == null
 				|| StringUtils.isBlank(sysCodePrizeMode.getCodeVal())) {
@@ -134,22 +140,22 @@ public class FfcServiceImpl extends DefaultLottoTypeServiceImpl
 				return ;
 			}
 			case NON_INTERVENTIONAL : {
-				nonInterventional(issueNum);
+				nonInterventional(lottoType, issueNum);
 				return;
 			}
 			case INTERVENTIONAL:{
-				interventional(issueNum, sysCodeWinningRate);
+				interventional(lottoType, issueNum, sysCodeWinningRate);
 				return ;
 			}
 			case DAEMO :{
-				Float profitLoss = queryPlatProfitLoss(issueNum);
+				Float profitLoss = queryPlatProfitLoss(lottoType, issueNum);
 				Float upLimitProfitLoss = Float.parseFloat(sysCodeUplimitProfitLoss.getCodeVal());
 				if(profitLoss.floatValue() < upLimitProfitLoss.floatValue()) {
 					//不干涉开奖
-					nonInterventional(issueNum);
+					nonInterventional(lottoType, issueNum);
 				}else {
 					//干涉开奖
-					interventional(issueNum, sysCodeWinningRate);
+					interventional(lottoType, issueNum, sysCodeWinningRate);
 				}
 				return;
 			}
@@ -161,9 +167,9 @@ public class FfcServiceImpl extends DefaultLottoTypeServiceImpl
 	 * @param issueNum
 	 * @return
 	 */
-	private Float queryPlatProfitLoss(String issueNum) {
+	private Float queryPlatProfitLoss(String lottoType, String issueNum) {
 		Float ret = null;
-		Issue issue = issueServ.getIssueByIssueNum(issueNum);
+		Issue issue = issueServ.getIssueByIssueNum(lottoType, issueNum);
 		
 		Map<String, Object> statInfo = cacheServ
 				.getPlatStat(issue.getLotteryType());
@@ -176,10 +182,10 @@ public class FfcServiceImpl extends DefaultLottoTypeServiceImpl
 		return ret;
 	}
 
-	private void interventional(String issueNum, SysCode sysCodeWinningRate) {
+	private void interventional(String lottoType, String issueNum, SysCode sysCodeWinningRate) {
 		String winningNum;
 		Issue issue;
-		issue = issueServ.getIssueByIssueNum(issueNum);
+		issue = issueServ.getIssueByIssueNum(lottoType, issueNum);
 		
 		Map<String, Object> statInfo = cacheServ
 				.getStatGroupByBettingNum(issue.getLotteryType(), 
@@ -190,7 +196,7 @@ public class FfcServiceImpl extends DefaultLottoTypeServiceImpl
 		PlayTypeFacade playTypeFacade = null;
 		
 		if(statInfo == null || statInfo.size() == 0) {
-			nonInterventional(issueNum);
+			nonInterventional(lottoType, issueNum);
 			return ;
 		}
 		
@@ -221,7 +227,7 @@ public class FfcServiceImpl extends DefaultLottoTypeServiceImpl
 		}
 		
 		if(maxRate == null || statInfo.size() < 10) {
-			nonInterventional(issueNum);
+			nonInterventional(lottoType, issueNum);
 			return;
 		}
 		
@@ -251,11 +257,11 @@ public class FfcServiceImpl extends DefaultLottoTypeServiceImpl
 		cacheServ.publishMessage(Constants.TOPIC_PAY_OUT, issueNum);
 	}
 
-	private void nonInterventional(String issueNum) {
+	private void nonInterventional(String lottoType, String issueNum) {
 		String winningNum;
 		Issue issue;
 		winningNum = Utils.produce5Digits0to9Number();
-		issue = issueServ.getIssueByIssueNum(issueNum);
+		issue = issueServ.getIssueByIssueNum(lottoType, issueNum);
 		issue.setRetNum(winningNum);
 		issueServ.saveIssue(issue);
 		

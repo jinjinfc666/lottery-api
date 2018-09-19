@@ -243,4 +243,14 @@ public class CacheRedisDaoImpl  extends AbstractBaseRedisDao implements CacheRed
 		saveOrUpdate(cacheObj);
 	}
 
+	@Override
+	public CacheObject<Integer> getMMCIssueCount(String cacheKey) {
+		return get(cacheKey);
+	}
+
+	@Override
+	public void setMMCIssueCount(CacheObject<Integer> cacheObj) {
+		saveOrUpdate(cacheObj);
+	}
+
 }

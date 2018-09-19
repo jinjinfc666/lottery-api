@@ -34,6 +34,10 @@ public class Constants {
 	
 	public final static String KEY_LOTTO_TYPE_PLAT_STAT = "plat_stat_";
 	
+	public final static String MMC_ISSUE_COUNT = "mmc_issue_count_";
+	
+	public final static String MMC_SERVICE_IMPL = "com.jll.game.lotterytypeservice.MmcServiceImpl";
+	
 	public static enum DepositOrderState{
 		
 		INIT_OR_PUSHED(0),
@@ -2006,6 +2010,31 @@ public class Constants {
 			}
 			
 			return null;
+		}
+		
+	}
+	
+	
+	/**
+	 * 彩种类型
+	 */
+	public static enum LottoType{
+		CQSSC("cqssc"),
+		GD11X5("gd11x5"),
+		FIVEFC("5fc"),
+		SFC("sfc"),
+		FFC("ffc"),
+		MMC("mmc"),
+		BJPK10("bjpk10");
+		
+		private String code;
+		
+		private LottoType(String code) {
+			this.code = code;
+		}
+		
+		public String getCode() {
+			return this.code;
 		}
 		
 	}

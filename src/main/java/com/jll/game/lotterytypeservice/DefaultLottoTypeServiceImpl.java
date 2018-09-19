@@ -62,11 +62,17 @@ public abstract class DefaultLottoTypeServiceImpl implements LotteryTypeService
 	public abstract void queryWinningNum(String issueNum);
 
 	@Override
-	public void payout(String issueNum) {
-		/*String userName = SecurityContextHolder.getContext().getAuthentication().getName();*/
+	public void payout(String message) {
+		String[] lottoTypeAndIssueNum = null;
+		String lottoType = null;
+		String issueNum = null;
 		UserInfo user = null;
 		
-		Issue issue = issueServ.getIssueByIssueNum(issueNum);
+		lottoTypeAndIssueNum = ((String)message).split("|");
+		lottoType = lottoTypeAndIssueNum[0];
+		issueNum = lottoTypeAndIssueNum[1];
+		
+		Issue issue = issueServ.getIssueByIssueNum(lottoType, issueNum);
 		List<OrderInfo> orders = null;
 		boolean isMatch = false;
 				

@@ -19,7 +19,7 @@ public class HszuxZsPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 
 	private Logger logger = Logger.getLogger(QszxPlayTypeFacadeImpl.class);
 	
-	private String playTypeDesc = "cqssc/hszx|后三组选/zsfs";
+	private String playTypeDesc = "hszux|后三组选/zsfs";
 
 	@Override
 	public String getPlayTypeDesc() {

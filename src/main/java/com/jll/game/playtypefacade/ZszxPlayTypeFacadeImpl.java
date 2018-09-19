@@ -16,7 +16,7 @@ import com.jll.entity.UserInfo;
 public class ZszxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 	private Logger logger = Logger.getLogger(QszxPlayTypeFacadeImpl.class);
 	
-	protected String playTypeDesc = "cqssc/zszx|中三直选";
+	protected String playTypeDesc = "zszx|中三直选/fs-ds";
 	/*
 	CacheRedisService cacheServ = (CacheRedisService)SpringContextUtil.getBean("cacheRedisServiceImpl");
 	

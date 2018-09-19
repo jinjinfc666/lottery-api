@@ -100,5 +100,9 @@ public interface CacheRedisDao {
 	CacheObject<Map<String, Object>> getPlatStat(String string);
 
 	void setPlatStat(CacheObject<Map<String, Object>> cacheObj);
+
+	CacheObject<Integer> getMMCIssueCount(String string);
+
+	void setMMCIssueCount(CacheObject<Integer> cacheObj);
 }
 
