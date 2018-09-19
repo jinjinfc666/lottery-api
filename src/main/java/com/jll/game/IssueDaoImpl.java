@@ -45,9 +45,10 @@ public class IssueDaoImpl extends DefaultGenericDaoImpl<Issue> implements IssueD
 	}
 
 	@Override
-	public Issue getIssueByIssueNum(String issueNum) {
-		String sql = "from Issue where issueNum =?";
+	public Issue getIssueByIssueNum(String lottoType, String issueNum) {
+		String sql = "from Issue where lotteryType = ? and issueNum =?";
 		List<Object> params = new ArrayList<>();
+		params.add(lottoType);
 		params.add(issueNum);
 		
 		List<Issue> result = query(sql, params, Issue.class);

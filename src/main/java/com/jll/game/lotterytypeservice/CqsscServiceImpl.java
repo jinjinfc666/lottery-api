@@ -1,7 +1,6 @@
 package com.jll.game.lotterytypeservice;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.DecimalFormat;
@@ -15,29 +14,18 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jll.common.cache.CacheRedisService;
 import com.jll.common.constants.Constants;
-import com.jll.common.constants.Constants.OrderDelayState;
-import com.jll.common.constants.Constants.OrderState;
 import com.jll.common.http.HttpRemoteStub;
 import com.jll.entity.Issue;
-import com.jll.entity.OrderInfo;
-import com.jll.entity.PlayType;
 import com.jll.entity.SysCode;
-import com.jll.entity.UserAccount;
-import com.jll.entity.UserAccountDetails;
-import com.jll.entity.UserInfo;
 import com.jll.game.IssueService;
-import com.jll.game.LotteryTypeService;
 import com.jll.game.order.OrderService;
-import com.jll.game.playtype.PlayTypeFacade;
 import com.jll.game.playtype.PlayTypeService;
-import com.jll.game.playtypefacade.PlayTypeFactory;
 import com.jll.spring.extend.SpringContextUtil;
 import com.jll.user.UserInfoService;
 import com.jll.user.details.UserAccountDetailsService;
@@ -127,7 +115,10 @@ public class CqsscServiceImpl extends DefaultLottoTypeServiceImpl
 	}
 
 	@Override
-	public void queryWinningNum(String issueNum) {
+	public void queryWinningNum(String message) {
+		String[] lottoTypeAndIssueNum = null;
+		String lottoType = null;
+		String issueNum = null;
 		String[] urls = null;
 		Map<String, Object> result = null;
 		String response = null;
@@ -139,6 +130,9 @@ public class CqsscServiceImpl extends DefaultLottoTypeServiceImpl
 		int maxCounter = 3600;
 		int currCounter = 0;
 		
+		lottoTypeAndIssueNum = ((String)message).split("|");
+		lottoType = lottoTypeAndIssueNum[0];
+		issueNum = lottoTypeAndIssueNum[1];
 		if(sysCode == null
 				|| StringUtils.isBlank(sysCode.getCodeVal())) {
 			return;
@@ -164,7 +158,7 @@ public class CqsscServiceImpl extends DefaultLottoTypeServiceImpl
 								
 								if(!StringUtils.isBlank(winningNum)) {
 									//store into to database
-									issue = issueServ.getIssueByIssueNum(issueNum);
+									issue = issueServ.getIssueByIssueNum(lottoType, issueNum);
 									issue.setRetNum(winningNum.replaceAll(" ", ","));
 									issueServ.saveIssue(issue);
 									

@@ -1239,30 +1239,19 @@ public class UserInfoServiceImpl implements UserInfoService
 	@Override
 	public Map<String, Object> directOperationUserAmount(UserAccountDetails dtl) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		List<String> operTypes = new ArrayList<>();
-		operTypes.add(AccOperationType.SYS_ADD.getCode());
-		operTypes.add(AccOperationType.SYS_DEDUCTION.getCode());
-		operTypes.add(AccOperationType.CUSTOMER_CLAIMS.getCode());
-		operTypes.add(AccOperationType.PLAT_REWARD.getCode());
-		operTypes.add(AccOperationType.BANK_FEES.getCode());
 		
 		UserInfo userInfo = userDao.getUserById(dtl.getUserId());
 		if(null == AccOperationType.getValueByCode(dtl.getOperationType())
 				|| null == userInfo
-				|| Utils.toDouble(dtl.getAmount()) == 0.00){
+				|| Utils.toDouble(dtl.getAmount()) == 0.00
+				|| null == WalletType.getWalletTypeByCode(dtl.getWalletId())){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
 			return ret;
 		}
-		UserAccount mainAcc = null;
+		UserAccount mainAcc  = (UserAccount) supserDao.findByName(UserAccount.class, "userId",userInfo.getId(), "accType", dtl.getWalletId()).get(0);
 		//操作主账号
-		if(operTypes.contains(dtl.getOperationType())){
-			mainAcc = (UserAccount) supserDao.findByName(UserAccount.class, "userId",userInfo.getId(), "accType", WalletType.MAIN_WALLET.getCode()).get(0);
-		}else{
-			mainAcc = (UserAccount) supserDao.findByName(UserAccount.class, "userId",userInfo.getId(), "accType", WalletType.RED_PACKET_WALLET.getCode()).get(0);
-		}
-		
 		if(dtl.getAmount() < 0
 				&& Utils.toDouble(mainAcc.getBalance()) < Math.abs(dtl.getAmount())){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());

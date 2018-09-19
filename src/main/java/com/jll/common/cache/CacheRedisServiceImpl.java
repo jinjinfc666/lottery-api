@@ -84,14 +84,17 @@ public class CacheRedisServiceImpl implements CacheRedisService
 	}
 
 	@Override
-	public void setPlan(String cacheKey, List<Issue> issues) {
+	public void setPlan(String lotteryType, List<Issue> issues) {
+		String cacheKey = Constants.KEY_PRE_PLAN + lotteryType;
+		
 		cacheDao.setPlan(cacheKey, issues);
 	}
 
 
 
 	@Override
-	public List<Issue> getPlan(String cacheKey) {
+	public List<Issue> getPlan(String lotteryType) {
+		String cacheKey = Constants.KEY_PRE_PLAN + lotteryType;
 		return cacheDao.getPlan(cacheKey);
 	}
 
@@ -100,7 +103,7 @@ public class CacheRedisServiceImpl implements CacheRedisService
 	@Override
 	public boolean isPlanExisting(String lotteryType) {
 		Date today = new Date();
-		String cacheKey = Constants.KEY_PRE_PLAN + lotteryType;
+		String cacheKey = lotteryType;
 		
 		logger.debug(String.format("plan key %s", cacheKey));
 		List<Issue> issues = this.getPlan(cacheKey);
@@ -696,5 +699,45 @@ public class CacheRedisServiceImpl implements CacheRedisService
 		cacheObj.setKey(cacheKey.toString());
 		
 		cacheDao.setPlatStat(cacheObj);
+	}
+
+	@Override
+	public Integer getMMCIssueCount(Date currTime) {
+		SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
+		Date currDay = new Date();
+		String currDayStr = format.format(currDay);
+		StringBuffer cacheKey = new StringBuffer();
+		Map<String, Object> ret = null;
+		CacheObject<Integer> cacheObj = null;
+		
+		cacheKey.append(Constants.MMC_ISSUE_COUNT)
+		.append(currDayStr);
+		
+		cacheObj = cacheDao.getMMCIssueCount(cacheKey.toString());
+		
+		if(cacheObj == null) {
+			return null;
+		}
+		return cacheObj.getContent();
+	}
+
+	@Override
+	public void setMMCIssueCount(Date currTime, int i) {
+		SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
+		Date currDay = new Date();
+		String currDayStr = format.format(currDay);
+		StringBuffer cacheKey = new StringBuffer();
+		CacheObject<Integer> cacheObj = new CacheObject<>();
+		Integer cacheContent = null;
+		
+		cacheKey.append(Constants.MMC_ISSUE_COUNT)
+		.append(currDayStr);
+		
+		cacheContent = new Integer(i);
+		
+		cacheObj.setContent(cacheContent);
+		cacheObj.setKey(cacheKey.toString());
+		
+		cacheDao.setMMCIssueCount(cacheObj);
 	}
 }

@@ -18,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.jll.common.cache.CacheRedisService;
 import com.jll.common.constants.Constants;
 import com.jll.common.constants.Message;
-import com.jll.common.constants.Constants.SysCodeTypes;
 import com.jll.common.utils.MathUtil;
 import com.jll.common.utils.Utils;
 import com.jll.common.utils.sequence.GenSequenceService;
@@ -30,6 +29,9 @@ import com.jll.entity.SysCode;
 import com.jll.entity.UserAccount;
 import com.jll.entity.UserAccountDetails;
 import com.jll.entity.UserInfo;
+import com.jll.game.IssueService;
+import com.jll.game.LotteryTypeFactory;
+import com.jll.game.LotteryTypeService;
 import com.jll.game.playtype.PlayTypeFacade;
 import com.jll.game.playtype.PlayTypeService;
 import com.jll.game.playtypefacade.PlayTypeFactory;
@@ -64,8 +66,10 @@ public class OrderServiceImpl implements OrderService
 	GenSequenceService genSeqServ;
 	
 	@Resource
-	PlayTypeService playTypeServ;
+	PlayTypeService playTypeServ;	
 	
+	@Resource
+	IssueService issueServ;
 	
 	@Override
 	public String saveOrders(List<OrderInfo> orders, int walletId, int zhFlag, String lotteryType) {
@@ -83,15 +87,22 @@ public class OrderServiceImpl implements OrderService
 		String seqVal = null;
 		int bettingBlockTimes = 1000;
 		int bettingBlockCounter = 0;
-				
+		
+		if(Constants.LottoType.MMC.getCode().equals(lotteryType)) {
+			processMMCIssue(orders);
+		}
+		
 		isWalletValid = isWalletValid(walletId);
 		if(!isWalletValid) {
 			return String.valueOf(Message.Error.ERROR_USER__WALLET_INVALID.getCode());
 		}
 		
-		isIssueValid = verifyIssue(orders, lotteryType);
-		if(!isIssueValid) {
-			return String.valueOf(Message.Error.ERROR_GAME_EXPIRED_ISSUE.getCode());
+		
+		if(!Constants.LottoType.MMC.getCode().equals(lotteryType)) {
+			isIssueValid = verifyIssue(orders, lotteryType);
+			if(!isIssueValid) {
+				return String.valueOf(Message.Error.ERROR_GAME_EXPIRED_ISSUE.getCode());
+			}
 		}
 		
 		isBalValid = verifyBal(orders, wallet, lotteryType, user);
@@ -163,7 +174,39 @@ public class OrderServiceImpl implements OrderService
 		
 		cacheServ.releaseUserBettingFlag(user, orders.get(0));
 		
+		if(Constants.LottoType.MMC.getCode().equals(lotteryType)) {
+			int issueId = orders.get(0).getIssueId();
+			Issue issue = issueServ.getIssueById(issueId);
+			cacheServ.publishMessage(Constants.TOPIC_WINNING_NUMBER, issue.getIssueNum());
+		}
+		
 		return String.valueOf(Message.status.SUCCESS.getCode());
+	}
+
+	private boolean processMMCIssue(List<OrderInfo> orders) {
+		LotteryTypeService lotteryTypeServ = null;
+		
+		List<Issue> issues = null;
+		Issue issue = null;
+		
+		for(OrderInfo order : orders) {			
+			if(lotteryTypeServ == null) {
+				lotteryTypeServ = LotteryTypeFactory
+						.getInstance()
+						.createLotteryType(Constants.MMC_SERVICE_IMPL);
+				issues = lotteryTypeServ.makeAPlan();
+				if(issues == null || issues.size() == 0) {
+					return false;
+				}
+			}
+			
+			issue = issues.get(0);
+			
+			order.setIssueId(issue.getId());
+			
+		}
+		
+		return true;
 	}
 
 	private boolean isWalletValid(int walletId) {

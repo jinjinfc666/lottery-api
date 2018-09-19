@@ -1,6 +1,7 @@
 package com.jll.common.cache;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -199,4 +200,8 @@ public interface CacheRedisService {
 	Map<String, Object> getPlatStat(String lotteryType);
 	
 	void setPlatStat(String lotteryType, Map<String, Object> items);
+
+	Integer getMMCIssueCount(Date currTime);
+
+	void setMMCIssueCount(Date currTime, int i);
 }
