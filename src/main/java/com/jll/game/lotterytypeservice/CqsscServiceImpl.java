@@ -1,7 +1,6 @@
 package com.jll.game.lotterytypeservice;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.DecimalFormat;
@@ -15,29 +14,18 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jll.common.cache.CacheRedisService;
 import com.jll.common.constants.Constants;
-import com.jll.common.constants.Constants.OrderDelayState;
-import com.jll.common.constants.Constants.OrderState;
 import com.jll.common.http.HttpRemoteStub;
 import com.jll.entity.Issue;
-import com.jll.entity.OrderInfo;
-import com.jll.entity.PlayType;
 import com.jll.entity.SysCode;
-import com.jll.entity.UserAccount;
-import com.jll.entity.UserAccountDetails;
-import com.jll.entity.UserInfo;
 import com.jll.game.IssueService;
-import com.jll.game.LotteryTypeService;
 import com.jll.game.order.OrderService;
-import com.jll.game.playtype.PlayTypeFacade;
 import com.jll.game.playtype.PlayTypeService;
-import com.jll.game.playtypefacade.PlayTypeFactory;
 import com.jll.spring.extend.SpringContextUtil;
 import com.jll.user.UserInfoService;
 import com.jll.user.details.UserAccountDetailsService;
