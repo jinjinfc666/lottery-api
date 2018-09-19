@@ -1,6 +1,5 @@
 package com.jll.game.lotterytypeservice;
 
-import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -16,20 +15,13 @@ import org.apache.log4j.Logger;
 
 import com.jll.common.cache.CacheRedisService;
 import com.jll.common.constants.Constants;
-import com.jll.common.constants.Constants.OrderDelayState;
-import com.jll.common.constants.Constants.OrderState;
 import com.jll.common.constants.Constants.PrizeMode;
 import com.jll.common.utils.MathUtil;
 import com.jll.common.utils.Utils;
 import com.jll.entity.Issue;
-import com.jll.entity.OrderInfo;
 import com.jll.entity.PlayType;
 import com.jll.entity.SysCode;
-import com.jll.entity.UserAccount;
-import com.jll.entity.UserAccountDetails;
-import com.jll.entity.UserInfo;
 import com.jll.game.IssueService;
-import com.jll.game.LotteryTypeService;
 import com.jll.game.order.OrderService;
 import com.jll.game.playtype.PlayTypeFacade;
 import com.jll.game.playtype.PlayTypeService;
@@ -295,37 +287,7 @@ public class FiveFCServiceImpl extends DefaultLottoTypeServiceImpl
 		}
 		
 		for(OrderInfo order : orders) {
-			user = userServ.getUserById(order.getUserId());
-			//被取消的订单 或者延迟开奖的订单 跳过开奖
-			if(order.getState() == Constants.OrderState.SYS_CANCEL.getCode()
-					|| order.getState() == Constants.OrderState.USER_CANCEL.getCode()
-					|| (order.getDelayPayoutFlag() != null 
-							&& order.getDelayPayoutFlag() == OrderDelayState.DEPLAY.getCode())) {
-				continue;
-			}
-			
-			isMatch = isMatchWinningNum(issue, order);
-			
-			if(isMatch) {//赢
-				//TODO 发奖金
-				BigDecimal prize = calPrize(issue, order, user);
-				//TODO 增加账户流水
-				addUserAccountDetails(order, issue, prize);
-				//TODO 修改用户余额
-				modifyBal(order, user, prize);
-				
-				//TODO 修改订单状态
-				modifyOrderState(order, Constants.OrderState.WINNING);
-				
-				setProfitLoss(issue, prize);
-			}else {
-				//TODO 修改订单状态
-				modifyOrderState(order, Constants.OrderState.LOSTING);
-			}
-			
-			//TODO
-			rebate(issue, user, order);
-			
+			payout(order, issue, true);
 		}
 		
 		modifyIssueState(issue);
@@ -455,6 +417,47 @@ public class FiveFCServiceImpl extends DefaultLottoTypeServiceImpl
 		}
 		
 		return playTypeFacade.isMatchWinningNum(issue, order);
+	}
+
+	@Override
+	public void payout(OrderInfo order, Issue issue, boolean isAuto) {
+		if(issue == null){
+			issue = issueServ.getIssueById(order.getIssueId());
+		}
+		 
+		UserInfo user = userServ.getUserById(order.getUserId());
+		//被取消的订单 或者延迟开奖的订单,或者已经开奖 跳过开奖
+		if(order.getState() == Constants.OrderState.SYS_CANCEL.getCode()
+				||	order.getState() == Constants.OrderState.WINNING.getCode()
+				|| order.getState() == Constants.OrderState.LOSTING.getCode()
+				|| order.getState() == Constants.OrderState.USER_CANCEL.getCode()
+				|| (order.getDelayPayoutFlag() != null 
+						&& order.getDelayPayoutFlag() == OrderDelayState.DEPLAY.getCode()
+						&& isAuto)) {
+			return;
+		}
+		
+		boolean isMatch = isMatchWinningNum(issue, order);
+		
+		if(isMatch) {//赢
+			//TODO 发奖金
+			BigDecimal prize = calPrize(issue, order, user);
+			//TODO 增加账户流水
+			addUserAccountDetails(order, issue, prize);
+			//TODO 修改用户余额
+			modifyBal(order, user, prize);
+			//TODO 修改订单状态
+			modifyOrderState(order, Constants.OrderState.WINNING);
+		}else {
+			//TODO 修改订单状态
+			modifyOrderState(order, Constants.OrderState.LOSTING);
+		}
+		
+		//TODO
+		if(order.getState() != Constants.OrderState.RE_PAYOUT.getCode()){
+			rebate(issue, user, order);
+		}
+		
 	}
 	
 	

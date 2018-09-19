@@ -286,7 +286,7 @@ public class LotteryCenterController {
 		return resp;
 	}
 	
-	@RequestMapping(value="/{lottery-type}/patterns", method = { RequestMethod.GET }, consumes=MediaType.APPLICATION_JSON_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value="/{lottery-type}/patterns", method = { RequestMethod.GET },produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> queryPattern(@PathVariable(name = "lottery-type", required = true) String lotteryType){
 		Map<String, Object> resp = new HashMap<String, Object>();
 		boolean isExisting = false;

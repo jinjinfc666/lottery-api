@@ -19,7 +19,7 @@ public class QszuxMixPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl  {
 
 	private Logger logger = Logger.getLogger(QszxPlayTypeFacadeImpl.class);
 	
-	private String playTypeDesc = "cqssc/qszux|前三组选/hhzxds";
+	private String playTypeDesc = "qszux|前三组选/hhzxds";
 
 	/*PlayTypeFacade qszuxZsPlayTypeFacadeImpl = PlayTypeFactory.getInstance().getPlayTypeFacade("cqssc/qszux|前三组选/zsfs");
 	

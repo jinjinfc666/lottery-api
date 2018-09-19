@@ -17,7 +17,7 @@ public class Wxq2PlayTypeFacadeImpl  extends DefaultPlayTypeFacadeImpl {
 	
 	private Logger logger = Logger.getLogger(Wxq2PlayTypeFacadeImpl.class);
 	
-	protected String playTypeDesc = "cqssc/wxq2|五星前二/fs-ds";
+	protected String playTypeDesc = "wxq2|五星前二/fs-ds";
 	
 	@Override
 	public boolean isMatchWinningNum(Issue issue, OrderInfo order) {

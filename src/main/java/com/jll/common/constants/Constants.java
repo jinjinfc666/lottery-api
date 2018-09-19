@@ -866,7 +866,9 @@ public class Constants {
 		END_BETTING(2, "结束投注"),
 		END_ISSUE(3, "期次结束"),
 		LOTTO_DARW(4, "已开奖"),
-		PAYOUT(5, "已派奖");
+		PAYOUT(5, "已派奖"),
+		RE_PAYOUT(6, "重新派奖"),
+		DISABLE(7, "期次作废");
 		
 		private int code;
 		
@@ -923,85 +925,7 @@ public class Constants {
 			return this.names;
 		}
 	}
-	
-//	public static enum CreditRecordType{
-//		DEPOSIT("deposit","充值",1),
-//		WITHDRAW("withdraw","提款",-1),
-//		WD_FREEZE("wd_freeze","提款冻结",-1),
-//		WD_UNFREEZE("wd_unfreezeze","提款解冻",1),
-//		BETTING("betting","投注",-1),
-//		TRANSFER("transfer","转账",-1),
-//		INITIATE_PURCHASING("initiate_purchasing","发起代购",-1),
-//		SYSTEM_AWARD("system_award","系统派奖",1),
-//		SYSTEM_REBATE("system_rebate","系统返点",1),
-//		SYSTEM_WITHDRAWAL("system_withdrawal","系统撤单",-1),
-//		USER_DEPOSIT("deposit","用户存款",1),
-//		SYS_ADD("sys_add","系统加钱",1),
-//		SYS_DEDUCTION("sys_deduction","系统扣除",-1),
-//		THIRD_RECHARGE("third_recharge","第三方补单充值",1),
-//		USER_WITHDRAWAL("withdrawal","用户提现",-1),
-//		RECHARGE_DEDUCTION("recharge_deduction","充值扣除",-1),
-//		ACTIVITY_GIFT_RED("activity_gift_red","活动红包礼金",1),
-//		CUSTOMER_CLAIMS("customer_claims","客户理赔",1),
-//		PLATFORM_REWARD("platform_reward","平台奖励",1),
-//		RECHARGE_GIFT("recharge_gift","充值赠送",1),
-//		REGISTRATION_GIFT("registration_gift","注册礼金",1),
-//		USER_RED_ENVELOPE_WITHDRAWAL_DEDUCTION("user_red_envelope_withdrawal_deduction","用户红包提现扣除",-1),
-//		USER_RED_BAG_WITHDRAWAL("user_red_bag_withdrawal","用户红包提现",-1),
-//		GOLD_COINS_AGAINST_THE_RENMINBI("gold_coins_against_the_renminbi","金币兑人民币",1),
-//		RMB_AGAINST_GOLD_COINS("RMB_against_gold_coins","人民币兑金币",-1),
-//		BANK_FEES("bank_fees","银行手续费",-1),
-//		TRANSFER_OF_FUNDS("transfer","资金转移",-1),
-//		ACTIVITY_GIFT_CASH("promo_cash","活动现金礼金",1),
-//		ACTIVITY_GIFT_POINT("promo_points","活动积分礼金",1),
-//		ACC_UNFREEZE("acc_unfreeze","账户资金解冻",-1),
-//		ACC_FREEZE("acc_freeze","账户资金冻结",-1),
-//		WITHDRAWAL_BACK("withdrawal_back","提款退还",1),
-//		POINT_EXCHANGE("point_exchange","积分兑换",-1);
-//
-//		
-//		private String code;
-//		
-//		private String desc;
-//
-//		private Integer number;
-//		
-//		private CreditRecordType(String code,String desc,Integer number) {
-//			this.code = code;
-//			this.desc = desc;
-//			this.number = number;
-//		}
-//		
-//		public String getCode() {
-//			return code;
-//		}
-//
-//		public String getDesc() {
-//			return desc;
-//		}
-//		
-//		public Integer getNumber() {
-//			return number;
-//		}
-//		
-//		public static CreditRecordType getValueByCode(String code) {
-//			CreditRecordType[] names = CreditRecordType.values();
-//			for(CreditRecordType name: names) {
-//				if(name.getCode().equals(code)) {
-//					return name;
-//				}
-//			}
-//			return null;
-//		}
-//		public static Map<String,Integer> getNumberMap() {
-//			Map<String,Integer> map=new HashMap<String,Integer>();
-//			CreditRecordType[] names = CreditRecordType.values();
-//			for(CreditRecordType code: names) {
-//				map.put(code.getCode(), code.getNumber());
-//			}
-//			return map;
-//		}
-//	}	
+
 	/**
 	 *报表统计 需要的类型：扣除
 	 * @author Silence
@@ -1523,7 +1447,13 @@ public class Constants {
 		SYS_ADD("sys_add","系统加钱",1),
 		DAILY_SIGN_IN("daily_sign_in","签到积分",1),
 		POINTS_EXCHANGE("points_exchange","积分兑换",-1),
-		WITHDRAWAL_BACK("withdrawal_back","提款退还",-1);
+		WITHDRAWAL_BACK("withdrawal_back","提款退还",-1),
+		ACTIVITY_GIFT_RED("activity_gift_red","活动红包礼金",1),
+		RECOVERY_PAYOUT("recovery_payout","派奖回收",-1),
+		ISSUE_DISBALE("issue_disbale","期次作废",1),
+		POINT_EXCHANGE("point_exchange","积分兑换",-1),
+		USER_RED_BAG_WITHDRAWAL("user_red_bag_withdrawal","用户红包提现",-1),
+		USER_RED_ENVELOPE_WITHDRAWAL_DEDUCTION("user_red_envelope_withdrawal_deduction","用户红包提现扣除",-1),;
 		
 		private String code;
 		
@@ -1611,7 +1541,9 @@ public class Constants {
 		WINNING(1, "赢"),
 		LOSTING(2, "输"),
 		USER_CANCEL(3, "用户取消订单"),
-		SYS_CANCEL(4, "系统取消订单");
+		SYS_CANCEL(4, "系统取消订单"),
+		RE_PAYOUT(5, "重新派奖"),
+		DISABLE(6, "订单作废");
 		
 		private String desc;
 		

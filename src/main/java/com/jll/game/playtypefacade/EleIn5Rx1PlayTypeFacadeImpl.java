@@ -17,7 +17,7 @@ public class EleIn5Rx1PlayTypeFacadeImpl  extends DefaultPlayTypeFacadeImpl {
 	
 	private Logger logger = Logger.getLogger(EleIn5Rx1PlayTypeFacadeImpl.class);
 	
-	protected String playTypeDesc = "rxfs|任选复式/rxyzy|任选一中一/fs-ds";
+	protected String playTypeDesc = "rx|任选/rxyzy|任选一中一/fs-ds";
 	
 	@Override
 	public boolean isMatchWinningNum(Issue issue, OrderInfo order) {

@@ -68,6 +68,30 @@ public class SupserDao extends HibernateDaoSupport{
 			}
 		}
 	}
+	
+	public void updateList(List<?> list) {
+		Session session = null;
+		try {
+			session = getHibernateTemplate().getSessionFactory().openSession();
+			Transaction tx = session.beginTransaction();
+			for (int index = 0; index < list.size(); index++) {
+				session.update(list.get(index));
+				if (index % 50 == 0) {
+					// // 只是将Hibernate缓存中的数据提交到数据库，保持与数据库数据的同步
+					session.flush();
+					// // 清除内部缓存的全部数据，及时释放出占用的内存
+					session.clear();
+				}
+			}
+			tx.commit();
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		} finally {
+			if (session != null) {
+				session.close();
+			}
+		}
+	}
 
 
 	public void deleteAll(Collection entities) {
