@@ -32,6 +32,7 @@ import com.jll.entity.SysCode;
 import com.jll.entity.UserAccount;
 import com.jll.entity.UserAccountDetails;
 import com.jll.entity.UserInfo;
+import com.jll.game.BulletinBoard;
 import com.jll.game.IssueService;
 import com.jll.game.LotteryTypeService;
 import com.jll.game.order.OrderService;
@@ -74,12 +75,25 @@ public class CqsscServiceImpl extends DefaultLottoTypeServiceImpl
 		int maxAmount = 120;
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(new Date());
-		calendar.set(Calendar.HOUR_OF_DAY, 10);
+		calendar.set(Calendar.HOUR_OF_DAY, 0);
 		calendar.set(Calendar.MINUTE, 0);
 		calendar.set(Calendar.SECOND, 0);
 		calendar.set(Calendar.MILLISECOND, 0);
 		for(int i = 0; i < maxAmount; i++) {
-			if(i < 72) {
+			if(i < 24
+					||(96 <= i && i < 120)) {
+				Issue issue = new Issue();
+				issue.setStartTime(calendar.getTime());
+				calendar.add(Calendar.MINUTE, 5);
+				issue.setEndTime(calendar.getTime());
+				issue.setIssueNum(generateLottoNumber(i + 1));
+				issue.setLotteryType(lotteryType);
+				issue.setState(Constants.IssueState.INIT.getCode());
+				
+				issues.add(issue);
+				
+			}else if(i == 24) {
+				calendar.add(Calendar.HOUR_OF_DAY, 8);
 				Issue issue = new Issue();
 				issue.setStartTime(calendar.getTime());
 				calendar.add(Calendar.MINUTE, 10);
@@ -89,10 +103,10 @@ public class CqsscServiceImpl extends DefaultLottoTypeServiceImpl
 				issue.setState(Constants.IssueState.INIT.getCode());
 				
 				issues.add(issue);
-			}else{
+			}else if(24 < i && i < 96){
 				Issue issue = new Issue();
 				issue.setStartTime(calendar.getTime());
-				calendar.add(Calendar.MINUTE, 5);
+				calendar.add(Calendar.MINUTE, 10);
 				issue.setEndTime(calendar.getTime());
 				issue.setIssueNum(generateLottoNumber(i + 1));
 				issue.setLotteryType(lotteryType);
@@ -141,10 +155,12 @@ public class CqsscServiceImpl extends DefaultLottoTypeServiceImpl
 		Issue issue = null;
 		int maxCounter = 3600;
 		int currCounter = 0;
+		BulletinBoard bulletinBoard = null;
 		
-		lottoTypeAndIssueNum = ((String)message).split("|");
+		lottoTypeAndIssueNum = ((String)message).split("\\|");
 		lottoType = lottoTypeAndIssueNum[0];
 		issueNum = lottoTypeAndIssueNum[1];
+		bulletinBoard = cacheServ.getBulletinBoard(lottoType);
 		if(sysCode == null
 				|| StringUtils.isBlank(sysCode.getCodeVal())) {
 			return;
@@ -174,9 +190,18 @@ public class CqsscServiceImpl extends DefaultLottoTypeServiceImpl
 									issue.setRetNum(winningNum.replaceAll(" ", ","));
 									issueServ.saveIssue(issue);
 									
+									if(bulletinBoard != null) {
+										if(bulletinBoard.getLastIssue() != null) {
+											Issue lastIssue = bulletinBoard.getLastIssue();
+											if(lastIssue.getIssueNum().equals(issueNum)) {
+												lastIssue.setRetNum(issue.getRetNum());
+												cacheServ.setBulletinBoard(lottoType, bulletinBoard);												
+											}
+										}
+									}
 									//inform the progress to payout
 									cacheServ.publishMessage(Constants.TOPIC_PAY_OUT, issueNum);
-									return;								
+									return;
 								}
 							}
 						}
