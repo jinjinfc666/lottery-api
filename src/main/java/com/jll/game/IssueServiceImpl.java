@@ -43,8 +43,8 @@ public class IssueServiceImpl implements IssueService
 	}
 
 	@Override
-	public Issue getIssueByIssueNum(String issueNum) {
-		return issueDao.getIssueByIssueNum(issueNum);
+	public Issue getIssueByIssueNum(String lottoType, String issueNum) {
+		return issueDao.getIssueByIssueNum(lottoType, issueNum);
 	}
 	//通过彩种和期次数量来查找
 	@Override

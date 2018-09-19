@@ -135,7 +135,10 @@ public class Pk10ServiceImpl extends DefaultLottoTypeServiceImpl
 	}
 
 	@Override
-	public void queryWinningNum(String issueNum) {
+	public void queryWinningNum(String message) {
+		String[] lottoTypeAndIssueNum = null;
+		String lottoType = null;
+		String issueNum = null;
 		String[] urls = null;
 		Map<String, Object> result = null;
 		String response = null;
@@ -146,6 +149,11 @@ public class Pk10ServiceImpl extends DefaultLottoTypeServiceImpl
 		Issue issue = null;
 		int maxCounter = 3600;
 		int currCounter = 0;
+		
+		lottoTypeAndIssueNum = ((String)message).split("|");
+		lottoType = lottoTypeAndIssueNum[0];
+		issueNum = lottoTypeAndIssueNum[1];
+		
 		
 		if(sysCode == null
 				|| StringUtils.isBlank(sysCode.getCodeVal())) {
@@ -172,7 +180,7 @@ public class Pk10ServiceImpl extends DefaultLottoTypeServiceImpl
 								
 								if(!StringUtils.isBlank(winningNum)) {
 									//store into to database
-									issue = issueServ.getIssueByIssueNum(issueNum);
+									issue = issueServ.getIssueByIssueNum(lottoType, issueNum);
 									issue.setRetNum(winningNum.replaceAll(" ", ","));
 									issueServ.saveIssue(issue);
 									
