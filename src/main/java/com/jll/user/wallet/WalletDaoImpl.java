@@ -139,7 +139,11 @@ public class WalletDaoImpl extends DefaultGenericDaoImpl<UserAccount> implements
 		Query<?> query = getSessionFactory().getCurrentSession().createQuery(sql);
 		query.setParameter("userId", userId);
 		List<?> list=query.list();
-		map.put("data", list);
+		if(list!=null&&list.size()>0) {
+			map.put("data", list);
+		}else {
+			map.put("data", null);
+		}
 		return map;
 	}
 	//通过用户ID查询用户的主钱包
