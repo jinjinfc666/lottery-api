@@ -28,6 +28,7 @@ import com.jll.entity.SysCode;
 import com.jll.entity.UserAccount;
 import com.jll.entity.UserAccountDetails;
 import com.jll.entity.UserInfo;
+import com.jll.game.BulletinBoard;
 import com.jll.game.IssueService;
 import com.jll.game.LotteryTypeService;
 import com.jll.game.order.OrderService;
@@ -126,7 +127,7 @@ public class SfcServiceImpl extends DefaultLottoTypeServiceImpl
 		
 		PrizeMode prizeMode;
 		
-		lottoTypeAndIssueNum = ((String)message).split("|");
+		lottoTypeAndIssueNum = ((String)message).split("\\|");
 		lottoType = lottoTypeAndIssueNum[0];
 		issueNum = lottoTypeAndIssueNum[1];
 		
@@ -149,7 +150,7 @@ public class SfcServiceImpl extends DefaultLottoTypeServiceImpl
 				return ;
 			}
 			case DAEMO :{
-				Float profitLoss = queryPlatProfitLoss(issueNum);
+				Float profitLoss = queryPlatProfitLoss(lottoType, issueNum);
 				Float upLimitProfitLoss = Float.parseFloat(sysCodeUplimitProfitLoss.getCodeVal());
 				if(profitLoss.floatValue() < upLimitProfitLoss.floatValue()) {
 					//不干涉开奖
@@ -168,15 +169,15 @@ public class SfcServiceImpl extends DefaultLottoTypeServiceImpl
 	 * @param issueNum
 	 * @return
 	 */
-	private Float queryPlatProfitLoss(String message) {
-		String[] lottoTypeAndIssueNum = null;
-		String lottoType = null;
-		String issueNum = null;
+	private Float queryPlatProfitLoss(String lottoType, String issueNum) {
+		/*String[] lottoTypeAndIssueNum = null;
+		String lottoType = null;*/
+		//String issueNum = null;
 		Float ret = null;
 		
-		lottoTypeAndIssueNum = ((String)message).split("|");
+		/*lottoTypeAndIssueNum = ((String)message).split("\\|");
 		lottoType = lottoTypeAndIssueNum[0];
-		issueNum = lottoTypeAndIssueNum[1];
+		issueNum = lottoTypeAndIssueNum[1];*/
 		
 		Issue issue = issueServ.getIssueByIssueNum(lottoType, issueNum);
 		
@@ -203,6 +204,7 @@ public class SfcServiceImpl extends DefaultLottoTypeServiceImpl
 		Double maxRate = null;
 		String playTypeName = null;
 		PlayTypeFacade playTypeFacade = null;
+		BulletinBoard bulletinBoard = cacheServ.getBulletinBoard(lottoType);
 		
 		if(statInfo == null || statInfo.size() == 0) {
 			nonInterventional(lottoType, issueNum);
@@ -262,6 +264,15 @@ public class SfcServiceImpl extends DefaultLottoTypeServiceImpl
 		issue.setRetNum(winningNum);
 		issueServ.saveIssue(issue);
 		
+		if(bulletinBoard != null) {
+			if(bulletinBoard.getLastIssue() != null) {
+				Issue lastIssue = bulletinBoard.getLastIssue();
+				if(lastIssue.getIssueNum().equals(issueNum)) {
+					lastIssue.setRetNum(issue.getRetNum());
+					cacheServ.setBulletinBoard(lottoType, bulletinBoard);												
+				}
+			}
+		}
 		//inform the progress to payout
 		cacheServ.publishMessage(Constants.TOPIC_PAY_OUT, issueNum);
 	}
@@ -269,10 +280,22 @@ public class SfcServiceImpl extends DefaultLottoTypeServiceImpl
 	private void nonInterventional(String lottoType, String issueNum) {
 		String winningNum;
 		Issue issue;
+		BulletinBoard bulletinBoard = cacheServ.getBulletinBoard(lottoType);
+		
 		winningNum = Utils.produce5Digits0to9Number();
 		issue = issueServ.getIssueByIssueNum(lottoType, issueNum);
 		issue.setRetNum(winningNum);
 		issueServ.saveIssue(issue);
+		
+		if(bulletinBoard != null) {
+			if(bulletinBoard.getLastIssue() != null) {
+				Issue lastIssue = bulletinBoard.getLastIssue();
+				if(lastIssue.getIssueNum().equals(issueNum)) {
+					lastIssue.setRetNum(issue.getRetNum());
+					cacheServ.setBulletinBoard(lottoType, bulletinBoard);												
+				}
+			}
+		}
 		
 		//inform the progress to payout
 		cacheServ.publishMessage(Constants.TOPIC_PAY_OUT, issueNum);

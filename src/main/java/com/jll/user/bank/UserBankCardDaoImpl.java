@@ -38,5 +38,30 @@ public class UserBankCardDaoImpl extends DefaultGenericDaoImpl<UserBankCard> imp
 	    }
 		return null;
 	}
+	//通过用户ID查询银行卡
+	@Override
+	public List<?> queryByUserId(Integer userId,Integer sysCodeId) {
+		String sql="from UserBankCard a,SysCode b where b.codeType=:codeType and a.bankCode=b.codeName and a.userId=:userId";
+		Query<?> query = getSessionFactory().getCurrentSession().createQuery(sql);
+	    query.setParameter("codeType", sysCodeId);
+	    query.setParameter("userId", userId);
+	    List<?> list= query.list();
+	    if(list!=null&&list.size()>0) {
+	    	return list;
+	    }
+		return null;
+	}
+	//通过用户id查询用户银行卡
+	@Override
+	public List<UserBankCard> queryByUserId(Integer userId) {
+		String sql="from UserBankCard where userId=:userId";
+		Query<UserBankCard> query = getSessionFactory().getCurrentSession().createQuery(sql,UserBankCard.class);
+	    query.setParameter("userId", userId);
+	    List<UserBankCard> list= query.list();
+	    if(list!=null&&list.size()>0) {
+	    	return list;
+	    }
+		return null;
+	}
   
 }

@@ -76,7 +76,7 @@ public class WalletDaoImpl extends DefaultGenericDaoImpl<UserAccount> implements
 			map.put("startTime", beginDate);
 			map.put("endTime", endDate);
 		}
-		String sql="from UserInfo a,UserAccount b where a.id=b.userId and a.createTime >:startTime and a.createTime <=:endTime"+userNameSql;
+		String sql="from UserInfo a,UserAccount b where a.id=b.userId and a.createTime >:startTime and a.createTime <=:endTime"+userNameSql+" order by b.userId";
 		PageBean page=new PageBean();
 		page.setPageIndex(pageIndex);
 		page.setPageSize(pageSize);
@@ -139,7 +139,11 @@ public class WalletDaoImpl extends DefaultGenericDaoImpl<UserAccount> implements
 		Query<?> query = getSessionFactory().getCurrentSession().createQuery(sql);
 		query.setParameter("userId", userId);
 		List<?> list=query.list();
-		map.put("data", list);
+		if(list!=null&&list.size()>0) {
+			map.put("data", list);
+		}else {
+			map.put("data", null);
+		}
 		return map;
 	}
 	//通过用户ID查询用户的主钱包

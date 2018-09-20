@@ -28,6 +28,7 @@ import com.jll.entity.SysCode;
 import com.jll.entity.UserAccount;
 import com.jll.entity.UserAccountDetails;
 import com.jll.entity.UserInfo;
+import com.jll.game.BulletinBoard;
 import com.jll.game.IssueService;
 import com.jll.game.LotteryTypeService;
 import com.jll.game.order.OrderService;
@@ -127,7 +128,7 @@ public class MmcServiceImpl extends DefaultLottoTypeServiceImpl
 		SysCode sysCodeWinningRate = cacheServ.getSysCode(codeTypeName, codeNameWinningRate);
 		SysCode sysCodeUplimitProfitLoss = cacheServ.getSysCode(codeTypeName, codeNameUplimitProfitLoss);
 		
-		lottoTypeAndIssueNum = ((String)message).split("|");
+		lottoTypeAndIssueNum = ((String)message).split("\\|");
 		lottoType = lottoTypeAndIssueNum[0];
 		issueNum = lottoTypeAndIssueNum[1];
 		
@@ -198,6 +199,7 @@ public class MmcServiceImpl extends DefaultLottoTypeServiceImpl
 		Double maxRate = null;
 		String playTypeName = null;
 		PlayTypeFacade playTypeFacade = null;
+		BulletinBoard bulletinBoard = cacheServ.getBulletinBoard(lottoType);
 		
 		if(statInfo == null || statInfo.size() == 0) {
 			nonInterventional(lottoType, issueNum);
@@ -257,6 +259,16 @@ public class MmcServiceImpl extends DefaultLottoTypeServiceImpl
 		issue.setRetNum(winningNum);
 		issueServ.saveIssue(issue);
 		
+		if(bulletinBoard != null) {
+			if(bulletinBoard.getLastIssue() != null) {
+				Issue lastIssue = bulletinBoard.getLastIssue();
+				if(lastIssue.getIssueNum().equals(issueNum)) {
+					lastIssue.setRetNum(issue.getRetNum());
+					cacheServ.setBulletinBoard(lottoType, bulletinBoard);												
+				}
+			}
+		}
+		
 		//inform the progress to payout
 		cacheServ.publishMessage(Constants.TOPIC_PAY_OUT, issueNum);
 	}
@@ -264,10 +276,22 @@ public class MmcServiceImpl extends DefaultLottoTypeServiceImpl
 	private void nonInterventional(String lottoType, String issueNum) {
 		String winningNum;
 		Issue issue;
+		BulletinBoard bulletinBoard = cacheServ.getBulletinBoard(lottoType);
+		
 		winningNum = Utils.produce5Digits0to9Number();
 		issue = issueServ.getIssueByIssueNum(lottoType, issueNum);
 		issue.setRetNum(winningNum);
 		issueServ.saveIssue(issue);
+		
+		if(bulletinBoard != null) {
+			if(bulletinBoard.getLastIssue() != null) {
+				Issue lastIssue = bulletinBoard.getLastIssue();
+				if(lastIssue.getIssueNum().equals(issueNum)) {
+					lastIssue.setRetNum(issue.getRetNum());
+					cacheServ.setBulletinBoard(lottoType, bulletinBoard);
+				}
+			}
+		}
 		
 		//inform the progress to payout
 		cacheServ.publishMessage(Constants.TOPIC_PAY_OUT, issueNum);

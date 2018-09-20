@@ -13,6 +13,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.criterion.DetachedCriteria;
@@ -1369,6 +1370,58 @@ public class UserInfoServiceImpl implements UserInfoService
 		bankInfo.clear();
 		bankInfo.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		return bankInfo; 
+	}
+	//通过用ID查询用户银行卡   给后台管理页面用的
+	@Override
+	public Map<String, Object> queryByUserIdBankList(Integer id) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+		boolean haveOrNot=userBankCardService.haveOrNot(id);
+		if(!haveOrNot) {
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			return ret;
+		}
+		String codeName=Constants.SysCodeTypes.BANK_CODE_LIST.getCode();
+		Integer sysCodeId=sysCodeService.queryByCodeName(codeName);
+		List<?> list=userBankCardService.queryByUserId(id, sysCodeId);
+		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		ret.put(Message.KEY_DATA,list);
+		return ret;
+	}
+
+	@Override
+	public Map<String, Object> getUserNameById(Integer userId) {
+		Map<String,Object> ret=new HashMap<String,Object>();
+		UserInfo userInfo=userDao.getUserById(userId);
+		if(userInfo==null) {
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			return ret;
+		}
+		String superior=userInfo.getSuperior();
+		if(!StringUtils.isBlank(superior)) {
+			String[] stringArr=superior.split(",");
+			String[] stringSuperior = new String[stringArr.length];
+			for(int a=0;a<stringArr.length;a++) {
+				Integer userIdNew=Integer.valueOf(stringArr[a]);
+				UserInfo userInfoNew=userDao.getUserById(userIdNew);
+				if(userInfoNew!=null) {
+					stringSuperior[a]=userInfoNew.getUserName();
+				}
+			}
+			String str2 = StringUtils.join(stringSuperior, ",");
+			userInfo.setSuperior(str2);
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+			ret.put(Message.KEY_DATA, userInfo);
+		}else {
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+			ret.put(Message.KEY_DATA, userInfo);
+		}
+		return ret;
 	}
 	
 }

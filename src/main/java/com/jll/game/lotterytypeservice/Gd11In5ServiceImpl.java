@@ -32,6 +32,7 @@ import com.jll.entity.SysCode;
 import com.jll.entity.UserAccount;
 import com.jll.entity.UserAccountDetails;
 import com.jll.entity.UserInfo;
+import com.jll.game.BulletinBoard;
 import com.jll.game.IssueService;
 import com.jll.game.LotteryTypeService;
 import com.jll.game.order.OrderService;
@@ -129,10 +130,14 @@ public class Gd11In5ServiceImpl extends DefaultLottoTypeServiceImpl
 		Issue issue = null;
 		int maxCounter = 3600;
 		int currCounter = 0;
+		BulletinBoard bulletinBoard = null;
 		
 		lottoTypeAndIssueNum = ((String)message).split("\\|");
 		lottoType = lottoTypeAndIssueNum[0];
 		issueNum = lottoTypeAndIssueNum[1];
+		
+		bulletinBoard = cacheServ.getBulletinBoard(lottoType);
+		
 		if(sysCode == null
 				|| StringUtils.isBlank(sysCode.getCodeVal())) {
 			return;
@@ -175,6 +180,16 @@ public class Gd11In5ServiceImpl extends DefaultLottoTypeServiceImpl
 									issue = issueServ.getIssueByIssueNum(lottoType, issueNum);
 									issue.setRetNum(winningNum.replaceAll(" ", ","));
 									issueServ.saveIssue(issue);
+									
+									if(bulletinBoard != null) {
+										if(bulletinBoard.getLastIssue() != null) {
+											Issue lastIssue = bulletinBoard.getLastIssue();
+											if(lastIssue.getIssueNum().equals(issueNum)) {
+												lastIssue.setRetNum(issue.getRetNum());
+												cacheServ.setBulletinBoard(lottoType, bulletinBoard);												
+											}
+										}
+									}
 									
 									//inform the progress to payout
 									cacheServ.publishMessage(Constants.TOPIC_PAY_OUT, issueNum);

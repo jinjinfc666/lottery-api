@@ -129,4 +129,8 @@ public interface UserInfoService
 	Map<String,Object> isOrAddBank();
 	//前台用户自己添加银行卡
 	Map<String, Object> addUserBank(UserBankCard bank);
+	//通过用ID查询用户银行卡   给后台管理页面用的
+	Map<String, Object> queryByUserIdBankList(Integer id);
+	
+	Map<String,Object> getUserNameById(Integer userId);
 }
