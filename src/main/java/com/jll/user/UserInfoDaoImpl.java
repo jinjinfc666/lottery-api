@@ -1,9 +1,11 @@
 package com.jll.user;
 
 
+import java.math.BigDecimal;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -17,6 +19,7 @@ import com.jll.common.constants.Constants.UserType;
 import com.jll.common.utils.StringUtils;
 import com.jll.dao.DefaultGenericDaoImpl;
 import com.jll.dao.PageBean;
+import com.jll.entity.LotteryPlReport;
 import com.jll.entity.UserInfo;
 
 @Repository
@@ -145,6 +148,9 @@ public class UserInfoDaoImpl extends DefaultGenericDaoImpl<UserInfo> implements 
 		return count ==  userIds.split(StringUtils.COMMA).length;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.jll.user.UserInfoDao#queryAllUserInfo(java.lang.Integer, java.lang.String, java.lang.Integer, java.lang.String, java.lang.String, java.lang.Integer, java.lang.Integer)
+	 */
 	@Override
 	public Map<String,Object> queryAllUserInfo(Integer id,String userName,Integer proxyId,String startTime,String endTime,Integer pageIndex,Integer pageSize) {
 		Map<String,Object> map=new HashMap<String,Object>();
@@ -158,13 +164,10 @@ public class UserInfoDaoImpl extends DefaultGenericDaoImpl<UserInfo> implements 
 			map.put("proxyId", proxyId);
 			map.put("startTime", startTime);
 			map.put("endTime", endTime);
-//			query.setParameter("startTime", beginDate,DateType.INSTANCE);
-//			query.setParameter("endTime", endDate,DateType.INSTANCE); 
-			List<UserInfo> list = new ArrayList<UserInfo>();	
-			PageBean page=new PageBean();
+			PageBean<UserInfo> page=new PageBean<>();
 			page.setPageIndex(pageIndex);
 			page.setPageSize(pageSize);
-			PageBean pageBean=queryBySqlPagination(page,hql,map);
+			PageBean<UserInfo> pageBean=queryBySqlClazzPagination(page,hql,map,UserInfo.class);
 			map.clear();
 			map.put("data", pageBean);
 			return map;

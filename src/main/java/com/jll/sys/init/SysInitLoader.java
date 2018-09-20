@@ -67,6 +67,7 @@ public class SysInitLoader {
 		initSignInDay();
 		initSysCodePayType();
 		initSysRuntimeArgument();
+		initBankCodeList();
 	}
 	
 	//加载签到活动
@@ -338,5 +339,25 @@ public class SysInitLoader {
 			cacheServ.setSysCode(keySysRuntimeArg, sysRuntimeArgList);
 		}
 	}
+	//加载彩种类型
+	private void initBankCodeList() {
+		String codeTypeName = Constants.SysCodeTypes.BANK_CODE_LIST.getCode();
+		Map<String, SysCode> lottoTypes = cacheServ.getSysCode(codeTypeName);
+		List<SysCode> sysCodes = null;
 		
+		if(lottoTypes == null || lottoTypes.size() == 0) {
+			sysCodes = sysCodeServ.queryAllSmallType(codeTypeName);
+			List<SysCode> sysCodeTypes = sysCodeServ.queryByCodeNameBigType(codeTypeName);
+			
+			if(sysCodes == null || sysCodes.size() == 0
+					|| sysCodeTypes == null
+					|| sysCodeTypes.size() == 0) {
+				return ;
+			}
+			
+			sysCodes.add(sysCodeTypes.get(0));
+			
+			cacheServ.setSysCode(codeTypeName, sysCodes);
+		}	
+	}
 }

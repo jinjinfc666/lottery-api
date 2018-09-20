@@ -153,7 +153,7 @@ public class PaymentServiceImpl  implements PaymentService
 		//验证支付渠道
 		PayChannel pcInfo = cacheRedisService.getPayChannel(Constants.PayChannel.PAY_CHANNEL.getCode()).get(info.getPayChannel());
 		if(null == pcInfo ||
-				pcInfo.getState() == PayTypeState.VALID_STATE.getCode()){
+				pcInfo.getState() == PayTypeState.INVALID_STATE.getCode()){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_MESSAGE_PAY_TYPE_DISABLE.getCode());
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_MESSAGE_PAY_TYPE_DISABLE.getErrorMes());

@@ -207,6 +207,7 @@ public class DefaultGenericDaoImpl<T> extends HibernateDaoSupport implements Gen
 	    List<?> list=query.list();
 	    return list.size();
 	}
+	//通过sql查询
 	@Override
 	public PageBean queryBySqlPagination(PageBean page, String SQL, Map<String,Object> params) {
 		PageBean ret = new PageBean();
@@ -217,6 +218,56 @@ public class DefaultGenericDaoImpl<T> extends HibernateDaoSupport implements Gen
 		Integer pageIndex = page.getPageIndex();
 		Integer pageSize = page.getPageSize();
 	    Query query = getSessionFactory().getCurrentSession().createNativeQuery(sql);
+	    
+	    
+	    totalNumber =  querySqlCount(SQL, params);
+	    
+	    if(totalNumber % pageSize == 0) {
+	    	totalPages = totalNumber / pageSize;
+	    }else {
+	    	totalPages = totalNumber / pageSize + 1; 
+	    }
+	    if(params != null) {
+	    	Set<String> keySet = params.keySet();  
+            for (String string : keySet) {  
+                Object obj = params.get(string);  
+            	if(obj instanceof Date){  
+                	query.setParameter(string, (Date)obj,DateType.INSTANCE); //query.setParameter(string, (Date)obj,DateType.INSTANCE);   此方法为setDate的替代方法 
+                }else if(obj instanceof Object[]){  
+                    query.setParameterList(string, (Object[])obj);  
+                }else{  
+                    query.setParameter(string, obj);  
+                }  
+            }
+	    }
+	    
+
+		Integer startPosition = pageIndex==1 ? 0 : pageIndex*pageSize-pageSize;
+	    
+	    
+	    query.setFirstResult(startPosition);
+	    query.setMaxResults(pageSize);
+	    content = query.list();
+	    
+	    ret.setContent(content);
+	    ret.setPageIndex(pageIndex);
+	    ret.setPageSize(pageSize);
+	    ret.setTotalPages(totalPages);
+	    ret.setTotalNumber(totalNumber);
+	    
+		return ret;
+	}
+	//通过sql+clazz查询
+	@Override
+	public PageBean<T> queryBySqlClazzPagination(PageBean<T> page, String SQL, Map<String,Object> params,Class<T> clazz) {
+		PageBean<T> ret = new PageBean<>();
+		List<T> content = null;
+		String sql = SQL;
+		Long totalPages =  null;
+		Long totalNumber=null;
+		Integer pageIndex = page.getPageIndex();
+		Integer pageSize = page.getPageSize();
+	    Query<T> query = getSessionFactory().getCurrentSession().createNativeQuery(sql,clazz);
 	    
 	    
 	    totalNumber =  querySqlCount(SQL, params);

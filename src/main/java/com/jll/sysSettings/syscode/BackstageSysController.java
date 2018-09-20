@@ -1380,4 +1380,33 @@ public class BackstageSysController {
 		}
 		return ret;
 	}
+	/**
+	 *可选银行的增删改查
+	 * @author Silence 
+	 */
+	//查询充值方式类型下的所有值
+	@RequestMapping(value={"/queryBankCodeList"}, method={RequestMethod.GET}, produces={"application/json"})
+	public Map<String, Object> queryBankCodeList() {
+		Map<String, Object> ret = new HashMap<>();
+		String bigCodeName=Constants.SysCodeTypes.BANK_CODE_LIST.getCode();
+		try {
+			Map<String,SysCode> sysCodeMaps=cacheRedisService.getSysCode(bigCodeName);
+			Map<String,SysCode> sysCodeMaps1=new HashMap<String, SysCode>();
+			for(String key:sysCodeMaps.keySet()) {
+				SysCode sysCode=sysCodeMaps.get(key);
+				if(sysCode.getState()==1) {
+					sysCodeMaps1.put(key, sysCode);
+				}
+			}
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+			ret.put("data", sysCodeMaps1);
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+		}
+		return ret;
+	}
 }
