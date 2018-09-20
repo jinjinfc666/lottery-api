@@ -91,6 +91,7 @@ public class IssueServiceImpl implements IssueService
 	public Issue getIssueByIssueNum(String lottoType, String issueNum) {
 		return issueDao.getIssueByIssueNum(lottoType, issueNum);
 	}
+	
 	//通过彩种和期次数量来查找
 	@Override
 	public List<Issue> queryByLTNumber(String lotteryType, Integer number) {
@@ -108,7 +109,9 @@ public class IssueServiceImpl implements IssueService
 	public Map<String, Object> updateIssueOpenNum(String issueNum, Map<String, String> params) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		String openNum = Utils.toString(params.get("openNum"));
-		if(StringUtils.isEmpty(openNum)){
+		String lottoType = Utils.toString(params.get("lottoType"));
+		if(StringUtils.isEmpty(openNum)
+				|| StringUtils.isEmpty(lottoType)){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
@@ -215,7 +218,7 @@ public class IssueServiceImpl implements IssueService
 		}
 	}
 	@Override
-	public Map<String, Object> betOrderPayout(String issueNum, Map<String, String> params) {
+	public Map<String, Object> betOrderPayout(String lottoType, String issueNum, Map<String, String> params) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		Issue curIssue = issueService.getIssueByIssueNum(Utils.toString(params.get("lottoType")),issueNum);
 		if(null == curIssue){
@@ -230,7 +233,7 @@ public class IssueServiceImpl implements IssueService
 	}
 
 	@Override
-	public Map<String, Object> calcelIssuePayout(String issueNum, Map<String, String> params) {
+	public Map<String, Object> calcelIssuePayout(String lottoType, String issueNum, Map<String, String> params) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		Issue curIssue = issueService.getIssueByIssueNum(Utils.toString(params.get("lottoType")),issueNum);
 		if(null == curIssue){
@@ -248,7 +251,7 @@ public class IssueServiceImpl implements IssueService
 	}
 
 	@Override
-	public Map<String, Object> betOrderRePayout(String issueNum, Map<String, String> params) {
+	public Map<String, Object> betOrderRePayout(String lottoType, String issueNum, Map<String, String> params) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		Issue curIssue = issueService.getIssueByIssueNum(Utils.toString(params.get("lottoType")),issueNum);
 		if(null == curIssue){
@@ -267,7 +270,7 @@ public class IssueServiceImpl implements IssueService
 	}
 
 	@Override
-	public Map<String, Object> issueDisbale(String issueNum, Map<String, String> params) {
+	public Map<String, Object> issueDisbale(String lottoType, String issueNum, Map<String, String> params) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		Issue curIssue = issueService.getIssueByIssueNum(Utils.toString(params.get("lottoType")),issueNum);
 		if(null == curIssue){
@@ -291,6 +294,7 @@ public class IssueServiceImpl implements IssueService
 	@Override
 	public Map<String, Object> issueDelayePayout(String issueNum, Map<String, String> params) {
 		Map<String, Object> ret = new HashMap<String, Object>();
+
 		Issue curIssue = issueService.getIssueByIssueNum(Utils.toString(params.get("lottoType")),issueNum);
 		if(null == curIssue){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());

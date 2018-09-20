@@ -180,10 +180,10 @@ public class LotteryCenterServiceImpl implements LotteryCenterService
 		if(currIssue != null && 
 				currIssue.getState() == Constants.IssueState.END_ISSUE.getCode()
 				&& hasMoreIssue(lottoType.getCodeName())) {
-			//logger.debug(String.format("move to next issue...."));
-			cacheServ.publishMessage(Constants.TOPIC_WINNING_NUMBER, currIssue.getLotteryType()+ "|" +currIssue.getIssueNum());
-			
+			String currIssueNum = currIssue.getIssueNum();
+			//logger.debug(String.format("move to next issue...."));			
 			currIssue = moveToNext(currIssue, lottoType.getCodeName());
+			cacheServ.publishMessage(Constants.TOPIC_WINNING_NUMBER, currIssue.getLotteryType()+ "|" + currIssueNum);
 		}
 	}
 
@@ -300,7 +300,7 @@ public class LotteryCenterServiceImpl implements LotteryCenterService
 		logger.debug(nextIssue);
 		issueServ.saveIssue(nextIssue);
 		cacheServ.setPlan(cacheKey, plans);
-		
+		bulletinBoard.setLastIssue(bulletinBoard.getCurrIssue());
 		bulletinBoard.setCurrIssue(nextIssue);
 		cacheServ.setBulletinBoard(lotteryType, bulletinBoard);
 		

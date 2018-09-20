@@ -28,6 +28,7 @@ import com.jll.entity.SysCode;
 import com.jll.entity.UserAccount;
 import com.jll.entity.UserAccountDetails;
 import com.jll.entity.UserInfo;
+import com.jll.game.BulletinBoard;
 import com.jll.game.IssueService;
 import com.jll.game.LotteryTypeService;
 import com.jll.game.order.OrderService;
@@ -125,7 +126,7 @@ public class FfcServiceImpl extends DefaultLottoTypeServiceImpl
 		SysCode sysCodeUplimitProfitLoss = cacheServ.getSysCode(codeTypeName, codeNameUplimitProfitLoss);
 		
 		PrizeMode prizeMode;
-		lottoTypeAndIssueNum = ((String)message).split("|");
+		lottoTypeAndIssueNum = ((String)message).split("\\|");
 		lottoType = lottoTypeAndIssueNum[0];
 		issueNum = lottoTypeAndIssueNum[1];
 		
@@ -260,6 +261,8 @@ public class FfcServiceImpl extends DefaultLottoTypeServiceImpl
 	private void nonInterventional(String lottoType, String issueNum) {
 		String winningNum;
 		Issue issue;
+		BulletinBoard bulletinBoard = cacheServ.getBulletinBoard(lottoType);
+		
 		winningNum = Utils.produce5Digits0to9Number();
 		issue = issueServ.getIssueByIssueNum(lottoType, issueNum);
 		issue.setRetNum(winningNum);
