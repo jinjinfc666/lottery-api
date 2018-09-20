@@ -90,12 +90,29 @@ public class WalletController {
 			return ret;
 		}
 	}
-	//查询所有的类型
-	@RequestMapping(value={"/queryOperationType"}, method={RequestMethod.GET}, produces={"application/json"})
-	public Map<String, Object> queryOperationType() {
+	//查询主钱包类型
+	@RequestMapping(value={"/queryMainWallet"}, method={RequestMethod.GET}, produces={"application/json"})
+	public Map<String, Object> queryMainWallet() {
 		Map<String, Object> ret = new HashMap<>();
 		try {
-			Map<String,String> map=Constants.UserAccountOperationType.getMap();
+			Map<String,String> map=Constants.MainWallet.getMap();
+			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+			ret.put("data", map);
+			return ret;
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			return ret;
+		}
+	}
+	//查询红包钱包类型
+	@RequestMapping(value={"/queryRedWallet"}, method={RequestMethod.GET}, produces={"application/json"})
+	public Map<String, Object> queryRedWallet() {
+		Map<String, Object> ret = new HashMap<>();
+		try {
+			Map<String,String> map=Constants.RedWallet.getMap();
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 			ret.put("data", map);
 			return ret;

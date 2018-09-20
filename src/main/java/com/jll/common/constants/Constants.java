@@ -1904,15 +1904,26 @@ public class Constants {
 		}
 	}
 	/**
-	 * 后台管理人员操作用户账户时，需要操作的类型
+	 * 后台管理人员操作主钱包时，需要操作的类型
 	 */
-	public static enum UserAccountOperationType{
-		SYS_ADD("sys_add","系统加钱",1),
+	public static enum MainWallet{
+		DEPOSIT("deposit","充值",1),
+		WITHDRAW("withdraw","提款",-1),
+		WD_FREEZE("wd_freeze","提款冻结",-1),
+		WD_UNFREEZE("wd_unfreeze","提款解冻",1),
+		TRANSFER("transfer","转账",-1),
+		CUSTOMER_CLAIMS("customer_claims","平台奖励",1),
+		PLAT_REWARD("plat_reward","平台积分",1),
+		DEPOSIT_GIFT("deposit_gift","充值礼金",1),
+		REG_CASH("reg_cash","注册礼金",1),
+		BANK_FEES("bank_fees","银行手续费",1),
+		PROMO_CASH("promo_cash","活动现金",1),
+		PROMO_POINTS("promo_points","活动积分",1),
+		ACC_FREEZE("acc_freeze","账户资金冻结",-1),
+		ACC_UNFREEZE("acc_unfreeze","账户资金解冻",1),
 		SYS_DEDUCTION("sys_deduction","系统扣除",-1),
-		CUSTOMER_CLAIMS("customer_claims","客户理赔",1),
-		PLATFORM_REWARD("platform_reward","平台奖励",1),
-		BANK_FEES("bank_fees","银行手续费",-1),
-		ACTIVITY_GIFT_CASH("promo_cash","活动现金礼金",1);
+		SYS_ADD("sys_add","系统加钱",1),
+		WITHDRAWAL_BACK("withdrawal_back","提款退还",1);
 
 		
 		private String code;
@@ -1921,7 +1932,7 @@ public class Constants {
 		
 		private Integer number;
 		
-		private UserAccountOperationType(String code,String desc,Integer number) {
+		private MainWallet(String code,String desc,Integer number) {
 			this.code = code;
 			this.desc = desc;
 			this.number = number;
@@ -1939,9 +1950,9 @@ public class Constants {
 			return number;
 		}
 		
-		public static UserAccountOperationType getValueByCode(String code) {
-			UserAccountOperationType[] names = UserAccountOperationType.values();
-			for(UserAccountOperationType name: names) {
+		public static MainWallet getValueByCode(String code) {
+			MainWallet[] names = MainWallet.values();
+			for(MainWallet name: names) {
 				if(name.getCode().equals(code)) {
 					return name;
 				}
@@ -1950,14 +1961,71 @@ public class Constants {
 		}
 		public static Map<String,String> getMap() {
 			Map<String,String> map=new HashMap<String,String>();
-			UserAccountOperationType[] names = UserAccountOperationType.values();
-			for(UserAccountOperationType code: names) {
+			MainWallet[] names = MainWallet.values();
+			for(MainWallet code: names) {
 				map.put(code.getCode(), code.getDesc());
 			}
 			return map;
 		}
 	}
+	/**
+	 * 后台管理人员操作红包钱包时，需要操作的类型
+	 */
+	public static enum RedWallet{
+		CUSTOMER_CLAIMS("customer_claims","平台奖励",1),
+		PLAT_REWARD("plat_reward","平台积分",1),
+		DEPOSIT_GIFT("deposit_gift","充值礼金",1),
+		REG_CASH("reg_cash","注册礼金",1),
+		PROMO_CASH("promo_cash","活动现金",1),
+		PROMO_POINTS("promo_points","活动积分",1),
+		ACC_FREEZE("acc_freeze","账户资金冻结",-1),
+		ACC_UNFREEZE("acc_unfreeze","账户资金解冻",1),
+		SYS_DEDUCTION("sys_deduction","系统扣除",-1),
+		SYS_ADD("sys_add","系统加钱",1);
 
+		
+		private String code;
+		
+		private String desc;
+		
+		private Integer number;
+		
+		private RedWallet(String code,String desc,Integer number) {
+			this.code = code;
+			this.desc = desc;
+			this.number = number;
+		}
+		
+		public String getCode() {
+			return code;
+		}
+
+		public String getDesc() {
+			return desc;
+		}
+		
+		public Integer getNumber() {
+			return number;
+		}
+		
+		public static RedWallet getValueByCode(String code) {
+			RedWallet[] names = RedWallet.values();
+			for(RedWallet name: names) {
+				if(name.getCode().equals(code)) {
+					return name;
+				}
+			}
+			return null;
+		}
+		public static Map<String,String> getMap() {
+			Map<String,String> map=new HashMap<String,String>();
+			RedWallet[] names = RedWallet.values();
+			for(RedWallet code: names) {
+				map.put(code.getCode(), code.getDesc());
+			}
+			return map;
+		}
+	}
 	/**
 	 * 系统运行时参数
 	 */
