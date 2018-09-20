@@ -74,8 +74,8 @@ public class PaymentController
 	  @ApiComment("User Pay Order To System")
 	  @RequestMapping(value={"/pay-loading"}, method={org.springframework.web.bind.annotation.RequestMethod.POST}, produces={"application/json"})
 	  public Map<String, Object> payOrderToSystem(@RequestBody DepositApplication info,
-				@RequestParam(name="payerName") String payerName,
-				@RequestParam(name="payCardNumber") String payCardNumber,
+				@RequestParam(name="payerName", required = false) String payerName,
+				@RequestParam(name="payCardNumber", required = false) String payCardNumber,
 				HttpServletRequest request,
 				HttpServletResponse response){
 		  Map<String, Object> params = new HashMap<String, Object>();
@@ -84,8 +84,7 @@ public class PaymentController
 		  params.put("reqIP", request.getRemoteAddr());
 		  params.put("payerName",payerName);
 		  params.put("payCardNumber",payCardNumber);
-//		  String userName=SecurityContextHolder.getContext().getAuthentication().getName();//当前登录的用户
-		  String userName="Silence";
+		  String userName=SecurityContextHolder.getContext().getAuthentication().getName();//当前登录的用户
 		  UserInfo userInfo=userInfoService.getUserByUserName(userName);
 		  Map<String,Object> ret =null;
 		  if(userInfo!=null) {
