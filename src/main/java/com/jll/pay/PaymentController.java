@@ -84,7 +84,7 @@ public class PaymentController
 		  params.put("payerName",Utils.toString(repParams.get("payerName")));
 		  params.put("payCardNumber",Utils.toString(repParams.get("payCardNumber")));
 //		  String userName=SecurityContextHolder.getContext().getAuthentication().getName();//当前登录的用户
-		  String userName="Silence";
+		  String userName="liuwei";
 		  UserInfo userInfo=userInfoService.getUserByUserName(userName);
 		  Map<String,Object> ret =null;
 		  if(userInfo!=null) {

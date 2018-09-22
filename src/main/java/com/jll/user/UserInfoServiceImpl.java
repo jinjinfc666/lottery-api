@@ -13,7 +13,6 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.criterion.DetachedCriteria;
@@ -878,7 +877,8 @@ public class UserInfoServiceImpl implements UserInfoService
 		if(auth == null) {
 			return null;
 		}
-		return getUserByUserName(auth.getName());
+		//return getUserByUserName(auth.getName());
+		return getUserByUserName("liuwei");
 	}
 
 	@Override

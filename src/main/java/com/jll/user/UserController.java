@@ -21,14 +21,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.jll.common.constants.Constants;
 import com.jll.common.constants.Constants.BankCardState;
 import com.jll.common.constants.Constants.UserType;
-import com.jll.common.constants.Constants;
 import com.jll.common.constants.Message;
 import com.jll.common.utils.StringUtils;
 import com.jll.dao.PageBean;
 import com.jll.dao.PageQueryDao;
-import com.jll.entity.PayType;
 import com.jll.entity.SiteMessFeedback;
 import com.jll.entity.SiteMessage;
 import com.jll.entity.SysCode;
