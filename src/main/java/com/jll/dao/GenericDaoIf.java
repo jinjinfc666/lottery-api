@@ -69,4 +69,6 @@ public interface GenericDaoIf<T> {
 	PageBean queryBySqlPagination(PageBean page, String HQL, Map<String,Object> params);
 	
 	long querySqlCount(String HQL, Map<String,Object> params);
+	
+	PageBean<T> queryBySqlClazzPagination(PageBean<T> page, String SQL, Map<String,Object> params,Class<T> clazz);
 }

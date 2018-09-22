@@ -253,4 +253,11 @@ public class CacheRedisDaoImpl  extends AbstractBaseRedisDao implements CacheRed
 		saveOrUpdate(cacheObj);
 	}
 
+	@Override
+	public PageBean<CacheObject> queryBySqlClazzPagination(PageBean<CacheObject> page, String SQL,
+			Map<String, Object> params, Class<CacheObject> clazz) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

@@ -222,6 +222,9 @@ public class LotteryCenterController {
 		}
 		
 		lastIssue = lotCenServ.queryLastIssue(lotteryType);
+		//自己添加的写死的中奖号码
+		String retNum="0,8,8,1,9";
+		lastIssue.setRetNum(retNum);
 		
 		lotteryTypeObj = cacheServ.getSysCode(SysCodeTypes.LOTTERY_TYPES.getCode(), lotteryType);
 		
