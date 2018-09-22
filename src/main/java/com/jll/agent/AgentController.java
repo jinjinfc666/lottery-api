@@ -138,7 +138,7 @@ public class AgentController {
 	
 	
 	@ApiComment("User Profit Report")
-	@RequestMapping(value="/{userName}/profit-report", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value="/{userName}/profit-report", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> userProfitReport(
 			@PathVariable("userName") String userName,@RequestBody PageQueryDao page) {
 		return userInfoService.userProfitReport(userName,page);
