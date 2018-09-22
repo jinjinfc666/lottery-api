@@ -108,7 +108,7 @@ public class AgentServiceImpl implements AgentService{
 	@Override
 	public Map<String, Object> getAgentLowerProfitReport(String userName, UserInfo superior, PageQueryDao page) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		StringBuffer querySql = new StringBuffer("SELECT o FROM  MemberPlReport o WHERE o.userName IN(SELECT u.id FROM  UserInfo u WHERE u.superior=? OR u.superior LIKE ? ");
+		StringBuffer querySql = new StringBuffer("SELECT o FROM  MemberPlReport o WHERE o.userName IN(SELECT u.id FROM  UserInfo u WHERE u.superior=? ");
 		List<Object> parmsList = new ArrayList<>();
 		
 		if(!StringUtils.isEmpty(superior.getSuperior())){
