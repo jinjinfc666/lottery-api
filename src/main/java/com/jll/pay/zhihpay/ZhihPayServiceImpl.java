@@ -469,6 +469,30 @@ public class ZhihPayServiceImpl implements ZhihPayService
 		 	return Message.Error.ERROR_PAYMENT_CAIPAY_FAILED_CANCEL_ORDER.getCode();
 		 }
 
+		 
+		 String res ="";
+			try {
+				res ="<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">"
+				+"<html><head><title>To Pay</title>"
+				+"<style> .tabPages{margin-top:150px;text-align:center;display:block; border:3px solid #d9d9de; padding:30px; font-size:14px;}</style>"
+				+"</head>"
+				+"<body onLoad=\"document.uncome.submit()\">"
+				+"<div id=\"Content\"><div class=\"tabPages\">我们正在为您连接银行，请稍等......</div></div>"
+				+"<form name=\"uncome\" action=\""+apiOnLineBankPay+"\" method=\"post\">";
+				
+				for (String mapkey:pushParams.keySet()) {
+					res +="<input type=\"hidden\" name=\""+mapkey+"\"  value=\""+pushParams.get(mapkey)+"\">";
+					
+				}
+				
+				res +="</form></body></html>";
+				//res = post(jumpUrl,params);
+				System.out.println("res:" + res);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+		 
 		 Map<String, Object> response = HttpRemoteStub.synPost(url, reqHeaders, pushParams);
 		 
 		 logger.debug("response from server :: " + (response.get("responseBody") == null ?"":(String)response.get("responseBody")));

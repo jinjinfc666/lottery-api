@@ -6,7 +6,6 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -69,7 +68,7 @@ public class AgentController {
 		PageQueryDao page = new PageQueryDao(Utils.toDate(params.get("startDate")),Utils.toDate(params.get("endDate")),Utils.toInteger(params.get("pageIndex")),
 				Utils.toInteger(params.get("pageSize")));
 		
-		return agentService.getAgentLowerBetOrder(userName,order,superior.getId(),page);
+		return agentService.getAgentLowerBetOrder(userName,order,superior,page);
 	}
 	
 
@@ -103,7 +102,7 @@ public class AgentController {
 		String userName = Utils.toString(params.get("userName"));
 		PageQueryDao page = new PageQueryDao(Utils.toDate(params.get("startDate")),Utils.toDate(params.get("endDate")),Utils.toInteger(params.get("pageIndex")),
 				Utils.toInteger(params.get("pageSize")));
-		return agentService.getAgentLowerCreditOrder(userName,order,superior.getId(),page);
+		return agentService.getAgentLowerCreditOrder(userName,order,superior,page);
 	}
 	
 	
@@ -133,14 +132,7 @@ public class AgentController {
 		String userName = Utils.toString(params.get("userName"));
 		PageQueryDao page = new PageQueryDao(Utils.toDate(params.get("startDate")),Utils.toDate(params.get("endDate")),Utils.toInteger(params.get("pageIndex")),
 				Utils.toInteger(params.get("pageSize")));
-		return agentService.getAgentLowerProfitReport(userName,superior.getId(),page);
+		return agentService.getAgentLowerProfitReport(userName,superior,page);
 	}
-	
-	
-	@ApiComment("User Profit Report")
-	@RequestMapping(value="/{userName}/profit-report", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> userProfitReport(
-			@PathVariable("userName") String userName,@RequestBody PageQueryDao page) {
-		return userInfoService.userProfitReport(userName,page);
-	}
+
 }
