@@ -68,7 +68,7 @@ public class UserRecordServiceImpl implements UserRecordService{
 	@Override
 	public Map<String, Object> getUserCreditRecord(UserAccountDetails query, PageQueryDao page) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		DetachedCriteria dc = DetachedCriteria.forClass(OrderInfo.class);
+		DetachedCriteria dc = DetachedCriteria.forClass(UserAccountDetails.class);
 		dc.add(Restrictions.eq("userId",query.getUserId()));
 		if(!StringUtils.isEmpty(query.getOperationType())){
 			dc.add(Restrictions.eq("operationType",query.getOperationType()));

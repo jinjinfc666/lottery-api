@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import com.alibaba.druid.util.StringUtils;
 import com.jll.common.constants.Constants.IssueState;
 import com.jll.common.constants.Constants.SysCodeState;
+import com.jll.common.constants.Constants.SysNotifyType;
 import com.jll.common.constants.Message;
 import com.jll.common.utils.PageQuery;
 import com.jll.dao.PageQueryDao;
@@ -32,7 +33,8 @@ public class HelpServiceImpl implements HelpService{
 		Map<String, Object> ret = new HashMap<String, Object>();
 		DetachedCriteria dc = DetachedCriteria.forClass(Issue.class);
 		dc.add(Restrictions.eq("lotteryType",lotteryType));
-		dc.add(Restrictions.eq("state",IssueState.LOTTO_DARW.getCode()));
+		Object[] states = {IssueState.LOTTO_DARW.getCode(),IssueState.PAYOUT.getCode()};
+		dc.add(Restrictions.in("state",states));
 		dc.add(Restrictions.le("createTime",new Date()));
 		dc.addOrder(Order.desc("createTime"));
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
@@ -47,7 +49,7 @@ public class HelpServiceImpl implements HelpService{
 		if(!StringUtils.isEmpty(lotteryType)){
 			dc.add(Restrictions.eq("lotteryType",lotteryType));
 		}
-		dc.add(Restrictions.eq("state",SysCodeState.INVALID_STATE.getCode()));
+		dc.add(Restrictions.eq("state",SysCodeState.VALID_STATE.getCode()));
 		dc.add(Restrictions.le("createTime",new Date()));
 		dc.addOrder(Order.desc("seq"));
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
