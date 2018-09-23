@@ -66,7 +66,7 @@ public class PaymentController
   
   
 	  @ApiComment("Get User Pay Order")
-	  @RequestMapping(value={"/{userId}/pay-order"}, method={org.springframework.web.bind.annotation.RequestMethod.GET}, produces={"application/json"})
+	  @RequestMapping(value={"/{userId}/pay-order"}, method={org.springframework.web.bind.annotation.RequestMethod.POST}, produces={"application/json"})
 	  public Map<String, Object> getUserPayOrder(@PathVariable("userId") int userId,
 				@RequestBody PageQueryDao page){
 		    return paymentService.getUserPayOrder(userId,page);
