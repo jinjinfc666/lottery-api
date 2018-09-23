@@ -47,7 +47,7 @@ public class HelpServiceImpl implements HelpService{
 		if(!StringUtils.isEmpty(lotteryType)){
 			dc.add(Restrictions.eq("lotteryType",lotteryType));
 		}
-		dc.add(Restrictions.eq("state",SysCodeState.INVALID_STATE.getCode()));
+		dc.add(Restrictions.eq("state",SysCodeState.VALID_STATE.getCode()));
 		dc.add(Restrictions.le("createTime",new Date()));
 		dc.addOrder(Order.desc("seq"));
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
