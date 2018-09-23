@@ -39,7 +39,6 @@ public class UserRecordController {
 	"pageSize":20,
 	"startDate":"2017-03-21 11:43:26",
 	"endDate":"2017-03-21 11:43:26",
-	"isZh":0 //不传查询所有
 	}
 	 * @return
 	 */
@@ -105,10 +104,10 @@ public class UserRecordController {
 	}
 	
 	
-	//@ApiComment("Get User Credit Types")
-	@RequestMapping(value="/creditTypes", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> getUserCreditTypes(@PathVariable("userName") String userName) {
-		return userRecordService.getUserCreditType();
-	}
+//	//@ApiComment("Get User Credit Types")
+//	@RequestMapping(value="/creditTypes", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
+//	public Map<String, Object> getUserCreditTypes(@PathVariable("userName") String userName) {
+//		return userRecordService.getUserCreditType();
+//	}
 
 }
