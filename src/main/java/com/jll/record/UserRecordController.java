@@ -44,7 +44,7 @@ public class UserRecordController {
 	 * @return
 	 */
 	//@ApiComment("Get User Bet Order")
-	@RequestMapping(value="/{userId}/bet-order", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value="/{userId}/bet-order", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> getUserBetOrder(
 			@PathVariable("userId") int userId,
 			@RequestBody Map<String, String> params) {
