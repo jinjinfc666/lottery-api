@@ -42,8 +42,8 @@ public class UserRecordServiceImpl implements UserRecordService{
 		if(null != pramsInfo.getIsZh()){
 			dc.add(Restrictions.eq("isZh",pramsInfo.getIsZh()));
 		}
-		dc.add(Restrictions.le("createTime",page.getEndDate()));
-		dc.add(Restrictions.ge("createTime",page.getStartDate()));
+		dc.add(Restrictions.ge("createTime",page.getEndDate()));
+		dc.add(Restrictions.le("createTime",page.getStartDate()));
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		ret.put(Message.KEY_DATA,PageQuery.queryForPagenation(supserDao.getHibernateTemplate(), dc, page.getPageIndex(), page.getPageSize()));
 		return ret;
@@ -73,11 +73,11 @@ public class UserRecordServiceImpl implements UserRecordService{
 		if(!StringUtils.isEmpty(query.getOperationType())){
 			dc.add(Restrictions.eq("operationType",query.getOperationType()));
 		}
-		if(null != query.getOrderId()){
+		if(query.getOrderId() > 0 ){
 			dc.add(Restrictions.eq("orderId",query.getOrderId()));
 		}
-		dc.add(Restrictions.le("createTime",page.getEndDate()));
-		dc.add(Restrictions.ge("createTime",page.getStartDate()));
+		dc.add(Restrictions.ge("createTime",page.getEndDate()));
+		dc.add(Restrictions.le("createTime",page.getStartDate()));
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		ret.put(Message.KEY_DATA,PageQuery.queryForPagenation(supserDao.getHibernateTemplate(), dc, page.getPageIndex(), page.getPageSize()));
 		return ret;
