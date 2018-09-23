@@ -108,8 +108,8 @@ public class PaymentServiceImpl  implements PaymentService
 		if(!StringUtils.isEmpty(page.getBillNo())){
 			criteria.add(Restrictions.eq("orderNum",page.getBillNo()));
 		}
-		criteria.add(Restrictions.le("createTime",page.getStartDate()));
-		criteria.add(Restrictions.ge("createTime",page.getEndDate()));
+		criteria.add(Restrictions.ge("createTime",page.getStartDate()));
+		criteria.add(Restrictions.le("createTime",page.getEndDate()));
 		criteria.addOrder(Order.desc("createTime"));
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		ret.put(Message.KEY_DATA,PageQuery.queryForPagenation(supserDao.getHibernateTemplate(), criteria, page.getPageIndex(), page.getPageSize()));
