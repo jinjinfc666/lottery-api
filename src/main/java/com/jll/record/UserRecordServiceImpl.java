@@ -73,9 +73,9 @@ public class UserRecordServiceImpl implements UserRecordService{
 		if(!StringUtils.isEmpty(query.getOperationType())){
 			dc.add(Restrictions.eq("operationType",query.getOperationType()));
 		}
-		if(query.getOrderId() > 0 ){
+		/*if(query.getOrderId() > 0 ){
 			dc.add(Restrictions.eq("orderId",query.getOrderId()));
-		}
+		}*/
 		dc.add(Restrictions.ge("createTime",page.getEndDate()));
 		dc.add(Restrictions.le("createTime",page.getStartDate()));
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
