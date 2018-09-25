@@ -370,7 +370,7 @@ public class UserController {
 	public Map<String, Object> updateLoginPwd(
 			 @PathVariable("userName") String userName,
 			 @RequestParam(name = "oldPwd", required = true) String oldPwd,
-			 String newPwd) {
+			 @RequestParam(name = "newPwd", required = true) String newPwd) {
 		return userInfoService.updateFundPwd(userName, oldPwd, newPwd);
 	}
 	
@@ -385,7 +385,7 @@ public class UserController {
 	 */
     @ApiComment("Update User Fun Password")
 	@RequestMapping(value="/{userName}/attrs/fund-pwd", method = { RequestMethod.PUT}, produces=MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> updateFundPwd( @PathVariable("userName") String userName,
+	public Map<String, Object> updateFundPwd(@PathVariable("userName") String userName,
 			 @RequestParam(name = "oldPwd", required = true) String oldPwd,
 			 @RequestParam(name = "newPwd", required = true) String newPwd) {
 		return userInfoService.updateFundPwd(userName, oldPwd, newPwd);
