@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.jll.common.cache.CacheRedisService;
 import com.jll.common.constants.Constants;
 import com.jll.common.constants.Constants.BankCardState;
 import com.jll.common.constants.Constants.UserType;
@@ -69,6 +70,9 @@ public class UserController {
 	
 	@Resource
 	HttpServletRequest request;
+	
+	@Resource
+	CacheRedisService cacheRedisService;
 	
 	@Value("${sys_captcha_code_expired_time}")
 	private int captchaCodeExpiredTime;
@@ -1173,5 +1177,22 @@ public class UserController {
 	@RequestMapping(value={"/updateUserInfo"}, method={RequestMethod.PUT}, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> updateUserInfo(@RequestBody UserInfo user) {
 		return userInfoService.updateUserInfoInfo(user);
+	}
+	//用户可以拥有的银行卡数量
+	@RequestMapping(value={"/getBankNumber"}, method={RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> getBankNumber() {
+		Map<String, Object> ret = new HashMap<>();
+		try {
+			String keySysRuntimeArg = Constants.SysCodeTypes.SYS_RUNTIME_ARGUMENT.getCode();
+			String numBank = Constants.SysRuntimeArgument.NUMBER_OF_BANK_CARDS.getCode();
+			SysCode sysCode=cacheRedisService.getSysCode(keySysRuntimeArg, numBank);
+			String codeVal=sysCode.getCodeVal();
+			ret.put("data", codeVal);
+		}catch(Exception e){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+		}
+		return ret;
 	}
 }
