@@ -42,7 +42,7 @@ public class SysUserController {
 	SysUserService sysUserService;
 	@Resource
 	SysAuthorityService sysAuthorityService;
-	//添加
+	//添加后台管理员
 	@RequestMapping(value={"/addSysRole"}, method={RequestMethod.POST}, produces={"application/json"})
 	public Map<String, Object> addSysUser(@RequestParam(name = "userName", required = true) String userName,
 			  HttpServletRequest request) {
