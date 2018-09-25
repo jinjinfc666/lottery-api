@@ -12,6 +12,7 @@ import java.util.Set;
 import javax.persistence.NoResultException;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 import org.hibernate.type.DateType;
@@ -24,9 +25,11 @@ import com.jll.dao.DefaultGenericDaoImpl;
 import com.jll.dao.PageBean;
 import com.jll.entity.MemberPlReport;
 import com.jll.entity.UserInfo;
+import com.jll.user.UserInfoServiceImpl;
 
 @Repository
 public class MReportDaoImpl extends DefaultGenericDaoImpl<MemberPlReport> implements MReportDao {
+	private Logger logger = Logger.getLogger(UserInfoServiceImpl.class);
 	//会员盈亏报表
 	@Override
 	public PageBean queryAll(String startTime,String endTime,String userName,Integer pageIndex,Integer pageSize) {
