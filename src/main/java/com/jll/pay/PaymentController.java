@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jll.common.constants.Message;
+import com.jll.common.utils.Utils;
 import com.jll.dao.PageQueryDao;
 import com.jll.entity.DepositApplication;
 import com.jll.entity.UserInfo;
@@ -65,7 +66,7 @@ public class PaymentController
   
   
 	  @ApiComment("Get User Pay Order")
-	  @RequestMapping(value={"/{userId}/pay-order"}, method={org.springframework.web.bind.annotation.RequestMethod.GET}, produces={"application/json"})
+	  @RequestMapping(value={"/{userId}/pay-order"}, method={org.springframework.web.bind.annotation.RequestMethod.POST}, produces={"application/json"})
 	  public Map<String, Object> getUserPayOrder(@PathVariable("userId") int userId,
 				@RequestBody PageQueryDao page){
 		    return paymentService.getUserPayOrder(userId,page);
@@ -73,22 +74,24 @@ public class PaymentController
 	  
 	  @ApiComment("User Pay Order To System")
 	  @RequestMapping(value={"/pay-loading"}, method={org.springframework.web.bind.annotation.RequestMethod.POST}, produces={"application/json"})
-	  public Map<String, Object> payOrderToSystem(@RequestBody DepositApplication info,
-				@RequestParam(name="payerName") String payerName,
-				@RequestParam(name="payCardNumber") String payCardNumber,
+	  public Map<String, Object> payOrderToSystem(@RequestBody Map<String, String> repParams,
 				HttpServletRequest request,
 				HttpServletResponse response){
 		  Map<String, Object> params = new HashMap<String, Object>();
 		  params.put("reqHost", request.getServerName() +":"+ request.getServerPort());
 		  params.put("reqContext", request.getServletContext().getContextPath());
 		  params.put("reqIP", request.getRemoteAddr());
-		  params.put("payerName",payerName);
-		  params.put("payCardNumber",payCardNumber);
+		  params.put("payerName",Utils.toString(repParams.get("payerName")));
+		  params.put("payCardNumber",Utils.toString(repParams.get("payCardNumber")));
 //		  String userName=SecurityContextHolder.getContext().getAuthentication().getName();//当前登录的用户
-		  String userName="Silence";
+		  String userName="liuwei";
 		  UserInfo userInfo=userInfoService.getUserByUserName(userName);
 		  Map<String,Object> ret =null;
 		  if(userInfo!=null) {
+			  DepositApplication info  = new DepositApplication();
+			  info.setPayType(Utils.toInteger(repParams.get("payType")));
+			  info.setPayChannel(Utils.toInteger(repParams.get("payChannel")));
+			  info.setAmount(Utils.toDouble(repParams.get("amount")).floatValue());
 			  ret= paymentService.payOrderToSystem(userInfo.getId(),info,params);
 		  }
 		  if(null != ret.get("isRedirect")){

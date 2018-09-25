@@ -108,8 +108,8 @@ public class PaymentServiceImpl  implements PaymentService
 		if(!StringUtils.isEmpty(page.getBillNo())){
 			criteria.add(Restrictions.eq("orderNum",page.getBillNo()));
 		}
-		criteria.add(Restrictions.le("createTime",page.getStartDate()));
-		criteria.add(Restrictions.ge("createTime",page.getEndDate()));
+		criteria.add(Restrictions.ge("createTime",page.getStartDate()));
+		criteria.add(Restrictions.le("createTime",page.getEndDate()));
 		criteria.addOrder(Order.desc("createTime"));
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		ret.put(Message.KEY_DATA,PageQuery.queryForPagenation(supserDao.getHibernateTemplate(), criteria, page.getPageIndex(), page.getPageSize()));
@@ -153,7 +153,7 @@ public class PaymentServiceImpl  implements PaymentService
 		//验证支付渠道
 		PayChannel pcInfo = cacheRedisService.getPayChannel(Constants.PayChannel.PAY_CHANNEL.getCode()).get(info.getPayChannel());
 		if(null == pcInfo ||
-				pcInfo.getState() == PayTypeState.VALID_STATE.getCode()){
+				pcInfo.getState() == PayTypeState.INVALID_STATE.getCode()){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_MESSAGE_PAY_TYPE_DISABLE.getCode());
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_MESSAGE_PAY_TYPE_DISABLE.getErrorMes());

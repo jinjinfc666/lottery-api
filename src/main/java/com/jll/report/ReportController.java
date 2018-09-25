@@ -33,7 +33,7 @@ import com.terran4j.commons.api2doc.annotations.ApiComment;
 @Api2Doc(id = "report", name = "Flow Detail")
 @ApiComment(seeClass = UserAccountDetails.class)
 @RestController
-@RequestMapping({"/record"})
+@RequestMapping({"/report"})
 public class ReportController {
 	private Logger logger = Logger.getLogger(ReportController.class);
 	@Resource

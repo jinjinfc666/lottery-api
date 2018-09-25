@@ -30,7 +30,7 @@ public class HistoryController {
 	@Resource
 	IssueService issueService;
 	
-	//增加大类
+	//通过彩种和期次数量来查找
 	@RequestMapping(value={"/queryIssueByNumber"}, method={RequestMethod.GET}, produces={"application/json"})
 	public Map<String, Object> queryIssueByNumber(@RequestParam(name = "lotteryType", required = true) String lotteryType,
 			  @RequestParam(name = "number", required = true) Integer number,

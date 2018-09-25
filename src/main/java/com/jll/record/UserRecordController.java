@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.jll.common.constants.Constants.AccOperationType;
 import com.jll.common.constants.Constants.SysCodeTypes;
 import com.jll.common.utils.Utils;
 import com.jll.dao.PageQueryDao;
@@ -38,12 +39,11 @@ public class UserRecordController {
 	"pageSize":20,
 	"startDate":"2017-03-21 11:43:26",
 	"endDate":"2017-03-21 11:43:26",
-	"isZh":0 //不传查询所有
 	}
 	 * @return
 	 */
 	//@ApiComment("Get User Bet Order")
-	@RequestMapping(value="/{userId}/bet-order", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value="/{userId}/bet-order", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> getUserBetOrder(
 			@PathVariable("userId") int userId,
 			@RequestBody Map<String, String> params) {
@@ -51,6 +51,7 @@ public class UserRecordController {
 				Utils.toInteger(params.get("pageSize")));
 		OrderInfo query = new OrderInfo();
 		query.setUserId(userId);
+		query.setIsZh(Utils.toInteger(params.get("isZh")));
 		return userRecordService.getUserBetRecord(query, page);
 	}
 	
@@ -70,7 +71,8 @@ public class UserRecordController {
 	"pageSize":20,
 	"startDate":"2017-03-21 11:43:26",
 	"endDate":"2017-03-21 11:43:26",
-	"orderId":123456 //不传查询所有
+	"orderId":123456 ,//不传查询所有
+	"operationType":123456 //不传查询所有
 	}
 	 * @return
 	 */
@@ -84,6 +86,7 @@ public class UserRecordController {
 		 UserAccountDetails query = new UserAccountDetails();
 		query.setUserId(userId);
 		query.setOrderId(Utils.toInteger(params.get("orderId")));
+		query.setOperationType(Utils.toString(params.get("operationType")));
 		return userRecordService.getUserCreditRecord(query, page);
 	}
 	
@@ -96,14 +99,15 @@ public class UserRecordController {
 		UserAccountDetails query = new UserAccountDetails();
 		query.setUserId(userId);
 		query.setOrderId(promoService.getPromoByCode(SysCodeTypes.SIGN_IN_DAY.getCode()).getId());
+		query.setOperationType(AccOperationType.DAILY_SIGN_IN.getCode());
 		return userRecordService.getUserCreditRecord(query, page);
 	}
 	
 	
-	//@ApiComment("Get User Credit Types")
-	@RequestMapping(value="/creditTypes", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> getUserCreditTypes(@PathVariable("userName") String userName) {
-		return userRecordService.getUserCreditType();
-	}
+//	//@ApiComment("Get User Credit Types")
+//	@RequestMapping(value="/creditTypes", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
+//	public Map<String, Object> getUserCreditTypes(@PathVariable("userName") String userName) {
+//		return userRecordService.getUserCreditType();
+//	}
 
 }

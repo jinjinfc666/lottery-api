@@ -36,13 +36,13 @@ public class HelpController {
 	 * @return
 	 */
 	
-	@ApiComment("Get System History Open Record")
-	@RequestMapping(value="/history/open-record/{lotteryType}", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> getHistoryOpenRecord(
-			@PathVariable(name="lotteryType", required = true) String lotteryType,
-			@RequestBody PageQueryDao page) {
-		return helpService.getHistoryOpenRecord(lotteryType, page);
-	}
+//	@ApiComment("Get System History Open Record")
+//	@RequestMapping(value="/history/open-record/{lotteryType}", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
+//	public Map<String, Object> getHistoryOpenRecord(
+//			@PathVariable(name="lotteryType", required = true) String lotteryType,
+//			@RequestBody PageQueryDao page) {
+//		return helpService.getHistoryOpenRecord(lotteryType, page);
+//	}
 	
 	
 	/**

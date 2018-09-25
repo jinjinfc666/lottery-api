@@ -31,7 +31,6 @@ public class SysOperationController{
 	  @RequestMapping(value={"/issue/{issueNum}"}, method={org.springframework.web.bind.annotation.RequestMethod.POST}, produces={"application/json"})
 	  public Map<String, Object> updateIssueOpenNum(@PathVariable("issueNum") String issueNum,
 			  @RequestBody Map<String, String> params){
-		  
 		  return issueService.updateIssueOpenNum(issueNum,params);
 	  }
 	  
@@ -43,11 +42,11 @@ public class SysOperationController{
 	   */
 	  
 	  @ApiComment("issue payout")
-	  @RequestMapping(value={"/issue/{issueNum}/lottoType/{lottoType}/payout"}, method={org.springframework.web.bind.annotation.RequestMethod.POST}, produces={"application/json"})
+	  @RequestMapping(value={"/issue/{issueNum}/payout"}, method={org.springframework.web.bind.annotation.RequestMethod.POST}, produces={"application/json"})
 	  public Map<String, Object> betOrderPayout(@PathVariable("issueNum") String issueNum,
-			  @PathVariable("lottoType") String lottoType,
+			 // @PathVariable("lottoType") String lottoType,
 			  @RequestBody Map<String, String> params){
-		  return issueService.betOrderPayout(lottoType, issueNum,params);
+		  return issueService.betOrderPayout("", issueNum,params);
 	  }
 	  
 	  /**
@@ -57,11 +56,11 @@ public class SysOperationController{
 	   * @return
 	   */
 	  @ApiComment("cancel current issue all  payout")
-	  @RequestMapping(value={"/issue/{issueNum}/lottoType/{lottoType}/cancel-payout"}, method={org.springframework.web.bind.annotation.RequestMethod.POST}, produces={"application/json"})
+	  @RequestMapping(value={"/issue/{issueNum}/cancel-payout"}, method={org.springframework.web.bind.annotation.RequestMethod.POST}, produces={"application/json"})
 	  public Map<String, Object> calcelIssuePayout(@PathVariable("issueNum") String issueNum,
-			  @PathVariable("lottoType") String lottoType,
+			  //@PathVariable("lottoType") String lottoType,
 			  @RequestBody Map<String, String> params){
-		  return issueService.calcelIssuePayout(lottoType,issueNum,params);
+		  return issueService.calcelIssuePayout("",issueNum,params);
 	  }
 	  
 	  /**
@@ -71,11 +70,10 @@ public class SysOperationController{
 	   * @return
 	   */
 	  @ApiComment("issue re payout")
-	  @RequestMapping(value={"/issue/{issueNum}/lottoType/{lottoType}/re-payout"}, method={org.springframework.web.bind.annotation.RequestMethod.POST}, produces={"application/json"})
+	  @RequestMapping(value={"/issue/{issueNum}/re-payout"}, method={org.springframework.web.bind.annotation.RequestMethod.POST}, produces={"application/json"})
 	  public Map<String, Object> betOrderRePayout(@PathVariable("issueNum") String issueNum,
-			  @PathVariable("lottoType") String lottoType,
 			  @RequestBody Map<String, String> params){
-		  return issueService.betOrderRePayout(lottoType,issueNum,params);
+		  return issueService.betOrderRePayout("",issueNum,params);
 	  }
 	  
 	  /**
@@ -85,11 +83,11 @@ public class SysOperationController{
 	   * @return
 	   */
 	  @ApiComment("issue disbale")
-	  @RequestMapping(value={"/issue/{issueNum}/lottoType/{lottoType}/disbale"}, method={org.springframework.web.bind.annotation.RequestMethod.POST}, produces={"application/json"})
+	  @RequestMapping(value={"/issue/{issueNum}/disbale"}, method={org.springframework.web.bind.annotation.RequestMethod.POST}, produces={"application/json"})
 	  public Map<String, Object> issueDisbale(@PathVariable("issueNum") String issueNum,
-			  @PathVariable("lottoType") String lottoType,
+			  //@PathVariable("lottoType") String lottoType,
 			  @RequestBody Map<String, String> params){
-		  return issueService.issueDisbale(lottoType,issueNum,params);
+		  return issueService.issueDisbale("",issueNum,params);
 	  }
 	  
 	  /**

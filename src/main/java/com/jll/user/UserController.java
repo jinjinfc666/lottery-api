@@ -21,14 +21,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.jll.common.constants.Constants;
 import com.jll.common.constants.Constants.BankCardState;
 import com.jll.common.constants.Constants.UserType;
-import com.jll.common.constants.Constants;
 import com.jll.common.constants.Message;
 import com.jll.common.utils.StringUtils;
 import com.jll.dao.PageBean;
 import com.jll.dao.PageQueryDao;
-import com.jll.entity.PayType;
 import com.jll.entity.SiteMessFeedback;
 import com.jll.entity.SiteMessage;
 import com.jll.entity.SysCode;
@@ -814,11 +813,10 @@ public class UserController {
 			  HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
 		try {
-			UserInfo userInfo=userInfoService.getUserById(userId);
 			ret.clear();
-			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-			ret.put("data", userInfo);
+			ret=userInfoService.getUserNameById(userId);
 		}catch(Exception e){
+			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
@@ -1104,7 +1102,21 @@ public class UserController {
 		}
 		return ret;
 	}
-	//通过用户名查询用户银行卡
+	//通过用ID查询用户银行卡   给后台管理页面用的
+	@RequestMapping(value={"/byUIBankList"}, method={RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> queryByUserIdBankList(@RequestParam(name = "id", required = true) Integer id,
+			  HttpServletRequest request) {
+		Map<String, Object> ret = new HashMap<>();
+		try {
+			return userInfoService.queryByUserIdBankList(id);
+		}catch(Exception e){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+		}
+		return ret;
+	}
+	//通过用户名查询用户银行卡   给前台用的
 	@RequestMapping(value={"/byUNUBankList"}, method={RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> queryByUserNameBankList() {
 		Map<String, Object> ret = new HashMap<>();

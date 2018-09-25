@@ -75,8 +75,8 @@ public class IssueDaoImpl extends DefaultGenericDaoImpl<Issue> implements IssueD
 	//通过当前时间和彩种    获得离当前时间最近的一期成功的期次时间
 	@Override
 	public List<Issue> queryByLTNumeber(String lotteryType) {
-		Integer state=4;
-		String sql="from Issue  where state=:state and lotteryType=:lotteryType AND startTime<=:time ORDER BY id DESC";
+		Integer state=3;
+		String sql="from Issue  where state>:state and lotteryType=:lotteryType AND startTime<=:time ORDER BY id DESC";
 		Query<Issue> query = getSessionFactory().getCurrentSession().createQuery(sql,Issue.class);
 		query.setFirstResult(0);
 		query.setMaxResults(1);

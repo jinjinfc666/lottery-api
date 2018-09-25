@@ -222,6 +222,9 @@ public class LotteryCenterController {
 		}
 		
 		lastIssue = lotCenServ.queryLastIssue(lotteryType);
+		//自己添加的写死的中奖号码
+		String retNum="0,8,8,1,9";
+		lastIssue.setRetNum(retNum);
 		
 		lotteryTypeObj = cacheServ.getSysCode(SysCodeTypes.LOTTERY_TYPES.getCode(), lotteryType);
 		
@@ -252,12 +255,12 @@ public class LotteryCenterController {
 		return resp;
 	}
 	
-	@RequestMapping(value="/{lottery-type}/play-types", method = { RequestMethod.GET }, consumes=MediaType.APPLICATION_JSON_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> queryPlayType(@PathVariable(name = "lottery-type", required = true) String lotteryType){
-		
-		
-		return null;
-	}
+//	@RequestMapping(value="/{lottery-type}/play-types", method = { RequestMethod.GET }, consumes=MediaType.APPLICATION_JSON_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
+//	public Map<String, Object> queryPlayType(@PathVariable(name = "lottery-type", required = true) String lotteryType){
+//		
+//		
+//		return null;
+//	}
 	
 	@RequestMapping(value="/{lottery-type}/times", method = { RequestMethod.GET }, consumes=MediaType.APPLICATION_JSON_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> queryTimes(@PathVariable(name = "lottery-type", required = true) String lotteryType){

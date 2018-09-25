@@ -270,7 +270,7 @@ public class PromoServiceImpl implements PromoService
 		addDtl.setPreAmount(dbAcc.getRewardPoints().floatValue());
 		addDtl.setPostAmount(Double.valueOf(BigDecimalUtil.add(addDtl.getAmount(),addDtl.getPreAmount())).floatValue());
 		addDtl.setWalletId(dbAcc.getId());
-		addDtl.setOperationType(AccOperationType.PROMO_POINTS.getCode());
+		addDtl.setOperationType(AccOperationType.DAILY_SIGN_IN.getCode());
 		supserDao.save(addDtl);
 		dbAcc.setRewardPoints(new BigDecimal(addDtl.getPostAmount()).longValue());
 		supserDao.update(dbAcc);
