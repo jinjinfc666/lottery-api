@@ -191,7 +191,7 @@ public class CqsscServiceImpl extends DefaultLottoTypeServiceImpl
 										}
 									}
 									//inform the progress to payout
-									cacheServ.publishMessage(Constants.TOPIC_PAY_OUT, issueNum);
+									cacheServ.publishMessage(Constants.TOPIC_PAY_OUT, message);
 									return;
 								}
 							}

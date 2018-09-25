@@ -28,14 +28,14 @@
 		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
 		<property name="jobDetail" ref="makeAPlanJobDetail"/>
 		<!-- run every morning at 6 AM -->
-		<property name="cronExpression" value="0 0/2 * * * ?" />
+		<property name="cronExpression" value="0 0/1 * * * ?" />
 	</bean>
 
 	<bean id="processScheduleIssueCronTrigger"
 		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
 		<property name="jobDetail" ref="processScheduleIssueJobDetail"/>
 		<!-- run every morning at 6 AM -->
-		<property name="cronExpression" value="0 0/3 * * * ?" />
+		<property name="cronExpression" value="0/1 * * * * ?" />
 	</bean>
 	
 	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">

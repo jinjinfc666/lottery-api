@@ -31,7 +31,6 @@ public class WinningNumberListenerImpl implements MessageDelegateListener {
 	
 	@Override
 	public void handleMessage(Serializable message) {
-		logger.debug("Its ready to obtain the winning number for issue:::" + message);
 		String[] lottoTypeAndIssueNum = null;
 		Issue issue = null;
 		String lottoType = null;

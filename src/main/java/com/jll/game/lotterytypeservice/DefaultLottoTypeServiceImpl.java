@@ -68,7 +68,7 @@ public abstract class DefaultLottoTypeServiceImpl implements LotteryTypeService
 		String issueNum = null;
 		UserInfo user = null;
 		
-		lottoTypeAndIssueNum = ((String)message).split("|");
+		lottoTypeAndIssueNum = ((String)message).split("\\|");
 		lottoType = lottoTypeAndIssueNum[0];
 		issueNum = lottoTypeAndIssueNum[1];
 		

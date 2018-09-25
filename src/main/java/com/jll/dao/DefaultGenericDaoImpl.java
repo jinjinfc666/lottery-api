@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 import org.hibernate.type.DateType;
@@ -13,8 +14,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.orm.hibernate5.support.HibernateDaoSupport;
 
+import com.jll.game.LotteryCenterServiceImpl;
+
 public class DefaultGenericDaoImpl<T> extends HibernateDaoSupport implements GenericDaoIf<T> {
 
+	private Logger logger = Logger.getLogger(LotteryCenterServiceImpl.class);
+	
 	@Autowired
 	@DependsOn("sessionFactory")
 	public void setSuperSessionFactory(SessionFactory sessionFactory)
@@ -24,6 +29,7 @@ public class DefaultGenericDaoImpl<T> extends HibernateDaoSupport implements Gen
 	
 	@Override
 	public void saveOrUpdate(T entity) {
+		logger.debug(String.format("Try to save the entity...", ""));
 		getSessionFactory().getCurrentSession().saveOrUpdate(entity);
 	}
 
