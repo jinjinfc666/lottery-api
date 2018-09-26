@@ -1,6 +1,5 @@
 package com.jll.game.lotterytypeservice;
 
-import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -16,21 +15,14 @@ import org.apache.log4j.Logger;
 
 import com.jll.common.cache.CacheRedisService;
 import com.jll.common.constants.Constants;
-import com.jll.common.constants.Constants.OrderDelayState;
-import com.jll.common.constants.Constants.OrderState;
 import com.jll.common.constants.Constants.PrizeMode;
 import com.jll.common.utils.MathUtil;
 import com.jll.common.utils.Utils;
 import com.jll.entity.Issue;
-import com.jll.entity.OrderInfo;
 import com.jll.entity.PlayType;
 import com.jll.entity.SysCode;
-import com.jll.entity.UserAccount;
-import com.jll.entity.UserAccountDetails;
-import com.jll.entity.UserInfo;
 import com.jll.game.BulletinBoard;
 import com.jll.game.IssueService;
-import com.jll.game.LotteryTypeService;
 import com.jll.game.order.OrderService;
 import com.jll.game.playtype.PlayTypeFacade;
 import com.jll.game.playtype.PlayTypeService;
@@ -49,7 +41,7 @@ public class MmcServiceImpl extends DefaultLottoTypeServiceImpl
 {
 	private Logger logger = Logger.getLogger(MmcServiceImpl.class);
 
-	private final String lotteryType = "mmc";
+	private final String lotteryType = Constants.LottoType.MMC.getCode();
 	
 	IssueService issueServ = (IssueService)SpringContextUtil.getBean("issueServiceImpl");
 	
@@ -116,11 +108,12 @@ public class MmcServiceImpl extends DefaultLottoTypeServiceImpl
 	}
 
 	@Override
-	public void queryWinningNum(String message) {	
+	public void queryWinningNum(String message) {
+		logger.debug(String.format("Trying to handle %s", message));
 		String[] lottoTypeAndIssueNum = null;
 		String lottoType = null;
 		String issueNum = null;
-		String codeTypeName = Constants.SysCodeTypes.LOTTERY_CONFIG_5FC.getCode();
+		String codeTypeName = Constants.SysCodeTypes.LOTTERY_CONFIG_MMC.getCode();
 		String codeNamePrizeMode = Constants.LotteryAttributes.PRIZE_MODE.getCode();
 		String codeNameWinningRate = Constants.LotteryAttributes.WINING_RATE.getCode();
 		String codeNameUplimitProfitLoss = Constants.LotteryAttributes.UP_LIMIT_PROFIT_LOSS.getCode();
@@ -216,27 +209,19 @@ public class MmcServiceImpl extends DefaultLottoTypeServiceImpl
 			Float prizeAmount = (Float)statInfo.get(key);
 			
 			Double rate = MathUtil.divide(prizeAmount, betAmount, 5);
-			if(rate < Double.parseDouble(sysCodeWinningRate.getCodeVal())){
-				if(rateDistribute.get(String.valueOf(rate)) != null) {
-					key = rateDistribute.get(String.valueOf(rate)) + ";";
-					rateDistribute.put(String.valueOf(rate), key);						
-				}else {
-					rateDistribute.put(String.valueOf(rate), key);
-				}
-				
-				if(maxRate == null
-						|| maxRate.doubleValue() < rate.doubleValue()) {
-					maxRate = rate;
-				}
+			if(rateDistribute.get(String.valueOf(rate)) != null) {
+				key = rateDistribute.get(String.valueOf(rate)) + ";";
+				rateDistribute.put(String.valueOf(rate), key);
+			}else {
+				rateDistribute.put(String.valueOf(rate), key);
 			}
 			
+			if(maxRate == null
+					|| maxRate.doubleValue() < rate.doubleValue()) {
+				maxRate = rate;
+			}
 		}
-		
-		if(maxRate == null || statInfo.size() < 10) {
-			nonInterventional(lottoType, issueNum);
-			return;
-		}
-		
+				
 		String maxBetAmount = (String)rateDistribute.get(String.valueOf(maxRate));
 		if(maxBetAmount.contains(";")) {
 			maxBetAmount = maxBetAmount.substring(0, 
@@ -254,9 +239,10 @@ public class MmcServiceImpl extends DefaultLottoTypeServiceImpl
 		}
 		playTypeFacade = PlayTypeFactory.getInstance().getPlayTypeFacade(playTypeName);
 		
-		winningNum = playTypeFacade.produceWinningNumber(betNum);
+		winningNum = playTypeFacade.produceLostNumber(betNum);
 		
 		issue.setRetNum(winningNum);
+		issue.setState(Constants.IssueState.LOTTO_DARW.getCode());
 		issueServ.saveIssue(issue);
 		
 		if(bulletinBoard != null) {
@@ -270,7 +256,8 @@ public class MmcServiceImpl extends DefaultLottoTypeServiceImpl
 		}
 		
 		//inform the progress to payout
-		cacheServ.publishMessage(Constants.TOPIC_PAY_OUT, issueNum);
+		logger.debug(String.format("sending message to handle pay out %s", lottoType +"|"+ issueNum));
+		cacheServ.publishMessage(Constants.TOPIC_PAY_OUT, lottoType +"|"+ issueNum);
 	}
 
 	private void nonInterventional(String lottoType, String issueNum) {
@@ -281,6 +268,7 @@ public class MmcServiceImpl extends DefaultLottoTypeServiceImpl
 		winningNum = Utils.produce5Digits0to9Number();
 		issue = issueServ.getIssueByIssueNum(lottoType, issueNum);
 		issue.setRetNum(winningNum);
+		issue.setState(Constants.IssueState.LOTTO_DARW.getCode());
 		issueServ.saveIssue(issue);
 		
 		if(bulletinBoard != null) {
@@ -294,201 +282,7 @@ public class MmcServiceImpl extends DefaultLottoTypeServiceImpl
 		}
 		
 		//inform the progress to payout
-		cacheServ.publishMessage(Constants.TOPIC_PAY_OUT, issueNum);
+		logger.debug(String.format("sending message to handle pay out %s", lottoType +"|"+ issueNum));
+		cacheServ.publishMessage(Constants.TOPIC_PAY_OUT, lottoType +"|"+ issueNum);
 	}
-
-	
-	/*@Override
-	public void payout(String issueNum) {
-		String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-		UserInfo user = null;
-		
-		Issue issue = issueServ.getIssueByIssueNum(issueNum);
-		List<OrderInfo> orders = null;
-		boolean isMatch = false;
-				
-		if(issue == null) {
-			return ;
-		}
-		
-		if(issue.getState() != Constants.IssueState.END_ISSUE.getCode()) {
-			return ;
-		}
-		
-		if(StringUtils.isBlank(issue.getRetNum())) {
-			return ;
-		}
-		
-		orders = orderInfoServ.queryOrdersByIssue(issue.getId());
-		
-		if(orders == null || orders.size() == 0) {
-			modifyIssueState(issue);
-			return ;
-		}
-		
-		for(OrderInfo order : orders) {
-			user = userServ.getUserById(order.getUserId());
-			//被取消的订单 或者延迟开奖的订单 跳过开奖
-			if(order.getState() == Constants.OrderState.SYS_CANCEL.getCode()
-					|| order.getState() == Constants.OrderState.USER_CANCEL.getCode()
-					|| (order.getDelayPayoutFlag() != null 
-							&& order.getDelayPayoutFlag() == OrderDelayState.DEPLAY.getCode())) {
-				continue;
-			}
-			
-			isMatch = isMatchWinningNum(issue, order);
-			
-			if(isMatch) {//赢
-				//TODO 发奖金
-				BigDecimal prize = calPrize(issue, order, user);
-				//TODO 增加账户流水
-				addUserAccountDetails(order, issue, prize);
-				//TODO 修改用户余额
-				modifyBal(order, user, prize);
-				
-				//TODO 修改订单状态
-				modifyOrderState(order, Constants.OrderState.WINNING);
-				
-				setProfitLoss(issue, prize);
-			}else {
-				//TODO 修改订单状态
-				modifyOrderState(order, Constants.OrderState.LOSTING);
-			}
-			
-			//TODO
-			rebate(issue, user, order);
-			
-		}
-		
-		modifyIssueState(issue);
-	}
-
-	private void setProfitLoss(Issue issue, BigDecimal prize) {
-		Float profitLoss = queryPlatProfitLoss(issue.getIssueNum());
-		if(profitLoss == null) {
-			profitLoss = 0F;
-		}
-		
-		profitLoss = MathUtil.subtract(profitLoss, 
-				prize.floatValue(), 
-				Float.class);
-		Map<String, Object> items = new HashMap<>();
-		items.put(Constants.KEY_LOTTO_TYPE_PROFIT_LOSS, profitLoss);
-		cacheServ.setPlatStat(issue.getLotteryType(), items);
-	}
-
-	private void modifyIssueState(Issue issue) {
-		issue.setState(Constants.IssueState.PAYOUT.getCode());
-		issueServ.saveIssue(issue);
-	}
-
-	private void rebate(Issue issue, UserInfo user, OrderInfo order) {
-		String superior = user.getSuperior();
-		BigDecimal prize = null;
-		
-		if(StringUtils.isBlank(superior) || "0".equals(superior)) {
-			return ;
-		}
-		
-		String[] superiors = superior.split(",");
-		
-		superior = superiors[0];
-		UserInfo superiorUser = userServ.getUserById(Integer.parseInt(superior));
-		prize = calRebate(user, order);
-		addUserAccountDetails(order, issue, prize);
-		
-		modifyBal(order, user, prize);
-		
-		setProfitLoss(issue, prize);
-		
-		rebate(issue, superiorUser, order);
-		
-	}
-
-	private BigDecimal calRebate(UserInfo user, OrderInfo order) {
-		BigDecimal prize = null;
-		BigDecimal prizeRate = user.getRebate();
-		BigDecimal betAmount = new BigDecimal(order.getBetAmount());
-		
-		prize = betAmount.multiply(prizeRate);
-		return prize;
-	}
-
-	private void modifyOrderState(OrderInfo order, OrderState orderState) {
-		order.setState(orderState.getCode());
-		
-		orderInfoServ.saveOrder(order);
-	}
-
-	private void modifyBal(OrderInfo order, UserInfo user, BigDecimal prize) {
-		BigDecimal bal = null;
-		UserAccount wallet = walletServ.queryById(order.getWalletId());
-		bal = wallet.getBalance().add(prize);
-		wallet.setBalance(bal);
-		
-		walletServ.updateWallet(wallet);
-	}
-
-	private void addUserAccountDetails(OrderInfo order, Issue issue, BigDecimal prize) {
-		UserAccount wallet = walletServ.queryById(order.getWalletId());
-		UserAccountDetails accDetails = new UserAccountDetails();
-		BigDecimal preAmount = null;
-		BigDecimal postAmount = null;
-		
-		preAmount = wallet.getBalance();
-		postAmount = preAmount.add(prize);
-		accDetails.setAmount(prize.floatValue());
-		accDetails.setCreateTime(new Date());
-		accDetails.setDataItemType(Constants.DataItemType.BALANCE.getCode());
-		accDetails.setOperationType(Constants.AccOperationType.PAYOUT.getDesc());
-		accDetails.setOrderId(order.getId());
-		accDetails.setPostAmount(postAmount.floatValue());
-		accDetails.setPreAmount(preAmount.floatValue());
-		accDetails.setUserId(order.getUserId());
-		accDetails.setWalletId(order.getWalletId());
-		accDetailsServ.saveAccDetails(accDetails);
-	}
-
-	private BigDecimal calPrize(Issue issue, OrderInfo order, UserInfo user) {
-		PlayType playType = null;
-		String facadeName = null;
-		Integer playTypeId = order.getPlayType();
-		playType = playTypeServ.queryById(playTypeId);
-		if(playType == null) {
-			return null;
-		}
-		
-		//playType = playTypes.get(0);
-		facadeName = playType.getClassification() +"/" + playType.getPtName();
-		PlayTypeFacade playTypeFacade = PlayTypeFactory.getInstance().getPlayTypeFacade(facadeName);
-		
-		if(playTypeFacade == null) {
-			return null;
-		}
-		
-		return playTypeFacade.calPrize(issue, order, user);
-	}
-
-	private boolean isMatchWinningNum(Issue issue, OrderInfo order) {
-		PlayType playType = null;
-		String facadeName = null;
-		Integer playTypeId = order.getPlayType();
-		playType = playTypeServ.queryById(playTypeId);
-		if(playType == null) {
-			return false;
-		}
-		
-		
-		facadeName = playType.getClassification() +"/" + playType.getPtName();
-		PlayTypeFacade playTypeFacade = PlayTypeFactory.getInstance().getPlayTypeFacade(facadeName);
-		
-		if(playTypeFacade == null) {
-			return false;
-		}
-		
-		return playTypeFacade.isMatchWinningNum(issue, order);
-	}
-	
-	*/
-	
 }

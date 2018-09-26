@@ -16,6 +16,7 @@ public class GenSequence implements java.io.Serializable {
 	private Integer id;
 	private String seqName;
 	private Long seqVal;
+	private Date createTime;
 	
 	public GenSequence() {
 	}
@@ -49,5 +50,11 @@ public class GenSequence implements java.io.Serializable {
 		this.seqVal = seqVal;
 	}
 
-	
+	public Date getCreateTime() {
+		return createTime;
+	}
+
+	public void setCreateTime(Date createTime) {
+		this.createTime = createTime;
+	}
 }

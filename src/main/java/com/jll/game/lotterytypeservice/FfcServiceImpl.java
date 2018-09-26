@@ -252,10 +252,11 @@ public class FfcServiceImpl extends DefaultLottoTypeServiceImpl
 		winningNum = playTypeFacade.produceWinningNumber(betNum);
 		
 		issue.setRetNum(winningNum);
+		issue.setState(Constants.IssueState.LOTTO_DARW.getCode());
 		issueServ.saveIssue(issue);
 		
 		//inform the progress to payout
-		cacheServ.publishMessage(Constants.TOPIC_PAY_OUT, issueNum);
+		cacheServ.publishMessage(Constants.TOPIC_PAY_OUT, lottoType +"|"+ issueNum);
 	}
 
 	private void nonInterventional(String lottoType, String issueNum) {
@@ -266,10 +267,11 @@ public class FfcServiceImpl extends DefaultLottoTypeServiceImpl
 		winningNum = Utils.produce5Digits0to9Number();
 		issue = issueServ.getIssueByIssueNum(lottoType, issueNum);
 		issue.setRetNum(winningNum);
+		issue.setState(Constants.IssueState.LOTTO_DARW.getCode());
 		issueServ.saveIssue(issue);
 		
 		//inform the progress to payout
-		cacheServ.publishMessage(Constants.TOPIC_PAY_OUT, issueNum);
+		cacheServ.publishMessage(Constants.TOPIC_PAY_OUT, lottoType +"|"+ issueNum);
 	}
 
 	

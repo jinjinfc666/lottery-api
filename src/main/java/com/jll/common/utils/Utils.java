@@ -66,12 +66,18 @@ public class Utils {
 				
 	}
 	
-	public static String produce5Digits0to9Number() {
+	public static  String produce5Digits0to9Number() {
 		StringBuffer ret = new StringBuffer();
 		Random random = new Random();
 		for(int i = 0; i < 5; i++) {
 			int currIndex = random.nextInt(10);
 			ret.append(Integer.toString(currIndex)).append(",");
+			
+			try {
+				Thread.sleep(5000);
+			} catch (InterruptedException e) {
+				
+			}
 		}
 		
 		ret.delete(ret.length() - 1, ret.length() + 1);

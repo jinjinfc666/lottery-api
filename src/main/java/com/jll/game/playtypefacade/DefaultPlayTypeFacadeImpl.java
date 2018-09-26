@@ -80,4 +80,9 @@ public abstract class DefaultPlayTypeFacadeImpl implements PlayTypeFacade {
 		return null;
 	}
 	
+	@Override
+	public String produceLostNumber(String betNUm) {
+		return null;
+	}
+	
 }

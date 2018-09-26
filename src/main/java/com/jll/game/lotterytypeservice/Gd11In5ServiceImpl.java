@@ -179,6 +179,7 @@ public class Gd11In5ServiceImpl extends DefaultLottoTypeServiceImpl
 									//store into to database
 									issue = issueServ.getIssueByIssueNum(lottoType, issueNum);
 									issue.setRetNum(winningNum.replaceAll(" ", ","));
+									issue.setState(Constants.IssueState.LOTTO_DARW.getCode());
 									issueServ.saveIssue(issue);
 									
 									if(bulletinBoard != null) {
@@ -192,7 +193,7 @@ public class Gd11In5ServiceImpl extends DefaultLottoTypeServiceImpl
 									}
 									
 									//inform the progress to payout
-									cacheServ.publishMessage(Constants.TOPIC_PAY_OUT, issueNum);
+									cacheServ.publishMessage(Constants.TOPIC_PAY_OUT, message);
 									return;								
 								}
 							}

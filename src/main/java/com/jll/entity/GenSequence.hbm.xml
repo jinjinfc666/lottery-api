@@ -14,5 +14,9 @@
             <column length="50" name="seq_val">
             </column>
         </property>
+        <property generated="never" lazy="false" name="createTime" optimistic-lock="true" type="date" unique="false">
+            <column length="50" name="create_time">
+            </column>
+        </property>
     </class>
 </hibernate-mapping>
