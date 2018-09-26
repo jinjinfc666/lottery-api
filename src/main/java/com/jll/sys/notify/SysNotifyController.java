@@ -27,7 +27,7 @@ public class SysNotifyController {
 	SysNotifyService sysNotifyService;
 
 	@ApiComment("Get Notify Lists")
-	@RequestMapping(value="/lists", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value="/lists", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> list(
 			@RequestParam("userName") String userName,
 			@RequestBody PageQueryDao page) {
