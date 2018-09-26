@@ -53,8 +53,8 @@
         <property generated="never" lazy="false" name="createTime" optimistic-lock="true" type="timestamp" unique="false">
             <column length="19" name="create_time"/>
         </property>
-        <property generated="never" lazy="false" name="creator" optimistic-lock="true" type="timestamp" unique="false">
-            <column length="19" name="creator"/>
+        <property generated="never" lazy="false" name="creator" optimistic-lock="true" type="java.lang.Integer" unique="false">
+            <column name="creator"/>
         </property>
         <property generated="never" lazy="false" name="updateTime" optimistic-lock="true" type="timestamp" unique="false">
             <column length="19" name="update_time"/>
