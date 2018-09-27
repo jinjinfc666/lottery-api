@@ -91,6 +91,9 @@ public class LotteryCenterServiceImpl implements LotteryCenterService
 
 	@Override
 	public boolean hasMoreIssue(String lotteryType) {
+		if(lotteryType.equals(Constants.LottoType.MMC.getCode())) {
+			return true;
+		}
 		String cacheKey = lotteryType;
 		List<Issue> issues = cacheServ.getPlan(cacheKey);
 		Date nowTime = new Date();

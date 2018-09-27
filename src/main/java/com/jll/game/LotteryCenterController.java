@@ -214,15 +214,15 @@ public class LotteryCenterController {
 			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_GAME_END.getErrorMes());
 			return resp;
 		}
-		
-		currentIssue = lotCenServ.queryBettingIssue(lotteryType);
-		if(currentIssue == null) {
-			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_GAME_NO_START.getCode());
-			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_GAME_NO_START.getErrorMes());
-			return resp;
+		if(!lotteryType.equals(Constants.LottoType.MMC.getCode())) {
+			currentIssue = lotCenServ.queryBettingIssue(lotteryType);
+			if(currentIssue == null) {
+				resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+				resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_GAME_NO_START.getCode());
+				resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_GAME_NO_START.getErrorMes());
+				return resp;
+			}
 		}
-		
 		lastIssue = lotCenServ.queryLastIssue(lotteryType);
 		
 		lotteryTypeObj = cacheServ.getSysCode(SysCodeTypes.LOTTERY_TYPES.getCode(), lotteryType);
@@ -235,18 +235,19 @@ public class LotteryCenterController {
 			return resp;
 		}
 		
-		if(lastIssue != null) {
-			data.put("lastIssue", lastIssue);
+		if(!lotteryType.equals(Constants.LottoType.MMC.getCode())) {
+			String codeTypeName = "lottery_config_" + lotteryType;
+			String codeValName = Constants.LotteryAttributes.BETTING_END_TIME.getCode();
+			SysCode lottoAttri = cacheServ.getSysCode(codeTypeName, codeValName);
+			nowTime = new Date();
+			Long downCounter = currentIssue.getEndTime().getTime() - nowTime.getTime();
+			downCounter = downCounter/1000 - Long.valueOf(lottoAttri.getCodeVal());
+			currentIssue.setDownCounter(downCounter);
+			data.put("currIssue", currentIssue);
+		}else {
+			data.put("currIssue", null);
 		}
-		
-		String codeTypeName = "lottery_config_" + lotteryType;
-		String codeValName = Constants.LotteryAttributes.BETTING_END_TIME.getCode();
-		SysCode lottoAttri = cacheServ.getSysCode(codeTypeName, codeValName);
-		nowTime = new Date();
-		Long downCounter = currentIssue.getEndTime().getTime() - nowTime.getTime();
-		downCounter = downCounter/1000 - Long.valueOf(lottoAttri.getCodeVal());
-		currentIssue.setDownCounter(downCounter);
-		data.put("currIssue", currentIssue);
+		data.put("lastIssue", lastIssue);
 		data.put("playType", playTypes);
 		
 		resp.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
