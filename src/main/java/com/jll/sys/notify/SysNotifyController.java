@@ -8,13 +8,11 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jll.common.utils.Utils;
 import com.jll.dao.PageQueryDao;
 import com.jll.entity.SysNotification;
-import com.jll.sys.siteMsg.SysSiteMsgService;
 import com.terran4j.commons.api2doc.annotations.Api2Doc;
 import com.terran4j.commons.api2doc.annotations.ApiComment;
 
@@ -26,7 +24,7 @@ public class SysNotifyController {
 	
 	@Resource
 	SysNotifyService sysNotifyService;
-
+	
 	@ApiComment("Get Notify Lists")
 	@RequestMapping(value="/lists", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> list(@RequestBody Map<String, String> params) {
@@ -63,4 +61,5 @@ public class SysNotifyController {
 	public Map<String, Object> setSysNotifyExpire(@RequestBody Map<String, String> params) {
 		return sysNotifyService.setSysNotifyExpire( Utils.toInteger(params.get("notifyId")));
 	}
+	
 }

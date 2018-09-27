@@ -2032,8 +2032,9 @@ public class Constants {
 	public static enum SysRuntimeArgument{
 		LOTTO_PRIZE_RATE("lotto_prize_rate"),
 		MAX_PLAT_REBATE("max_plat_rebate"),
-		NUMBER_OF_BANK_CARDS("number_of_bank_cards");
-		
+		NUMBER_OF_BANK_CARDS("number_of_bank_cards"),
+		SITE_MSG_VALID_DAY("site_msg_valid_day"),
+		NOTIFY_MSG_VALID_DAY("notify_msg_valid_day");
 		private String code;
 		
 		private SysRuntimeArgument(String code) {
