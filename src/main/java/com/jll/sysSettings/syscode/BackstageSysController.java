@@ -1381,10 +1381,10 @@ public class BackstageSysController {
 		return ret;
 	}
 	/**
-	 *可选银行的增删改查
+	 *可选银行
 	 * @author Silence 
 	 */
-	//查询充值方式类型下的所有值
+	//查询所有的可选银行
 	@RequestMapping(value={"/queryBankCodeList"}, method={RequestMethod.GET}, produces={"application/json"})
 	public Map<String, Object> queryBankCodeList() {
 		Map<String, Object> ret = new HashMap<>();
