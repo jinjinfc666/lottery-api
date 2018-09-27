@@ -45,5 +45,5 @@ public interface LotteryCenterService
 
 	String PreBet(Map<String, Object> params, Map<String, Object> data);
 
-	
+	void processScheduleIssue();
 }

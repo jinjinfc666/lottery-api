@@ -5481,23 +5481,23 @@ public class LotteryCenterControllerTest extends ControllerJunitBase{
 	
 	
 	public void testBetting_mmc_zs() throws Exception{
-		int maxTimes = 10000;
+		int maxTimes = 5;
 		int counter = 0;
 		String lottoType = "mmc";
 		while(counter < maxTimes) {
-			Thread.sleep(10000);
 			
+			Thread.sleep(120000);
 			//if(counter == 0) {
 				Thread exe = new Thread(new Runnable(){
 					@Override
 					public void run() {
 						
-						try {
+						/*try {
 							Thread.sleep(1*60*1000);
 						} catch (InterruptedException e1) {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
-						}
+						}*/
 						String userName = "test001";
 						String pwd = "test001";
 						
@@ -5573,6 +5573,9 @@ public class LotteryCenterControllerTest extends ControllerJunitBase{
 			counter++;
 			
 		}
+		
+		
+		Thread.sleep(10000000);
 	}
 	
 	

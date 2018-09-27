@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.jll.common.cache.CacheRedisService;
 import com.jll.common.constants.Constants;
 import com.jll.common.constants.Message;
+import com.jll.common.threadpool.ThreadPoolManager;
 import com.jll.common.utils.StringUtils;
 import com.jll.entity.Issue;
 import com.jll.entity.PlayType;
@@ -90,6 +91,9 @@ public class LotteryCenterServiceImpl implements LotteryCenterService
 
 	@Override
 	public boolean hasMoreIssue(String lotteryType) {
+		if(lotteryType.equals(Constants.LottoType.MMC.getCode())) {
+			return true;
+		}
 		String cacheKey = lotteryType;
 		List<Issue> issues = cacheServ.getPlan(cacheKey);
 		Date nowTime = new Date();
@@ -146,7 +150,7 @@ public class LotteryCenterServiceImpl implements LotteryCenterService
 	/**
 	 * 定时遍历期次，修改状态
 	 */
-	
+	@Override
 	public synchronized void processScheduleIssue() {
 		//logger.debug(String.format("It's ready to process schedule....."));
 		Map<String, SysCode> lottoTypes = cacheServ.getSysCode(Constants.SysCodeTypes.LOTTERY_TYPES.getCode());
@@ -159,44 +163,46 @@ public class LotteryCenterServiceImpl implements LotteryCenterService
 			String key = ite.next();
 			SysCode sysCode = lottoTypes.get(key);
 			if(sysCode.getIsCodeType().intValue() == Constants.SysCodeTypesFlag.code_val.getCode()) {
-				processBulletinBoard(sysCode);
+				dealBulletinBoard(sysCode);
 			}
 		}
 	}
 
-	private void processBulletinBoard(SysCode lottoType) {
-		//logger.debug(String.format("It's ready to process bulletinBoard....."));
+	private void dealBulletinBoard(SysCode lottoType) {
 		Issue currIssue = null;
 		initBulletinBoard(lottoType);
-		//logger.debug(!isPlanExisting(lottoType.getCodeName())+"---------------进入changeIssueState（）-----------------------");		
 		if(!isPlanExisting(lottoType.getCodeName())) {
-			//logger.debug(String.format("%s plan no more...", lottoType));
 			return ;
 		}
-		//logger.debug("---------------进入changeIssueState（）-----------------------");			
 		currIssue = changeIssueState(lottoType.getCodeName());
-		//logger.debug(currIssue+"-----------------------------------");
-		//logger.debug(currIssue.getState()+"--------------state---------------------"+Constants.IssueState.END_ISSUE.getCode());
 		if(currIssue != null && 
 				currIssue.getState() == Constants.IssueState.END_ISSUE.getCode()
 				&& hasMoreIssue(lottoType.getCodeName())) {
-			String currIssueNum = currIssue.getIssueNum();
-			//logger.debug(String.format("move to next issue...."));			
-			currIssue = moveToNext(currIssue, lottoType.getCodeName());
-			cacheServ.publishMessage(Constants.TOPIC_WINNING_NUMBER, currIssue.getLotteryType()+ "|" + currIssueNum);
+			String currIssueNum = currIssue.getIssueNum();	
+			/*currIssue = moveToNext(currIssue, lottoType.getCodeName());*/
+			
+			
+			final String message = currIssue.getLotteryType()+ "|" + currIssueNum;
+			/*cacheServ.publishMessage(Constants.TOPIC_WINNING_NUMBER, 
+					message);*/
+			ThreadPoolManager.getInstance().exeThread(new Runnable() {
+				@Override
+				public void run() {
+					cacheServ.publishMessage(Constants.TOPIC_WINNING_NUMBER, 
+							message);
+				}
+			});
 		}
 	}
 
 	private Issue changeIssueState(String lottoType) {
-		//logger.debug(String.format("Trying to change state..."));
-		
 		BulletinBoard bulletinBoard = cacheServ.getBulletinBoard(lottoType);
 		Issue currIssue = null;
 		Date currTime = new Date();
 		Date startTime = null;
 		Date endTime = null;
 		Date endBettingTime = null;
-		Issue temp = null;
+		//Issue temp = null;
 		String cacheKey = lottoType;
 		List<Issue> plans = cacheServ.getPlan(cacheKey);
 		Integer indx = 0;
@@ -204,18 +210,16 @@ public class LotteryCenterServiceImpl implements LotteryCenterService
 		String codeValName = Constants.LotteryAttributes.BETTING_END_TIME.getCode();
 		SysCode lottoAttri = cacheServ.getSysCode(codeTypeName, codeValName);
 		boolean hasChanged = false;
-
-		//logger.debug(lottoAttri+"---------------lottoAttri-----------------------");
+		int state = -1;
+		
 		if(lottoAttri == null) {
 			return null;
 		}
-		//logger.debug(bulletinBoard+"---------------bulletinBoard-----------------------");
 		if(bulletinBoard == null) {
 			return null;
 		}
 		currIssue = bulletinBoard.getCurrIssue();
 
-		//logger.debug(currIssue+"---------------currIssue-----------------------");
 		if(currIssue == null) {
 			return null;
 		}
@@ -225,41 +229,33 @@ public class LotteryCenterServiceImpl implements LotteryCenterService
 		endBettingTime = DateUtils.addSeconds(endTime, 
 				Integer.valueOf(lottoAttri.getCodeVal())*-1);
 		endTime = DateUtils.addSeconds(endTime, -5);
-		temp = issueServ.getIssueById(currIssue.getId());
-		//logger.debug(temp+"---------------temp-----------------------");
-		if(temp == null) {
-			return null;
-		}
-		//logger.debug(currIssue.getState()+"-----------currIssue.getState()------------"+endBettingTime.getTime()+"--------endBettingTime.getTime()-----------"+currTime.getTime()+"-------------currTime.getTime()------------");
-		//logger.debug(endTime.getTime()+"------------------endTime.getTime()--------------------");
-		//logger.debug(startTime.getTime()+"------------startTime.getTime()---------------");
-		if(currIssue.getState() == Constants.IssueState.BETTING.getCode()
+		
+		state = currIssue.getState();
+		logger.debug(String.format("issue number %s   Issue Id %s", currIssue.getIssueNum(), currIssue.getId()));
+		logger.debug(state+"-----------current state------------");
+		logger.debug(endTime.getTime()+"------------------endTime--------------------");
+		logger.debug(startTime.getTime()+"------------startTime---------------");
+		
+		logger.debug(endBettingTime.getTime()+"------------endBettingTime---------------");
+		logger.debug(currTime.getTime()+"------------currTime---------------");
+		
+		if(state == Constants.IssueState.BETTING.getCode()
 				&& endBettingTime.getTime() <= currTime.getTime()) {
 			currIssue.setState(Constants.IssueState.END_BETTING.getCode());
-			temp.setState(Constants.IssueState.END_BETTING.getCode());
 			hasChanged = true;
-			/*logger.debug(String.format("Converting state from %s to %s",
-					Constants.IssueState.BETTING.getCode(), 
-					Constants.IssueState.END_BETTING.getCode()));*/
-		}else if(currIssue.getState() == Constants.IssueState.END_BETTING.getCode()
+		}else if(state == Constants.IssueState.END_BETTING.getCode()
 				&& endTime.getTime() <= currTime.getTime()) {
 			currIssue.setState(Constants.IssueState.END_ISSUE.getCode());
-			temp.setState(Constants.IssueState.END_ISSUE.getCode());
 			hasChanged = true;
 			
-			/*logger.debug(String.format("Converting state from %s to %s",
-					Constants.IssueState.END_BETTING.getCode(), 
-					Constants.IssueState.END_ISSUE.getCode()));*/
-		}else if(currIssue.getState() == Constants.IssueState.INIT.getCode()
+		}else if(state == Constants.IssueState.INIT.getCode()
 				&& startTime.getTime() <= currTime.getTime()) {
 			currIssue.setState(Constants.IssueState.BETTING.getCode());
-			temp.setState(Constants.IssueState.BETTING.getCode());
 			hasChanged = true;
-			
-			/*logger.debug(String.format("Converting state from %s to %s",
-					Constants.IssueState.INIT.getCode(), 
-					Constants.IssueState.BETTING.getCode()));*/
 		}
+		
+		state = currIssue.getState();
+		logger.debug(state + "-----------current state------------");
 		
 		if(hasChanged) {
 			indx = getIndexOfIssue(currIssue, plans);
@@ -268,8 +264,13 @@ public class LotteryCenterServiceImpl implements LotteryCenterService
 			}
 			plans.set(indx, currIssue);
 			bulletinBoard.setCurrIssue(currIssue);
+			logger.debug("-----------Save Issue------------");
+			state = currIssue.getState();
+			logger.debug(state + "-----------current state------------");
+			logger.debug(String.format("issue number %s   Issue Id %s", currIssue.getIssueNum(), currIssue.getId()));
 			
-			issueServ.saveIssue(temp);
+			issueServ.saveIssue(currIssue);
+			
 			cacheServ.setPlan(cacheKey, plans);
 			cacheServ.setBulletinBoard(lottoType, bulletinBoard);
 		}
@@ -298,6 +299,7 @@ public class LotteryCenterServiceImpl implements LotteryCenterService
 		nextIssue.setState(Constants.IssueState.BETTING.getCode());
 		plans.set(indx, nextIssue);
 		logger.debug(nextIssue);
+		//TODO 
 		issueServ.saveIssue(nextIssue);
 		cacheServ.setPlan(cacheKey, plans);
 		bulletinBoard.setLastIssue(bulletinBoard.getCurrIssue());

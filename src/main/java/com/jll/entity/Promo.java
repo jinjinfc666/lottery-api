@@ -19,14 +19,14 @@ public class Promo implements java.io.Serializable {
 	private Date expiredTime;
 	private Integer withdrawFlowTimes;
 	private Date createTime;
-	private Date creator;
+	private Integer creator;
 	private Date updateTime;
 
 	public Promo() {
 	}
 
 	public Promo(String promoName, String promoType, Integer isMultiple, Float minDepositAmount, Integer flowTimes,
-			Integer valueType, Float value, Date expiredTime, Integer withdrawFlowTimes, Date createTime, Date creator,
+			Integer valueType, Float value, Date expiredTime, Integer withdrawFlowTimes, Date createTime, Integer creator,
 			Date updateTime) {
 		this.promoName = promoName;
 		this.promoType = promoType;
@@ -130,11 +130,11 @@ public class Promo implements java.io.Serializable {
 		this.createTime = createTime;
 	}
 
-	public Date getCreator() {
+	public Integer getCreator() {
 		return this.creator;
 	}
 
-	public void setCreator(Date creator) {
+	public void setCreator(Integer creator) {
 		this.creator = creator;
 	}
 

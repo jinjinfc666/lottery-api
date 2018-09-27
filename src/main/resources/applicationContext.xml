@@ -103,11 +103,17 @@
         <!-- the transactional semantics... -->
         <tx:attributes>
             <!-- all methods starting with 'get' are read-only -->
-            <tx:method name="get*" propagation="REQUIRED" read-only="true"/>
+            <!-- <tx:method name="get*" propagation="REQUIRED" read-only="true"/>
             
             <tx:method name="query*" propagation="REQUIRED" read-only="true"/>
             
-            <tx:method name="find*" propagation="REQUIRED" read-only="true"/>
+            <tx:method name="find*" propagation="REQUIRED" read-only="true"/> -->
+            
+            <tx:method name="get*" read-only="true"/>
+            
+            <tx:method name="query*" read-only="true"/>
+            
+            <tx:method name="find*" read-only="true"/>
             
             <tx:method name="save*" propagation="REQUIRED"/>
             
@@ -115,17 +121,21 @@
             
             <tx:method name="process*" propagation="REQUIRED"/>
             
-            <tx:method name="make*" propagation="REQUIRED"/>
+            <!-- <tx:method name="make*" propagation="REQUIRED"/>
+                        
+            <tx:method name="change*" propagation="REQUIRED"/>
+            
+            <tx:method name="move*" propagation="REQUIRED"/> -->
             
             <!-- other methods use the default transaction settings (see below) -->
-            <tx:method name="*"/>
+            <!-- <tx:method name="*"/> -->
         </tx:attributes>
     </tx:advice>
 
     <!-- ensure that the above transactional advice runs for any execution
         of an operation defined by the FooService interface -->
     <aop:config>
-        <aop:advisor advice-ref="txAdvice" pointcut="execution(* com.jll..*Service*.*(..))"/>
+        <aop:advisor advice-ref="txAdvice" pointcut="execution(* com.jll..*Service.*(..))"/>
     </aop:config>
     
     

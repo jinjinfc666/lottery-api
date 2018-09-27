@@ -1,5 +1,7 @@
 package com.jll.game;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -212,19 +214,16 @@ public class LotteryCenterController {
 			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_GAME_END.getErrorMes());
 			return resp;
 		}
-		
-		currentIssue = lotCenServ.queryBettingIssue(lotteryType);
-		if(currentIssue == null) {
-			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_GAME_NO_START.getCode());
-			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_GAME_NO_START.getErrorMes());
-			return resp;
+		if(!lotteryType.equals(Constants.LottoType.MMC.getCode())) {
+			currentIssue = lotCenServ.queryBettingIssue(lotteryType);
+			if(currentIssue == null) {
+				resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+				resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_GAME_NO_START.getCode());
+				resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_GAME_NO_START.getErrorMes());
+				return resp;
+			}
 		}
-		
 		lastIssue = lotCenServ.queryLastIssue(lotteryType);
-		//自己添加的写死的中奖号码
-		String retNum="0,8,8,1,9";
-		lastIssue.setRetNum(retNum);
 		
 		lotteryTypeObj = cacheServ.getSysCode(SysCodeTypes.LOTTERY_TYPES.getCode(), lotteryType);
 		
@@ -236,18 +235,19 @@ public class LotteryCenterController {
 			return resp;
 		}
 		
-		if(lastIssue != null) {
-			data.put("lastIssue", lastIssue);
+		if(!lotteryType.equals(Constants.LottoType.MMC.getCode())) {
+			String codeTypeName = "lottery_config_" + lotteryType;
+			String codeValName = Constants.LotteryAttributes.BETTING_END_TIME.getCode();
+			SysCode lottoAttri = cacheServ.getSysCode(codeTypeName, codeValName);
+			nowTime = new Date();
+			Long downCounter = currentIssue.getEndTime().getTime() - nowTime.getTime();
+			downCounter = downCounter/1000 - Long.valueOf(lottoAttri.getCodeVal());
+			currentIssue.setDownCounter(downCounter);
+			data.put("currIssue", currentIssue);
+		}else {
+			data.put("currIssue", null);
 		}
-		
-		String codeTypeName = "lottery_config_" + lotteryType;
-		String codeValName = Constants.LotteryAttributes.BETTING_END_TIME.getCode();
-		SysCode lottoAttri = cacheServ.getSysCode(codeTypeName, codeValName);
-		nowTime = new Date();
-		Long downCounter = currentIssue.getEndTime().getTime() - nowTime.getTime();
-		downCounter = downCounter/1000 - Long.valueOf(lottoAttri.getCodeVal());
-		currentIssue.setDownCounter(downCounter);
-		data.put("currIssue", currentIssue);
+		data.put("lastIssue", lastIssue);
 		data.put("playType", playTypes);
 		
 		resp.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
@@ -339,5 +339,57 @@ public class LotteryCenterController {
 		resp.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		resp.put("singleBettingPrize", prizeRate);
 		return resp;
+	}
+	//未结算的注单  前端只传彩种，默认查询state为0的数据显示给前端
+	@RequestMapping(value="/{lottery-type}/unsettled-bet", method = { RequestMethod.GET }, consumes=MediaType.APPLICATION_JSON_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> queryUnsettledBet(@PathVariable(name = "lottery-type", required = true) String lotteryType){
+		Map<String,Object> map=new HashMap<String,Object>();
+		List<OrderInfo> orderInfoList=new ArrayList<OrderInfo>();
+		OrderInfo orderInfo=new OrderInfo();
+		orderInfo.setId(1);
+		orderInfo.setOrderNum("180911-0041");
+		orderInfo.setUserId(2);
+		orderInfo.setIssueId(4107);
+		orderInfo.setWalletId(19);
+		orderInfo.setPlayType(1);
+		orderInfo.setBetNum("0,2,3,5,1");
+		orderInfo.setBetTotal(60);
+		orderInfo.setBetAmount((float)6084.44);
+		orderInfo.setTimes(20);
+		orderInfo.setState(0);
+		orderInfo.setDelayPayoutFlag(0);
+		orderInfo.setIsZh(1);
+		orderInfo.setIsZhBlock(1);
+		orderInfo.setTerminalType(1);
+		orderInfoList.add(orderInfo);
+		map.put("data", orderInfoList);
+		map.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		return map;
+	}
+	//近期注单   前端只传过来彩种，后台默认只查询30条记录给前端
+	@RequestMapping(value="/{lottery-type}/recent-bet", method = { RequestMethod.GET }, consumes=MediaType.APPLICATION_JSON_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> queryRecentBet(@PathVariable(name = "lottery-type", required = true) String lotteryType){
+		Map<String,Object> map=new HashMap<String,Object>();
+		List<OrderInfo> orderInfoList=new ArrayList<OrderInfo>();
+		OrderInfo orderInfo=new OrderInfo();
+		orderInfo.setId(1);
+		orderInfo.setOrderNum("180911-0041");
+		orderInfo.setUserId(2);
+		orderInfo.setIssueId(4107);
+		orderInfo.setWalletId(19);
+		orderInfo.setPlayType(1);
+		orderInfo.setBetNum("0,2,3,5,1");
+		orderInfo.setBetTotal(60);
+		orderInfo.setBetAmount((float)6084.44);
+		orderInfo.setTimes(20);
+		orderInfo.setState(0);
+		orderInfo.setDelayPayoutFlag(0);
+		orderInfo.setIsZh(1);
+		orderInfo.setIsZhBlock(1);
+		orderInfo.setTerminalType(1);
+		orderInfoList.add(orderInfo);
+		map.put("data", orderInfoList);
+		map.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		return map;
 	}
 }

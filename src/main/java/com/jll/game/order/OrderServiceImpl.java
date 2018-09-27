@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.jll.common.cache.CacheRedisService;
 import com.jll.common.constants.Constants;
 import com.jll.common.constants.Message;
+import com.jll.common.threadpool.ThreadPoolManager;
 import com.jll.common.utils.MathUtil;
 import com.jll.common.utils.Utils;
 import com.jll.common.utils.sequence.GenSequenceService;
@@ -177,9 +178,25 @@ public class OrderServiceImpl implements OrderService
 		if(Constants.LottoType.MMC.getCode().equals(lotteryType)) {
 			int issueId = orders.get(0).getIssueId();
 			Issue issue = issueServ.getIssueById(issueId);
-			cacheServ.publishMessage(Constants.TOPIC_WINNING_NUMBER, issue.getIssueNum());
+			issue.setState(Constants.IssueState.END_ISSUE.getCode());
+			issueServ.saveIssue(issue);
+			
+			final String message = lotteryType +"|"+ issue.getIssueNum();
+			ThreadPoolManager.getInstance().exeThread(new Runnable() {
+				@Override
+				public void run() {
+					cacheServ.publishMessage(Constants.TOPIC_WINNING_NUMBER, 
+							message);
+				}
+			});
 		}
 		
+		/*try {
+			Thread.sleep(60000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
 		return String.valueOf(Message.status.SUCCESS.getCode());
 	}
 

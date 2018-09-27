@@ -221,4 +221,29 @@ public class QszxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 		
 		return winningBetNum.toString();
 	}
+	
+	@Override
+	public String produceLostNumber(String betNum) {
+		String[] betNumSet = betNum.split(",");
+		StringBuffer winningBetNum = new StringBuffer();
+		Random random = new Random();
+		
+		for(String betNumBit : betNumSet) {
+			for(int i = 0; i < 10; i++) {
+				if(betNumBit.contains(Integer.toString(i))) {
+					continue;
+				}
+				
+				winningBetNum.append(i);
+				break;
+			}
+		}
+		
+		for(int i = 0; i < 2; i++) {
+			int currIndex = random.nextInt(10);
+			winningBetNum.append(Integer.toString(currIndex));
+		}
+		
+		return winningBetNum.toString();
+	}
 }

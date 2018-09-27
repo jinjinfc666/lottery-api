@@ -24,6 +24,7 @@ import com.jll.common.constants.Constants;
 import com.jll.common.constants.Constants.OrderDelayState;
 import com.jll.common.constants.Constants.OrderState;
 import com.jll.common.http.HttpRemoteStub;
+import com.jll.common.utils.DateUtil;
 import com.jll.common.utils.sequence.GenSequenceService;
 import com.jll.entity.GenSequence;
 import com.jll.entity.Issue;
@@ -78,39 +79,34 @@ public class Pk10ServiceImpl extends DefaultLottoTypeServiceImpl
 		int maxAmount = 179;
 		Calendar calendar = Calendar.getInstance();
 		GenSequence pk10Seq = seqServ.queryPK10SeqVal();
+		Long seqVal = pk10Seq.getSeqVal().longValue();
+		long incresVal = 0;
 		
 		calendar.setTime(new Date());
 		calendar.set(Calendar.HOUR_OF_DAY, 9);
 		calendar.set(Calendar.MINUTE, 0);
 		calendar.set(Calendar.SECOND, 0);
 		calendar.set(Calendar.MILLISECOND, 0);
+		
+		incresVal = DateUtil.intervalDays(pk10Seq.getCreateTime(), new Date()) - 1;
+		incresVal *= maxAmount;
+		seqVal += incresVal;
+		
 		for(int i = 0; i < maxAmount; i++) {
-			Long seqVal = pk10Seq.getSeqVal().longValue() + 1;
+			seqVal += 1;
 			pk10Seq.setSeqVal(seqVal);
-			//if(i < 72) {
-				Issue issue = new Issue();
-				issue.setStartTime(calendar.getTime());
-				calendar.add(Calendar.MINUTE, 5);
-				issue.setEndTime(calendar.getTime());
-				issue.setIssueNum(String.valueOf(pk10Seq.getSeqVal().longValue()));
-				issue.setLotteryType(lotteryType);
-				issue.setState(Constants.IssueState.INIT.getCode());
-				
-				issues.add(issue);
-			/*}else{
-				Issue issue = new Issue();
-				issue.setStartTime(calendar.getTime());
-				calendar.add(Calendar.MINUTE, 5);
-				issue.setEndTime(calendar.getTime());
-				issue.setIssueNum(generateLottoNumber(i + 1));
-				issue.setLotteryType(lotteryType);
-				issue.setState(Constants.IssueState.INIT.getCode());
-				
-				issues.add(issue);
-			}*/
+			Issue issue = new Issue();
+			issue.setStartTime(calendar.getTime());
+			calendar.add(Calendar.MINUTE, 5);
+			issue.setEndTime(calendar.getTime());
+			issue.setIssueNum(String.valueOf(pk10Seq.getSeqVal().longValue()));
+			issue.setLotteryType(lotteryType);
+			issue.setState(Constants.IssueState.INIT.getCode());
+			
+			issues.add(issue);
+			
 		}
 		
-		seqServ.saveSeq(pk10Seq);
 		issueServ.savePlan(issues);
 		return issues;
 	}
@@ -185,6 +181,7 @@ public class Pk10ServiceImpl extends DefaultLottoTypeServiceImpl
 									//store into to database
 									issue = issueServ.getIssueByIssueNum(lottoType, issueNum);
 									issue.setRetNum(winningNum.replaceAll(" ", ","));
+									issue.setState(Constants.IssueState.LOTTO_DARW.getCode());
 									issueServ.saveIssue(issue);
 									
 									if(bulletinBoard != null) {
@@ -198,7 +195,7 @@ public class Pk10ServiceImpl extends DefaultLottoTypeServiceImpl
 									}
 									
 									//inform the progress to payout
-									cacheServ.publishMessage(Constants.TOPIC_PAY_OUT, issueNum);
+									cacheServ.publishMessage(Constants.TOPIC_PAY_OUT, message);
 									return;								
 								}
 							//}

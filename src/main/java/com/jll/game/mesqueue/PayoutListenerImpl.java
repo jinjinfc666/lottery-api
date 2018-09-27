@@ -35,7 +35,7 @@ public class PayoutListenerImpl implements MessageDelegateListener {
 		Issue issue = null;
 		String lottoType = null;
 		String issueNum = null;
-		lottoTypeAndIssueNum = ((String)message).split("|");
+		lottoTypeAndIssueNum = ((String)message).split("\\|");
 		lottoType = lottoTypeAndIssueNum[0];
 		issueNum = lottoTypeAndIssueNum[1];
 		issue = issueServ.getIssueByIssueNum(lottoType, issueNum);

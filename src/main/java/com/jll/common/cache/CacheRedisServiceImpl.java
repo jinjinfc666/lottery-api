@@ -105,16 +105,16 @@ public class CacheRedisServiceImpl implements CacheRedisService
 		Date today = new Date();
 		String cacheKey = lotteryType;
 		
-		logger.debug(String.format("plan key %s", cacheKey));
+		//logger.debug(String.format("plan key %s", cacheKey));
 		List<Issue> issues = this.getPlan(cacheKey);
 		if(issues == null || issues.size() == 0) {
-			logger.debug(String.format("No plan existing..."));
+			//logger.debug(String.format("No plan existing..."));
 			return false;
 		}
 		
 		Issue lastIssue = issues.get(issues.size() -1);
 		if(lastIssue.getEndTime().getTime() < today.getTime() ) {
-			logger.debug(String.format("Last issue is over..."));
+			//logger.debug(String.format("Last issue is over..."));
 			return false;
 		}
 		

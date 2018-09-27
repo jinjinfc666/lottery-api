@@ -92,4 +92,17 @@ public class DateUtil extends DateUtils {
 		
 		return calendar.getTime();
 	}
+	
+	/**
+	 * 返回间隔天数
+	 * @param beginDate
+	 * @param endDate
+	 * @return
+	 */
+	public static long intervalDays(Date beginDate, Date endDate){
+		Long milliSeconds = endDate.getTime() - beginDate.getTime();
+		
+		 milliSeconds = milliSeconds/(1000*60*60*24);
+		return milliSeconds;
+	}
 }

@@ -62,4 +62,12 @@ public interface PlayTypeFacade
 	 * @return
 	 */
 	String produceWinningNumber(String betNUm);
+	
+	/**
+	 * 计算不匹配投注号码的中奖号码
+	 * @param issue
+	 * @param order
+	 * @return
+	 */
+	String produceLostNumber(String betNUm);
 }

@@ -12,6 +12,7 @@ import java.util.Set;
 import javax.persistence.NoResultException;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 import org.hibernate.type.DateType;
@@ -25,6 +26,7 @@ import com.jll.dao.PageBean;
 import com.jll.entity.LotteryPlReport;
 import com.jll.entity.MemberPlReport;
 import com.jll.entity.UserInfo;
+import com.jll.user.UserInfoServiceImpl;
 
 
 
@@ -32,6 +34,7 @@ import com.jll.entity.UserInfo;
 
 @Repository
 public class LReportDaoImpl extends DefaultGenericDaoImpl<LotteryPlReport> implements LReportDao {
+	private Logger logger = Logger.getLogger(UserInfoServiceImpl.class);
 	//团队盈亏报表(按彩种查询)
 	
 	@Override

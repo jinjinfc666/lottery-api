@@ -63,12 +63,13 @@ public abstract class DefaultLottoTypeServiceImpl implements LotteryTypeService
 
 	@Override
 	public void payout(String message) {
+		logger.debug(String.format("Trying to handle %s", message));
 		String[] lottoTypeAndIssueNum = null;
 		String lottoType = null;
 		String issueNum = null;
 		UserInfo user = null;
 		
-		lottoTypeAndIssueNum = ((String)message).split("|");
+		lottoTypeAndIssueNum = ((String)message).split("\\|");
 		lottoType = lottoTypeAndIssueNum[0];
 		issueNum = lottoTypeAndIssueNum[1];
 		
@@ -80,7 +81,7 @@ public abstract class DefaultLottoTypeServiceImpl implements LotteryTypeService
 			return ;
 		}
 		
-		if(issue.getState() != Constants.IssueState.END_ISSUE.getCode()) {
+		if(issue.getState() != Constants.IssueState.LOTTO_DARW.getCode()) {
 			return ;
 		}
 		
