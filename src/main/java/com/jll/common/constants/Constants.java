@@ -486,8 +486,6 @@ public class Constants {
 		BANK_CODE_LIST("bank_code_list"),
 		FLOW_TYPES("flow_type"),
 		PAYMENT_PLATFORM("payment_platform"),
-		SITE_MSG_VALID_DAY("site_msg_valid_day"),
-		NOTIFY_MSG_VALID_DAY("notify_msg_valid_day"),
 		LUCKY_DRAW("lucky_draw"),//幸运抽奖
 		LOTTERY_CONFIG_CQSSC("lottery_config_cqssc"),//,"重庆时时彩属性"
 		LOTTERY_CONFIG_GD11X5("lottery_config_gd11x5"),//,"广东11选5属性"
@@ -2030,11 +2028,13 @@ public class Constants {
 	 * 系统运行时参数
 	 */
 	public static enum SysRuntimeArgument{
+		
 		LOTTO_PRIZE_RATE("lotto_prize_rate"),
 		MAX_PLAT_REBATE("max_plat_rebate"),
 		NUMBER_OF_BANK_CARDS("number_of_bank_cards"),
 		SITE_MSG_VALID_DAY("site_msg_valid_day"),
 		NOTIFY_MSG_VALID_DAY("notify_msg_valid_day");
+		
 		private String code;
 		
 		private SysRuntimeArgument(String code) {
