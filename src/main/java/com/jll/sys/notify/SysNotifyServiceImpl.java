@@ -11,7 +11,6 @@ import javax.annotation.Resource;
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.criterion.DetachedCriteria;
-import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.BeanUtils;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -27,10 +26,10 @@ import com.jll.common.utils.PageQuery;
 import com.jll.common.utils.StringUtils;
 import com.jll.dao.PageQueryDao;
 import com.jll.dao.SupserDao;
-import com.jll.entity.SysCode;
 import com.jll.entity.SysNotification;
 import com.jll.entity.UserInfo;
 import com.jll.user.UserInfoDao;
+import com.jll.user.UserInfoService;
 
 
 @Service
@@ -43,6 +42,9 @@ public class SysNotifyServiceImpl implements SysNotifyService
 	CacheRedisService cacheRedisService;
 	
 	@Resource
+	UserInfoService userInfoService;
+	
+	@Resource
 	SupserDao  supserDao; 
 	
 	@Resource
@@ -51,18 +53,22 @@ public class SysNotifyServiceImpl implements SysNotifyService
 	@Override
 	public Map<String, Object> getSysNotifyLists(String userName, PageQueryDao page) {
 		Map<String, Object> ret = new HashMap<String, Object>(); 
-		 DetachedCriteria criteria = DetachedCriteria.forClass(SysNotification.class);
-	     
+		
+		StringBuffer querySql = new StringBuffer("SELECT snt FROM  SysNotification snt WHERE 1=1 ");
+		List<Object> parmsList = new ArrayList<>();
+		
+		DetachedCriteria criteria = DetachedCriteria.forClass(SysNotification.class);
 		 if(null != page.getEndDate()){
-			 criteria.add(Restrictions.le("createTime",page.getEndDate()));
+			querySql.append(" and snt.createTime <= ? ");
+			parmsList.add(page.getEndDate());
 		 }
 		 if(null != page.getStartDate()){
-			 criteria.add(Restrictions.ge("createTime",page.getStartDate()));
+			 querySql.append(" and snt.createTime <= ? ");
+			 parmsList.add(page.getStartDate());
 		 }
-		
 		 if(!StringUtils.isEmpty(userName)){
-			 criteria = criteria.createCriteria("UserInfo");
-	         criteria.add(Restrictions.eq("userName",userName));
+			 querySql.append(" and snt.receiver = (SELECT u.id FROM  UserInfo u WHERE u.userName = ?) ");
+			 parmsList.add(userName);
 		 }
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		ret.put(Message.KEY_DATA,PageQuery.queryForPagenation(supserDao.getHibernateTemplate(), criteria, page.getPageIndex(), page.getPageSize()));
@@ -120,13 +126,11 @@ public class SysNotifyServiceImpl implements SysNotifyService
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_MESSAGE_TITLE_IS_EMPTY);
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_MESSAGE_TITLE_IS_EMPTY.getErrorMes());
 			return ret;
-			
 		}else if(null == SysNotifyReceiverType.getSysNotifyReceiverTypeByCode(notify.getReceiverType())){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_NOTIFY_RECEIVER_TYPE_ERROR);
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_NOTIFY_RECEIVER_TYPE_ERROR.getErrorMes());
 			return ret;
-			
 		}else if((SysNotifyReceiverType.LEVEL.getCode() == notify.getReceiverType()
 			 && StringUtils.isEmpty(sendIds))
 				|| (SysNotifyReceiverType.TYPE.getCode() == notify.getReceiverType() && null == SysNotifyType.getSysNotifyTypeByCode(notify.getReceiver()))){
@@ -135,16 +139,8 @@ public class SysNotifyServiceImpl implements SysNotifyService
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_NOTIFY_RECEIVER_ERROR.getErrorMes());
 			return ret;
 		}
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		if(auth == null) {
-			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_LOGIN);
-			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_LOGIN.getErrorMes());
-			return ret;
-		}
 		
-		UserInfo loginUser = userDao.getUserByUserName(auth.getName());
-		
+		UserInfo loginUser = userInfoService.getCurLoginInfo();
 		if(loginUser == null) {
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_NO_VALID_USER);
