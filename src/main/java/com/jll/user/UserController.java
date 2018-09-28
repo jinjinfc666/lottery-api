@@ -27,6 +27,7 @@ import com.jll.common.constants.Constants.BankCardState;
 import com.jll.common.constants.Constants.UserType;
 import com.jll.common.constants.Message;
 import com.jll.common.utils.StringUtils;
+import com.jll.common.utils.Utils;
 import com.jll.dao.PageBean;
 import com.jll.dao.PageQueryDao;
 import com.jll.entity.SiteMessFeedback;
@@ -716,16 +717,10 @@ public class UserController {
 	}
 	
 	@ApiComment("Feedback Site Message ")
-	@RequestMapping(value="/{userId}/site-message/feedback", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> siteMessageFeedback(@PathVariable("userId") Integer userId,
-			@RequestBody SiteMessFeedback back,
-			@RequestParam(name = "msgId", required = true) Integer msgId) {
-		if(userId.intValue()==-1) {
-			String userName=SecurityContextHolder.getContext().getAuthentication().getName();//当前登录的用户
-			UserInfo userInfo=userInfoService.getUserByUserName(userName);
-			userId=userInfo.getId();
-		}
-		return userInfoService.siteMessageFeedback(userId,msgId,back);
+	@RequestMapping(value="/site-message/feedback", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> siteMessageFeedback(@RequestBody SiteMessFeedback back) {
+		
+		return userInfoService.updateMessageFeedbackStatus(back);
 	}
 	
 	/**
@@ -743,16 +738,12 @@ public class UserController {
 	 */
 	
 	@ApiComment("Add Site Message ")
-	@RequestMapping(value="/{userId}/site-message/add", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> addSiteMessage(@PathVariable("userId") Integer userId,
-			@RequestBody SiteMessage msg,
-			@RequestParam("sendIds") String sendIds) {
-		if(userId.intValue()==-1) {
-			String userName=SecurityContextHolder.getContext().getAuthentication().getName();//当前登录的用户
-			UserInfo userInfo=userInfoService.getUserByUserName(userName);
-			userId=userInfo.getId();
-		}
-		return userInfoService.addSiteMessage(userId,sendIds,msg);
+	@RequestMapping(value="/site-message/add", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> addSiteMessage(@RequestBody Map<String, String> params) {
+		SiteMessage msg = new SiteMessage();
+		msg.setContent( Utils.toString(params.get("content")));
+		msg.setTitle( Utils.toString(params.get("title")));
+		return userInfoService.saveSiteMessage("",msg);
 	}
 	//重置登录密码
 	@RequestMapping(value={"/resetLoginPwd"}, method={RequestMethod.PUT}, produces=MediaType.APPLICATION_JSON_VALUE)

@@ -23,6 +23,7 @@ import com.jll.dao.PageQueryDao;
 import com.jll.dao.SupserDao;
 import com.jll.entity.SiteMessFeedback;
 import com.jll.entity.SiteMessage;
+import com.jll.entity.SysNotification;
 import com.jll.sysSettings.syscode.SysCodeService;
 import com.jll.user.UserInfoDao;
 import com.jll.user.wallet.WalletService;
@@ -76,12 +77,7 @@ public class SysSiteMsgServiceImpl implements SysSiteMsgService
 		List<SiteMessFeedback> retList = new ArrayList<>();
 		
 		getAllSiteMessageFeedback(retList, dbMsg.getUserId(), msgId);
-		Collections.sort(retList, new Comparator<SiteMessFeedback>() {
-			@Override
-			public int compare(SiteMessFeedback b1, SiteMessFeedback b2) {
-				return b2.getId()-b1.getId();
-			}
-		});
+		
 		if(!retList.isEmpty()){
 			SiteMessFeedback lastBack = retList.get(retList.size()-1);
 			if(lastBack.getIsRead() == SiteMessageReadType.UN_READING.getCode()
@@ -100,22 +96,24 @@ public class SysSiteMsgServiceImpl implements SysSiteMsgService
 
 	@Override
 	public Map<String, Object> getSiteMessageLists(String userName, PageQueryDao page) {
-		 Map<String, Object> ret = new HashMap<String, Object>(); 
-		 DetachedCriteria criteria = DetachedCriteria.forClass(SiteMessage.class);
-	     
+		Map<String, Object> ret = new HashMap<String, Object>(); 
+		StringBuffer querySql = new StringBuffer("SELECT snt FROM  SiteMessage snt WHERE 1=1 ");
+		List<Object> parmsList = new ArrayList<>();
+		
 		 if(null != page.getEndDate()){
-			 criteria.add(Restrictions.le("createTime",page.getEndDate()));
+			querySql.append(" and snt.createTime <= ? ");
+			parmsList.add(page.getEndDate());
 		 }
 		 if(null != page.getStartDate()){
-			 criteria.add(Restrictions.ge("createTime",page.getStartDate()));
+			 querySql.append(" and snt.createTime >= ? ");
+			 parmsList.add(page.getStartDate());
 		 }
-		 
 		 if(!StringUtils.isEmpty(userName)){
-			 criteria = criteria.createCriteria("UserInfo");
-	         criteria.add(Restrictions.eq("userName",userName));
+			 querySql.append(" and snt.userId = (SELECT u.id FROM  UserInfo u WHERE u.userName = ?) ");
+			 parmsList.add(userName);
 		 }
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-		ret.put(Message.KEY_DATA,PageQuery.queryForPagenation(supserDao.getHibernateTemplate(), criteria, page.getPageIndex(), page.getPageSize()));
+		ret.put(Message.KEY_DATA,PageQuery.queryForPagenationByHql(supserDao, querySql.toString(),SiteMessage.class,parmsList,page.getPageIndex(), page.getPageSize()));
 		return ret;
 	}
 	

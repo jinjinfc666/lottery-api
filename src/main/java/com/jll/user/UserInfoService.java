@@ -82,8 +82,8 @@ public interface UserInfoService
 	Map<String, Object> getUserNotifyLists(int userId);
 	Map<String, Object> getUserSiteMessageLists(int userId);
 	Map<String, Object> showSiteMessageFeedback(int userId, int msgId);
-	Map<String, Object> addSiteMessage(int userId, String sendIds, SiteMessage msg);
-	Map<String, Object> siteMessageFeedback(int userId, int msgId, SiteMessFeedback back);
+	Map<String, Object> saveSiteMessage(String sendIds, SiteMessage msg);
+	Map<String, Object> updateMessageFeedbackStatus(SiteMessFeedback back);
 	//重置登录密码
 	void resetLoginPwd(UserInfo user);
 	//重置支付密码
