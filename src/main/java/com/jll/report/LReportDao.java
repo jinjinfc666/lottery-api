@@ -8,7 +8,6 @@ import com.jll.entity.LotteryPlReport;
 
 /**
  *对应LotteryPlReport实体
- * @author Silence 
  */
 public interface LReportDao {
 	//团队盈亏报表(按彩种查询)

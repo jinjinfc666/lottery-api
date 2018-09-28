@@ -62,7 +62,6 @@ public class ReportController {
 	CacheRedisService cacheRedisService;
 	/**
 	 *流水明细
-	 * @author Silence 
 	 */
 	@RequestMapping(value={"/userFlowDetail"}, method={RequestMethod.GET}, produces={"application/json"})
 	public Map<String, Object> queryUserAccountDetails(@RequestParam(name = "userName", required = false) String userName,
@@ -119,7 +118,6 @@ public class ReportController {
 	}
 	/**
 	 *红包明细
-	 * @author Silence
 	 */
 //	@RequestMapping(value={"/redPackage"}, method={RequestMethod.POST}, produces={"application/json"})
 //	public Map<String, Object> queryRedUserAccountDetails(@RequestParam(name = "userName", required = true) String userName,
@@ -146,7 +144,6 @@ public class ReportController {
 //	}
 	/**
 	 *彩票交易
-	 * @author Silence
 	 */
 	@RequestMapping(value={"/loyTstRecord"}, method={RequestMethod.GET}, produces={"application/json"})
 	public Map<String, Object> queryLoyTst(@RequestParam(name = "lotteryType", required = false) String lotteryType,//彩种 String
@@ -253,7 +250,6 @@ public class ReportController {
 	}
 	/**
 	 *存取款明细
-	 * @author Silence
 	 */
 	@RequestMapping(value={"/DWD"}, method={RequestMethod.GET}, produces={"application/json"})
 	public Map<String, Object> queryDWD(@RequestParam(name = "type", required = true) String type,//存款:1 取款:2
@@ -392,7 +388,6 @@ public class ReportController {
 //	}
 //	/**
 //	 *充值明细
-//	 * @author Silence
 //	 */
 //	@RequestMapping(value={"/DepositApplication"}, method={RequestMethod.GET}, produces={"application/json"})
 //	public Map<String, Object> queryDepositApplication(@RequestParam(name = "userName", required = false) String userName,
@@ -428,7 +423,6 @@ public class ReportController {
 //	}
 	/**
 	 *会员盈亏报表
-	 * @author Silence
 	 */
 	@RequestMapping(value={"/MReport"}, method={RequestMethod.GET}, produces={"application/json"})
 	public Map<String, Object> queryMReport(@RequestParam(name = "userName", required = false) String userName,
@@ -507,7 +501,6 @@ public class ReportController {
 	}
 	/**
 	 *团队盈亏报表
-	 * @author Silence
 	 */
 	@RequestMapping(value={"/MReportTeam"}, method={RequestMethod.GET}, produces={"application/json"})
 	public Map<String, Object> queryMReportTeam(@RequestParam(name = "userName", required = false) String userName,
@@ -624,7 +617,6 @@ public class ReportController {
 	}
 	/**
 	 *团队盈亏报表(按彩种查询)
-	 * @author Silence
 	 */
 	@RequestMapping(value={"/LReportTeam"}, method={RequestMethod.GET}, produces={"application/json"})
 	public Map<String, Object> queryLReportTeam(@RequestParam(name = "userName", required = false) String userName,
@@ -748,7 +740,6 @@ public class ReportController {
 	}
 	/**
 	 *订单数据来源
-	 * @author Silence
 	 */
 	@RequestMapping(value={"/OrderSource"}, method={RequestMethod.GET}, produces={"application/json"})
 	public Map<String, Object> queryOrderSource(@RequestParam(name = "codeName", required = false) String codeName,//时间 String
@@ -783,7 +774,6 @@ public class ReportController {
 	}
 	/**
 	 *平台盈亏 资金汇总
-	 * @author Silence
 	 */
 	@RequestMapping(value={"/PPL"}, method={RequestMethod.GET}, produces={"application/json"})
 	public Map<String, Object> queryPPL(@RequestParam(name = "codeName", required = false) String codeName,//时间 String

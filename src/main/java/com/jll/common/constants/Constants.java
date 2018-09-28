@@ -125,7 +125,6 @@ public class Constants {
 	
 	/**
 	 *The state required to set the code
-	 * @author Silence
 	 */
 	public static enum SysCodeState{
 		VALID_STATE(1),
@@ -479,7 +478,6 @@ public class Constants {
 	
 	/**
 	 *SysCode大类类型
-	 * @author Silence
 	 */
 	public static enum SysCodeTypes{
 		LOTTERY_TYPES("lottery_type"),
@@ -559,7 +557,6 @@ public class Constants {
 	}
 	/**
 	 *SysCode大类类型
-	 * @author Silence
 	 */
 	public static enum SysCodeTypesFlag{
 		code_type(1),
@@ -648,7 +645,6 @@ public class Constants {
 	}
 	/**
 	 *彩票交易明细列表：查询条件：是否追号
-	 * @author Silence
 	 */
 	public static enum IsZh{
 		IS_ZH("1", "是"),
@@ -681,7 +677,6 @@ public class Constants {
 	}
 	/**
 	 *彩票交易明细列表：查询条件：中奖情况
-	 * @author Silence
 	 */
 	public static enum State{
 		WAITING_FOR_PRIZE("0", "等待派奖"),
@@ -717,7 +712,6 @@ public class Constants {
 	}
 	/**
 	 *彩票交易明细列表：查询条件：订单来源
-	 * @author Silence
 	 */
 	public static enum TerminalType{
 		MOBILE_PHONE("1", "手机端"),
@@ -751,7 +745,6 @@ public class Constants {
 
 	/**
 	 *存取款明细：查询条件：取款状态
-	 * @author Silence
 	 */
 	public static enum WithdrawType{
 		WAIT("0", "等待付款"),
@@ -788,7 +781,6 @@ public class Constants {
 	}
 	/**
 	 *存取款明细：查询条件：存款状态
-	 * @author Silence
 	 */
 	public static enum DepositType{
 		WAIT("0", "等待充值"),
@@ -822,7 +814,6 @@ public class Constants {
 	}
 	/**
 	 *存取款明细：类别
-	 * @author Silence
 	 */
 	public static enum DWType{
 		WAIT("1", "存款"),
@@ -856,7 +847,6 @@ public class Constants {
 	
 	/**
 	 *存取款明细：类别
-	 * @author Silence
 	 */
 	public static enum IssueState{
 		INIT(0, "初始状态"),
@@ -898,7 +888,6 @@ public class Constants {
 	}
 	/**
 	 *用户类型
-	 * @author Silence
 	 */
 	public static enum UserTypes{
 		PLATFORM_USER(0,"平台客户"),
@@ -926,7 +915,6 @@ public class Constants {
 
 	/**
 	 *报表统计 需要的类型：扣除
-	 * @author Silence
 	 */
 	public static enum Deduction{
 		RECHARGE_DEDUCTION("recharge_deduction","充值扣除"),//充值扣除
@@ -966,7 +954,6 @@ public class Constants {
 	}
 	/**
 	 *报表统计 需要的类型：用户存款
-	 * @author Silence
 	 */
 	public static enum UserDeposit{
 		USER_DEPOSIT("user_deposit","用户存款");
@@ -1005,7 +992,6 @@ public class Constants {
 	}
 	/**
 	 *报表统计 需要的类型：系统充值
-	 * @author Silence
 	 */
 	public static enum SystemRecharge{
 		SYSTEM_RECHARGE("system_recharge","系统充值"),
@@ -1046,7 +1032,6 @@ public class Constants {
 	}
 	/**
 	 *报表统计 需要的类型：用户取款
-	 * @author Silence
 	 */
 	public static enum UserWithdrawal{
 		USER_WITHDRAWAL("user_withdrawal","用户取款");
@@ -1085,7 +1070,6 @@ public class Constants {
 	}
 	/**
 	 *报表统计 需要的类型：消费
-	 * @author Silence
 	 */
 	public static enum Consumption{
 		INITIATE_PURCHASING("initiate_purchasing","发起代购");
@@ -1124,7 +1108,6 @@ public class Constants {
 	}
 	/**
 	 *报表统计 需要的类型：撤单
-	 * @author Silence
 	 */
 	public static enum Withdrawal{
 		SYSTEM_WITHDRAWAL("system_withdrawal","系统撤单");
@@ -1163,7 +1146,6 @@ public class Constants {
 	}
 	/**
 	 *报表统计 需要的类型：返奖
-	 * @author Silence
 	 */
 	public static enum ReturnPrize{
 		SYSTEM_AWARD("system_award","系统派奖");
@@ -1202,7 +1184,6 @@ public class Constants {
 	}
 	/**
 	 *报表统计 需要的类型：返点
-	 * @author Silence
 	 */
 	public static enum Rebate{
 		SYSTEM_REBATE("system_rebate","系统返点");
@@ -1274,7 +1255,6 @@ public class Constants {
 	
 	/**
 	 *彩种的玩法类型
-	 * @author Silence
 	 */
 	public static enum SysCodePlayType{
 		CT_PLAY_TYPE_CLASSICFICATION("ct_play_type_classicfication","玩法类型");
@@ -1313,7 +1293,6 @@ public class Constants {
 	}
 	/**
 	 *玩法是单式还是复式
-	 * @author Silence
 	 */
 	public static enum SingleOrDouble{
 		SINGLE("0","单式"),
@@ -1353,7 +1332,6 @@ public class Constants {
 	}
 	/**
 	 *玩法名称是否隐藏
-	 * @author Silence
 	 */
 	public static enum HidePlayName{
 		SHOW("0","显示"),
@@ -1497,7 +1475,6 @@ public class Constants {
 	}
 	/**
 	 *彩种的属性
-	 * @author Silence
 	 */
 	public static enum LotteryAttributes{
 		MAX_PRIZE_AMOUNT("max_prize_amount"),//,"单个订单最大中奖金额"
