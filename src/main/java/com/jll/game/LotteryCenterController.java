@@ -192,6 +192,7 @@ public class LotteryCenterController {
 		
 		Map<String, Object> data = new HashMap<>();
 		List<PlayType> playTypes = null;
+		List<PlayType> playTypess = new ArrayList<PlayType>();
 		boolean isExisting = false;
 		boolean hasMoreIssue = false;
 		Issue currentIssue = null;
@@ -228,6 +229,20 @@ public class LotteryCenterController {
 		lotteryTypeObj = cacheServ.getSysCode(SysCodeTypes.LOTTERY_TYPES.getCode(), lotteryType);
 		
 		playTypes = cacheServ.getPlayType(lotteryTypeObj);
+		
+		if(playTypes!=null&&playTypes.size()>0) {
+			Integer stateas=null;
+			for(int i=0; i<playTypes.size();i++)    {   
+			     PlayType playType=playTypes.get(i);
+			     stateas=playType.getState();
+			     if((int)stateas==1) {
+			    	 playTypess.add(playType);
+				}
+			 }
+		}
+		
+		
+		
 		if(playTypes == null || playTypes.size() == 0) {
 			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_GAME_MISSTING_PLAY_TYPE.getCode());
@@ -248,7 +263,7 @@ public class LotteryCenterController {
 			data.put("currIssue", null);
 		}
 		data.put("lastIssue", lastIssue);
-		data.put("playType", playTypes);
+		data.put("playType", playTypess);
 		
 		resp.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		resp.put(Message.KEY_DATA, data);
