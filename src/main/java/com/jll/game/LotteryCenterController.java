@@ -175,7 +175,7 @@ public class LotteryCenterController {
 		retCode = orderServ.saveOrders(orders, walletId, zhFlag,lotteryType);
 		if(!String.valueOf(Message.status.SUCCESS.getCode()).equals(retCode)) {
 			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			resp.put(Message.KEY_ERROR_CODE, Message.Error.getErrorByCode(retCode));
+			resp.put(Message.KEY_ERROR_CODE, Message.Error.getErrorByCode(retCode).getCode());
 			resp.put(Message.KEY_ERROR_MES, Message.Error.getErrorByCode(retCode).getErrorMes());
 			return resp;
 		}
