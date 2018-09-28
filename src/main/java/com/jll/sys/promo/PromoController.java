@@ -56,7 +56,7 @@ public class PromoController {
 	@RequestMapping(value="/accede-promo", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> accedeToPromo(
 			@RequestBody Promo po) {
-		return promoService.accedeToPromo(po);
+		return promoService.processAccedeToPromo(po);
 	}
 	
 }

@@ -21,6 +21,7 @@ import com.jll.common.cache.CacheRedisService;
 import com.jll.common.constants.Constants.SysCodeTypes;
 import com.jll.common.constants.Constants.SysNotifyReceiverType;
 import com.jll.common.constants.Constants.SysNotifyType;
+import com.jll.common.constants.Constants.SysRuntimeArgument;
 import com.jll.common.constants.Message;
 import com.jll.common.utils.PageQuery;
 import com.jll.common.utils.StringUtils;
@@ -76,7 +77,7 @@ public class SysNotifyServiceImpl implements SysNotifyService
 	}
 
 	@Override
-	public Map<String, Object> setSysNotifyExpire(int notifyId) {
+	public Map<String, Object> updateSetSysNotifyExpire(int notifyId) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		SysNotification dbNotify = (SysNotification) supserDao.get(SysNotification.class,notifyId);
 		if(null == dbNotify){
@@ -114,7 +115,7 @@ public class SysNotifyServiceImpl implements SysNotifyService
 	}
 
 	@Override
-	public Map<String, Object> addSysNotify(String sendIds,SysNotification notify) {
+	public Map<String, Object> saveSysNotify(String sendIds,SysNotification notify) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		if(StringUtils.isEmpty(notify.getContent())){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
@@ -150,7 +151,7 @@ public class SysNotifyServiceImpl implements SysNotifyService
 		
 		notify.setCreator(loginUser.getId());
 		notify.setCreateTime(new Date());
-		notify.setExpireTime(DateUtils.addDays(new Date(), Integer.valueOf(cacheRedisService.getSysCode(SysCodeTypes.NOTIFY_MSG_VALID_DAY.getCode()).get(SysCodeTypes.NOTIFY_MSG_VALID_DAY.getCode()).getCodeVal())));
+		notify.setExpireTime(DateUtils.addDays(new Date(), Integer.valueOf(cacheRedisService.getSysCode(SysCodeTypes.SYS_RUNTIME_ARGUMENT.getCode(),SysRuntimeArgument.NOTIFY_MSG_VALID_DAY.getCode()).getCodeVal())));
 		
 		if(SysNotifyReceiverType.LEVEL.getCode() == notify.getReceiverType() 
 				&& !StringUtils.isEmpty(sendIds)){
@@ -172,7 +173,6 @@ public class SysNotifyServiceImpl implements SysNotifyService
 		}else{
 			supserDao.save(notify);
 		}
-		supserDao.update(notify);
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		return ret;
 	}

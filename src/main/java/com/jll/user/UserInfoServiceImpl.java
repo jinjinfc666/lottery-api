@@ -41,6 +41,7 @@ import com.jll.common.constants.Constants.SysCodeState;
 import com.jll.common.constants.Constants.SysCodeTypes;
 import com.jll.common.constants.Constants.SysNotifyReceiverType;
 import com.jll.common.constants.Constants.SysNotifyType;
+import com.jll.common.constants.Constants.SysRuntimeArgument;
 import com.jll.common.constants.Constants.UserLevel;
 import com.jll.common.constants.Constants.UserState;
 import com.jll.common.constants.Constants.UserType;
@@ -647,7 +648,7 @@ public class UserInfoServiceImpl implements UserInfoService
 			back.setFbUserId(dbMsg.getUserId());
 		}
 		
-		int validDay = Integer.valueOf(((SysCode)cacheServ.getSysCode(SysCodeTypes.SITE_MSG_VALID_DAY.getCode()).get(SysCodeTypes.SITE_MSG_VALID_DAY.getCode())).getCodeVal());
+		int validDay = Integer.valueOf(cacheRedisService.getSysCode(SysCodeTypes.SYS_RUNTIME_ARGUMENT.getCode(),SysRuntimeArgument.SITE_MSG_VALID_DAY.getCode()).getCodeVal());
 		dbMsg.setExpireTime(DateUtils.addDays(new Date(), validDay));
 		dbMsg.setIsRead(SiteMessageReadType.UN_READING.getCode());
 		
@@ -704,7 +705,7 @@ public class UserInfoServiceImpl implements UserInfoService
 					return ret;
 				}
 			}
-			int validDay = Integer.valueOf(((SysCode)cacheServ.getSysCode(SysCodeTypes.SITE_MSG_VALID_DAY.getCode()).get(SysCodeTypes.SITE_MSG_VALID_DAY.getCode())).getCodeVal());
+			int validDay = Integer.valueOf(cacheRedisService.getSysCode(SysCodeTypes.SYS_RUNTIME_ARGUMENT.getCode(),SysRuntimeArgument.SITE_MSG_VALID_DAY.getCode()).getCodeVal());
 			msg.setExpireTime(DateUtils.addDays(new Date(), validDay));
 			List<SiteMessage> addList = new ArrayList<>();
 			for(String id:sendIds.split(StringUtils.COMMA)){

@@ -1,25 +1,19 @@
 package com.jll.user;
 
 
-import java.math.BigDecimal;
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.hibernate.query.Query;
-import org.hibernate.type.DateType;
 import org.springframework.stereotype.Repository;
 
 import com.jll.common.constants.Constants.UserType;
 import com.jll.common.utils.StringUtils;
 import com.jll.dao.DefaultGenericDaoImpl;
 import com.jll.dao.PageBean;
-import com.jll.entity.LotteryPlReport;
 import com.jll.entity.UserInfo;
 
 @Repository
@@ -140,12 +134,17 @@ public class UserInfoDaoImpl extends DefaultGenericDaoImpl<UserInfo> implements 
 
 	@Override
 	public boolean checkUserIds(String userIds) {
-		String sql = "select count(*) from UserInfo userType <> ? and id in(?)";
+		String sql = "select count(1) from UserInfo where userType <> :type and id in(:ids)";
 	    Query query = getSessionFactory().getCurrentSession().createQuery(sql);
-	    query.setParameter(0, UserType.SYS_ADMIN.getCode());
-	    query.setParameter(1, userIds);
+	    String[] ids = userIds.split(StringUtils.COMMA);
+	    List<Integer> intTemp = new ArrayList<>();
+	    for (int index = 0; index < ids.length; index++) {
+	    	intTemp.add(Integer.valueOf(ids[index]));
+		}
+	    query.setParameter("type", UserType.SYS_ADMIN.getCode());
+	    query.setParameter("ids", intTemp);
 	    long count = ((Number)query.iterate().next()).longValue();
-		return count ==  userIds.split(StringUtils.COMMA).length;
+		return count ==  ids.length;
 	}
 
 	/* (non-Javadoc)

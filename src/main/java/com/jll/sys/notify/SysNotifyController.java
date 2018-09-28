@@ -43,14 +43,14 @@ public class SysNotifyController {
 		notify.setTitle( Utils.toString(params.get("title")));
 		notify.setReceiverType( Utils.toInteger(params.get("receiverType")));
 		notify.setReceiver( Utils.toInteger(params.get("receiver")));
-		return sysNotifyService.addSysNotify(sendIds, notify);
+		return sysNotifyService.saveSysNotify(sendIds, notify);
 	}
 	
 	@ApiComment("Update Notify Info")
 	@RequestMapping(value="/update", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> updateSysNotify(@RequestBody Map<String, String> params) {
 		SysNotification notify = new SysNotification();
-		notify.setId(Utils.toInteger(params.get("id")));
+		notify.setId(Utils.toInteger(params.get("notifyId")));
 		notify.setContent( Utils.toString(params.get("content")));
 		notify.setTitle( Utils.toString(params.get("title")));
 		return sysNotifyService.updateSysNotify(notify);
@@ -59,7 +59,7 @@ public class SysNotifyController {
 	@ApiComment("Set Sys Notify Expire")
 	@RequestMapping(value="/cancel", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> setSysNotifyExpire(@RequestBody Map<String, String> params) {
-		return sysNotifyService.setSysNotifyExpire( Utils.toInteger(params.get("notifyId")));
+		return sysNotifyService.updateSetSysNotifyExpire( Utils.toInteger(params.get("notifyId")));
 	}
 	
 }
