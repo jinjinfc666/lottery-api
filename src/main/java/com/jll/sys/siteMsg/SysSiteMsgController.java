@@ -13,9 +13,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.jll.common.utils.Utils;
 import com.jll.dao.PageQueryDao;
 import com.jll.entity.SiteMessFeedback;
 import com.jll.entity.SiteMessage;
+import com.jll.entity.SysNotification;
 import com.jll.user.UserController;
 import com.jll.user.UserInfoService;
 import com.terran4j.commons.api2doc.annotations.Api2Doc;
@@ -37,26 +39,25 @@ public class SysSiteMsgController {
 	
 	
 	@ApiComment("Get Site Msg Lists")
-	@RequestMapping(value="/lists/{userName}", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> list(
-			@PathVariable("userName") String userName,
-			@RequestBody PageQueryDao page) {
+	@RequestMapping(value="/lists", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> list(@RequestBody Map<String, String> params) {
+		String userName = Utils.toString(params.get("userName"));
+		PageQueryDao page = new PageQueryDao(Utils.toDate(params.get("startDate")),Utils.toDate(params.get("endDate")),Utils.toInteger(params.get("pageIndex")),
+				Utils.toInteger(params.get("pageSize")));
 		return sysSiteMsgService.getSiteMessageLists(userName,page);
 	}
 	
 	@ApiComment("Show Site Msg History")
-	@RequestMapping(value="/{msgId}/history-feedback}", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value="/{msgId}/history-feedback", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> siteMsgDesc(@PathVariable("msgId") int msgId) {
 		return sysSiteMsgService.showSiteMessageFeedback(msgId);
 	}
 
 	
 	@ApiComment("Feedback Site Message ")
-	@RequestMapping(value="/feedback/{userId}/{msgId}", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> siteMessageFeedback(@PathVariable("userId") int userId,
-			@PathVariable("msgId") int msgId,
-			@RequestBody SiteMessFeedback back) {
-		return userInfoService.siteMessageFeedback(userId,msgId,back);
+	@RequestMapping(value="/feedback", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> siteMessageFeedback(@RequestBody SiteMessFeedback back) {
+		return userInfoService.updateMessageFeedbackStatus(back);
 	}
 	
 	/**
@@ -74,11 +75,13 @@ public class SysSiteMsgController {
 	 */
 	
 	@ApiComment("Add Site Message ")
-	@RequestMapping(value="/add/{userId}", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> addSiteMessage(@PathVariable("userId") int userId,
-			@RequestBody SiteMessage msg,
-			@RequestParam("sendIds") String sendIds) {
-		return userInfoService.addSiteMessage(userId,sendIds,msg);
+	@RequestMapping(value="/add", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> addSiteMessage(@RequestBody Map<String, String> params) {
+		String sendIds = Utils.toString(params.get("sendIds"));
+		SiteMessage msg = new SiteMessage();
+		msg.setContent( Utils.toString(params.get("content")));
+		msg.setTitle( Utils.toString(params.get("title")));
+		return userInfoService.saveSiteMessage(sendIds,msg);
 	}
 	
 

@@ -57,14 +57,12 @@ public class SysNotifyServiceImpl implements SysNotifyService
 		
 		StringBuffer querySql = new StringBuffer("SELECT snt FROM  SysNotification snt WHERE 1=1 ");
 		List<Object> parmsList = new ArrayList<>();
-		
-		DetachedCriteria criteria = DetachedCriteria.forClass(SysNotification.class);
 		 if(null != page.getEndDate()){
 			querySql.append(" and snt.createTime <= ? ");
 			parmsList.add(page.getEndDate());
 		 }
 		 if(null != page.getStartDate()){
-			 querySql.append(" and snt.createTime <= ? ");
+			 querySql.append(" and snt.createTime >= ? ");
 			 parmsList.add(page.getStartDate());
 		 }
 		 if(!StringUtils.isEmpty(userName)){
@@ -72,7 +70,7 @@ public class SysNotifyServiceImpl implements SysNotifyService
 			 parmsList.add(userName);
 		 }
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-		ret.put(Message.KEY_DATA,PageQuery.queryForPagenation(supserDao.getHibernateTemplate(), criteria, page.getPageIndex(), page.getPageSize()));
+		ret.put(Message.KEY_DATA,PageQuery.queryForPagenationByHql(supserDao, querySql.toString(),SysNotification.class,parmsList,page.getPageIndex(), page.getPageSize()));
 		return ret;
 	}
 
