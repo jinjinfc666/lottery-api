@@ -40,7 +40,6 @@ public class BackstageSysController {
 	CacheRedisService cacheRedisService;
 	/**
 	 *大类
-	 * @author Silence 
 	 */
 	//增加大类
 	@RequestMapping(value={"/addLotteryType"}, method={RequestMethod.POST}, produces={"application/json"})
@@ -165,7 +164,6 @@ public class BackstageSysController {
 	}
 	/**
 	 *彩种类型的增删改查
-	 * @author Silence 
 	 */
 	//增加彩种小类
 	@RequestMapping(value={"/SmallLotteryType"}, method={RequestMethod.POST}, produces={"application/json"})
@@ -314,7 +312,6 @@ public class BackstageSysController {
 	}
 	/**
 	 *流水类型的增删改查
-	 * @author Silence 
 	 */
 	//增加流水小类
 	@RequestMapping(value={"/SmallFlowType"}, method={RequestMethod.POST}, produces={"application/json"})
@@ -463,7 +460,6 @@ public class BackstageSysController {
 	}
 	/**
 	 *幸运抽奖类型的增删改查
-	 * @author Silence 
 	 */
 	//增加幸运抽奖小类
 	@RequestMapping(value={"/SmallLuckyDraw"}, method={RequestMethod.POST}, produces={"application/json"})
@@ -612,7 +608,6 @@ public class BackstageSysController {
 	}
 	/**
 	 *支付平台类型的增删改查
-	 * @author Silence 
 	 */
 	//增加支付平台小类
 	@RequestMapping(value={"/SmallPaymentPlatform"}, method={RequestMethod.POST}, produces={"application/json"})
@@ -761,7 +756,6 @@ public class BackstageSysController {
 	}
 	/**
 	 *签到活动类型的增删改查
-	 * @author Silence 
 	 */
 	//增加签到活动小类
 	@RequestMapping(value={"/SmallSignInDay"}, method={RequestMethod.POST}, produces={"application/json"})
@@ -910,7 +904,6 @@ public class BackstageSysController {
 	}
 	/**
 	 *玩法类型的增删改查
-	 * @author Silence 
 	 */
 	//增加玩法类型小类
 	@RequestMapping(value={"/SmallPTypeClassicfication"}, method={RequestMethod.POST}, produces={"application/json"})
@@ -1059,7 +1052,6 @@ public class BackstageSysController {
 	}
 	/**
 	 *彩种属性类型的增删改查
-	 * @author Silence 
 	 */
 	//增加彩种属性类型小类
 	@RequestMapping(value={"/SmallLotteryConfig"}, method={RequestMethod.POST}, produces={"application/json"})
@@ -1213,7 +1205,6 @@ public class BackstageSysController {
 	}
 	/**
 	 *充值方式的增删改查
-	 * @author Silence 
 	 */
 	//增加充值方式类型小类
 	@RequestMapping(value={"/SmallPayType"}, method={RequestMethod.POST}, produces={"application/json"})
@@ -1382,7 +1373,6 @@ public class BackstageSysController {
 	}
 	/**
 	 *可选银行
-	 * @author Silence 
 	 */
 	//查询所有的可选银行
 	@RequestMapping(value={"/queryBankCodeList"}, method={RequestMethod.GET}, produces={"application/json"})
