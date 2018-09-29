@@ -78,36 +78,11 @@ public class UserController {
 	@Value("${sys_captcha_code_expired_time}")
 	private int captchaCodeExpiredTime;
 	
-	/**
-	 * query the specified user by userName, only the operator with userName or operator with role:role_bus_manager
-	 * can obtain the full information, the person without permission can only read part of information.
-	 * @param request
-	 */
-	@RequestMapping(value="/attrs/user-name/{userName}", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> queryUserByUserName(@PathVariable("userName") String userName) {
-		Map<String, Object> resp = new HashMap<String, Object>();
-		
-		
-		return null;
-	}
-	
-	/**
-	 * query the specified user by userName, only the operator with userName or operator with role:role_bus_manager
-	 * can obtain the full information, the person without permission can only read part of information.
-	 * @param request
-	 */
-	@RequestMapping(value="/attrs/superior/{superior}", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> queryUserBySuperior(@RequestParam("superior") int Superior) { 
-		Map<String, Object> resp = new HashMap<String, Object>();
-		
-		
-		return null;
-	}
 	
 	/**
 	 * register the user who can login front-end web application
 	 * this will be only called  by the agent
-	 * @param request   给前台代理开户用的
+	 * @param request   给前台代理给下级开户用的
 	 */
 	@RequestMapping(value="/players", method = { RequestMethod.POST }, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> regUser(@RequestBody UserInfo user) {
