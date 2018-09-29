@@ -2,6 +2,7 @@ package com.jll.game.playtypefacade;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -85,4 +86,8 @@ public abstract class DefaultPlayTypeFacadeImpl implements PlayTypeFacade {
 		return null;
 	}
 	
+	@Override
+	public List<String> parseBetNumber(String betNum){
+		return null;
+	}
 }

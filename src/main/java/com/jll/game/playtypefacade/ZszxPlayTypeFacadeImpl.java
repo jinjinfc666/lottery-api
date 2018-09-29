@@ -1,8 +1,10 @@
 package com.jll.game.playtypefacade;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -17,10 +19,6 @@ public class ZszxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 	private Logger logger = Logger.getLogger(QszxPlayTypeFacadeImpl.class);
 	
 	protected String playTypeDesc = "zszx|中三直选/fs-ds";
-	/*
-	CacheRedisService cacheServ = (CacheRedisService)SpringContextUtil.getBean("cacheRedisServiceImpl");
-	
-	UserInfoService userServ = (UserInfoService)SpringContextUtil.getBean("userInfoServiceImpl");*/
 	
 	@Override
 	public String getPlayTypeDesc() {
@@ -199,13 +197,28 @@ public class ZszxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 		return winningRate;
 	}
 
-	/*@Override
-	public BigDecimal calSingleBettingPrize(Float prizePattern, BigDecimal winningRate) {
-		BigDecimal singleBettingPrize = null;
-		BigDecimal priP = new BigDecimal(prizePattern);
-		winningRate = winningRate.multiply(new BigDecimal(1000));
-		singleBettingPrize = priP.divide(winningRate);
+	@Override
+	public List<String> parseBetNumber(String betNum){
+		List<String> betNumList = new ArrayList<>();
+		String[] betNumArray = betNum.split(";");
+		for(String singleBetNumArray : betNumArray) {
+			String[] betNumBits = singleBetNumArray.split(",");
+			
+			for(int i = 0 ; i < betNumBits[0].length(); i++) {
+				String a = betNumBits[0].substring(i, i + 1);
+				for(int ii = 0; ii < betNumBits[1].length(); ii++) {
+					String aa = betNumBits[1].substring(ii, ii + 1);
+					for(int iii = 0; iii < betNumBits[2].length(); iii++) {
+						String aaa = betNumBits[2].substring(iii, iii + 1);
+						StringBuffer buffer = new StringBuffer();
+						buffer.append("*").append(a).append(aa).append(aaa).append("*");
+						betNumList.add(buffer.toString());
+					}
+				}
+			}
+		}
 		
-		return singleBettingPrize;
-	}*/
+		
+		return betNumList;
+	}
 }

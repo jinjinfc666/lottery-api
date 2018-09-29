@@ -212,10 +212,11 @@ public class MathUtil {
      * @param dataList 待选列表
      * @param n 选择个数
      */
-    public static void combinationSelect(String[] dataList, int n) {
+    public static void combinationSelect(String[] dataList, int n, List<String[]> results) {
         System.out.println(String.format("C(%d, %d) = %d", 
                 dataList.length, n, combination(n, dataList.length)));
-        combinationSelect(dataList, 0, new String[n], 0);
+        
+        combinationSelect(dataList, 0, new String[n], 0, results);
     }
 
     /**
@@ -225,11 +226,13 @@ public class MathUtil {
      * @param resultList 前面（resultIndex-1）个的组合结果
      * @param resultIndex 选择索引，从0开始
      */
-    private static void combinationSelect(String[] dataList, int dataIndex, String[] resultList, int resultIndex) {  
+    private static void combinationSelect(String[] dataList, int dataIndex, String[] resultList, int resultIndex, List<String[]> results) {
         int resultLen = resultList.length;
         int resultCount = resultIndex + 1;
         if (resultCount > resultLen) { // 全部选择完时，输出组合结果
-            System.out.println(Arrays.asList(resultList));
+            //System.out.println(Arrays.asList(resultList));
+        	String[] copy = Arrays.copyOf(resultList, resultList.length);
+            results.add(copy);
             return;
         }
 
@@ -237,7 +240,7 @@ public class MathUtil {
         for (int i = dataIndex; i < dataList.length + resultCount - resultLen; i++) {
         	//System.out.println(String.format("dataIndex = %s, resultCount= %s, resultLen=%s, maxVal=%s", dataIndex, resultCount, resultLen, (dataList.length + resultCount - resultLen)));
             resultList[resultIndex] = dataList[i];
-            combinationSelect(dataList, i + 1, resultList, resultIndex + 1);
+            combinationSelect(dataList, i + 1, resultList, resultIndex + 1, results);
         }
     }
     
@@ -246,10 +249,10 @@ public class MathUtil {
      * @param dataList 待选列表 
      * @param n 选择个数 
      */
-    public static void arrangementSelect(String[] dataList, int n) {
+    public static void arrangementSelect(String[] dataList, int n, List<String[]> results) {
         System.out.println(String.format("A(%d, %d) = %d", dataList.length, n, 
                 arrangement(n, dataList.length)));
-        arrangementSelect(dataList, new String[n], 0);
+        arrangementSelect(dataList, new String[n], 0, results);
     }
 
     /** 
@@ -258,10 +261,12 @@ public class MathUtil {
      * @param resultList 前面（resultIndex-1）个的排列结果 
      * @param resultIndex 选择索引，从0开始 
      */  
-    private static void arrangementSelect(String[] dataList, String[] resultList, int resultIndex) {
+    private static void arrangementSelect(String[] dataList, String[] resultList, int resultIndex, List<String[]> results) {
         int resultLen = resultList.length;
         if (resultIndex >= resultLen) { // 全部选择完时，输出排列结果 
-            System.out.println(Arrays.asList(resultList));
+            //System.out.println(Arrays.asList(resultList));
+            String[] copy = Arrays.copyOf(resultList, resultList.length);
+            results.add(copy);
             return;
         }
 
@@ -277,7 +282,7 @@ public class MathUtil {
             }
             if (!exists) { // 排列结果不存在该项，才可选择
                 resultList[resultIndex] = dataList[i];
-                arrangementSelect(dataList, resultList, resultIndex + 1);
+                arrangementSelect(dataList, resultList, resultIndex + 1, results);
             }
         }
     }

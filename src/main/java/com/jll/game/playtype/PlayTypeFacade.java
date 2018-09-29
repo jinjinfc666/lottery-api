@@ -1,6 +1,7 @@
 package com.jll.game.playtype;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Map;
 
 import com.jll.entity.Issue;
@@ -61,7 +62,7 @@ public interface PlayTypeFacade
 	 * @param order
 	 * @return
 	 */
-	String produceWinningNumber(String betNUm);
+	String produceWinningNumber(String betNum);
 	
 	/**
 	 * 计算不匹配投注号码的中奖号码
@@ -69,5 +70,7 @@ public interface PlayTypeFacade
 	 * @param order
 	 * @return
 	 */
-	String produceLostNumber(String betNUm);
+	String produceLostNumber(String betNum);
+	
+	List<String> parseBetNumber(String betNum);
 }
