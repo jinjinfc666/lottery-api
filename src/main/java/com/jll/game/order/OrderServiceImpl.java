@@ -115,24 +115,24 @@ public class OrderServiceImpl implements OrderService
 			return String.valueOf(Message.Error.ERROR_COMMON_NO_ACCOUNT_OPERATION.getCode());
 		}
 		
-		while(bettingBlockCounter < bettingBlockTimes) {
-			bettingBlockCounter++;
-			
-			isBetting = cacheServ.isUserBetting(user, orders.get(0));
-			logger.debug(String.format("user %s is betting:%s", user.getId(), isBetting));
-			if(!isBetting) {
-				break;
-			}
-			
-			try {
-				Thread.sleep(100);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		
-		cacheServ.setUserBettingFlag(user, orders.get(0));
+//		while(bettingBlockCounter < bettingBlockTimes) {
+//			bettingBlockCounter++;
+//			
+//			isBetting = cacheServ.isUserBetting(user, orders.get(0));
+//			logger.debug(String.format("user %s is betting:%s", user.getId(), isBetting));
+//			if(!isBetting) {
+//				break;
+//			}
+//			
+//			try {
+//				Thread.sleep(100);
+//			} catch (InterruptedException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//		}
+//		
+//		cacheServ.setUserBettingFlag(user, orders.get(0));
 		
 		for(OrderInfo order : orders) {
 			
