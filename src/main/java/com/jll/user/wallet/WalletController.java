@@ -90,7 +90,7 @@ public class WalletController {
 			return ret;
 		}
 	}
-	//查询主钱包类型
+	//查询可以对主钱包操作的类型
 	@RequestMapping(value={"/queryMainWallet"}, method={RequestMethod.GET}, produces={"application/json"})
 	public Map<String, Object> queryMainWallet() {
 		Map<String, Object> ret = new HashMap<>();
@@ -107,7 +107,7 @@ public class WalletController {
 			return ret;
 		}
 	}
-	//查询红包钱包类型
+	//查询可以对红包钱包操作的类型
 	@RequestMapping(value={"/queryRedWallet"}, method={RequestMethod.GET}, produces={"application/json"})
 	public Map<String, Object> queryRedWallet() {
 		Map<String, Object> ret = new HashMap<>();

@@ -41,6 +41,7 @@ import com.jll.common.constants.Constants.SysCodeState;
 import com.jll.common.constants.Constants.SysCodeTypes;
 import com.jll.common.constants.Constants.SysNotifyReceiverType;
 import com.jll.common.constants.Constants.SysNotifyType;
+import com.jll.common.constants.Constants.SysRuntimeArgument;
 import com.jll.common.constants.Constants.UserLevel;
 import com.jll.common.constants.Constants.UserState;
 import com.jll.common.constants.Constants.UserType;
@@ -558,11 +559,14 @@ public class UserInfoServiceImpl implements UserInfoService
 		DetachedCriteria dc = DetachedCriteria.forClass(SiteMessFeedback.class);
 		dc.add(Restrictions.eq("mesId",msgId));
 		dc.add(Restrictions.eq("fbUserId",userId));
-		List<SiteMessFeedback> dbBacks = supserDao.findByCriteria(dc);
+		dc.addOrder(Order.desc("id"));
+		
+		backList = supserDao.findByCriteria(dc);
+		/*List<SiteMessFeedback> dbBacks = supserDao.findByCriteria(dc);
 		if(null!= dbBacks && !dbBacks.isEmpty()){
 			backList.add(dbBacks.get(0));
 			getAllSiteMessageFeedback(backList, dbBacks.get(0).getFbUserId(), dbBacks.get(0).getId());
-		}
+		}*/
 		
 	}
 
@@ -613,23 +617,19 @@ public class UserInfoServiceImpl implements UserInfoService
 	}
 
 	@Override
-	public Map<String, Object> siteMessageFeedback(int userId, int msgId, SiteMessFeedback back) {
+	public Map<String, Object> updateMessageFeedbackStatus(SiteMessFeedback back) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		UserInfo dbInfo = (UserInfo) supserDao.get(UserInfo.class,userId);
-		SiteMessage dbMsg = (SiteMessage) supserDao.get(SiteMessage.class,msgId);
-		SiteMessFeedback dbBack = new SiteMessFeedback();
+		UserInfo dbInfo = getCurLoginInfo();
+		SiteMessage dbMsg = (SiteMessage) supserDao.get(SiteMessage.class,back.getMesId());
 		
-		if(back.getMesId() > 0){
-			dbBack = (SiteMessFeedback) supserDao.get(SiteMessFeedback.class,back.getMesId());;
-		}
 		if(null == dbInfo
-				|| null == dbMsg
-				|| null == dbBack){
+				|| null == dbMsg){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
 			return ret;
 		}
+		
 		if(StringUtils.isEmpty(back.getContent()) ){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_MESSAGE_CONTENT_IS_EMPTY.getCode());
@@ -637,17 +637,10 @@ public class UserInfoServiceImpl implements UserInfoService
 			return ret;
 		}
 		
-		// 不是首次回复...
-		if(dbBack.getMesId() > 0){
-			back.setMesId(dbMsg.getId());
-			back.setFbUserId(dbBack.getFbUserId());
-		}else{
-			//该信息是的类型是 system => user, 回复： user => system
-			back.setMesId(msgId);
-			back.setFbUserId(dbMsg.getUserId());
-		}
+		back.setMesId(dbMsg.getId());
+		back.setFbUserId(dbMsg.getUserId());
 		
-		int validDay = Integer.valueOf(((SysCode)cacheServ.getSysCode(SysCodeTypes.SITE_MSG_VALID_DAY.getCode()).get(SysCodeTypes.SITE_MSG_VALID_DAY.getCode())).getCodeVal());
+		int validDay = Integer.valueOf(cacheRedisService.getSysCode(SysCodeTypes.SYS_RUNTIME_ARGUMENT.getCode(),SysRuntimeArgument.SITE_MSG_VALID_DAY.getCode()).getCodeVal());
 		dbMsg.setExpireTime(DateUtils.addDays(new Date(), validDay));
 		dbMsg.setIsRead(SiteMessageReadType.UN_READING.getCode());
 		
@@ -661,9 +654,9 @@ public class UserInfoServiceImpl implements UserInfoService
 	}
 
 	@Override
-	public Map<String, Object> addSiteMessage(int userId, String sendIds, SiteMessage msg) {
+	public Map<String, Object> saveSiteMessage(String sendIds, SiteMessage msg) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		UserInfo dbInfo = (UserInfo) supserDao.get(UserInfo.class,userId);
+		UserInfo dbInfo =getCurLoginInfo();
 		if(null == dbInfo
 				||(UserType.SYS_ADMIN.getCode() == dbInfo.getUserType()
 						&& sendIds.equals(StringUtils.ALL))
@@ -690,10 +683,13 @@ public class UserInfoServiceImpl implements UserInfoService
 		}
 		
 		msg.setCreateTime(new Date());
-		msg.setCreator(userId);
+		msg.setCreator(dbInfo.getId());
 		msg.setIsRead(Constants.SiteMessageReadType.UN_READING.getCode());
+		int validDay = Integer.valueOf(cacheRedisService.getSysCode(SysCodeTypes.SYS_RUNTIME_ARGUMENT.getCode(),SysRuntimeArgument.SITE_MSG_VALID_DAY.getCode()).getCodeVal());
+		msg.setExpireTime(DateUtils.addDays(new Date(), validDay));
+		
 		//system to user
-		if(StringUtils.isEmpty(sendIds)){
+		if(!StringUtils.isEmpty(sendIds)){
 			if(sendIds.equals(StringUtils.ALL)){
 				sendIds = userDao.queryUnSystemUsers();
 			}else{
@@ -704,8 +700,6 @@ public class UserInfoServiceImpl implements UserInfoService
 					return ret;
 				}
 			}
-			int validDay = Integer.valueOf(((SysCode)cacheServ.getSysCode(SysCodeTypes.SITE_MSG_VALID_DAY.getCode()).get(SysCodeTypes.SITE_MSG_VALID_DAY.getCode())).getCodeVal());
-			msg.setExpireTime(DateUtils.addDays(new Date(), validDay));
 			List<SiteMessage> addList = new ArrayList<>();
 			for(String id:sendIds.split(StringUtils.COMMA)){
 				SiteMessage addMsg = new SiteMessage();
@@ -717,7 +711,7 @@ public class UserInfoServiceImpl implements UserInfoService
 			supserDao.saveList(addList);
 		}else{
 			//user to system
-			msg.setUserId(userId);
+			msg.setUserId(dbInfo.getId());
 			msg.setReceiver(0);
 			supserDao.save(msg);
 		}

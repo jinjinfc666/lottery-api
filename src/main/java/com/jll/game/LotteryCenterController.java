@@ -175,7 +175,7 @@ public class LotteryCenterController {
 		retCode = orderServ.saveOrders(orders, walletId, zhFlag,lotteryType);
 		if(!String.valueOf(Message.status.SUCCESS.getCode()).equals(retCode)) {
 			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			resp.put(Message.KEY_ERROR_CODE, Message.Error.getErrorByCode(retCode));
+			resp.put(Message.KEY_ERROR_CODE, Message.Error.getErrorByCode(retCode).getCode());
 			resp.put(Message.KEY_ERROR_MES, Message.Error.getErrorByCode(retCode).getErrorMes());
 			return resp;
 		}
@@ -192,6 +192,7 @@ public class LotteryCenterController {
 		
 		Map<String, Object> data = new HashMap<>();
 		List<PlayType> playTypes = null;
+		List<PlayType> playTypess = new ArrayList<PlayType>();
 		boolean isExisting = false;
 		boolean hasMoreIssue = false;
 		Issue currentIssue = null;
@@ -214,20 +215,34 @@ public class LotteryCenterController {
 			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_GAME_END.getErrorMes());
 			return resp;
 		}
-		
-		currentIssue = lotCenServ.queryBettingIssue(lotteryType);
-		if(currentIssue == null) {
-			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_GAME_NO_START.getCode());
-			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_GAME_NO_START.getErrorMes());
-			return resp;
+		if(!lotteryType.equals(Constants.LottoType.MMC.getCode())) {
+			currentIssue = lotCenServ.queryBettingIssue(lotteryType);
+			if(currentIssue == null) {
+				resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+				resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_GAME_NO_START.getCode());
+				resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_GAME_NO_START.getErrorMes());
+				return resp;
+			}
 		}
-		
 		lastIssue = lotCenServ.queryLastIssue(lotteryType);
 		
 		lotteryTypeObj = cacheServ.getSysCode(SysCodeTypes.LOTTERY_TYPES.getCode(), lotteryType);
 		
 		playTypes = cacheServ.getPlayType(lotteryTypeObj);
+		
+		if(playTypes!=null&&playTypes.size()>0) {
+			Integer stateas=null;
+			for(int i=0; i<playTypes.size();i++)    {   
+			     PlayType playType=playTypes.get(i);
+			     stateas=playType.getState();
+			     if((int)stateas==1) {
+			    	 playTypess.add(playType);
+				}
+			 }
+		}
+		
+		
+		
 		if(playTypes == null || playTypes.size() == 0) {
 			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_GAME_MISSTING_PLAY_TYPE.getCode());
@@ -235,19 +250,20 @@ public class LotteryCenterController {
 			return resp;
 		}
 		
-		if(lastIssue != null) {
-			data.put("lastIssue", lastIssue);
+		if(!lotteryType.equals(Constants.LottoType.MMC.getCode())) {
+			String codeTypeName = "lottery_config_" + lotteryType;
+			String codeValName = Constants.LotteryAttributes.BETTING_END_TIME.getCode();
+			SysCode lottoAttri = cacheServ.getSysCode(codeTypeName, codeValName);
+			nowTime = new Date();
+			Long downCounter = currentIssue.getEndTime().getTime() - nowTime.getTime();
+			downCounter = downCounter/1000 - Long.valueOf(lottoAttri.getCodeVal());
+			currentIssue.setDownCounter(downCounter);
+			data.put("currIssue", currentIssue);
+		}else {
+			data.put("currIssue", null);
 		}
-		
-		String codeTypeName = "lottery_config_" + lotteryType;
-		String codeValName = Constants.LotteryAttributes.BETTING_END_TIME.getCode();
-		SysCode lottoAttri = cacheServ.getSysCode(codeTypeName, codeValName);
-		nowTime = new Date();
-		Long downCounter = currentIssue.getEndTime().getTime() - nowTime.getTime();
-		downCounter = downCounter/1000 - Long.valueOf(lottoAttri.getCodeVal());
-		currentIssue.setDownCounter(downCounter);
-		data.put("currIssue", currentIssue);
-		data.put("playType", playTypes);
+		data.put("lastIssue", lastIssue);
+		data.put("playType", playTypess);
 		
 		resp.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		resp.put(Message.KEY_DATA, data);

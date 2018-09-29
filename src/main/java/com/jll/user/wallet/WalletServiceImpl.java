@@ -149,8 +149,7 @@ public class WalletServiceImpl implements WalletService
 	//通过用户名查询用户的主钱包
 	@Override
 	public Map<String, Object> queryUserAccount() {
-//		String userName=SecurityContextHolder.getContext().getAuthentication().getName();//当前登录的用户
-		String userName="Silence";
+		String userName=SecurityContextHolder.getContext().getAuthentication().getName();//当前登录的用户
 		UserInfo userInfo=userInfoService.getUserByUserName(userName);
 		Map<String,Object> map=new HashMap<String,Object>();
 		Map<String,Object> userAccountLists=walletDao.queryUserAccount(userInfo.getId(),Constants.WalletType.MAIN_WALLET.getCode());

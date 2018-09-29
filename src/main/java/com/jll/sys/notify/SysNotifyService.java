@@ -8,7 +8,7 @@ import com.jll.entity.SysNotification;
 public interface SysNotifyService
 {
 	Map<String, Object> updateSysNotify(SysNotification notify);
-	Map<String, Object> addSysNotify(String sendIds,SysNotification notify);
+	Map<String, Object> saveSysNotify(String sendIds,SysNotification notify);
 	Map<String, Object> getSysNotifyLists(String userName, PageQueryDao page);
-	Map<String, Object> setSysNotifyExpire(int notifyId);
+	Map<String, Object> updateSetSysNotifyExpire(int notifyId);
 }

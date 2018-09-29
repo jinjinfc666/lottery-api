@@ -81,22 +81,21 @@ public class PromoServiceImpl implements PromoService
 	}
 
 	@Override
-	public Map<String, Object> accedeToPromo(Promo po) {
+	public Map<String, Object> processAccedeToPromo(Promo po) {
 		String userName=SecurityContextHolder.getContext().getAuthentication().getName();//当前登录的用户
 		UserInfo userInfo=userDao.getUserByUserName(userName);
 		Integer userId=userInfo.getId();
 		Map<String, Object> ret = new HashMap<String, Object>(); 
 		UserInfo dbInfo = (UserInfo) supserDao.get(UserInfo.class,userId);
 		
-		if(null == dbInfo
-				|| StringUtils.isEmpty(po.getPromoType())){
+		if(null == dbInfo){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
 			return ret;
 		}
 		
-		Promo dbPro = (Promo) supserDao.get(Promo.class, "promoType", po.getPromoType());
+		Promo dbPro = (Promo) supserDao.get(Promo.class, po.getId());
 		if(null == dbPro
 				|| dbPro.getExpiredTime().after(new Date())){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
@@ -130,9 +129,9 @@ public class PromoServiceImpl implements PromoService
 				return ret;
 			}
 			if(SysCodeTypes.LUCKY_DRAW.getCode().equals(po.getPromoType())){
-				return accedeToLuckyDrwPromo(dbPro,dbInfo);
+				return processAccedeToLuckyDrwPromo(dbPro,dbInfo);
 			}else if(SysCodeTypes.SIGN_IN_DAY.getCode().equals(po.getPromoType())){
-				return accedeTodaySingInDayPromo(dbPro,dbInfo);
+				return processAccedeTodaySingInDayPromo(dbPro,dbInfo);
 			}
 		}
 		
@@ -194,7 +193,7 @@ public class PromoServiceImpl implements PromoService
 	}
 
 	@Override
-	public Map<String, Object> accedeToLuckyDrwPromo(Promo dbPro,UserInfo userInfo) {
+	public Map<String, Object> processAccedeToLuckyDrwPromo(Promo dbPro,UserInfo userInfo) {
 		Map<String, Object> ret = new HashMap<String, Object>(); 
 		Map<String,SysCode> maps =  cacheRedisService.getSysCode(SysCodeTypes.LOTTERY_TYPES.getCode());
 		double curDepAmt = userInfoService.getUserTotalDepostAmt(dbPro.getCreateTime(),new Date(),userInfo),
@@ -253,7 +252,7 @@ public class PromoServiceImpl implements PromoService
 	}
 
 	@Override
-	public Map<String, Object> accedeTodaySingInDayPromo(Promo dbPro, UserInfo userInfo) {
+	public Map<String, Object> processAccedeTodaySingInDayPromo(Promo dbPro, UserInfo userInfo) {
 		Map<String, Object> ret = new HashMap<String, Object>(); 
 		Map<String,SysCode> maps =  cacheRedisService.getSysCode(SysCodeTypes.SIGN_IN_DAY.getCode());
 		Random random = new Random();

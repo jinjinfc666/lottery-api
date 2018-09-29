@@ -46,6 +46,10 @@ public class SupserDao extends HibernateDaoSupport{
 	}
 	
 	public void saveList(List<?> addList) {
+		/*for (Object object : addList) {
+			save(object);
+		}
+		*/
 		Session session = null;
 		try {
 			session = getHibernateTemplate().getSessionFactory().openSession();
