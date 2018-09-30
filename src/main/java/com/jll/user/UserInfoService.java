@@ -116,7 +116,6 @@ public interface UserInfoService
 	
 	Float calPrizePattern(UserInfo user, String lottoType);
 	
-	PageBean<UserInfo> queryAllUserInfoByPage(PageBean<UserInfo> reqPage);
 	
 	Map<String, Object> processUserRedWalletAmountTransfer(String userName, double amount);
 	Map<String, Object> processDirectOperationUserAmount(UserAccountDetails dtl);

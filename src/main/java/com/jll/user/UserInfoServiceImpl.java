@@ -285,7 +285,7 @@ public class UserInfoServiceImpl implements UserInfoService
 			dbInfo.setPhoneNum(userInfo.getPhoneNum());
 			dbInfo.setIsValidPhone(Constants.PhoneValidState.UNVERIFIED.getCode());
 		}
-		
+		dbInfo.setUserId(userInfo.getUserId());
 		dbInfo.setWechat(userInfo.getWechat());
 		dbInfo.setQq(userInfo.getQq());
 		supserDao.update(dbInfo);
@@ -879,8 +879,7 @@ public class UserInfoServiceImpl implements UserInfoService
 		if(auth == null) {
 			return null;
 		}
-		//return getUserByUserName(auth.getName());
-		return getUserByUserName("zhaowei");
+		return getUserByUserName(auth.getName());
 	}
 
 	@Override
@@ -1160,19 +1159,6 @@ public class UserInfoServiceImpl implements UserInfoService
 				valRebatePrizeRate.floatValue(), 
 				Float.class);
 		return prizePattern;
-	}
-
-	@Override
-	public PageBean<UserInfo> queryAllUserInfoByPage(PageBean<UserInfo> reqPage) {
-		Integer pageSize = reqPage.getPageSize();
-		
-		if(pageSize > 10000) {
-			return null;
-		}
-		
-		PageBean<UserInfo> retPage = userDao.queryAllUserInfoByPage(reqPage);
-		
-		return retPage;
 	}
 
 	@Override
