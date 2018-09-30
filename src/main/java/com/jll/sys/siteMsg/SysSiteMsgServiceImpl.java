@@ -1,8 +1,6 @@
 package com.jll.sys.siteMsg;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +9,7 @@ import javax.annotation.Resource;
 
 import org.apache.log4j.Logger;
 import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,7 +22,6 @@ import com.jll.dao.PageQueryDao;
 import com.jll.dao.SupserDao;
 import com.jll.entity.SiteMessFeedback;
 import com.jll.entity.SiteMessage;
-import com.jll.entity.SysNotification;
 import com.jll.sysSettings.syscode.SysCodeService;
 import com.jll.user.UserInfoDao;
 import com.jll.user.wallet.WalletService;
@@ -52,11 +50,8 @@ public class SysSiteMsgServiceImpl implements SysSiteMsgService
 		DetachedCriteria dc = DetachedCriteria.forClass(SiteMessFeedback.class);
 		dc.add(Restrictions.eq("mesId",msgId));
 		dc.add(Restrictions.eq("fbUserId",userId));
-		List<SiteMessFeedback> dbBacks = supserDao.findByCriteria(dc);
-		if(null!= dbBacks && !dbBacks.isEmpty()){
-			backList.add(dbBacks.get(0));
-			getAllSiteMessageFeedback(backList, dbBacks.get(0).getFbUserId(), dbBacks.get(0).getId());
-		}
+		dc.addOrder(Order.desc("id"));
+		backList = supserDao.findByCriteria(dc);
 	}
 
 	@Override
@@ -69,10 +64,6 @@ public class SysSiteMsgServiceImpl implements SysSiteMsgService
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
 			return ret;
 		}
-		
-		DetachedCriteria dc = DetachedCriteria.forClass(SiteMessFeedback.class);
-		dc.add(Restrictions.eq("mesId",msgId));
-		dc.add(Restrictions.eq("fbUserId",dbMsg.getUserId()));
 		
 		List<SiteMessFeedback> retList = new ArrayList<>();
 		

@@ -137,12 +137,12 @@ public class UserInfoServiceImpl implements UserInfoService
 	}
 
 	@Override
-	public Map<String, Object> updateFundPwd(String userName, String oldPwd, String newPwd) {
+	public Map<String, Object> updateFundPwd(String oldPwd, String newPwd, String checkPwd) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
-		UserInfo dbInfo = (UserInfo) supserDao.get(UserInfo.class,"userName",userName);
+		UserInfo dbInfo = getCurLoginInfo();
 		if(StringUtils.checkFundPwdFmtIsOK(newPwd)
-				|| !newPwd.equals(oldPwd)
+				|| !newPwd.equals(checkPwd)
 				|| null == dbInfo){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
@@ -150,25 +150,26 @@ public class UserInfoServiceImpl implements UserInfoService
 			return ret;
 		}
 		BCryptPasswordEncoder bcEncoder = new  BCryptPasswordEncoder();
-		String chargePwd = bcEncoder.encode(newPwd);
-		if(!chargePwd.equals(dbInfo.getFundPwd())){
+		String oldDbPwd = bcEncoder.encode(oldPwd);
+		if(!oldDbPwd.equals(dbInfo.getFundPwd())){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_OLD_FUND_PWD_ERROR);
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_OLD_FUND_PWD_ERROR.getErrorMes());
 			return ret;
 		}
-		dbInfo.setFundPwd(chargePwd);
+		dbInfo.setFundPwd(bcEncoder.encode(newPwd));
 		supserDao.update(dbInfo);
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		return ret;
 	}
 
 	@Override
-	public Map<String, Object> updateLoginPwd(String userName, String oldPwd, String newPwd) {
+	public Map<String, Object> updateLoginPwd(String oldPwd, String newPwd, String checkPwd) {
+
 		Map<String, Object> ret = new HashMap<String, Object>();
-		UserInfo dbInfo = (UserInfo) supserDao.get(UserInfo.class,"userName",userName);
+		UserInfo dbInfo = getCurLoginInfo();
 		if(StringUtils.checkLoginPwdFmtIsOK(newPwd)
-				|| !newPwd.equals(oldPwd)
+				|| !newPwd.equals(checkPwd)
 				|| null == dbInfo){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
@@ -176,23 +177,23 @@ public class UserInfoServiceImpl implements UserInfoService
 			return ret;
 		}
 		BCryptPasswordEncoder bcEncoder = new  BCryptPasswordEncoder();
-		String chargePwd = bcEncoder.encode(newPwd);
-		if(!chargePwd.equals(dbInfo.getLoginPwd())){
+		String oldDbPwd = bcEncoder.encode(oldPwd);
+		if(!oldDbPwd.equals(dbInfo.getLoginPwd())){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_OLD_LOGIN_PWD_ERROR);
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_OLD_LOGIN_PWD_ERROR.getErrorMes());
 			return ret;
 		}
-		dbInfo.setLoginPwd(chargePwd);
+		dbInfo.setLoginPwd(bcEncoder.encode(newPwd));
 		supserDao.update(dbInfo);
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		return ret;
 	}
 
 	@Override
-	public Map<String, Object> getUserInfoByUserName(String userName) {
+	public Map<String, Object> getUserInfo() {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		UserInfo dbInfo = (UserInfo) supserDao.get(UserInfo.class,"userName",userName);
+		UserInfo dbInfo = getCurLoginInfo();
 		if(null == dbInfo){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
@@ -211,15 +212,17 @@ public class UserInfoServiceImpl implements UserInfoService
 			dbInfo.setQq(StringUtils.abbreviate(dbInfo.getQq(),3,StringUtils.MORE_ASTERISK));
 			
 		}
+		dbInfo.setLoginPwd(StringUtils.MORE_ASTERISK);
+		dbInfo.setFundPwd(StringUtils.MORE_ASTERISK);
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		ret.put(Message.KEY_DATA, dbInfo);
 		return ret;
 	}
 
 	@Override
-	public Map<String, Object> updateUserInfoInfo(UserInfo userInfo) {
+	public Map<String, Object> updateUserInfo(UserInfo userInfo) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		UserInfo dbInfo = (UserInfo) supserDao.get(UserInfo.class,"userName",userInfo.getUserName());
+		UserInfo dbInfo = getCurLoginInfo();
 		
 		if(null == dbInfo
 				|| !StringUtils.checkEmailFmtIsOK(userInfo.getEmail())
@@ -418,6 +421,7 @@ public class UserInfoServiceImpl implements UserInfoService
 		if(null == bankInfo.get(Message.KEY_DATA)){
 			return bankInfo;
 		}
+		bank.setUserId(userId);
 		bank.setBankCode(bankInfo.get(Message.KEY_DATA).toString());
 		bank.setCreateTime(new Date());
 		bank.setCreator(userId);
@@ -439,6 +443,13 @@ public class UserInfoServiceImpl implements UserInfoService
 	@Override
 	public Map<String, Object> verifyUserBankInfo(int userId, UserBankCard bank) {
 		Map<String, Object> ret = new HashMap<String, Object>();
+		if(StringUtils.isEmpty( bank.getCardNum())
+				|| StringUtils.isEmpty( bank.getBankBranch())){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			ret.put(Message.KEY_ERROR_MES,Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+			return ret;
+		}
 		Map<String, Object> bankInfo =  getUserBankLists(userId);
 		List<?> bankList = (List<?>) bankInfo.get(Message.KEY_DATA);
 		SysCode sysCode=cacheServ.getSysCode(Constants.SysCodeTypes.SYS_RUNTIME_ARGUMENT.getCode(),Constants.SysRuntimeArgument.NUMBER_OF_BANK_CARDS.getCode());
@@ -472,24 +483,27 @@ public class UserInfoServiceImpl implements UserInfoService
 		userDao.saveUser(user);
 	}
 	@Override
-	public Map<String, Object> getUserNotifyLists(int userId) {
+	public Map<String, Object> getUserNotifyLists() {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		UserInfo dbInfo = (UserInfo) supserDao.get(UserInfo.class,userId);
+		UserInfo dbInfo = getCurLoginInfo();
 		if(null == dbInfo){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
 			return ret;
 		}
+		
 		Object[] upUserId = StringUtils.getUserSupersId(dbInfo.getSuperior());
 		
-		Object[] query = {SysNotifyType.ALL_USER.getCode()};
+		Object[] query = new Object[2];
+		query[0] = SysNotifyType.ALL_USER.getCode();
 		query[1] = SysNotifyType.ALL_COM_USER.getCode();
+		
 		if(UserType.AGENCY.getCode() == dbInfo.getUserType()){
 			query[1] = SysNotifyType.ALL_AGENT.getCode();
 		}
 		DetachedCriteria dc = DetachedCriteria.forClass(SysNotification.class);
-		dc.add(Restrictions.le("expireTime",new Date()));
+		dc.add(Restrictions.ge("expireTime",new Date()));
 		dc.add(Restrictions.or(
 				Restrictions.and(
 		                Restrictions.eq("receiverType", SysNotifyReceiverType.TYPE.getCode()),
@@ -536,9 +550,9 @@ public class UserInfoServiceImpl implements UserInfoService
 	}
 
 	@Override
-	public Map<String, Object> getUserSiteMessageLists(int userId) {
+	public Map<String, Object> getUserSiteMessageLists() {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		UserInfo dbInfo = (UserInfo) supserDao.get(UserInfo.class,userId);
+		UserInfo dbInfo = getCurLoginInfo();
 		if(null == dbInfo){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
@@ -546,7 +560,7 @@ public class UserInfoServiceImpl implements UserInfoService
 			return ret;
 		}
 		DetachedCriteria dc = DetachedCriteria.forClass(SiteMessage.class);
-		dc.add(Restrictions.eq("userId",userId));
+		dc.add(Restrictions.eq("userId",dbInfo.getId()));
 		dc.add(Restrictions.le("expireTime",new Date()));
 		dc.addOrder(Order.desc("expireTime"));
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
@@ -560,20 +574,14 @@ public class UserInfoServiceImpl implements UserInfoService
 		dc.add(Restrictions.eq("mesId",msgId));
 		dc.add(Restrictions.eq("fbUserId",userId));
 		dc.addOrder(Order.desc("id"));
-		
 		backList = supserDao.findByCriteria(dc);
-		/*List<SiteMessFeedback> dbBacks = supserDao.findByCriteria(dc);
-		if(null!= dbBacks && !dbBacks.isEmpty()){
-			backList.add(dbBacks.get(0));
-			getAllSiteMessageFeedback(backList, dbBacks.get(0).getFbUserId(), dbBacks.get(0).getId());
-		}*/
 		
 	}
 
 	@Override
-	public Map<String, Object> showSiteMessageFeedback(int userId, int msgId) {
+	public Map<String, Object> showSiteMessageFeedback(int msgId) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		UserInfo dbInfo = (UserInfo) supserDao.get(UserInfo.class,userId);
+		UserInfo dbInfo = getCurLoginInfo();
 		SiteMessage dbMsg = (SiteMessage) supserDao.get(SiteMessage.class,msgId);
 		if(null == dbInfo
 				|| null == dbMsg){
@@ -585,13 +593,10 @@ public class UserInfoServiceImpl implements UserInfoService
 		
 		dbMsg.setIsRead(SiteMessageReadType.READING.getCode());
 		
-		DetachedCriteria dc = DetachedCriteria.forClass(SiteMessFeedback.class);
-		dc.add(Restrictions.eq("mesId",msgId));
-		dc.add(Restrictions.eq("fbUserId",userId));
 		
 		List<SiteMessFeedback> retList = new ArrayList<>();
+		getAllSiteMessageFeedback(retList, dbInfo.getId(), msgId);
 		
-		getAllSiteMessageFeedback(retList, userId, msgId);
 		Collections.sort(retList, new Comparator<SiteMessFeedback>() {
 			@Override
 			public int compare(SiteMessFeedback b1, SiteMessFeedback b2) {
@@ -804,10 +809,9 @@ public class UserInfoServiceImpl implements UserInfoService
 	
 
 	@Override
-	public Map<String, Object> exchangePoint(int userId, double amount) {
+	public Map<String, Object> processExchangePoint(double amount) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		UserInfo dbInfo = (UserInfo) supserDao.get(UserInfo.class,userId);
-		
+		UserInfo dbInfo = getCurLoginInfo();
 		if(amount < 0
 				|| null == dbInfo){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
@@ -824,6 +828,13 @@ public class UserInfoServiceImpl implements UserInfoService
 			return ret;
 		}
 		
+		SysCode dbCode = cacheServ.getSysCode(SysCodeTypes.SYS_RUNTIME_ARGUMENT.getCode(),SysRuntimeArgument.POINT_EXCHANGE_SCALE.getCode());
+		if(dbCode.getState() ==  SysCodeState.INVALID_STATE.getCode()){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_PROMS_INVALID.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_PROMS_INVALID.getErrorMes());
+			return ret;
+		}
 		
 		UserAccount redAcc = (UserAccount) supserDao.findByName(UserAccount.class, "userId", dbInfo.getId(), "accType", WalletType.RED_PACKET_WALLET.getCode()).get(0);
 		
@@ -840,13 +851,7 @@ public class UserInfoServiceImpl implements UserInfoService
 		dbAcc.setRewardPoints(addDtl.getPostAmount().longValue());
 		supserDao.update(dbAcc);
 		
-		SysCode dbCode = cacheServ.getSysCode(SysCodeTypes.POINT_EXCHANGE_SCALE.getCode(), SysCodeTypes.POINT_EXCHANGE_SCALE.getCode());
-		if(dbCode.getState() ==  SysCodeState.INVALID_STATE.getCode()){
-			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_PROMS_INVALID.getCode());
-			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_PROMS_INVALID.getErrorMes());
-			return ret;
-		}
+		
 		
 		double redAddAmt = BigDecimalUtil.mul(amount, Double.valueOf(dbCode.getCodeVal()));
 		//红包钱包金额增加
@@ -872,16 +877,15 @@ public class UserInfoServiceImpl implements UserInfoService
 			return null;
 		}
 		//return getUserByUserName(auth.getName());
-		return getUserByUserName("liuwei");
+		return getUserByUserName("zhaowei");
 	}
 
 	@Override
-	public Map<String, Object> userProfitReport(String userName,PageQueryDao page) {
+	public Map<String, Object> userProfitReport(PageQueryDao page) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
-		
 		DetachedCriteria dc = DetachedCriteria.forClass(MemberPlReport.class);
-		dc.add(Restrictions.eq("userName",userName));
+		dc.add(Restrictions.eq("userName",getCurLoginInfo().getUserName()));
 		dc.add(Restrictions.ge("createTime",page.getStartDate()));
 		dc.add(Restrictions.le("createTime",page.getStartDate()));
 		dc.addOrder(Order.desc("id"));
@@ -893,7 +897,7 @@ public class UserInfoServiceImpl implements UserInfoService
 	
 
 	@Override
-	public Map<String, Object> userWithdrawApply(int bankId, double amount, String passoword) {
+	public Map<String, Object> processUserWithdrawApply(int bankId, double amount, String passoword) {
 		
 		Map<String, Object> ret = new HashMap<String, Object>();
 		UserInfo dbInfo = getCurLoginInfo();
@@ -932,7 +936,7 @@ public class UserInfoServiceImpl implements UserInfoService
 		
 		//资金密码
 		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-		if(encoder.encode(passoword).equals(dbInfo.getFundPwd())){
+		if(!encoder.encode(passoword).equals(dbInfo.getFundPwd())){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_WTD_PWD_ERROR.getCode());
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_WTD_PWD_ERROR.getErrorMes());
@@ -988,6 +992,8 @@ public class UserInfoServiceImpl implements UserInfoService
 		wtd.setOrderNum(DateUtil.fmtYmdHisEmp(new Date())+StringUtils.getRandomString(6));
 		wtd.setWalletId(mainAcc.getId());
 		wtd.setBankCardId(userCard.getId());
+		wtd.setCreateTime(new Date());
+		wtd.setOperator(dbInfo.getId());
 		
 		supserDao.save(wtd);
 		
@@ -996,11 +1002,9 @@ public class UserInfoServiceImpl implements UserInfoService
 	}
 
 	@Override
-	public Map<String, Object> userWithdrawNotices(String userName, WithdrawApplication wtd) {
+	public Map<String, Object> processUserWithdrawNotices(WithdrawApplication wtd) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		UserInfo dbInfo = getUserByUserName(userName);
-		if(null == dbInfo
-				|| StringUtils.isEmpty(wtd.getOrderNum())
+		if(StringUtils.isEmpty(wtd.getOrderNum())
 				|| null == WithdrawOrderState.getValueByCode(wtd.getState())
 				|| WithdrawOrderState.ORDER_INIT.getCode() == wtd.getState()){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
@@ -1008,7 +1012,6 @@ public class UserInfoServiceImpl implements UserInfoService
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
 			return ret;
 		}
-		
 		WithdrawApplication dbWtd = null;
 		List<?> finds =  supserDao.findByName(WithdrawApplication.class, "orderNum",wtd.getOrderNum());
 		if(!finds.isEmpty()){
@@ -1021,8 +1024,8 @@ public class UserInfoServiceImpl implements UserInfoService
 			return ret;
 		}
 		
-		UserAccount mainAcc = (UserAccount) supserDao.findByName(UserAccount.class, "userId", dbInfo.getId(), "accType", WalletType.MAIN_WALLET.getCode()).get(0);
-		UserAccountDetails addDtail1 = userAccountDetailsService.initCreidrRecord(dbInfo.getId(),mainAcc, mainAcc.getFreeze().doubleValue(), -mainAcc.getFreeze().doubleValue(), AccOperationType.ACC_UNFREEZE.getCode());
+		UserAccount mainAcc = (UserAccount) supserDao.findByName(UserAccount.class, "userId", dbWtd.getUserId(), "accType", WalletType.MAIN_WALLET.getCode()).get(0);
+		UserAccountDetails addDtail1 = userAccountDetailsService.initCreidrRecord(dbWtd.getUserId(),mainAcc, mainAcc.getFreeze().doubleValue(), -mainAcc.getFreeze().doubleValue(), AccOperationType.ACC_UNFREEZE.getCode());
 		supserDao.save(addDtail1);
 		mainAcc.setFreeze(new BigDecimal(addDtail1.getPostAmount()));
 		
@@ -1034,7 +1037,7 @@ public class UserInfoServiceImpl implements UserInfoService
 		
 		//审核不通过，退还金额，
 		if(WithdrawOrderState.ORDER_END.getCode() != wtd.getState()){
-			UserAccountDetails addDtail2 = userAccountDetailsService.initCreidrRecord(dbInfo.getId(),mainAcc, mainAcc.getBalance().doubleValue(), mainAcc.getFreeze().doubleValue(), AccOperationType.WITHDRAWAL_BACK.getCode());
+			UserAccountDetails addDtail2 = userAccountDetailsService.initCreidrRecord(dbWtd.getUserId(),mainAcc, mainAcc.getBalance().doubleValue(), mainAcc.getFreeze().doubleValue(), AccOperationType.WITHDRAWAL_BACK.getCode());
 			supserDao.save(addDtail2);
 			mainAcc.setBalance(new BigDecimal(addDtail2.getPostAmount()));
 		}
@@ -1047,13 +1050,13 @@ public class UserInfoServiceImpl implements UserInfoService
 	
 
 	@Override
-	public Map<String, Object> userAmountTransfer(String fromUser, String toUser, double amount) {
+	public Map<String, Object> processUserAmountTransfer(String fromUser, String toUser, double amount) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		UserInfo fromUserInfo = getUserByUserName(fromUser);
 		UserInfo toUserInfo = getUserByUserName(toUser);
 		if(null == fromUserInfo
 				|| null == toUserInfo
-				){
+				|| fromUserInfo.equals(toUserInfo)){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
@@ -1170,7 +1173,7 @@ public class UserInfoServiceImpl implements UserInfoService
 	}
 
 	@Override
-	public Map<String, Object> userRedWalletAmountTransfer(String userName, double amount) {
+	public Map<String, Object> processUserRedWalletAmountTransfer(String userName, double amount) {
 		
 		Map<String, Object> ret = new HashMap<String, Object>();
 		UserInfo fromUserInfo = getUserByUserName(userName);
@@ -1208,7 +1211,7 @@ public class UserInfoServiceImpl implements UserInfoService
 		if(curCheckAMt < 0){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_TRANS_RED_WALLET_FAIL.getCode());
-			ret.put(Message.KEY_ERROR_MES,String.format(Message.Error.ERROR_USER_TRANS_RED_WALLET_FAIL.getErrorMes(), curCheckAMt,BigDecimalUtil.mul(amount,wtdRate)));
+			ret.put(Message.KEY_ERROR_MES,String.format(Message.Error.ERROR_USER_TRANS_RED_WALLET_FAIL.getErrorMes(), userSumBet,BigDecimalUtil.mul(amount,wtdRate)));
 			return ret;
 		}
 		
@@ -1231,13 +1234,13 @@ public class UserInfoServiceImpl implements UserInfoService
 	
 
 	@Override
-	public Map<String, Object> directOperationUserAmount(UserAccountDetails dtl) {
+	public Map<String, Object> processDirectOperationUserAmount(UserAccountDetails dtl) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
 		UserInfo userInfo = userDao.getUserById(dtl.getUserId());
 		if(null == AccOperationType.getValueByCode(dtl.getOperationType())
 				|| null == userInfo
-				|| Utils.toDouble(dtl.getAmount()) == 0.00
+				|| Utils.toDouble(dtl.getAmount()) <= 0.00
 				|| null == WalletType.getWalletTypeByCode(dtl.getWalletId())){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
@@ -1245,14 +1248,7 @@ public class UserInfoServiceImpl implements UserInfoService
 			return ret;
 		}
 		UserAccount mainAcc  = (UserAccount) supserDao.findByName(UserAccount.class, "userId",userInfo.getId(), "accType", dtl.getWalletId()).get(0);
-		//操作主账号
-		if(dtl.getAmount() < 0
-				&& Utils.toDouble(mainAcc.getBalance()) < Math.abs(dtl.getAmount())){
-			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_BALANCE_NOT_ENOUGH.getCode());
-			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_BALANCE_NOT_ENOUGH.getErrorMes());
-			return ret;
-		}
+		
 		int userId=mainAcc.getUserId();
 		UserAccount userAcc=mainAcc;
 		double beforAmt=mainAcc.getBalance().doubleValue();
@@ -1269,6 +1265,14 @@ public class UserInfoServiceImpl implements UserInfoService
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
 			return ret;
 		}
+		//账号
+		if(addAmt < 0
+				&& Utils.toDouble(mainAcc.getBalance()) < Math.abs(addAmt)){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_BALANCE_NOT_ENOUGH.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_BALANCE_NOT_ENOUGH.getErrorMes());
+			return ret;
+		}
 		UserAccountDetails accDtal1 = userAccountDetailsService.initCreidrRecord(userId,userAcc,beforAmt,addAmt,operType);
 		mainAcc.setBalance(new BigDecimal(accDtal1.getPostAmount()));
 		supserDao.save(accDtal1);
@@ -1280,7 +1284,7 @@ public class UserInfoServiceImpl implements UserInfoService
 	}
 
 	@Override
-	public Map<String, Object> userWalletLock(UserAccount dtl) {
+	public Map<String, Object> updateUserWalletLockStatus(UserAccount dtl) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		UserInfo userInfo = userDao.getUserById(dtl.getUserId());
 		
@@ -1297,14 +1301,14 @@ public class UserInfoServiceImpl implements UserInfoService
 		
 		if(dtl.getAccType() < 0
 				|| dtl.getAccType()  == WalletType.RED_PACKET_WALLET.getCode()){
-			UserAccount mainAcc = (UserAccount) supserDao.findByName(UserAccount.class, "userId",userInfo.getUserId(), "accType", WalletType.RED_PACKET_WALLET.getCode()).get(0);
+			UserAccount mainAcc = (UserAccount) supserDao.findByName(UserAccount.class, "userId",userInfo.getId(), "accType", WalletType.RED_PACKET_WALLET.getCode()).get(0);
 			mainAcc.setState(dtl.getState());
 			supserDao.update(mainAcc);
 		}
 		
 		if(dtl.getAccType() < 0
 				|| dtl.getAccType()  == WalletType.MAIN_WALLET.getCode()){
-			UserAccount mainAcc = (UserAccount) supserDao.findByName(UserAccount.class, "userId",userInfo.getUserId(), "accType", WalletType.MAIN_WALLET.getCode()).get(0);
+			UserAccount mainAcc = (UserAccount) supserDao.findByName(UserAccount.class, "userId",userInfo.getId(), "accType", WalletType.MAIN_WALLET.getCode()).get(0);
 			mainAcc.setState(dtl.getState());
 			supserDao.update(mainAcc);
 		}

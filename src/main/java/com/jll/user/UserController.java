@@ -78,36 +78,11 @@ public class UserController {
 	@Value("${sys_captcha_code_expired_time}")
 	private int captchaCodeExpiredTime;
 	
-	/**
-	 * query the specified user by userName, only the operator with userName or operator with role:role_bus_manager
-	 * can obtain the full information, the person without permission can only read part of information.
-	 * @param request
-	 */
-	@RequestMapping(value="/attrs/user-name/{userName}", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> queryUserByUserName(@PathVariable("userName") String userName) {
-		Map<String, Object> resp = new HashMap<String, Object>();
-		
-		
-		return null;
-	}
-	
-	/**
-	 * query the specified user by userName, only the operator with userName or operator with role:role_bus_manager
-	 * can obtain the full information, the person without permission can only read part of information.
-	 * @param request
-	 */
-	@RequestMapping(value="/attrs/superior/{superior}", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> queryUserBySuperior(@RequestParam("superior") int Superior) { 
-		Map<String, Object> resp = new HashMap<String, Object>();
-		
-		
-		return null;
-	}
 	
 	/**
 	 * register the user who can login front-end web application
 	 * this will be only called  by the agent
-	 * @param request   给前台代理开户用的
+	 * @param request   给前台代理给下级开户用的
 	 */
 	@RequestMapping(value="/players", method = { RequestMethod.POST }, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> regUser(@RequestBody UserInfo user) {
@@ -355,45 +330,43 @@ public class UserController {
 	 * @return  更新用户的基本信息  前台用的
 	 */
 	@ApiComment("update the basic information of user[real name,wechar,qq,phone,email]")
-	@RequestMapping(value="/{userName}", method = { RequestMethod.PUT}, produces=MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> updateUserBasic(@PathVariable("userName") String userName,
+	@RequestMapping(value="/update-info", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> updateUserBasic(
 			@RequestBody UserInfo user) {
-		user.setUserName(userName);
-		return userInfoService.updateUserInfoInfo(user);
+		return userInfoService.updateUserInfo(user);
 	}
 	
 	/**
 	 * Update User login password
 	 * 
-	 * @param userName
 	 * @param oldPwd
 	 * @param newPwd
 	 * @return
 	 */
     @ApiComment("Update User Login Password")
-	@RequestMapping(value="/{userName}/attrs/login-pwd", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> updateLoginPwd(
-			 @PathVariable("userName") String userName,
-			 @RequestParam(name = "oldPwd", required = true) String oldPwd,
-			 @RequestParam(name = "newPwd", required = true) String newPwd) {
-		return userInfoService.updateFundPwd(userName, oldPwd, newPwd);
+	@RequestMapping(value="/attrs/login-pwd", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> updateLoginPwd(@RequestBody Map<String, String> params) {
+		String oldPwd = Utils.toString(params.get("oldPwd"));
+		String newPwd = Utils.toString(params.get("newPwd"));
+		String confirmPwd = Utils.toString(params.get("confirmPwd"));
+		return userInfoService.updateFundPwd(oldPwd, newPwd,confirmPwd);
 	}
 	
 	/**
 	 * 
 	 *  Update User fund password
 	 * 
-	 * @param userName
 	 * @param oldPwd
 	 * @param newPwd
 	 * @return
 	 */
     @ApiComment("Update User Fun Password")
-	@RequestMapping(value="/{userName}/attrs/fund-pwd", method = { RequestMethod.PUT}, produces=MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> updateFundPwd(@PathVariable("userName") String userName,
-			 @RequestParam(name = "oldPwd", required = true) String oldPwd,
-			 @RequestParam(name = "newPwd", required = true) String newPwd) {
-		return userInfoService.updateFundPwd(userName, oldPwd, newPwd);
+	@RequestMapping(value="/attrs/fund-pwd", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> updateFundPwd(@RequestBody Map<String, String> params) {
+		String oldPwd = Utils.toString(params.get("oldPwd"));
+		String newPwd = Utils.toString(params.get("newPwd"));
+		String confirmPwd = Utils.toString(params.get("confirmPwd"));
+		return userInfoService.updateFundPwd(oldPwd, newPwd,confirmPwd);
 	}
     
     
@@ -404,9 +377,10 @@ public class UserController {
      * @return
      */
     @ApiComment("Get User Info")
-	@RequestMapping(value="/{userName}", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> getUserInfo( @PathVariable("userName") String userName) {
-		return userInfoService.getUserInfoByUserName(userName);
+	@RequestMapping(value="/info", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> getUserInfo() {
+    	
+		return userInfoService.getUserInfo();
 	}
 	
 
@@ -683,41 +657,25 @@ public class UserController {
 	}
 	
 	@ApiComment("Get User notify lists")
-	@RequestMapping(value="/{userId}/notify", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> getUserNotifyLists(@PathVariable("userId") Integer userId) {
-		if(userId==null) {
-			String userName=SecurityContextHolder.getContext().getAuthentication().getName();//当前登录的用户
-			UserInfo userInfo=userInfoService.getUserByUserName(userName);
-			userId=userInfo.getId();
-		}
-		return userInfoService.getUserNotifyLists(userId);
+	@RequestMapping(value="/notify/lists", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> getUserNotifyLists() {
+		return userInfoService.getUserNotifyLists();
 	}
 	
 	@ApiComment("Get User Site Message lists")
-	@RequestMapping(value="/{userId}/site-message/list", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> getUserSiteMessageLists(@PathVariable("userId") Integer userId) {
-		if(userId.intValue()==-1) {
-			String userName=SecurityContextHolder.getContext().getAuthentication().getName();//当前登录的用户
-			UserInfo userInfo=userInfoService.getUserByUserName(userName);
-			userId=userInfo.getId();
-		}
-		return userInfoService.getUserSiteMessageLists(userId);
+	@RequestMapping(value="/site-msg/lists", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> getUserSiteMessageLists() {
+		return userInfoService.getUserSiteMessageLists();
 	}
 	
 	@ApiComment("Show Site Message History Feedback")
-	@RequestMapping(value="/{userId}/site-message/history-feedback", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> showSiteMessageFeedback(@PathVariable("userId") Integer userId,
-			 @RequestParam(name = "msgId", required = true) Integer msgId) {
-		if(userId.intValue()==-1) {
-			String userName=SecurityContextHolder.getContext().getAuthentication().getName();//当前登录的用户
-			UserInfo userInfo=userInfoService.getUserByUserName(userName);
-			userId=userInfo.getId();
-		}
-		return userInfoService.showSiteMessageFeedback(userId,msgId);
+	@RequestMapping(value="/site-msg/{msgId}/history-feedback", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> showSiteMessageFeedback(@PathVariable("msgId") int msgId) {
+		return userInfoService.showSiteMessageFeedback(msgId);
 	}
 	
 	@ApiComment("Feedback Site Message ")
-	@RequestMapping(value="/site-message/feedback", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value="/site-msg/feedback", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> siteMessageFeedback(@RequestBody SiteMessFeedback back) {
 		
 		return userInfoService.updateMessageFeedbackStatus(back);
@@ -738,7 +696,7 @@ public class UserController {
 	 */
 	
 	@ApiComment("Add Site Message ")
-	@RequestMapping(value="/site-message/add", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value="/site-msg/add", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> addSiteMessage(@RequestBody Map<String, String> params) {
 		SiteMessage msg = new SiteMessage();
 		msg.setContent( Utils.toString(params.get("content")));
@@ -882,20 +840,19 @@ public class UserController {
 	}
 	
 	@ApiComment("User exchange point")
-	@RequestMapping(value="/{userId}/exchange-point", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> exchangePoint(
-			@PathVariable("userId") int userId,
-			@RequestParam("amount") double amount) {
-		return userInfoService.exchangePoint(userId,amount);
+	@RequestMapping(value="/exchange-point", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> exchangePoint(@RequestBody Map<String, String> params) {
+		double amount = Utils.toDouble(params.get("amount"));
+		return userInfoService.processExchangePoint(amount);
 	}
 	
 	
 	@ApiComment("User Profit Report")
-	@RequestMapping(value="/{userName}/profit-report", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> userProfitReport(
-			@PathVariable("userName") String userName,
-			@RequestBody PageQueryDao page) {
-		return userInfoService.userProfitReport(userName,page);
+	@RequestMapping(value="/profit-report", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> userProfitReport(@RequestBody Map<String, String> params) {
+		PageQueryDao page = new PageQueryDao(Utils.toDate(params.get("startDate")),Utils.toDate(params.get("endDate")),Utils.toInteger(params.get("pageIndex")),
+				Utils.toInteger(params.get("pageSize")));
+		return userInfoService.userProfitReport(page);
 	}	
 	
 	/**
@@ -907,21 +864,23 @@ public class UserController {
 	 */
 	
     @ApiComment("User Withdraw apply")
-	@RequestMapping(value="/withdraw/apply", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> userWithdrawApply(
-			 @RequestParam("bankId") int bankId,
-			 @RequestParam("amount") double amount,
-			 @RequestParam("passoword") String passoword) {
-		return userInfoService.userWithdrawApply(bankId, amount,passoword);
+	@RequestMapping(value="/withdraw/apply", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> userWithdrawApply(@RequestBody Map<String, String> params) {
+		int bankId = Utils.toInteger(params.get("bankId"));
+		String passoword = Utils.toString(params.get("passoword"));
+		double amount = Utils.toDouble(params.get("amount"));
+		return userInfoService.processUserWithdrawApply(bankId, amount,passoword);
 	}
     
     
     @ApiComment(value="User Withdraw notices",seeClass=WithdrawApplication.class)
-   	@RequestMapping(value="/{userName}/withdraw/notices", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
-   	public Map<String, Object> userWithdrawNotices(
-   			@PathVariable("userName") String userName,
-   			@RequestBody WithdrawApplication wtd) {
-   		return userInfoService.userWithdrawNotices(userName,wtd);
+   	@RequestMapping(value="/withdraw/notices", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
+   	public Map<String, Object> userWithdrawNotices(@RequestBody Map<String, String> params) {
+		WithdrawApplication wtd = new WithdrawApplication();
+		wtd.setOrderNum(Utils.toString(params.get("orderNum")));
+		wtd.setRemark(Utils.toString(params.get("remark")));
+		wtd.setState(Utils.toInteger(params.get("state")));
+   		return userInfoService.processUserWithdrawNotices(wtd);
    	}
     
     
@@ -936,11 +895,12 @@ public class UserController {
     
     @ApiComment(value="User Amount Transfer",seeClass=WithdrawApplication.class)
    	@RequestMapping(value="/amount/transfer", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
-   	public Map<String, Object> userAmountTransfer(
-   			@RequestParam("fromUser") String fromUser,
-   			@RequestParam("toUser") String toUser,
-   			@RequestParam("amount") double amount) {
-   		return userInfoService.userAmountTransfer(fromUser,toUser,amount);
+   	public Map<String, Object> userAmountTransfer(@RequestBody Map<String, String> params) {
+		String fromUser = Utils.toString(params.get("fromUser"));
+		String toUser = Utils.toString(params.get("toUser"));
+		double amount = Utils.toDouble(params.get("amount"));
+		
+   		return userInfoService.processUserAmountTransfer(fromUser,toUser,amount);
    	}
 	
 	@ApiComment("test")
@@ -1018,10 +978,10 @@ public class UserController {
 	}
 	@ApiComment(value="User Red Wallet Amount Transfer",seeClass=WithdrawApplication.class)
    	@RequestMapping(value="/red-wallet/amount/transfer", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
-   	public Map<String, Object> userRedWalletAmountTransfer(
-   			@RequestParam("userName") String userName,
-   			@RequestParam("amount") double amount) {
-   		return userInfoService.userRedWalletAmountTransfer(userName,amount);
+   	public Map<String, Object> userRedWalletAmountTransfer(@RequestBody Map<String, String> params) {
+		String userName = Utils.toString(params.get("userName"));
+		double amount = Utils.toDouble(params.get("amount"));
+   		return userInfoService.processUserRedWalletAmountTransfer(userName,amount);
    	}
 	
 	@ApiComment(value="User Add Bank",seeClass=BankCardState.class)
@@ -1060,7 +1020,7 @@ public class UserController {
    	@RequestMapping(value="/operation/amount", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
    	public Map<String, Object> directOperationUserAmount(
    			@RequestBody UserAccountDetails dtl) {
-   		return userInfoService.directOperationUserAmount(dtl);
+   		return userInfoService.processDirectOperationUserAmount(dtl);
    	}
 	
 	
@@ -1078,8 +1038,9 @@ public class UserController {
    	@RequestMapping(value="/wallet/lock", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
    	public Map<String, Object> userWalletLock(
    			@RequestBody UserAccount dtl) {
-   		return userInfoService.userWalletLock(dtl);
+   		return userInfoService.updateUserWalletLockStatus(dtl);
    	}
+	
 	//通过用户名查询用户详细信息
 	@RequestMapping(value={"/byUserNameUserInfo"}, method={RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> queryByUserNameUserInfo() {
@@ -1167,7 +1128,7 @@ public class UserController {
 	//用户自己修改信息
 	@RequestMapping(value={"/updateUserInfo"}, method={RequestMethod.PUT}, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> updateUserInfo(@RequestBody UserInfo user) {
-		return userInfoService.updateUserInfoInfo(user);
+		return userInfoService.updateUserInfo(user);
 	}
 	//用户可以拥有的银行卡数量
 	@RequestMapping(value={"/getBankNumber"}, method={RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
