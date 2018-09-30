@@ -72,6 +72,31 @@ public class CacheRedisDaoImpl  extends AbstractBaseRedisDao implements CacheRed
 		return cache.getContent();
 	}
 	
+	@SuppressWarnings("unchecked")
+	@Override
+	public void upatePlan(String cacheKey, Issue issue) {
+		List<Issue> content = null;
+		CacheObject<List<Issue>> cache = this.get(cacheKey);
+		if(cache == null 
+				|| cache.getContent() == null 
+				|| cache.getContent().size() == 0) {
+			return ;
+		}
+		
+		content = cache.getContent();
+		for(int i = 0; i< content.size(); i++) {
+			Issue temp = content.get(i);
+			if(temp.getId().intValue() == issue.getId().intValue()) {
+				content.set(i, issue);
+				break;
+			}
+		}
+		
+		cache.setContent(content);
+		cache.setKey(cacheKey);
+		this.saveOrUpdate(cache);
+	}
+	
 	@Override
 	public void setSysCode(CacheObject<Map<String, SysCode>> cacheObj) {
 		this.saveOrUpdate(cacheObj);

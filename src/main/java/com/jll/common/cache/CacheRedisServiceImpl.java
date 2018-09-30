@@ -742,4 +742,10 @@ public class CacheRedisServiceImpl implements CacheRedisService
 		
 		cacheDao.setMMCIssueCount(cacheObj);
 	}
+
+	@Override
+	public void updatePlan(String lottoType, Issue issue) {
+		String cacheKey = Constants.KEY_PRE_PLAN + lottoType;
+		cacheDao.upatePlan(cacheKey, issue);
+	}
 }
