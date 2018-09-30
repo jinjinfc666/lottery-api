@@ -78,36 +78,11 @@ public class UserController {
 	@Value("${sys_captcha_code_expired_time}")
 	private int captchaCodeExpiredTime;
 	
-	/**
-	 * query the specified user by userName, only the operator with userName or operator with role:role_bus_manager
-	 * can obtain the full information, the person without permission can only read part of information.
-	 * @param request
-	 */
-	@RequestMapping(value="/attrs/user-name/{userName}", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> queryUserByUserName(@PathVariable("userName") String userName) {
-		Map<String, Object> resp = new HashMap<String, Object>();
-		
-		
-		return null;
-	}
-	
-	/**
-	 * query the specified user by userName, only the operator with userName or operator with role:role_bus_manager
-	 * can obtain the full information, the person without permission can only read part of information.
-	 * @param request
-	 */
-	@RequestMapping(value="/attrs/superior/{superior}", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> queryUserBySuperior(@RequestParam("superior") int Superior) { 
-		Map<String, Object> resp = new HashMap<String, Object>();
-		
-		
-		return null;
-	}
 	
 	/**
 	 * register the user who can login front-end web application
 	 * this will be only called  by the agent
-	 * @param request   给前台代理开户用的
+	 * @param request   给前后台代理注册用户或者下级代理
 	 */
 	@RequestMapping(value="/players", method = { RequestMethod.POST }, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> regUser(@RequestBody UserInfo user) {
@@ -137,9 +112,14 @@ public class UserController {
 		}		
 		
 		user.setSuperior(superior.getId()+","+superior.getSuperior());
-		user.setUserType(UserType.PLAYER.getCode());
+		if(user.getUserType()==null) {
+			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+			return resp;
+		}
 		String ret = userInfoService.validUserInfo(user, superior);
-		if(StringUtils.isBlank(ret) ) {
+		if(StringUtils.isBlank(ret)) {
 			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
 			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
@@ -190,25 +170,34 @@ public class UserController {
 	/**
 	 * register the agent
 	 * this will be only called  by the user with role:role_admin
-	 * @param request   给后台用的  代理开户
+	 * @param request   给后台添加总代
 	 */
 	@RequestMapping(value="/agents/{agent-id}", method = { RequestMethod.POST }, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> regAgent(@PathVariable("agent-id") Integer agentId,
 			@RequestBody UserInfo user) {
 		Map<String, Object> resp = new HashMap<String, Object>();
 				
-		UserInfo generalAgency = userInfoService.getGeneralAgency();
+		
+		UserInfo generalAgency = userInfoService.getUserById(agentId);
 		if(generalAgency == null) {
 			resp.put(Message.KEY_STATUS, Message.status.FAILED);
 			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_NO_GENERAL_AGENCY.getCode());
 			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_NO_GENERAL_AGENCY.getErrorMes());
 			return resp;
 		}
-		
-		user.setSuperior(Integer.toString(generalAgency.getId()));
-		user.setUserType(UserType.AGENCY.getCode());
+		if(StringUtils.isBlank(generalAgency.getSuperior())) {
+			user.setSuperior(Integer.toString(generalAgency.getId()));
+		}else {
+			user.setSuperior(Integer.toString(generalAgency.getId()) +","+generalAgency.getSuperior());
+		}
+		if(user.getUserType()==null) {
+			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+			return resp;
+		}
 		String ret = userInfoService.validUserInfo(user, generalAgency);
-		if(StringUtils.isBlank(ret) ) {
+		if(StringUtils.isBlank(ret)) {
 			resp.put(Message.KEY_STATUS, Message.status.FAILED);
 			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
 			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());

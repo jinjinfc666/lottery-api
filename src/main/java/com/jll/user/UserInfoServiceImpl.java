@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.log4j.Logger;
@@ -116,6 +117,9 @@ public class UserInfoServiceImpl implements UserInfoService
 	
 	@Resource
 	UserBankCardService userBankCardService;
+	
+	@Resource
+	HttpServletRequest request;
  	
 	@Value("${sys_reset_pwd_default_pwd}")
 	String defaultPwd;
@@ -383,16 +387,15 @@ public class UserInfoServiceImpl implements UserInfoService
 		
 		loginUserName = auth.getName();
 		
-//		UserInfo loginUser = userDao.getUserByUserName(loginUserName);
+		UserInfo loginUser = userDao.getUserByUserName(loginUserName);
 		
-//		if(loginUser == null) {
-//			logger.error(Message.Error.ERROR_USER_NO_VALID_USER.getErrorMes());
-//			throw new RuntimeException(Message.Error.ERROR_USER_NO_VALID_USER.getErrorMes());
-//		}
+		if(loginUser == null) {
+			logger.error(Message.Error.ERROR_USER_NO_VALID_USER.getErrorMes());
+			throw new RuntimeException(Message.Error.ERROR_USER_NO_VALID_USER.getErrorMes());
+		}
 		
-//		user.setCreator(loginUser.getId());
-		user.setCreator(15);
-		
+		user.setCreator(loginUser.getId());
+		user.setRegIp(request.getRemoteHost());
 		userDao.saveUser(user);
 		walletServ.createWallet(user);
 	}
