@@ -204,4 +204,6 @@ public interface CacheRedisService {
 	Integer getMMCIssueCount(Date currTime);
 
 	void setMMCIssueCount(Date currTime, int i);
+
+	void updatePlan(String lottoType, Issue issue);
 }

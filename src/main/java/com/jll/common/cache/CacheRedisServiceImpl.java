@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.jll.common.constants.Constants;
 import com.jll.common.constants.Constants.SysCodeTypes;
+import com.jll.common.utils.DateUtil;
 import com.jll.common.utils.MathUtil;
 import com.jll.entity.IpBlackList;
 import com.jll.entity.Issue;
@@ -105,6 +106,7 @@ public class CacheRedisServiceImpl implements CacheRedisService
 		Date today = new Date();
 		String cacheKey = lotteryType;
 		
+		today = DateUtil.addMinutes(today, 10);
 		//logger.debug(String.format("plan key %s", cacheKey));
 		List<Issue> issues = this.getPlan(cacheKey);
 		if(issues == null || issues.size() == 0) {
@@ -739,5 +741,11 @@ public class CacheRedisServiceImpl implements CacheRedisService
 		cacheObj.setKey(cacheKey.toString());
 		
 		cacheDao.setMMCIssueCount(cacheObj);
+	}
+
+	@Override
+	public void updatePlan(String lottoType, Issue issue) {
+		String cacheKey = Constants.KEY_PRE_PLAN + lottoType;
+		cacheDao.upatePlan(cacheKey, issue);
 	}
 }

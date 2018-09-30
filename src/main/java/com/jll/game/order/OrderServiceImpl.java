@@ -182,13 +182,15 @@ public class OrderServiceImpl implements OrderService
 			issueServ.saveIssue(issue);
 			
 			final String message = lotteryType +"|"+ issue.getIssueNum();
-			ThreadPoolManager.getInstance().exeThread(new Runnable() {
+			cacheServ.publishMessage(Constants.TOPIC_WINNING_NUMBER, 
+					message);
+			/*ThreadPoolManager.getInstance().exeThread(new Runnable() {
 				@Override
 				public void run() {
 					cacheServ.publishMessage(Constants.TOPIC_WINNING_NUMBER, 
 							message);
 				}
-			});
+			});*/
 		}
 		
 		/*try {

@@ -74,7 +74,7 @@ public class Utils {
 			ret.append(Integer.toString(currIndex)).append(",");
 			
 			try {
-				Thread.sleep(5000);
+				Thread.sleep(10000);
 			} catch (InterruptedException e) {
 				
 			}

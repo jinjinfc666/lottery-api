@@ -68,6 +68,7 @@ public class SysInitLoader {
 		initSysCodePayType();
 		initSysRuntimeArgument();
 		initBankCodeList();
+		initWithdrawalCfg();
 	}
 	
 	//加载签到活动
@@ -91,6 +92,29 @@ public class SysInitLoader {
 			cacheServ.setSysCode(codeTypeName, sysCodes);
 		}
 	}
+	
+	//加载提款设置
+	private void initWithdrawalCfg() {
+		String codeTypeName = Constants.SysCodeTypes.WITHDRAWAL_CFG.getCode();
+		Map<String, SysCode> cacheCodes = cacheServ.getSysCode(codeTypeName);
+		List<SysCode> sysCodes = null;
+		
+		if(cacheCodes == null || cacheCodes.size() == 0) {
+			sysCodes = sysCodeServ.queryAllSmallType(codeTypeName);
+			List<SysCode> sysCodeTypes = sysCodeServ.queryByCodeNameBigType(codeTypeName);
+			
+			if(sysCodes == null || sysCodes.size() == 0
+					|| sysCodeTypes == null
+					|| sysCodeTypes.size() == 0) {
+				return ;
+			}
+			
+			sysCodes.add(sysCodeTypes.get(0));
+			
+			cacheServ.setSysCode(codeTypeName, sysCodes);
+		}
+	}
+	
 	//加载流水类型
 	private void initAccOpeType() {
 		String codeTypeName = Constants.SysCodeTypes.FLOW_TYPES.getCode();
