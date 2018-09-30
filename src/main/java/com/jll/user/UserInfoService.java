@@ -19,10 +19,10 @@ public interface UserInfoService
 	int getUserId(String userName);
 	boolean isUserInfo(String userName);
 	boolean isUserInfoByUid(int userId); 
-	Map<String, Object> updateFundPwd(String userName,String oldPwd,String newPwd);
-	Map<String, Object> updateLoginPwd(String userName,String oldPwd,String newPwd);
-	Map<String, Object> getUserInfoByUserName(String userName);
-	Map<String, Object> updateUserInfoInfo(UserInfo userInfo);
+	Map<String, Object> updateFundPwd(String oldPwd, String newPwd, String checkPwd);
+	Map<String, Object> updateLoginPwd(String oldPwd, String newPwd, String checkPwd);
+	Map<String, Object> getUserInfo();
+	Map<String, Object> updateUserInfo(UserInfo userInfo);
 	 
 	/**
 	 * query the user by userName
@@ -79,9 +79,9 @@ public interface UserInfoService
 	Map<String, Object> addUserBank(int userId, UserBankCard bank);
 	Map<String, Object> getBankCodeList();
 	Map<String, Object> verifyUserBankInfo(int userId, UserBankCard bank);
-	Map<String, Object> getUserNotifyLists(int userId);
-	Map<String, Object> getUserSiteMessageLists(int userId);
-	Map<String, Object> showSiteMessageFeedback(int userId, int msgId);
+	Map<String, Object> getUserNotifyLists();
+	Map<String, Object> getUserSiteMessageLists();
+	Map<String, Object> showSiteMessageFeedback(int msgId);
 	Map<String, Object> saveSiteMessage(String sendIds, SiteMessage msg);
 	Map<String, Object> updateMessageFeedbackStatus(SiteMessFeedback back);
 	//重置登录密码
@@ -97,17 +97,15 @@ public interface UserInfoService
 	Map<String,Object> queryAllUserInfo(Map<String,Object> map);
 	//查询所有的代理
 	Map<String,Object> queryAllAgent(Map<String,Object> map);
-	Map<String, Object> exchangePoint(int userId, double amount);
+	Map<String, Object> processExchangePoint(double amount);
 	
 	//获取登陆用户信息，如果OK，返回用户信息
 	UserInfo getCurLoginInfo();
 	
-	Map<String, Object> userProfitReport(String userName,PageQueryDao page);
-
-	Map<String, Object> userWithdrawApply(int bankId, double amount, String passoword);
-	Map<String, Object> userWithdrawNotices(String userName, WithdrawApplication wtd);
-	Map<String, Object> userAmountTransfer(String fromUser, String toUser, double amount);
-
+	Map<String, Object> userProfitReport(PageQueryDao page);
+	Map<String, Object> processUserWithdrawApply(int bankId, double amount, String passoword);
+	Map<String, Object> processUserWithdrawNotices(WithdrawApplication wtd);
+	Map<String, Object> processUserAmountTransfer(String fromUser, String toUser, double amount);
 	
 	//查询总代下面的所有一级代理
 	List<UserInfo> queryAllAgent();
@@ -120,9 +118,9 @@ public interface UserInfoService
 	
 	PageBean<UserInfo> queryAllUserInfoByPage(PageBean<UserInfo> reqPage);
 	
-	Map<String, Object> userRedWalletAmountTransfer(String userName, double amount);
-	Map<String, Object> directOperationUserAmount(UserAccountDetails dtl);
-	Map<String, Object> userWalletLock(UserAccount dtl);
+	Map<String, Object> processUserRedWalletAmountTransfer(String userName, double amount);
+	Map<String, Object> processDirectOperationUserAmount(UserAccountDetails dtl);
+	Map<String, Object> updateUserWalletLockStatus(UserAccount dtl);
 	//用户登录后查询用户银行卡信息
 	Map<String, Object> queryByUserNameBankList();
 	//判断用户是否可以添加银行卡

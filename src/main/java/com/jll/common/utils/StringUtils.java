@@ -74,11 +74,16 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
         return str.substring(str.length()-length,str.length())+abrevMarker;
     }
 	
-	public static String[] getUserSupersId(String userPaath){
-		if(isEmpty(userPaath)){
-			return new String[]{};
+	public static Integer[] getUserSupersId(String userPath){
+		if(isEmpty(userPath)){
+			return new Integer[]{};
 		}
-		return userPaath.split(",");
+		String[] ids = userPath.split(",");
+		Integer[] rets = new Integer[ids.length];
+		for (int index = 0; index < ids.length; index++) {
+			rets[index] = Integer.valueOf(ids[index]);
+		}
+		return rets;
 	}
 	
 	public static String getStringValue(Object str){
