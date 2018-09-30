@@ -67,7 +67,8 @@ public class LotteryCenterServiceImpl implements LotteryCenterService
 		for(String impl : impls) {
 			LotteryTypeService lotteryTypeServ = LotteryTypeFactory.getInstance().createLotteryType(impl);
 			if(lotteryTypeServ == null 
-					|| lotteryTypeServ.getLotteryType().equals("mmc")) {
+					|| lotteryTypeServ.getLotteryType()
+						.equals(Constants.LottoType.MMC.getCode())) {
 				continue;
 			}
 			

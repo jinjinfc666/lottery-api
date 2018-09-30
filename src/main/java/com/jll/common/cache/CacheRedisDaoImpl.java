@@ -1,6 +1,8 @@
 package com.jll.common.cache;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -9,6 +11,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Repository;
 
+import com.jll.common.utils.DateUtil;
 import com.jll.dao.PageBean;
 import com.jll.entity.IpBlackList;
 import com.jll.entity.Issue;
@@ -37,8 +40,25 @@ public class CacheRedisDaoImpl  extends AbstractBaseRedisDao implements CacheRed
 
 	@Override
 	public void setPlan(String cacheKey, List<Issue> issues) {
+		List<Issue> preContent = getPlan(cacheKey);
+		List<Issue> newContent = new ArrayList<>();
 		CacheObject<List<Issue>> cache = new CacheObject<>();
-		cache.setContent(issues);
+		Date lastDay = new Date();
+		lastDay = DateUtil.addDay(lastDay, -1);
+		if(preContent != null
+				&& preContent.size() > 0) {
+			for(Issue issue : preContent) {
+				if(issue.getEndTime().getTime() > lastDay.getTime()) {
+					newContent.add(issue);
+				}
+			}
+		}
+		
+		for(Issue issue : issues) {
+			newContent.add(issue);
+		}
+		
+		cache.setContent(newContent);
 		cache.setKey(cacheKey);
 		this.saveOrUpdate(cache);
 	}

@@ -1,8 +1,10 @@
 package com.jll.game.playtypefacade;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -17,7 +19,7 @@ public class HszxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 
 private Logger logger = Logger.getLogger(QszxPlayTypeFacadeImpl.class);
 	
-	protected String playTypeDesc = "hszux|后三直选/fs-ds";
+	protected String playTypeDesc = "hszx|后三直选/fs-ds";
 	
 	@Override
 	public String getPlayTypeDesc() {
@@ -196,4 +198,29 @@ private Logger logger = Logger.getLogger(QszxPlayTypeFacadeImpl.class);
 		return winningRate;
 	}
 
+	@Override
+	public List<String> parseBetNumber(String betNum){
+		List<String> betNumList = new ArrayList<>();
+		String[] betNumArray = betNum.split(";");
+		for(String singleBetNumArray : betNumArray) {
+			String[] betNumBits = singleBetNumArray.split(",");
+			
+			for(int i = 0 ; i < betNumBits[0].length(); i++) {
+				String a = betNumBits[0].substring(i, i + 1);
+				for(int ii = 0; ii < betNumBits[1].length(); ii++) {
+					String aa = betNumBits[1].substring(ii, ii + 1);
+					for(int iii = 0; iii < betNumBits[2].length(); iii++) {
+						String aaa = betNumBits[2].substring(iii, iii + 1);
+						StringBuffer buffer = new StringBuffer();
+						buffer.append("*").append("*").append(a).append(aa).append(aaa);
+						betNumList.add(buffer.toString());
+					}
+				}
+			}
+		}
+		
+		
+		return betNumList;
+	}
+	
 }

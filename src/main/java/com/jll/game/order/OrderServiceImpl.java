@@ -75,7 +75,7 @@ public class OrderServiceImpl implements OrderService
 	@Override
 	public String saveOrders(List<OrderInfo> orders, int walletId, int zhFlag, String lotteryType) {
 		boolean isIssueValid = false;
-		boolean isBalValid = false;
+		String isBalValid = "";
 		boolean isWalletValid = false;
 		boolean isBetting = false;
 		Date currTime = new Date();
@@ -107,32 +107,32 @@ public class OrderServiceImpl implements OrderService
 		}
 		
 		isBalValid = verifyBal(orders, wallet, lotteryType, user);
-		if(!isBalValid) {
-			return String.valueOf(Message.Error.ERROR_GAME_BAL_INSUFFICIENT.getCode());
+		if(!isBalValid.equals(String.valueOf(Message.status.SUCCESS.getCode()))) {
+			return isBalValid;
 		}
 		
 		if(accOpetioans == null || accOpetioans.size() == 0) {
 			return String.valueOf(Message.Error.ERROR_COMMON_NO_ACCOUNT_OPERATION.getCode());
 		}
 		
-		while(bettingBlockCounter < bettingBlockTimes) {
-			bettingBlockCounter++;
-			
-			isBetting = cacheServ.isUserBetting(user, orders.get(0));
-			logger.debug(String.format("user %s is betting:%s", user.getId(), isBetting));
-			if(!isBetting) {
-				break;
-			}
-			
-			try {
-				Thread.sleep(100);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		
-		cacheServ.setUserBettingFlag(user, orders.get(0));
+//		while(bettingBlockCounter < bettingBlockTimes) {
+//			bettingBlockCounter++;
+//			
+//			isBetting = cacheServ.isUserBetting(user, orders.get(0));
+//			logger.debug(String.format("user %s is betting:%s", user.getId(), isBetting));
+//			if(!isBetting) {
+//				break;
+//			}
+//			
+//			try {
+//				Thread.sleep(100);
+//			} catch (InterruptedException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//		}
+//		
+//		cacheServ.setUserBettingFlag(user, orders.get(0));
 		
 		for(OrderInfo order : orders) {
 			
@@ -240,7 +240,7 @@ public class OrderServiceImpl implements OrderService
 		return false;
 	}
 
-	private boolean verifyBal(List<OrderInfo> orders, UserAccount wallet, String lotteryType, UserInfo user) {
+	private String verifyBal(List<OrderInfo> orders, UserAccount wallet, String lotteryType, UserInfo user) {
 		BigDecimal bal = wallet.getBalance();
 		BigDecimal totalAmount = new BigDecimal(0);
 		PlayTypeFacade playTypeFacade = null;
@@ -256,11 +256,11 @@ public class OrderServiceImpl implements OrderService
 			if(playTypeFacade == null) {
 				playTypeId = order.getPlayType();
 				if(playTypeId == null) {
-					return false;
+					return String.valueOf(Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
 				}
 				playType = playTypeServ.queryById(playTypeId);
 				if(playType == null) {
-					return false;
+					return String.valueOf(Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
 				}
 				
 				if(playType.getPtName().equals("fs") || playType.getPtName().equals("ds")) {
@@ -273,7 +273,7 @@ public class OrderServiceImpl implements OrderService
 			
 			isBetNumValid = playTypeFacade.validBetNum(order);
 			if(!isBetNumValid) {
-				return false;
+				return String.valueOf(Message.Error.ERROR_GAME_INVALID_BET_NUM.getCode());
 			}
 			
 			params = new HashMap<>();
@@ -291,7 +291,7 @@ public class OrderServiceImpl implements OrderService
 			totalAmount = totalAmount.add(betAmount);
 		}
 		
-		return bal.compareTo(totalAmount) == 1 ?true:false;
+		return bal.compareTo(totalAmount) == 1 ?String.valueOf(Message.status.SUCCESS.getCode()):String.valueOf(Message.Error.ERROR_GAME_BAL_INSUFFICIENT.getCode());
 	}
 
 	private boolean verifyIssue(List<OrderInfo> orders, String lotteryType) {
