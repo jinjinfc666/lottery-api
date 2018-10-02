@@ -1,9 +1,11 @@
 package com.jll.game.playtypefacade;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -175,5 +177,12 @@ public class QszuxZlPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl  {
 		totalCount = new BigDecimal(tempVal);
 		winningRate = winCount.divide(totalCount);
 		return winningRate;
+	}
+	
+	@Override
+	public List<Map<String,String>> parseBetNumber(String betNum){
+		List<Map<String,String>> betNumList = Utils.parseQszuxZLBetNumber(betNum);
+		
+		return betNumList;
 	}
 }

@@ -1,29 +1,27 @@
 package com.jll.game.playtypefacade;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import com.jll.common.constants.Constants;
 import com.jll.common.utils.MathUtil;
 import com.jll.common.utils.StringUtils;
 import com.jll.common.utils.Utils;
 import com.jll.entity.Issue;
 import com.jll.entity.OrderInfo;
 import com.jll.entity.UserInfo;
-import com.jll.game.playtype.PlayTypeFacade;
 
 public class QszuxMixPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl  {
 
 	private Logger logger = Logger.getLogger(QszxPlayTypeFacadeImpl.class);
 	
 	private String playTypeDesc = "qszux|前三组选/hhzxds";
-
-	/*PlayTypeFacade qszuxZsPlayTypeFacadeImpl = PlayTypeFactory.getInstance().getPlayTypeFacade("cqssc/qszux|前三组选/zsfs");
-	
-	PlayTypeFacade qszuxZlPlayTypeFacadeImpl = PlayTypeFactory.getInstance().getPlayTypeFacade("cqssc/qszux|前三组选/zlfs");*/
 	
 	@Override
 	public String getPlayTypeDesc() {
@@ -235,5 +233,65 @@ public class QszuxMixPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl  {
 		totalCount = new BigDecimal(tempVal);
 		winningRate = winCount.divide(totalCount);
 		return winningRate;
+	}
+	
+	@Override
+	public List<Map<String, String>> parseBetNumber(String betNum){
+		List<Map<String, String>> betNumList = new ArrayList<>();
+		String[] betNumArray = betNum.split(";");
+		
+		for(String singleBetNumArray : betNumArray) {
+			boolean isZx = isZx(singleBetNumArray);
+			List<Map<String, String>> partRet = new ArrayList<>();
+			if(isZx) {
+				Map<String, String> row = new HashMap<String, String>();
+				row.put(Constants.KEY_FACADE_BET_NUM, singleBetNumArray);
+				row.put(Constants.KEY_FACADE_PATTERN, singleBetNumArray + "[0-9]{2}");
+				row.put(Constants.KEY_FACADE_BET_NUM_SAMPLE, singleBetNumArray + "00");				
+				betNumList.add(row);
+				
+				StringBuffer buffer = new StringBuffer();
+				String firtBit = singleBetNumArray.substring(0, 1);
+				String secondBit = singleBetNumArray.substring(1, 2);
+				String thirdBit = singleBetNumArray.substring(2,3);
+				buffer.append(secondBit).append(firtBit).append(thirdBit);
+				
+				row = new HashMap<String, String>();
+				row.put(Constants.KEY_FACADE_BET_NUM, buffer.toString());
+				row.put(Constants.KEY_FACADE_PATTERN, buffer.toString() + "[0-9]{2}");
+				row.put(Constants.KEY_FACADE_BET_NUM_SAMPLE, buffer.toString() + "00");
+				betNumList.add(row);
+				
+				buffer = new StringBuffer();
+				buffer.append(thirdBit).append(secondBit).append(firtBit);
+				row = new HashMap<String, String>();
+				row.put(Constants.KEY_FACADE_BET_NUM, buffer.toString());
+				row.put(Constants.KEY_FACADE_PATTERN, buffer.toString() + "[0-9]{2}");
+				row.put(Constants.KEY_FACADE_BET_NUM_SAMPLE, buffer.toString() + "00");
+				betNumList.add(row);
+			}else {
+				partRet = Utils.parseQszuxZLBetNumber(singleBetNumArray);
+			}
+			
+			for(Map<String, String> temp : partRet) {
+				betNumList.add(temp);
+			}
+		}
+		
+		return betNumList;
+	}
+
+	private boolean isZx(String singleBetNumArray) {
+		Map<String,String> betNumBits = new HashMap<>();
+		for(int i = 0; i < singleBetNumArray.length(); i++) {
+			String bit = singleBetNumArray.substring(i, i + 1);
+			betNumBits.put(bit, bit);
+		}
+		
+		if(betNumBits.size() == 2) {
+			return true;
+		}
+		
+		return false;
 	}
 }

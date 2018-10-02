@@ -87,7 +87,7 @@ public abstract class DefaultPlayTypeFacadeImpl implements PlayTypeFacade {
 	}
 	
 	@Override
-	public List<String> parseBetNumber(String betNum){
+	public List<Map<String, String>> parseBetNumber(String betNum){
 		return null;
 	}
 }

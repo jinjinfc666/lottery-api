@@ -224,66 +224,8 @@ public class QszuxZsPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 	}
 	
 	@Override
-	public List<String> parseBetNumber(String betNum){
-		List<String> betNumList = new ArrayList<>();
-		String[] betNumArray = betNum.split(";");
-		List<String[]> arrangements = new ArrayList<>();
-		List<String[]> finalRet = new ArrayList<>();
-		
-		for(String singleBetNumArray : betNumArray) {
-			String[] betNumBits = new String[singleBetNumArray.length()];
-			for(int i = 0; i < singleBetNumArray.length(); i++) {
-				betNumBits[i] = singleBetNumArray.substring(i, i + 1);
-			}
-			List<String[]> combinations = new ArrayList<>();
-			MathUtil.combinationSelect(betNumBits, 2, combinations);
-			
-			
-			for(String[] combination : combinations) {
-				MathUtil.arrangementSelect(combination, 2, arrangements);
-				for(String[] arrangement : arrangements) {
-					String repeatBit = arrangement[0];
-					String[] extendArrangement = new String[3];
-					extendArrangement[0] = repeatBit;
-					extendArrangement[1] = arrangement[0];
-					extendArrangement[2] = arrangement[1];
-					finalRet.add(extendArrangement);
-					
-					String[] extendArrangement1 = new String[3];
-					extendArrangement1[0] = arrangement[0];
-					extendArrangement1[1] = arrangement[1];
-					extendArrangement1[2] = repeatBit;
-					finalRet.add(extendArrangement1);
-					
-					String repeatBit2 = arrangement[1];
-					String[] extendArrangement2 = new String[3];
-					extendArrangement2[0] = repeatBit2;
-					extendArrangement2[1] = arrangement[0];
-					extendArrangement2[2] = arrangement[1];
-					finalRet.add(extendArrangement2);
-					
-					String[] extendArrangement3 = new String[3];
-					extendArrangement3[0] = arrangement[0];
-					extendArrangement3[1] = arrangement[1];
-					extendArrangement3[2] = repeatBit2;
-					finalRet.add(extendArrangement3);
-					
-					
-				}
-			}
-			
-			
-			for(String[] temp : finalRet) {
-				StringBuffer buffer = new StringBuffer();
-				for(String tempBit : temp) {
-					buffer.append(tempBit);
-				}
-				String tempStr = buffer.toString();
-				if(!betNumList.contains(tempStr)) {
-					betNumList.add(tempStr);
-				}
-			}
-		}
+	public List<Map<String,String>> parseBetNumber(String betNum){
+		List<Map<String,String>> betNumList = Utils.parseQszuxZsBetNumber(betNum);
 		
 		return betNumList;
 	}
