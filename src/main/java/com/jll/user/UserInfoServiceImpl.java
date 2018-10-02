@@ -887,7 +887,7 @@ public class UserInfoServiceImpl implements UserInfoService
 		DetachedCriteria dc = DetachedCriteria.forClass(MemberPlReport.class);
 		dc.add(Restrictions.eq("userName",getCurLoginInfo().getUserName()));
 		dc.add(Restrictions.ge("createTime",page.getStartDate()));
-		dc.add(Restrictions.le("createTime",page.getStartDate()));
+		dc.add(Restrictions.le("createTime",page.getEndDate()));
 		dc.addOrder(Order.desc("id"));
 		
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());

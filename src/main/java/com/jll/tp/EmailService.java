@@ -14,5 +14,5 @@ public interface EmailService
 	 */
 	String sendingEmail(UserInfo user, String host) throws MessagingException;
 
-	boolean isSmsValid(UserInfo user, String sms);
+	boolean isEmailValid(UserInfo user, String sms);
 }

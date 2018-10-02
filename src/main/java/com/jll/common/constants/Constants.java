@@ -36,6 +36,8 @@ public class Constants {
 	
 	public final static String MMC_ISSUE_COUNT = "mmc_issue_count_";
 	
+	public final static String EMAIL = "email_";
+	
 	public final static String MMC_SERVICE_IMPL = "com.jll.game.lotterytypeservice.MmcServiceImpl";
 	
 	public static enum DepositOrderState{

@@ -465,11 +465,11 @@ public class UserController {
 		
 		user = userInfoService.getUserByUserName(userName);
 		
-		boolean ifPhoneValid = (user.getIsValidPhone() != null && user.getIsValidPhone() == 1)?true:false;
+		boolean ifPhoneValid = (user.getIsValidEmail() != null && user.getIsValidEmail() == 1)?true:false;
 		if(!ifPhoneValid) {
 			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_INVALID_PHONE_NUMBER.getCode());
-			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_INVALID_PHONE_NUMBER.getErrorMes());
+			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_INVALID_EMAIL.getCode());
+			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_INVALID_EMAIL.getErrorMes());
 			return resp;
 		}
 		
@@ -617,12 +617,12 @@ public class UserController {
 		
 		user = userInfoService.getUserByUserName(userName);
 		
-		boolean isEmailValid = smsServ.isSmsValid(user, verifyCode);
+		boolean isEmailValid = emailServ.isEmailValid(user, verifyCode);
 		
 		if(!isEmailValid) {
 			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_TP_INVALID_SMS.getCode());
-			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_TP_INVALID_SMS.getErrorMes());
+			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_TP_INVALID_EMAIL.getCode());
+			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_TP_INVALID_EMAIL.getErrorMes());
 			return resp;
 		}
 		
