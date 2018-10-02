@@ -82,7 +82,7 @@ public class UserController {
 	/**
 	 * register the user who can login front-end web application
 	 * this will be only called  by the agent
-	 * @param request   给前后台代理注册用户或者下级代理
+	 * @param request   给前台代理注册用户或者下级代理
 	 */
 	@RequestMapping(value="/players", method = { RequestMethod.POST }, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> regUser(@RequestBody UserInfo user) {
