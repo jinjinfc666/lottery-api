@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import javax.annotation.Resource;
 
@@ -245,7 +246,8 @@ public class CacheRedisServiceImpl implements CacheRedisService
 		Map<String, Object> params = new HashMap<>();		
 		Map<String, Object> preBetResult = null;
 		String betNums = order.getBetNum();
-		String[] betNumSet = null;
+		//String[] betNumSet = null;
+		List<Map<String, String>> betNumMapping = null;
 		
 		cacheObj = cacheDao.getStatGroupByBettingNum(cacheKey.toString());
 		
@@ -277,8 +279,8 @@ public class CacheRedisServiceImpl implements CacheRedisService
 		
 		
 		
-		betNumSet = betNums.split(";");
-		for(String betNum : betNumSet) {
+		//betNumSet = betNums.split(";");
+		/*for(String betNum : betNumSet) {
 			params.put("betNum", betNum);
 			params.put("times", order.getTimes());
 			params.put("monUnit", order.getPattern().floatValue());
@@ -287,10 +289,10 @@ public class CacheRedisServiceImpl implements CacheRedisService
 			
 			statInfo = cacheObj.getContent();
 			if(statInfo.get(playTypeId + "|" + betNum) == null) {
-				statInfo.put(betNum, preBetResult.get("maxWinAmount"));
+				statInfo.put(playTypeId + "|" + betNum, preBetResult.get("maxWinAmount"));
 			}else {				
 				statInfo.put(playTypeId + "|" + betNum, 
-						MathUtil.add((Float)statInfo.get(betNum), 
+						MathUtil.add((Float)statInfo.get(playTypeId + "|" + betNum), 
 								(Float)preBetResult.get("maxWinAmount"), 
 								Float.class));
 			}
@@ -306,6 +308,55 @@ public class CacheRedisServiceImpl implements CacheRedisService
 				statInfo.put(Constants.KEY_ISSUE_TOTAL_BETTING_AMOUNT, 
 						total);
 			}			
+		}*/
+		
+		betNumMapping = playTypeFacade.parseBetNumber(betNums);
+		statInfo = cacheObj.getContent();
+		
+		for(Map<String, String> temp : betNumMapping) {
+			String betNumTemp = temp.get(Constants.KEY_FACADE_BET_NUM);
+			String pattern = temp.get(Constants.KEY_FACADE_PATTERN);
+			String sample = temp.get(Constants.KEY_FACADE_BET_NUM_SAMPLE);
+			boolean isExisting = false;			
+			
+			Iterator<String> ite = statInfo.keySet().iterator();
+			while(ite.hasNext()) {
+				String key = ite.next();
+				boolean isMatch = Pattern.matches(key, sample);
+				if(isMatch) {
+					isExisting = true;
+					break;
+				}
+			}
+			
+			params.put("betNum", betNumTemp);
+			params.put("times", order.getTimes());
+			params.put("monUnit", order.getPattern().floatValue());
+			params.put("lottoType", lotteryType);
+			preBetResult = playTypeFacade.preProcessNumber(params, user);
+			
+			if(isExisting) {
+				isExisting = false;				
+				statInfo.put(pattern, 
+						MathUtil.add((Float)statInfo.get(pattern), 
+								(Float)preBetResult.get("maxWinAmount"), 
+								Float.class));
+			}else {
+				statInfo.put(pattern, preBetResult.get("maxWinAmount"));
+			}
+			
+			if(statInfo.get(Constants.KEY_ISSUE_TOTAL_BETTING_AMOUNT) == null) {
+				statInfo.put(Constants.KEY_ISSUE_TOTAL_BETTING_AMOUNT, 
+						preBetResult.get("betAmount"));
+			}else {
+				Float total = (Float)statInfo.get(Constants.KEY_ISSUE_TOTAL_BETTING_AMOUNT);
+				total = MathUtil.add(total, 
+						(Float)preBetResult.get("betAmount"), 
+						Float.class);
+				statInfo.put(Constants.KEY_ISSUE_TOTAL_BETTING_AMOUNT, 
+						total);
+			}		
+			
 		}
 		
 		cacheObj.setContent(statInfo);
@@ -741,5 +792,11 @@ public class CacheRedisServiceImpl implements CacheRedisService
 		cacheObj.setKey(cacheKey.toString());
 		
 		cacheDao.setMMCIssueCount(cacheObj);
+	}
+
+	@Override
+	public void updatePlan(String lottoType, Issue issue) {
+		String cacheKey = Constants.KEY_PRE_PLAN + lottoType;
+		cacheDao.upatePlan(cacheKey, issue);
 	}
 }

@@ -184,15 +184,16 @@ public class LotteryCenterServiceImpl implements LotteryCenterService
 			
 			
 			final String message = currIssue.getLotteryType()+ "|" + currIssueNum;
-			/*cacheServ.publishMessage(Constants.TOPIC_WINNING_NUMBER, 
-					message);*/
-			ThreadPoolManager.getInstance().exeThread(new Runnable() {
+			
+			cacheServ.publishMessage(Constants.TOPIC_WINNING_NUMBER, 
+					message);
+			/*ThreadPoolManager.getInstance().exeThread(new Runnable() {
 				@Override
 				public void run() {
 					cacheServ.publishMessage(Constants.TOPIC_WINNING_NUMBER, 
 							message);
 				}
-			});
+			});*/
 		}
 	}
 
@@ -263,7 +264,7 @@ public class LotteryCenterServiceImpl implements LotteryCenterService
 			if(indx == null) {
 				return null;
 			}
-			plans.set(indx, currIssue);
+			//plans.set(indx, currIssue);
 			bulletinBoard.setCurrIssue(currIssue);
 			logger.debug("-----------Save Issue------------");
 			state = currIssue.getState();
@@ -272,7 +273,9 @@ public class LotteryCenterServiceImpl implements LotteryCenterService
 			
 			issueServ.saveIssue(currIssue);
 			
-			cacheServ.setPlan(cacheKey, plans);
+			//cacheServ.setPlan(cacheKey, plans);
+			cacheServ.updatePlan(cacheKey, currIssue);
+			
 			cacheServ.setBulletinBoard(lottoType, bulletinBoard);
 		}
 
@@ -298,11 +301,11 @@ public class LotteryCenterServiceImpl implements LotteryCenterService
 		//indx++;
 		nextIssue = plans.get(indx);
 		nextIssue.setState(Constants.IssueState.BETTING.getCode());
-		plans.set(indx, nextIssue);
-		logger.debug(nextIssue);
+		//plans.set(indx, nextIssue);
+		//logger.debug(nextIssue);
 		//TODO 
 		issueServ.saveIssue(nextIssue);
-		cacheServ.setPlan(cacheKey, plans);
+		cacheServ.updatePlan(cacheKey, nextIssue);
 		bulletinBoard.setLastIssue(bulletinBoard.getCurrIssue());
 		bulletinBoard.setCurrIssue(nextIssue);
 		cacheServ.setBulletinBoard(lotteryType, bulletinBoard);

@@ -3,8 +3,10 @@ package com.jll.common.utils;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.regex.Pattern;
@@ -14,6 +16,7 @@ import javax.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 
 import com.google.gson.Gson;
+import com.jll.common.constants.Constants;
 import com.jll.common.constants.Message;
 import com.jll.common.utils.sequence.GenSequenceService;
 import com.jll.entity.GenSequence;
@@ -74,7 +77,7 @@ public class Utils {
 			ret.append(Integer.toString(currIndex)).append(",");
 			
 			try {
-				Thread.sleep(5000);
+				Thread.sleep(10000);
 			} catch (InterruptedException e) {
 				
 			}
@@ -85,7 +88,7 @@ public class Utils {
 				
 	}
 	
-	public static boolean validUserName(String userName) {		
+	public static boolean validUserName(String userName) {
 		String regex = "[a-zA-Z0-9_]{6,20}";
 		return Pattern.matches(regex, userName);
 	}
@@ -241,8 +244,128 @@ public class Utils {
 		return Pattern.matches(regex, betNumTemp);
 	}
 
-	public static void main(String[] args) {
-		BigDecimal sd = new BigDecimal(0.00);
-		System.out.println(toDouble(sd));
+	public static List<Map<String,String>> parseQszuxZsBetNumber(String betNum){
+		List<Map<String,String>> betNumList = new ArrayList<>();
+		String[] betNumArray = betNum.split(";");
+		List<String[]> arrangements = new ArrayList<>();
+		List<String[]> finalRet = new ArrayList<>();
+		
+		for(String singleBetNumArray : betNumArray) {
+			String[] betNumBits = new String[singleBetNumArray.length()];
+			for(int i = 0; i < singleBetNumArray.length(); i++) {
+				betNumBits[i] = singleBetNumArray.substring(i, i + 1);
+			}
+			List<String[]> combinations = new ArrayList<>();
+			MathUtil.combinationSelect(betNumBits, 2, combinations);
+			
+			
+			for(String[] combination : combinations) {
+				MathUtil.arrangementSelect(combination, 2, arrangements);
+				for(String[] arrangement : arrangements) {
+					String repeatBit = arrangement[0];
+					String[] extendArrangement = new String[3];
+					extendArrangement[0] = repeatBit;
+					extendArrangement[1] = arrangement[0];
+					extendArrangement[2] = arrangement[1];
+					finalRet.add(extendArrangement);
+					
+					String[] extendArrangement1 = new String[3];
+					extendArrangement1[0] = arrangement[0];
+					extendArrangement1[1] = arrangement[1];
+					extendArrangement1[2] = repeatBit;
+					finalRet.add(extendArrangement1);
+					
+					String repeatBit2 = arrangement[1];
+					String[] extendArrangement2 = new String[3];
+					extendArrangement2[0] = repeatBit2;
+					extendArrangement2[1] = arrangement[0];
+					extendArrangement2[2] = arrangement[1];
+					finalRet.add(extendArrangement2);
+					
+					String[] extendArrangement3 = new String[3];
+					extendArrangement3[0] = arrangement[0];
+					extendArrangement3[1] = arrangement[1];
+					extendArrangement3[2] = repeatBit2;
+					finalRet.add(extendArrangement3);
+					
+					
+				}
+			}
+			
+			
+			for(String[] temp : finalRet) {
+				StringBuffer buffer = new StringBuffer();
+				for(String tempBit : temp) {
+					buffer.append(tempBit);
+				}
+				String tempStr = buffer.toString();
+				if(!isExisting(betNumList, tempStr)) {
+					Map<String, String> row = new HashMap<String, String>();
+					row.put(Constants.KEY_FACADE_BET_NUM, tempStr);
+					row.put(Constants.KEY_FACADE_PATTERN, tempStr + "[0-9]{2}");
+					row.put(Constants.KEY_FACADE_BET_NUM_SAMPLE, tempStr + "00");
+					betNumList.add(row);
+					//betNumList.add(tempStr);
+				}
+			}
+		}
+		
+		return betNumList;
+	}
+	
+	private static boolean isExisting(List<Map<String, String>> betNumList, String tempStr) {
+		for(Map<String, String> temp : betNumList) {
+			String betNum = temp.get(Constants.KEY_FACADE_BET_NUM);
+			if(StringUtils.isBlank(betNum)) {
+				return false;
+			}
+			
+			if(betNum.equals(tempStr)) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
+
+	public static List<Map<String, String>> parseQszuxZLBetNumber(String betNum){
+		List<Map<String, String>> betNumList = new ArrayList<>();
+		String[] betNumArray = betNum.split(";");
+		List<String[]> arrangements = new ArrayList<>();
+		
+		for(String singleBetNumArray : betNumArray) {
+			String[] betNumBits = new String[singleBetNumArray.length()];
+			for(int i = 0; i < singleBetNumArray.length(); i++) {
+				betNumBits[i] = singleBetNumArray.substring(i, i + 1);
+			}
+			List<String[]> combinations = new ArrayList<>();
+			MathUtil.combinationSelect(betNumBits, 3, combinations);
+			
+			
+			for(String[] combination : combinations) {
+				MathUtil.arrangementSelect(combination, 3, arrangements);				
+			}
+			
+			
+			for(String[] temp : arrangements) {
+				StringBuffer buffer = new StringBuffer();
+				for(String tempBit : temp) {
+					buffer.append(tempBit);
+				}
+				
+				//buffer.append("**");
+				String tempStr = buffer.toString();
+				if(!isExisting(betNumList, tempStr)) {
+					Map<String, String> row = new HashMap<String, String>();
+					row.put(Constants.KEY_FACADE_BET_NUM, tempStr);
+					row.put(Constants.KEY_FACADE_PATTERN, tempStr + "[0-9]{2}");
+					row.put(Constants.KEY_FACADE_BET_NUM_SAMPLE, tempStr + "00");				
+					betNumList.add(row);
+					//betNumList.add(tempStr);
+				}
+			}
+		}
+		
+		return betNumList;
 	}
 }

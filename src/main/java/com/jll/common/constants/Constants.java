@@ -40,6 +40,12 @@ public class Constants {
 	
 	public final static String MMC_SERVICE_IMPL = "com.jll.game.lotterytypeservice.MmcServiceImpl";
 	
+	public final static String KEY_FACADE_PATTERN = "facade_pattern";
+	
+	public final static String KEY_FACADE_BET_NUM = "bet_num";
+	
+	public final static String KEY_FACADE_BET_NUM_SAMPLE = "bet_num_sample";
+	
 	public static enum DepositOrderState{
 		
 		INIT_OR_PUSHED(0),

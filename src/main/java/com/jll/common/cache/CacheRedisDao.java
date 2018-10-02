@@ -29,6 +29,8 @@ public interface CacheRedisDao {
 	 */
 	void setPlan(String cacheKey, List<Issue> issues);
 
+	void upatePlan(String cacheKey, Issue issue);
+	
 	/**
 	 * 
 	 * @param cacheKey

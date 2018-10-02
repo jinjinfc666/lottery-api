@@ -1,13 +1,16 @@
 package com.jll.game.playtypefacade;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import com.jll.common.constants.Constants;
 import com.jll.common.utils.MathUtil;
 import com.jll.common.utils.StringUtils;
 import com.jll.common.utils.Utils;
@@ -211,5 +214,90 @@ public class HszuxZsPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 		totalCount = new BigDecimal(tempVal);
 		winningRate = winCount.divide(totalCount);
 		return winningRate;
+	}
+	
+	@Override
+	public List<Map<String,String>> parseBetNumber(String betNum){
+		List<Map<String,String>> betNumList = new ArrayList<>();
+		String[] betNumArray = betNum.split(";");
+		List<String[]> arrangements = new ArrayList<>();
+		List<String[]> finalRet = new ArrayList<>();
+		
+		for(String singleBetNumArray : betNumArray) {
+			String[] betNumBits = new String[singleBetNumArray.length()];
+			for(int i = 0; i < singleBetNumArray.length(); i++) {
+				betNumBits[i] = singleBetNumArray.substring(i, i + 1);
+			}
+			List<String[]> combinations = new ArrayList<>();
+			MathUtil.combinationSelect(betNumBits, 2, combinations);
+			
+			
+			for(String[] combination : combinations) {
+				MathUtil.arrangementSelect(combination, 2, arrangements);
+				for(String[] arrangement : arrangements) {
+					String repeatBit = arrangement[0];
+					String[] extendArrangement = new String[3];
+					extendArrangement[0] = repeatBit;
+					extendArrangement[1] = arrangement[0];
+					extendArrangement[2] = arrangement[1];
+					finalRet.add(extendArrangement);
+					
+					String[] extendArrangement1 = new String[3];
+					extendArrangement1[0] = arrangement[0];
+					extendArrangement1[1] = arrangement[1];
+					extendArrangement1[2] = repeatBit;
+					finalRet.add(extendArrangement1);
+					
+					String repeatBit2 = arrangement[1];
+					String[] extendArrangement2 = new String[3];
+					extendArrangement2[0] = repeatBit2;
+					extendArrangement2[1] = arrangement[0];
+					extendArrangement2[2] = arrangement[1];
+					finalRet.add(extendArrangement2);
+					
+					String[] extendArrangement3 = new String[3];
+					extendArrangement3[0] = arrangement[0];
+					extendArrangement3[1] = arrangement[1];
+					extendArrangement3[2] = repeatBit2;
+					finalRet.add(extendArrangement3);
+					
+					
+				}
+			}
+			
+			
+			for(String[] temp : finalRet) {
+				StringBuffer buffer = new StringBuffer();
+				for(String tempBit : temp) {
+					buffer.append(tempBit);
+				}
+				String tempStr = buffer.toString();
+				if(!isExisting(betNumList, tempStr)) {
+					Map<String, String> row = new HashMap<String, String>();
+					row.put(Constants.KEY_FACADE_BET_NUM, tempStr);
+					row.put(Constants.KEY_FACADE_PATTERN, "[0-9]{2}" + tempStr);
+					row.put(Constants.KEY_FACADE_BET_NUM_SAMPLE, "00"+ tempStr);
+					betNumList.add(row);
+					//betNumList.add(tempStr);
+				}
+			}
+		}
+		
+		return betNumList;
+	}
+	
+	private static boolean isExisting(List<Map<String, String>> betNumList, String tempStr) {
+		for(Map<String, String> temp : betNumList) {
+			String betNum = temp.get(Constants.KEY_FACADE_BET_NUM);
+			if(StringUtils.isBlank(betNum)) {
+				return false;
+			}
+			
+			if(betNum.equals(tempStr)) {
+				return true;
+			}
+		}
+		
+		return false;
 	}
 }

@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.log4j.Logger;
@@ -116,6 +117,9 @@ public class UserInfoServiceImpl implements UserInfoService
 	
 	@Resource
 	UserBankCardService userBankCardService;
+	
+	@Resource
+	HttpServletRequest request;
  	
 	@Value("${sys_reset_pwd_default_pwd}")
 	String defaultPwd;
@@ -281,7 +285,7 @@ public class UserInfoServiceImpl implements UserInfoService
 			dbInfo.setPhoneNum(userInfo.getPhoneNum());
 			dbInfo.setIsValidPhone(Constants.PhoneValidState.UNVERIFIED.getCode());
 		}
-		
+		dbInfo.setUserId(userInfo.getUserId());
 		dbInfo.setWechat(userInfo.getWechat());
 		dbInfo.setQq(userInfo.getQq());
 		supserDao.update(dbInfo);
@@ -386,16 +390,15 @@ public class UserInfoServiceImpl implements UserInfoService
 		
 		loginUserName = auth.getName();
 		
-//		UserInfo loginUser = userDao.getUserByUserName(loginUserName);
+		UserInfo loginUser = userDao.getUserByUserName(loginUserName);
 		
-//		if(loginUser == null) {
-//			logger.error(Message.Error.ERROR_USER_NO_VALID_USER.getErrorMes());
-//			throw new RuntimeException(Message.Error.ERROR_USER_NO_VALID_USER.getErrorMes());
-//		}
+		if(loginUser == null) {
+			logger.error(Message.Error.ERROR_USER_NO_VALID_USER.getErrorMes());
+			throw new RuntimeException(Message.Error.ERROR_USER_NO_VALID_USER.getErrorMes());
+		}
 		
-//		user.setCreator(loginUser.getId());
-		user.setCreator(15);
-		
+		user.setCreator(loginUser.getId());
+		user.setRegIp(request.getRemoteHost());
 		userDao.saveUser(user);
 		walletServ.createWallet(user);
 	}
@@ -876,8 +879,7 @@ public class UserInfoServiceImpl implements UserInfoService
 		if(auth == null) {
 			return null;
 		}
-		//return getUserByUserName(auth.getName());
-		return getUserByUserName("zhaowei");
+		return getUserByUserName(auth.getName());
 	}
 
 	@Override
@@ -1157,19 +1159,6 @@ public class UserInfoServiceImpl implements UserInfoService
 				valRebatePrizeRate.floatValue(), 
 				Float.class);
 		return prizePattern;
-	}
-
-	@Override
-	public PageBean<UserInfo> queryAllUserInfoByPage(PageBean<UserInfo> reqPage) {
-		Integer pageSize = reqPage.getPageSize();
-		
-		if(pageSize > 10000) {
-			return null;
-		}
-		
-		PageBean<UserInfo> retPage = userDao.queryAllUserInfoByPage(reqPage);
-		
-		return retPage;
 	}
 
 	@Override

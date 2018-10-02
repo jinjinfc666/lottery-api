@@ -317,5 +317,14 @@ public class PayChannelServiceImpl implements PayChannelService
 			return map;
 		}
 	}
+	//通过充值方式Id查询这个充值方式下的所有充值渠道
+	@Override
+	public List<PayChannel> queryByPayTypeIdPayChannel(Integer payTypeId) {
+		List<PayChannel> payChannelList=payChannelDao.queryByPayTypeIdPayChannel(payTypeId);
+		if(payChannelList!=null&&payChannelList.size()>0) {
+			return payChannelList;
+		}
+		return null;
+	}
 }
 

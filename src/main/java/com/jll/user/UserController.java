@@ -82,7 +82,7 @@ public class UserController {
 	/**
 	 * register the user who can login front-end web application
 	 * this will be only called  by the agent
-	 * @param request   给前台代理给下级开户用的
+	 * @param request   给前台代理注册用户或者下级代理
 	 */
 	@RequestMapping(value="/players", method = { RequestMethod.POST }, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> regUser(@RequestBody UserInfo user) {
@@ -112,9 +112,14 @@ public class UserController {
 		}		
 		
 		user.setSuperior(superior.getId()+","+superior.getSuperior());
-		user.setUserType(UserType.PLAYER.getCode());
+		if(user.getUserType()==null) {
+			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+			return resp;
+		}
 		String ret = userInfoService.validUserInfo(user, superior);
-		if(StringUtils.isBlank(ret) ) {
+		if(StringUtils.isBlank(ret)) {
 			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
 			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
@@ -165,25 +170,34 @@ public class UserController {
 	/**
 	 * register the agent
 	 * this will be only called  by the user with role:role_admin
-	 * @param request   给后台用的  代理开户
+	 * @param request   后台用来添加代理或者用户
 	 */
 	@RequestMapping(value="/agents/{agent-id}", method = { RequestMethod.POST }, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> regAgent(@PathVariable("agent-id") Integer agentId,
 			@RequestBody UserInfo user) {
 		Map<String, Object> resp = new HashMap<String, Object>();
 				
-		UserInfo generalAgency = userInfoService.getGeneralAgency();
+		
+		UserInfo generalAgency = userInfoService.getUserById(agentId);
 		if(generalAgency == null) {
 			resp.put(Message.KEY_STATUS, Message.status.FAILED);
 			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_NO_GENERAL_AGENCY.getCode());
 			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_NO_GENERAL_AGENCY.getErrorMes());
 			return resp;
 		}
-		
-		user.setSuperior(Integer.toString(generalAgency.getId()));
-		user.setUserType(UserType.AGENCY.getCode());
+		if(StringUtils.isBlank(generalAgency.getSuperior())) {
+			user.setSuperior(Integer.toString(generalAgency.getId()));
+		}else {
+			user.setSuperior(Integer.toString(generalAgency.getId()) +","+generalAgency.getSuperior());
+		}
+		if(user.getUserType()==null) {
+			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+			return resp;
+		}
 		String ret = userInfoService.validUserInfo(user, generalAgency);
-		if(StringUtils.isBlank(ret) ) {
+		if(StringUtils.isBlank(ret)) {
 			resp.put(Message.KEY_STATUS, Message.status.FAILED);
 			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
 			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
@@ -280,7 +294,7 @@ public class UserController {
 	/**
 	 * register the system users
 	 * this will be only called  by the user with role:role_admin
-	 * @param request
+	 * @param request   增加系统用户
 	 */
 	@RequestMapping(value="/sys-users", method = { RequestMethod.POST }, consumes = MediaType.APPLICATION_JSON_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> regSysUser(@RequestBody UserInfo user) {
@@ -532,7 +546,6 @@ public class UserController {
 			return resp;		
 		}
 		
-		resp.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		
 		data.put(Message.KEY_DEFAULT_PASSWORD, defaultPwd);
 		resp.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
@@ -635,25 +648,10 @@ public class UserController {
 			return resp;		
 		}
 		
-		resp.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-		data.put("default_password", defaultPwd);
+		data.put(Message.KEY_DEFAULT_PASSWORD, defaultPwd);
 		resp.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		resp.put(Message.KEY_DATA, data);
 		return resp;
-	}
-	
-	/**
-	 * revoke the specified user by userId
-	 * only the operator with role role_admin
-	 * @param user
-	 * @return
-	 */
-	@RequestMapping(value="/{userId}", method = { RequestMethod.DELETE}, produces=MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> revokeUser(@PathVariable("userId") int userId) {
-		Map<String, Object> resp = new HashMap<String, Object>();
-		
-		
-		return null;
 	}
 	
 	@ApiComment("Get User notify lists")
@@ -735,7 +733,7 @@ public class UserController {
 		}
 		return ret;
 	}
-	//用户修改
+	//后台管理员修改用户状态和类型
 	@RequestMapping(value={"/updateUserType"}, method={RequestMethod.PUT}, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> updateUserType(@RequestBody UserInfo userInfo) {
 		Map<String, Object> ret = new HashMap<>();
@@ -846,14 +844,14 @@ public class UserController {
 		return userInfoService.processExchangePoint(amount);
 	}
 	
-	
-	@ApiComment("User Profit Report")
-	@RequestMapping(value="/profit-report", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> userProfitReport(@RequestBody Map<String, String> params) {
-		PageQueryDao page = new PageQueryDao(Utils.toDate(params.get("startDate")),Utils.toDate(params.get("endDate")),Utils.toInteger(params.get("pageIndex")),
-				Utils.toInteger(params.get("pageSize")));
-		return userInfoService.userProfitReport(page);
-	}	
+//	//会员盈亏信息
+//	@ApiComment("User Profit Report")
+//	@RequestMapping(value="/profit-report", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
+//	public Map<String, Object> userProfitReport(@RequestBody Map<String, String> params) {
+//		PageQueryDao page = new PageQueryDao(Utils.toDate(params.get("startDate")),Utils.toDate(params.get("endDate")),Utils.toInteger(params.get("pageIndex")),
+//				Utils.toInteger(params.get("pageSize")));
+//		return userInfoService.userProfitReport(page);
+//	}	
 	
 	/**
 	 * 
@@ -903,20 +901,6 @@ public class UserController {
    		return userInfoService.processUserAmountTransfer(fromUser,toUser,amount);
    	}
 	
-	@ApiComment("test")
-	@RequestMapping(value="/user-page", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> queryUserByPage(@RequestParam("pageSize") Integer pageSize,
-			@RequestParam("pageIndex") Integer pageIndex) {
-		Map<String, Object> ret = new HashMap<>();
-		PageBean<UserInfo> reqPage = new PageBean<>();
-		reqPage.setPageIndex(pageIndex);
-		reqPage.setPageSize(pageSize);		
-		
-		PageBean<UserInfo> page = userInfoService.queryAllUserInfoByPage(reqPage);
-		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-		ret.put(Message.KEY_DATA, page);
-		return ret;
-	}
 
 	/**
 	 * 代理开户功能:  
@@ -1041,7 +1025,7 @@ public class UserController {
    		return userInfoService.updateUserWalletLockStatus(dtl);
    	}
 	
-	//通过用户名查询用户详细信息
+	//通过用户名查询用户详细信息(当前登录用户)
 	@RequestMapping(value={"/byUserNameUserInfo"}, method={RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> queryByUserNameUserInfo() {
 		Map<String, Object> ret = new HashMap<>();
