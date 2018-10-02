@@ -72,5 +72,5 @@ public interface PlayTypeFacade
 	 */
 	String produceLostNumber(String betNum);
 	
-	List<String> parseBetNumber(String betNum);
+	List<Map<String, String>> parseBetNumber(String betNum);
 }

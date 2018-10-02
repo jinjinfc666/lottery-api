@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import com.jll.common.constants.Constants;
 import com.jll.common.utils.MathUtil;
 import com.jll.common.utils.StringUtils;
 import com.jll.entity.Issue;
@@ -198,8 +199,8 @@ public class ZszxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 	}
 
 	@Override
-	public List<String> parseBetNumber(String betNum){
-		List<String> betNumList = new ArrayList<>();
+	public List<Map<String, String>> parseBetNumber(String betNum){
+		List<Map<String, String>> betNumList = new ArrayList<>();
 		String[] betNumArray = betNum.split(";");
 		for(String singleBetNumArray : betNumArray) {
 			String[] betNumBits = singleBetNumArray.split(",");
@@ -211,8 +212,13 @@ public class ZszxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 					for(int iii = 0; iii < betNumBits[2].length(); iii++) {
 						String aaa = betNumBits[2].substring(iii, iii + 1);
 						StringBuffer buffer = new StringBuffer();
-						buffer.append("*").append(a).append(aa).append(aaa).append("*");
-						betNumList.add(buffer.toString());
+						buffer.append(a).append(aa).append(aaa);
+						Map<String, String> row = new HashMap<String, String>();
+						row.put(Constants.KEY_FACADE_BET_NUM, buffer.toString());
+						row.put(Constants.KEY_FACADE_PATTERN, "[0-9]{1}" + buffer.toString() + "[0-9]{1}");
+						row.put(Constants.KEY_FACADE_BET_NUM_SAMPLE, "0" + buffer.toString() + "0");				
+						betNumList.add(row);
+						//betNumList.add(buffer.toString());
 					}
 				}
 			}

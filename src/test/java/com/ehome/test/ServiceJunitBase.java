@@ -19,7 +19,7 @@ public class ServiceJunitBase extends ServletTestCase {
 		// 通过代码设置并启动一个服务器，该服务器是servlet的测试容器
 		super.setUp();
 		
-		String[] paths = {"file:/home/nick/workspace/stock/src/main/resources/applicationContext.xml"};
+		String[] paths = {"file:F:\\workspace\\lottery-api\\src\\main\\resources\\applicationContext.xml"};
 		ctx = new FileSystemXmlApplicationContext(paths);
 	}
 

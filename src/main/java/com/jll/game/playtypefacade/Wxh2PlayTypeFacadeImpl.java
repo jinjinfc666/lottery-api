@@ -1,12 +1,15 @@
 package com.jll.game.playtypefacade;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import com.jll.common.constants.Constants;
 import com.jll.common.utils.MathUtil;
 import com.jll.common.utils.StringUtils;
 import com.jll.entity.Issue;
@@ -192,5 +195,34 @@ public class Wxh2PlayTypeFacadeImpl  extends DefaultPlayTypeFacadeImpl {
 		totalCount = new BigDecimal(tempVal);
 		winningRate = winCount.divide(totalCount);
 		return winningRate;
+	}
+	
+	@Override
+	public List<Map<String, String>> parseBetNumber(String betNum){
+		List<Map<String, String>> betNumList = new ArrayList<>();
+		String[] betNumArray = betNum.split(";");
+		for(String singleBetNumArray : betNumArray) {
+			String[] betNumBits = singleBetNumArray.split(",");
+			
+			for(int i = 0 ; i < betNumBits[0].length(); i++) {
+				String a = betNumBits[0].substring(i, i + 1);
+				for(int ii = 0; ii < betNumBits[1].length(); ii++) {
+					String aa = betNumBits[1].substring(ii, ii + 1);
+					
+					StringBuffer buffer = new StringBuffer();
+					buffer.append(a).append(aa);
+					
+					Map<String, String> row = new HashMap<String, String>();
+					row.put(Constants.KEY_FACADE_BET_NUM, buffer.toString());
+					row.put(Constants.KEY_FACADE_PATTERN, "[0-9]{3}" + buffer.toString());
+					row.put(Constants.KEY_FACADE_BET_NUM_SAMPLE, "000" + buffer.toString());				
+					betNumList.add(row);
+					
+				}
+			}
+		}
+		
+		
+		return betNumList;
 	}
 }
