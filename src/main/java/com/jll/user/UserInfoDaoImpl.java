@@ -206,12 +206,10 @@ public class UserInfoDaoImpl extends DefaultGenericDaoImpl<UserInfo> implements 
 	@Override
 	public List<UserInfo> queryAgentByAgent(Integer id) {
 		Integer userType=2;
-		Integer userTypea=0;
-		String sql="select * from(select *,FIND_IN_SET(:id,superior) as aa from user_info where user_type !=:userType and user_type !=:userTypea)a where a.aa=1";
+		String sql="select * from(select *,FIND_IN_SET(:id,superior) as aa from user_info where user_type !=:userType)a where a.aa=1";
 		Query<UserInfo> query1 = getSessionFactory().getCurrentSession().createNativeQuery(sql,UserInfo.class);
 	    query1.setParameter("id", id);
 	    query1.setParameter("userType", userType);
-	    query1.setParameter("userTypea", userTypea);
 	    List<UserInfo> list=query1.list();
 	    return list;
 	} 
