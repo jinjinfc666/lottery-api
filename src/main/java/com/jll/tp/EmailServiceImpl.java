@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.jll.common.cache.CacheObject;
 import com.jll.common.cache.CacheRedisService;
 import com.jll.common.constants.Constants;
+import com.jll.common.constants.Constants.EmailValidState;
 import com.jll.common.constants.Message;
 import com.jll.common.utils.Utils;
 import com.jll.entity.UserInfo;
@@ -45,6 +46,9 @@ public class EmailServiceImpl implements EmailService
 	@Value("${email.reset.pwd.url}")
 	private String resetUrl;
 	
+	@Value("${email.verify.url}")
+	private String verifyUrl;
+	
 	@Value("${sys_captcha_code_expired_time}")
 	private int captchaCodeExpiredTime;
 
@@ -70,8 +74,9 @@ public class EmailServiceImpl implements EmailService
 		StringBuffer content = new StringBuffer();
 		
 		String captchaCode = Utils.produce6DigitsCaptchaCodeNumber();
+		String contenUrl = user.getIsValidEmail() ==  EmailValidState.UNVERIFIED.getCode()?verifyUrl:resetUrl;
 		
-		content.append("请点击地址进行验证,有效时间"+captchaCodeExpiredTime+"秒: http://").append(host).append(resetUrl.replace("{userName}", user.getUserName()))
+		content.append("请点击地址进行验证,有效时间"+captchaCodeExpiredTime+"秒: http://").append(host).append(contenUrl.replace("{userName}", user.getUserName()))
 		.append("?verifyCode=").append(captchaCode);
 				
 		mailSender.setHost(qqServer);  

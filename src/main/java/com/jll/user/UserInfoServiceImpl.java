@@ -58,7 +58,6 @@ import com.jll.common.utils.PageQuery;
 import com.jll.common.utils.SecurityUtils;
 import com.jll.common.utils.StringUtils;
 import com.jll.common.utils.Utils;
-import com.jll.dao.PageBean;
 import com.jll.dao.PageQueryDao;
 import com.jll.dao.SupserDao;
 import com.jll.entity.DepositApplication;
@@ -1409,6 +1408,11 @@ public class UserInfoServiceImpl implements UserInfoService
 			ret.put(Message.KEY_DATA, userInfo);
 		}
 		return ret;
+	}
+
+	@Override
+	public void updateUser(UserInfo userInfo) {
+		supserDao.update(userInfo);
 	}
 	
 }

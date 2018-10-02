@@ -23,6 +23,8 @@ public interface UserInfoService
 	Map<String, Object> updateLoginPwd(String oldPwd, String newPwd, String checkPwd);
 	Map<String, Object> getUserInfo();
 	Map<String, Object> updateUserInfo(UserInfo userInfo);
+	
+	void updateUser(UserInfo userInfo);
 	 
 	/**
 	 * query the user by userName
