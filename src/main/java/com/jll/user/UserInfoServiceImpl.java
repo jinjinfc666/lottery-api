@@ -58,7 +58,6 @@ import com.jll.common.utils.PageQuery;
 import com.jll.common.utils.SecurityUtils;
 import com.jll.common.utils.StringUtils;
 import com.jll.common.utils.Utils;
-import com.jll.dao.PageBean;
 import com.jll.dao.PageQueryDao;
 import com.jll.dao.SupserDao;
 import com.jll.entity.DepositApplication;
@@ -915,7 +914,7 @@ public class UserInfoServiceImpl implements UserInfoService
 		DetachedCriteria dc = DetachedCriteria.forClass(MemberPlReport.class);
 		dc.add(Restrictions.eq("userName",getCurLoginInfo().getUserName()));
 		dc.add(Restrictions.ge("createTime",page.getStartDate()));
-		dc.add(Restrictions.le("createTime",page.getStartDate()));
+		dc.add(Restrictions.le("createTime",page.getEndDate()));
 		dc.addOrder(Order.desc("id"));
 		
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
@@ -1435,6 +1434,11 @@ public class UserInfoServiceImpl implements UserInfoService
 			ret.put(Message.KEY_DATA, userInfo);
 		}
 		return ret;
+	}
+
+	@Override
+	public void updateUser(UserInfo userInfo) {
+		supserDao.update(userInfo);
 	}
 	
 }

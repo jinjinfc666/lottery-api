@@ -24,12 +24,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.jll.common.cache.CacheRedisService;
 import com.jll.common.constants.Constants;
 import com.jll.common.constants.Constants.BankCardState;
+import com.jll.common.constants.Constants.EmailValidState;
+import com.jll.common.constants.Constants.PhoneValidState;
 import com.jll.common.constants.Constants.UserType;
 import com.jll.common.constants.Message;
 import com.jll.common.utils.StringUtils;
 import com.jll.common.utils.Utils;
-import com.jll.dao.PageBean;
-import com.jll.dao.PageQueryDao;
 import com.jll.entity.SiteMessFeedback;
 import com.jll.entity.SiteMessage;
 import com.jll.entity.SysCode;
@@ -420,13 +420,38 @@ public class UserController {
 	 * @param user
 	 * @return
 	 */
-	@RequestMapping(value="/{userId}/attrs/phone", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> applyVerifyPhone(@PathVariable("userId") int userId,
-			@RequestParam("phoneNum") String phoneNum) {
+	@RequestMapping(value="/{userName}/verify/phone-apply", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> applyVerifyPhone(@PathVariable("userName") String userName) {
 		Map<String, Object> resp = new HashMap<String, Object>();
+		UserInfo	user = userInfoService.getUserByUserName(userName);
 		
+		if(null== user) {
+			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_NO_VALID_USER.getCode());
+			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_NO_VALID_USER.getErrorMes());
+			return resp;
+		}
 		
-		return null;
+		if(PhoneValidState.UNVERIFIED.getCode() != user.getIsValidPhone()) {
+			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_INVALID_PHONE_NUMBER.getCode());
+			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_INVALID_PHONE_NUMBER.getErrorMes());
+			return resp;
+		}
+		
+		String ret = smsServ.sending6digitsNumbers(user.getPhoneNum());
+		if(!Integer.toString(Message.status.SUCCESS.getCode()).equals(ret)) {
+			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			resp.put(Message.KEY_ERROR_CODE, ret);
+			resp.put(Message.KEY_ERROR_MES, Message.Error.getErrorByCode(ret).getErrorMes());
+			return resp;
+		}
+		
+		Map<String,Object> data = new HashMap<>();
+		data.put(Message.KEY_EXPIRED_TIME, captchaCodeExpiredTime);
+		resp.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		resp.put(Message.KEY_DATA, data);
+		return resp;
 	}
 	
 	/**
@@ -435,43 +460,129 @@ public class UserController {
 	 * @param user
 	 * @return
 	 */
-	@RequestMapping(value="/{userId}/attrs/phone", method = { RequestMethod.PUT}, produces=MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> verifyPhone(@PathVariable("userId") int userId,
-			@RequestParam("phoneNum") String phoneNum,
-			@RequestParam("sms") String sms) {
+	@RequestMapping(value="/{userName}/verify/phone", method = { RequestMethod.PUT}, produces=MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> verifyPhone(@PathVariable(name="userName", required = true) String userName,
+			@RequestBody Map<String, String> params) {
 		Map<String, Object> resp = new HashMap<String, Object>();
+		Map<String,Object> data = new HashMap<>();
+		String sms = Utils.toString(params.get("sms"));
+		UserInfo user = userInfoService.getUserByUserName(userName);
 		
+		if(null== user) {
+			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_NO_VALID_USER.getCode());
+			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_NO_VALID_USER.getErrorMes());
+			return resp;
+		}
 		
-		return null;
+		boolean isSmsValid = smsServ.isSmsValid(user, sms);
+		
+		if(!isSmsValid) {
+			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_TP_INVALID_SMS.getCode());
+			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_TP_INVALID_SMS.getErrorMes());
+			return resp;
+		}
+		
+		try {
+			user.setIsValidPhone(PhoneValidState.VERIFIED.getCode());
+			userInfoService.updateUser(user);			
+		}catch(Exception ex) {
+			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_FAILED_RESET_LOGIN_PWD_SMS.getCode());
+			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_FAILED_RESET_LOGIN_PWD_SMS.getErrorMes());
+			return resp;		
+		}
+		
+		resp.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		resp.put(Message.KEY_DATA, data);
+		return resp;
+	}
+	
+	
+	@RequestMapping(value="/{userName}/verify/email-apply", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> applyVerifyEmail(@PathVariable("userName") String userName) {
+		Map<String, Object> resp = new HashMap<String, Object>();
+		UserInfo	user = userInfoService.getUserByUserName(userName);
+		
+		if(null== user) {
+			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_NO_VALID_USER.getCode());
+			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_NO_VALID_USER.getErrorMes());
+			return resp;
+		}
+		
+		if(EmailValidState.UNVERIFIED.getCode() != user.getIsValidEmail()) {
+			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_INVALID_PHONE_NUMBER.getCode());
+			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_INVALID_PHONE_NUMBER.getErrorMes());
+			return resp;
+		}
+		try {
+			String ret = emailServ.sendingEmail(user, request.getServerName());
+			if(!Integer.toString(Message.status.SUCCESS.getCode()).equals(ret)) {
+				resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+				resp.put(Message.KEY_ERROR_CODE, ret);
+				resp.put(Message.KEY_ERROR_MES, Message.Error.getErrorByCode(ret).getErrorMes());
+				return resp;
+			}
+		} catch (Exception e) {
+			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_TP_SENDING_EMAIL.getCode());
+			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_TP_SENDING_EMAIL.getErrorMes());
+			return resp;
+		}
+		
+		Map<String,Object> data = new HashMap<>();
+		data.put(Message.KEY_EXPIRED_TIME, captchaCodeExpiredTime);
+		resp.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		resp.put(Message.KEY_DATA, data);
+		return resp;
 	}
 	
 	/**
-	 * apply for email
+	 * verify the received sms ,
+	 * if pass verification, then the phone number will be saved to current user and change the flag to pass verification.
 	 * @param user
 	 * @return
 	 */
-	@RequestMapping(value="/{userId}/attrs/email/pre-verification", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> applyVerifyEmail(@PathVariable("userId") int userId,
-			@RequestParam("email") String email) {
+	@RequestMapping(value="/{userName}/verify/email", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> verifyEmail(@PathVariable(name = "userName", required = true) String userName,
+			@RequestParam(name = "verifyCode", required = true) String verifyCode) {
+		
 		Map<String, Object> resp = new HashMap<String, Object>();
+		Map<String,Object> data = new HashMap<>();
 		
+		UserInfo user = userInfoService.getUserByUserName(userName);
 		
-		return null;
-	}
-	
-	/**
-	 * verify the email
-	 * @param user
-	 * @return
-	 */
-	@RequestMapping(value="/{userId}/attrs/email/verification", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> verifyEmail(@PathVariable("userId") int userId,
-			@RequestParam("verifyCode") String verifyCode) {
-		Map<String, Object> resp = new HashMap<String, Object>();
+		if(null== user) {
+			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_NO_VALID_USER.getCode());
+			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_NO_VALID_USER.getErrorMes());
+			return resp;
+		}
+		boolean isSmsValid = emailServ.isEmailValid(user, verifyCode);
+		if(!isSmsValid) {
+			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_TP_INVALID_SMS.getCode());
+			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_TP_INVALID_SMS.getErrorMes());
+			return resp;
+		}
 		
+		try {
+			user.setIsValidEmail(EmailValidState.VERIFIED.getCode());
+			userInfoService.updateUser(user);			
+		}catch(Exception ex) {
+			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_FAILED_RESET_LOGIN_PWD_SMS.getCode());
+			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_FAILED_RESET_LOGIN_PWD_SMS.getErrorMes());
+			return resp;		
+		}
 		
-		return null;
-	}
+		resp.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		resp.put(Message.KEY_DATA, data);
+		return resp;
+	}	
 	
 	/**
 	 * verify the email
@@ -646,12 +757,12 @@ public class UserController {
 		
 		user = userInfoService.getUserByUserName(userName);
 		
-		boolean isEmailValid = smsServ.isSmsValid(user, verifyCode);
+		boolean isEmailValid = emailServ.isEmailValid(user, verifyCode);
 		
 		if(!isEmailValid) {
 			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_TP_INVALID_SMS.getCode());
-			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_TP_INVALID_SMS.getErrorMes());
+			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_TP_INVALID_EMAIL.getCode());
+			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_TP_INVALID_EMAIL.getErrorMes());
 			return resp;
 		}
 		

@@ -1,20 +1,24 @@
 package com.jll.tp;
 
+import java.util.Properties;
+
 import javax.annotation.Resource;
 import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.jll.common.cache.CacheObject;
 import com.jll.common.cache.CacheRedisService;
+import com.jll.common.constants.Constants;
+import com.jll.common.constants.Constants.EmailValidState;
 import com.jll.common.constants.Message;
 import com.jll.common.utils.Utils;
 import com.jll.entity.UserInfo;
@@ -42,13 +46,26 @@ public class EmailServiceImpl implements EmailService
 	@Value("${email.reset.pwd.url}")
 	private String resetUrl;
 	
+	@Value("${email.verify.url}")
+	private String verifyUrl;
+	
 	@Value("${sys_captcha_code_expired_time}")
 	private int captchaCodeExpiredTime;
 
 	@Override
-	public boolean isSmsValid(UserInfo user, String sms) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean isEmailValid(UserInfo user, String code) {
+		code = Constants.EMAIL+code;
+
+		CacheObject<String> cacheObject = cacheService.getCaptchaCode(code);
+		if(cacheObject == null
+				|| StringUtils.isBlank(cacheObject.getContent())) {
+			return false;
+		}
+		
+		if(!cacheObject.getContent().equals(code)) {
+			return false;
+		}
+		return true;
 	}
 
 	@Override
@@ -57,30 +74,31 @@ public class EmailServiceImpl implements EmailService
 		StringBuffer content = new StringBuffer();
 		
 		String captchaCode = Utils.produce6DigitsCaptchaCodeNumber();
+		String contenUrl = user.getIsValidEmail() ==  EmailValidState.UNVERIFIED.getCode()?verifyUrl:resetUrl;
 		
-		content.append("http://").append(host).append(resetUrl.replace("{userName}", user.getUserName()))
+		content.append("请点击地址进行验证,有效时间"+captchaCodeExpiredTime+"秒: http://").append(host).append(contenUrl.replace("{userName}", user.getUserName()))
 		.append("?verifyCode=").append(captchaCode);
 				
 		mailSender.setHost(qqServer);  
 		mailSender.setUsername(qqSender);  
 		mailSender.setPassword(qqPwd);
 		
-		SimpleMailMessage smm = new SimpleMailMessage(); 
-		smm.setFrom(mailSender.getUsername());  
-		smm.setTo(qqSender);  
-		smm.setSubject("Reset Password");
-
-		MimeMessage msg = mailSender.createMimeMessage();  
-		MimeMessageHelper helper = new MimeMessageHelper(msg, true);  
-		//使用辅助类MimeMessage设定参数  
-		helper.setFrom(mailSender.getUsername());  
-		helper.setTo(user.getEmail());  
-		helper.setSubject("Reset password");  
-		helper.setText(content.toString(), true);
-		// 发送邮件  
-		mailSender.send(smm);
+		 //加认证机制        
+		Properties javaMailProperties = new Properties();  
+		javaMailProperties.put("mail.smtp.auth", true);     
+		javaMailProperties.put("mail.smtp.starttls.enable", true);
+		javaMailProperties.put("mail.smtp.timeout", 5000);
+		mailSender.setJavaMailProperties(javaMailProperties); 
+		//创建邮件内容     
+		SimpleMailMessage message=new SimpleMailMessage();   
+		message.setFrom(qqSender);       
+		message.setTo(user.getEmail());      
+		message.setSubject("Reset Password");  
+		message.setText(content.toString());       
+		//发送邮件        
+		mailSender.send(message);
 		
-		cacheService.setCaptchaCode(captchaCode, captchaCodeExpiredTime);
+		cacheService.setCaptchaCode(Constants.EMAIL+captchaCode, captchaCodeExpiredTime);
 		return Integer.toString(Message.status.SUCCESS.getCode());
 	}
 	
