@@ -363,7 +363,23 @@ public class UserController {
 		String oldPwd = Utils.toString(params.get("oldPwd"));
 		String newPwd = Utils.toString(params.get("newPwd"));
 		String confirmPwd = Utils.toString(params.get("confirmPwd"));
-		return userInfoService.updateFundPwd(oldPwd, newPwd,confirmPwd);
+		return userInfoService.updateLoginPwd(oldPwd, newPwd,confirmPwd);
+	}
+    /**
+	 * Update User login password
+	 * 给后台管理人员用来修改密码的
+	 * @param oldPwd
+	 * @param newPwd
+	 * @return
+	 */
+    @ApiComment("Update User Login Admin Password")
+	@RequestMapping(value="/attrs/login-pwdAdmin", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> updateLoginPwdAdmin(@RequestBody Map<String, String> params) {
+		String oldPwd = Utils.toString(params.get("oldPwd"));
+		String newPwd = Utils.toString(params.get("newPwd"));
+		String confirmPwd = Utils.toString(params.get("confirmPwd"));
+		Integer id=Integer.valueOf(params.get("id"));
+		return userInfoService.updateLoginPwdAdmin(oldPwd, newPwd,confirmPwd,id);
 	}
 	
 	/**
