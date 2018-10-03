@@ -68,7 +68,7 @@ public class SfcServiceImpl extends DefaultPrivateLottoTypeServiceImpl
 	String codeTypeName = Constants.SysCodeTypes.LOTTERY_CONFIG_5FC.getCode();
 	
 	@Override
-	public List<Issue> makeAPlan() {
+	public List<Issue> makeAPlan() {  
 		//00:00-23:59  2分钟一期
 		List<Issue> issues = new ArrayList<>();
 		int maxAmount = 720;

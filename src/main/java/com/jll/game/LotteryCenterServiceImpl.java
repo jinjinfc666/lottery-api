@@ -158,11 +158,15 @@ public class LotteryCenterServiceImpl implements LotteryCenterService
 		if(lottoTypes == null || lottoTypes.size() == 0) {
 			return ;
 		}
-		
+		//logger.debug(String.format("current lotto type count %s ", lottoTypes.size()));
 		Iterator<String> ite = lottoTypes.keySet().iterator();
 		while(ite.hasNext()) {
 			String key = ite.next();
 			SysCode sysCode = lottoTypes.get(key);
+			//logger.debug(String.format("current lotto type  %s ", key));
+			if(key.equals(Constants.LottoType.MMC.getCode())) {
+				continue;
+			}
 			if(sysCode.getIsCodeType().intValue() == Constants.SysCodeTypesFlag.code_val.getCode()) {
 				dealBulletinBoard(sysCode);
 			}
@@ -175,7 +179,7 @@ public class LotteryCenterServiceImpl implements LotteryCenterService
 		Map<String, Object> ret = null;
 		
 		initBulletinBoard(lottoType);
-		if(!isPlanExisting(lottoType.getCodeName())) {
+		if(!hasMoreIssue(lottoType.getCodeName())) {
 			return ;
 		}
 		ret = changeIssueState(lottoType.getCodeName());
@@ -305,6 +309,10 @@ public class LotteryCenterServiceImpl implements LotteryCenterService
 			return null;
 		}
 		
+		if(plans == null || plans.size() == 0) {
+			return null;
+		}
+		
 		indx = getIndexOfNextIssue(currIssue, plans);
 		if(indx == null) {
 			return null;
@@ -373,7 +381,7 @@ public class LotteryCenterServiceImpl implements LotteryCenterService
 			cacheServ.setBulletinBoard(lottoType.getCodeName(), bulletinBoard);
 		}
 		
-		if(!isPlanExisting(lottoType.getCodeName())) {
+		if(!hasMoreIssue(lottoType.getCodeName())) {
 			bulletinBoard.setCurrIssue(null);
 			cacheServ.setBulletinBoard(lottoType.getCodeName(), bulletinBoard);
 		}else {

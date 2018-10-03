@@ -57,8 +57,6 @@ public class MmcServiceImpl extends DefaultLottoTypeServiceImpl
 	
 	UserInfoService userServ = (UserInfoService)SpringContextUtil.getBean("userInfoServiceImpl");
 	
-	String codeTypeName = Constants.SysCodeTypes.LOTTERY_CONFIG_MMC.getCode();
-	
 	@Override
 	public synchronized List<Issue> makeAPlan() {
 		//00:00-23:59  1秒钟一期
@@ -114,7 +112,8 @@ public class MmcServiceImpl extends DefaultLottoTypeServiceImpl
 		logger.debug(String.format("Trying to handle %s", message));
 		String[] lottoTypeAndIssueNum = null;
 		String lottoType = null;
-		String issueNum = null;		
+		String issueNum = null;
+		String codeTypeName = Constants.SysCodeTypes.LOTTERY_CONFIG_MMC.getCode();
 		String codeNamePrizeMode = Constants.LotteryAttributes.PRIZE_MODE.getCode();
 		String codeNameWinningRate = Constants.LotteryAttributes.WINING_RATE.getCode();
 		String codeNameUplimitProfitLoss = Constants.LotteryAttributes.UP_LIMIT_PROFIT_LOSS.getCode();
