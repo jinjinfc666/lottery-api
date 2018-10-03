@@ -173,30 +173,32 @@ public class CqsscServiceImpl extends DefaultLottoTypeServiceImpl
 									winningNum = parse360API(response);
 								}else if(response.contains("winningNumber")) {//网易
 									winningNum = parse163API(response);
-								}
-								
-								if(!StringUtils.isBlank(winningNum)) {
-									//store into to database
-									issue = issueServ.getIssueByIssueNum(lottoType, issueNum);
-									issue.setRetNum(winningNum.replaceAll(" ", ","));
-									issue.setState(Constants.IssueState.LOTTO_DARW.getCode());
-									issueServ.saveIssue(issue);
-									
-									if(bulletinBoard != null) {
-										if(bulletinBoard.getLastIssue() != null) {
-											Issue lastIssue = bulletinBoard.getLastIssue();
-											if(lastIssue.getIssueNum().equals(issueNum)) {
-												lastIssue.setRetNum(issue.getRetNum());
-												cacheServ.setBulletinBoard(lottoType, bulletinBoard);												
-											}
-										}
-									}
-									//inform the progress to payout
-									cacheServ.publishMessage(Constants.TOPIC_PAY_OUT, message);
-									return;
+								}else if(response.contains("result")) {
+									winningNum = parse168(response, "20"+ issueNum.replace("-", ""));
 								}
 							}
 						}
+					}
+					
+					if(!StringUtils.isBlank(winningNum)) {
+						//store into to database
+						issue = issueServ.getIssueByIssueNum(lottoType, issueNum);
+						issue.setRetNum(winningNum.replaceAll(" ", ","));
+						issue.setState(Constants.IssueState.LOTTO_DARW.getCode());
+						issueServ.saveIssue(issue);
+						
+						if(bulletinBoard != null) {
+							if(bulletinBoard.getLastIssue() != null) {
+								Issue lastIssue = bulletinBoard.getLastIssue();
+								if(lastIssue.getIssueNum().equals(issueNum)) {
+									lastIssue.setRetNum(issue.getRetNum());
+									cacheServ.setBulletinBoard(lottoType, bulletinBoard);												
+								}
+							}
+						}
+						//inform the progress to payout
+						cacheServ.publishMessage(Constants.TOPIC_PAY_OUT, message);
+						return;
 					}
 				} catch (URISyntaxException e) {
 					logger.error(e.getMessage());
@@ -253,6 +255,48 @@ public class CqsscServiceImpl extends DefaultLottoTypeServiceImpl
 				winningNumMap = (Map)retItems.get(0);
 				String winningNumber = (String)winningNumMap.get("code");
 				return winningNumber;
+			}
+			
+		} catch (JsonParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JsonMappingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
+	private String parse168(String response, String issueNum) {
+		ObjectMapper mapper = new ObjectMapper();
+		Map  winningNumMap = null;
+		Map responseMap = null;
+		Map resultMap = null;
+		Map dataMap = null;
+		List retItems = null;
+		try {
+			responseMap = mapper.readValue(response, Map.class);
+			resultMap = (Map)responseMap.get("result");
+			retItems = (List)resultMap.get("data");
+			
+			//resultMap = (Map)responseMap.get("result");
+			//retItems = (List)responseMap.get("data");
+			if(retItems == null || retItems.size() == 0) {
+				return null;
+			}
+			
+			for(Object temp : retItems) {
+				winningNumMap = (Map)temp;
+				String winningNumber = (String)winningNumMap.get("preDrawCode");
+				Long winningIssueNum = (Long)winningNumMap.get("preDrawIssue");
+				
+				if(issueNum.equals(String.valueOf(winningIssueNum))) {
+					return winningNumber;
+				}
 			}
 			
 		} catch (JsonParseException e) {
