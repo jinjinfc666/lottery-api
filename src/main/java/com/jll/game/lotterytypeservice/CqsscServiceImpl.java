@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jll.common.cache.CacheRedisService;
 import com.jll.common.constants.Constants;
 import com.jll.common.http.HttpRemoteStub;
+import com.jll.common.utils.DateUtil;
 import com.jll.entity.Issue;
 import com.jll.entity.SysCode;
 import com.jll.entity.UserAccount;
@@ -65,7 +66,10 @@ public class CqsscServiceImpl extends DefaultLottoTypeServiceImpl
 		List<Issue> issues = new ArrayList<>();
 		int maxAmount = 120;
 		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(new Date());
+		
+		Date today = new Date();
+		today = DateUtil.addMinutes(today, 10);
+		calendar.setTime(today);
 		calendar.set(Calendar.HOUR_OF_DAY, 0);
 		calendar.set(Calendar.MINUTE, 0);
 		calendar.set(Calendar.SECOND, 0);

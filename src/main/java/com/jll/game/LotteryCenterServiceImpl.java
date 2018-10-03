@@ -115,8 +115,12 @@ public class LotteryCenterServiceImpl implements LotteryCenterService
 					continue;
 				}
 			}
-			if(issueTemp.getStartTime().getTime() > nowTime.getTime()
-					&& issueTemp.getState() == Constants.IssueState.INIT.getCode()) {
+			if(issueTemp.getState() == Constants.IssueState.INIT.getCode()) {
+				if(currIssue != null
+						&& currIssue.getEndTime().getTime() != issueTemp.getStartTime().getTime()) {
+					return false;
+				}
+				
 				return true;
 			}
 		}
@@ -183,6 +187,9 @@ public class LotteryCenterServiceImpl implements LotteryCenterService
 			return ;
 		}
 		ret = changeIssueState(lottoType.getCodeName());
+		if(ret == null) {
+			return ;
+		}
 		currIssue = (Issue)ret.get(Constants.KEY_CURR_ISSUE);
 		isChanged = (Boolean)ret.get(Constants.KEY_IS_CHANGED);
 		if(currIssue != null && 
@@ -305,9 +312,9 @@ public class LotteryCenterServiceImpl implements LotteryCenterService
 		List<Issue> plans = cacheServ.getPlan(cacheKey);
 		BulletinBoard bulletinBoard = cacheServ.getBulletinBoard(lotteryType);
 				
-		if(!hasMoreIssue(lotteryType)) {
+		/*if(!hasMoreIssue(lotteryType)) {
 			return null;
-		}
+		}*/
 		
 		if(plans == null || plans.size() == 0) {
 			return null;
