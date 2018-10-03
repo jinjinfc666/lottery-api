@@ -1,6 +1,7 @@
 package com.jll.game;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.jll.common.cache.CacheRedisService;
 import com.jll.common.constants.Constants;
 import com.jll.common.constants.Message;
-import com.jll.common.threadpool.ThreadPoolManager;
 import com.jll.common.utils.StringUtils;
 import com.jll.entity.Issue;
 import com.jll.entity.PlayType;
@@ -171,13 +171,19 @@ public class LotteryCenterServiceImpl implements LotteryCenterService
 
 	private void dealBulletinBoard(SysCode lottoType) {
 		Issue currIssue = null;
+		boolean isChanged = false;
+		Map<String, Object> ret = null;
+		
 		initBulletinBoard(lottoType);
 		if(!isPlanExisting(lottoType.getCodeName())) {
 			return ;
 		}
-		currIssue = changeIssueState(lottoType.getCodeName());
+		ret = changeIssueState(lottoType.getCodeName());
+		currIssue = (Issue)ret.get(Constants.KEY_CURR_ISSUE);
+		isChanged = (Boolean)ret.get(Constants.KEY_IS_CHANGED);
 		if(currIssue != null && 
 				currIssue.getState() == Constants.IssueState.END_ISSUE.getCode()
+				&& isChanged
 				&& hasMoreIssue(lottoType.getCodeName())) {
 			String currIssueNum = currIssue.getIssueNum();	
 			/*currIssue = moveToNext(currIssue, lottoType.getCodeName());*/
@@ -197,7 +203,8 @@ public class LotteryCenterServiceImpl implements LotteryCenterService
 		}
 	}
 
-	private Issue changeIssueState(String lottoType) {
+	private Map<String, Object> changeIssueState(String lottoType) {
+		Map<String, Object> ret = new HashMap<>();
 		BulletinBoard bulletinBoard = cacheServ.getBulletinBoard(lottoType);
 		Issue currIssue = null;
 		Date currTime = new Date();
@@ -233,7 +240,10 @@ public class LotteryCenterServiceImpl implements LotteryCenterService
 		endTime = DateUtils.addSeconds(endTime, -5);
 		
 		state = currIssue.getState();
-		logger.debug(String.format("issue number %s   Issue Id %s", currIssue.getIssueNum(), currIssue.getId()));
+		logger.debug(String.format("lotto Type  %s   issue number %s   Issue Id %s", 
+				lottoType, 
+				currIssue.getIssueNum(), 
+				currIssue.getId()));
 		logger.debug(state+"-----------current state------------");
 		logger.debug(endTime.getTime()+"------------------endTime--------------------");
 		logger.debug(startTime.getTime()+"------------startTime---------------");
@@ -268,8 +278,8 @@ public class LotteryCenterServiceImpl implements LotteryCenterService
 			bulletinBoard.setCurrIssue(currIssue);
 			logger.debug("-----------Save Issue------------");
 			state = currIssue.getState();
-			logger.debug(state + "-----------current state------------");
-			logger.debug(String.format("issue number %s   Issue Id %s", currIssue.getIssueNum(), currIssue.getId()));
+			//logger.debug(state + "-----------current state------------");
+			//logger.debug(String.format("issue number %s   Issue Id %s", currIssue.getIssueNum(), currIssue.getId()));
 			
 			issueServ.saveIssue(currIssue);
 			
@@ -279,7 +289,9 @@ public class LotteryCenterServiceImpl implements LotteryCenterService
 			cacheServ.setBulletinBoard(lottoType, bulletinBoard);
 		}
 
-		return currIssue;
+		ret.put(Constants.KEY_CURR_ISSUE, currIssue);
+		ret.put(Constants.KEY_IS_CHANGED, hasChanged);
+		return ret;
 	}
 
 	private Issue moveToNext(Issue currIssue, String lotteryType) {

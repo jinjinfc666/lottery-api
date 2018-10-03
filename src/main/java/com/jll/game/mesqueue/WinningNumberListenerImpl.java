@@ -36,6 +36,7 @@ public class WinningNumberListenerImpl implements MessageDelegateListener {
 			
 			@Override
 			public void run() {
+				logger.debug(String.format("start to run ....", ""));
 				try {
 					String[] lottoTypeAndIssueNum = null;
 					Issue issue = null;
@@ -53,15 +54,17 @@ public class WinningNumberListenerImpl implements MessageDelegateListener {
 						} catch (InterruptedException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
-						}						
+						}
 					}
 					
 					issue = issueServ.getIssueByIssueNum(lottoType, issueNum);
 					if(issue == null || !StringUtils.isBlank(issue.getRetNum())) {
+						logger.debug(String.format("return with no issue or the issue has winning number", ""));
 						return ;
 					}
 					
 					if(StringUtils.isBlank(lotteryTypeImpl)) {
+						logger.debug(String.format("return with no lottery Type Impl", ""));
 						return ; 
 					}
 					

@@ -144,7 +144,7 @@ public class CqsscServiceImpl extends DefaultLottoTypeServiceImpl
 		SysCode sysCode = cacheServ.getSysCode(codeTypeName, codeName);
 		String winningNum = null;
 		Issue issue = null;
-		int maxCounter = 3600;
+		int maxCounter = 1800;
 		int currCounter = 0;
 		BulletinBoard bulletinBoard = null;
 		

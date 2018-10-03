@@ -45,7 +45,7 @@ import com.jll.user.wallet.WalletService;
  * @author Administrator
  *
  */
-public class SfcServiceImpl extends DefaultLottoTypeServiceImpl
+public class SfcServiceImpl extends DefaultPrivateLottoTypeServiceImpl
 {
 	private Logger logger = Logger.getLogger(SfcServiceImpl.class);
 
@@ -64,6 +64,8 @@ public class SfcServiceImpl extends DefaultLottoTypeServiceImpl
 	UserAccountDetailsService accDetailsServ = (UserAccountDetailsService)SpringContextUtil.getBean("userAccountDetailsServiceImpl");
 	
 	UserInfoService userServ = (UserInfoService)SpringContextUtil.getBean("userInfoServiceImpl");
+	
+	String codeTypeName = Constants.SysCodeTypes.LOTTERY_CONFIG_5FC.getCode();
 	
 	@Override
 	public List<Issue> makeAPlan() {
@@ -112,7 +114,7 @@ public class SfcServiceImpl extends DefaultLottoTypeServiceImpl
 		
 	}
 
-	@Override
+	/*@Override
 	public void queryWinningNum(String message) {	
 		String[] lottoTypeAndIssueNum = null;
 		String lottoType = null;
@@ -164,20 +166,20 @@ public class SfcServiceImpl extends DefaultLottoTypeServiceImpl
 		}
 	}
 
-	/**
+	*//**
 	 * 计算平台彩种盈亏
 	 * @param issueNum
 	 * @return
-	 */
+	 *//*
 	private Float queryPlatProfitLoss(String lottoType, String issueNum) {
-		/*String[] lottoTypeAndIssueNum = null;
-		String lottoType = null;*/
+		String[] lottoTypeAndIssueNum = null;
+		String lottoType = null;
 		//String issueNum = null;
 		Float ret = null;
 		
-		/*lottoTypeAndIssueNum = ((String)message).split("\\|");
+		lottoTypeAndIssueNum = ((String)message).split("\\|");
 		lottoType = lottoTypeAndIssueNum[0];
-		issueNum = lottoTypeAndIssueNum[1];*/
+		issueNum = lottoTypeAndIssueNum[1];
 		
 		Issue issue = issueServ.getIssueByIssueNum(lottoType, issueNum);
 		
@@ -301,6 +303,11 @@ public class SfcServiceImpl extends DefaultLottoTypeServiceImpl
 		
 		//inform the progress to payout
 		cacheServ.publishMessage(Constants.TOPIC_PAY_OUT, lottoType +"|"+ issueNum);
+	}*/
+	
+	@Override
+	public String getCodeTypeName() {
+		return codeTypeName;
 	}
 
 }

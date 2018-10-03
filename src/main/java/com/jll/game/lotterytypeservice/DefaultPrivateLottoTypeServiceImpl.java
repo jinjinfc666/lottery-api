@@ -1,28 +1,34 @@
 package com.jll.game.lotterytypeservice;
 
-import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.jll.common.cache.CacheRedisService;
 import com.jll.common.constants.Constants;
+import com.jll.common.constants.Constants.OrderDelayState;
+import com.jll.common.constants.Constants.OrderState;
 import com.jll.common.constants.Constants.PrizeMode;
 import com.jll.common.utils.MathUtil;
 import com.jll.common.utils.Utils;
 import com.jll.entity.Issue;
+import com.jll.entity.OrderInfo;
 import com.jll.entity.PlayType;
 import com.jll.entity.SysCode;
+import com.jll.entity.UserAccount;
+import com.jll.entity.UserAccountDetails;
+import com.jll.entity.UserInfo;
 import com.jll.game.BulletinBoard;
 import com.jll.game.IssueService;
+import com.jll.game.LotteryTypeService;
 import com.jll.game.order.OrderService;
 import com.jll.game.playtype.PlayTypeFacade;
 import com.jll.game.playtype.PlayTypeService;
@@ -32,11 +38,12 @@ import com.jll.user.UserInfoService;
 import com.jll.user.details.UserAccountDetailsService;
 import com.jll.user.wallet.WalletService;
 
-public class FiveFCServiceImpl extends DefaultPrivateLottoTypeServiceImpl
-{
-	private Logger logger = Logger.getLogger(FiveFCServiceImpl.class);
 
-	private final String lotteryType = "5fc";
+public abstract class DefaultPrivateLottoTypeServiceImpl extends DefaultLottoTypeServiceImpl
+{
+	private Logger logger = Logger.getLogger(DefaultPrivateLottoTypeServiceImpl.class);
+
+	//private final String lotteryType = "cqssc";
 	
 	IssueService issueServ = (IssueService)SpringContextUtil.getBean("issueServiceImpl");
 	
@@ -52,61 +59,12 @@ public class FiveFCServiceImpl extends DefaultPrivateLottoTypeServiceImpl
 	
 	UserInfoService userServ = (UserInfoService)SpringContextUtil.getBean("userInfoServiceImpl");
 	
-	String codeTypeName = Constants.SysCodeTypes.LOTTERY_CONFIG_5FC.getCode();
-	
 	@Override
-	public List<Issue> makeAPlan() {
-		//00:00-23:59  5分钟一期
-		List<Issue> issues = new ArrayList<>();
-		int maxAmount = 288;
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(new Date());
-		calendar.set(Calendar.HOUR_OF_DAY, 0);
-		calendar.set(Calendar.MINUTE, 0);
-		calendar.set(Calendar.SECOND, 0);
-		calendar.set(Calendar.MILLISECOND, 0);
-		for(int i = 0; i < maxAmount; i++) {
-			Issue issue = new Issue();
-			issue.setStartTime(calendar.getTime());
-			calendar.add(Calendar.MINUTE, 5);
-			issue.setEndTime(calendar.getTime());
-			issue.setIssueNum(generateLottoNumber(i + 1));
-			issue.setLotteryType(lotteryType);
-			issue.setState(Constants.IssueState.INIT.getCode());
-			
-			issues.add(issue);
-		}
-		
-		issueServ.savePlan(issues);
-		return issues;
-	}
-
-	@Override
-	public String getLotteryType() {
-		return lotteryType;
-	}
-	
-	
-	private String generateLottoNumber(int seq) {
-		StringBuffer buffer = new StringBuffer();
-		Date curr = new Date();
-		SimpleDateFormat format = new SimpleDateFormat("yyMMdd");
-		DecimalFormat numFormat = new DecimalFormat("000");
-
-		buffer.append(format.format(curr)).append("-").append(numFormat.format(seq));
-		
-		String ret = buffer.toString();
-		logger.debug("lotto number :::::" + ret);
-		return ret;
-		
-	}
-
-	/*@Override
-	public void queryWinningNum(String message) {	
+	public void queryWinningNum(String message) {
+		logger.debug(String.format("message  %s", message));
 		String[] lottoTypeAndIssueNum = null;
 		String lottoType = null;
 		String issueNum = null;
-		
 		String codeTypeName = Constants.SysCodeTypes.LOTTERY_CONFIG_5FC.getCode();
 		String codeNamePrizeMode = Constants.LotteryAttributes.PRIZE_MODE.getCode();
 		String codeNameWinningRate = Constants.LotteryAttributes.WINING_RATE.getCode();
@@ -153,11 +111,11 @@ public class FiveFCServiceImpl extends DefaultPrivateLottoTypeServiceImpl
 		}
 	}
 
-	*//**
+	/**
 	 * 计算平台彩种盈亏
 	 * @param issueNum
 	 * @return
-	 *//*
+	 */
 	private Float queryPlatProfitLoss(String lottoType, String issueNum) {
 		Float ret = null;
 		Issue issue = issueServ.getIssueByIssueNum(lottoType, issueNum);
@@ -176,16 +134,17 @@ public class FiveFCServiceImpl extends DefaultPrivateLottoTypeServiceImpl
 	private void interventional(String lottoType, String issueNum, SysCode sysCodeWinningRate) {
 		String winningNum;
 		Issue issue;
+		BulletinBoard bulletinBoard = cacheServ.getBulletinBoard(lottoType);
+		StringBuffer buffer = null;
+		boolean isMatch = false;
+		
 		issue = issueServ.getIssueByIssueNum(lottoType, issueNum);
 		
 		Map<String, Object> statInfo = cacheServ
 				.getStatGroupByBettingNum(issue.getLotteryType(), 
 				issue.getId());
 		Map<String, Object> rateDistribute = new HashMap<>();
-		Double maxRate = null;
-		String playTypeName = null;
-		PlayTypeFacade playTypeFacade = null;
-		BulletinBoard bulletinBoard = cacheServ.getBulletinBoard(lottoType);
+		Double maxRate = null;		
 		
 		if(statInfo == null || statInfo.size() == 0) {
 			nonInterventional(lottoType, issueNum);
@@ -219,7 +178,7 @@ public class FiveFCServiceImpl extends DefaultPrivateLottoTypeServiceImpl
 		}
 		
 		if(maxRate == null || statInfo.size() < 10) {
-			nonInterventional(lottoType, issueNum);
+			nonMatch(lottoType, issueNum, statInfo);
 			return;
 		}
 		
@@ -229,38 +188,106 @@ public class FiveFCServiceImpl extends DefaultPrivateLottoTypeServiceImpl
 					maxBetAmount.indexOf(";"));
 		}
 		
-		String playTypeId = maxBetAmount.split("|")[0];
-		String betNum = maxBetAmount.split("|")[1];
-		PlayType playType = playTypeServ.queryById(Integer.parseInt(playTypeId));
-						
-		if(playType.getPtName().equals("fs") || playType.getPtName().equals("ds")) {
-			playTypeName = playType.getClassification() + "/fs-ds";
-		}else {
-			playTypeName = playType.getClassification() + "/" + playType.getPtName();
-		}
-		playTypeFacade = PlayTypeFactory.getInstance().getPlayTypeFacade(playTypeName);
+		while(true) {
+			buffer = new StringBuffer();
+			Random random = new Random();
+			for(int i = 0; i < 5; i++) {
+				int currIndex = random.nextInt(10);
+				buffer.append(Integer.toString(currIndex)).append(",");
+			}
+			
+			buffer.delete(buffer.length() - 1, buffer.length() + 1);
+			
+			isMatch = Pattern.matches(maxBetAmount, buffer.toString());
+			
+			if(isMatch) {
+				winningNum = buffer.toString();
+				issue = issueServ.getIssueByIssueNum(lottoType, issueNum);
+				issue.setRetNum(winningNum);
+				issue.setState(Constants.IssueState.LOTTO_DARW.getCode());
+				issueServ.saveIssue(issue);
+				
+				if(bulletinBoard != null) {
+					if(bulletinBoard.getLastIssue() != null) {
+						Issue lastIssue = bulletinBoard.getLastIssue();
+						if(lastIssue.getIssueNum().equals(issueNum)) {
+							lastIssue.setRetNum(issue.getRetNum());
+							cacheServ.setBulletinBoard(lottoType, bulletinBoard);												
+						}
+					}
+				}
+				
+				//inform the progress to payout
+				cacheServ.publishMessage(Constants.TOPIC_PAY_OUT, lottoType +"|"+ issueNum);
+				break;
+			}
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}		
+	}
+
+	private void nonMatch(String lottoType, String issueNum, Map<String, Object> statInfo) {
+		StringBuffer buffer = null;
+		boolean isMatch = false;
+		Issue issue;
+		String winningNum;
+		BulletinBoard bulletinBoard = cacheServ.getBulletinBoard(lottoType);
 		
-		winningNum = playTypeFacade.produceWinningNumber(betNum);
-		
-		issue.setRetNum(winningNum);
-		issue.setState(Constants.IssueState.LOTTO_DARW.getCode());
-		issueServ.saveIssue(issue);
-		
-		if(bulletinBoard != null) {
-			if(bulletinBoard.getLastIssue() != null) {
-				Issue lastIssue = bulletinBoard.getLastIssue();
-				if(lastIssue.getIssueNum().equals(issueNum)) {
-					lastIssue.setRetNum(issue.getRetNum());
-					cacheServ.setBulletinBoard(lottoType, bulletinBoard);												
+		while(true) {
+			buffer = new StringBuffer();
+			Random random = new Random();
+			for(int i = 0; i < 5; i++) {
+				int currIndex = random.nextInt(10);
+				buffer.append(Integer.toString(currIndex)).append(",");
+			}
+			
+			buffer.delete(buffer.length() - 1, buffer.length() + 1);
+			
+			Iterator<String> ite = statInfo.keySet().iterator();
+			while(ite.hasNext()) {
+				String key = ite.next();
+				isMatch = Pattern.matches(key, buffer.toString());
+				if(isMatch) {
+					break;
 				}
 			}
+			
+			if(!isMatch) {
+				winningNum = buffer.toString();
+				issue = issueServ.getIssueByIssueNum(lottoType, issueNum);
+				issue.setRetNum(winningNum);
+				issue.setState(Constants.IssueState.LOTTO_DARW.getCode());
+				issueServ.saveIssue(issue);
+				
+				if(bulletinBoard != null) {
+					if(bulletinBoard.getLastIssue() != null) {
+						Issue lastIssue = bulletinBoard.getLastIssue();
+						if(lastIssue.getIssueNum().equals(issueNum)) {
+							lastIssue.setRetNum(issue.getRetNum());
+							cacheServ.setBulletinBoard(lottoType, bulletinBoard);												
+						}
+					}
+				}
+				
+				//inform the progress to payout
+				cacheServ.publishMessage(Constants.TOPIC_PAY_OUT, lottoType +"|"+ issueNum);
+				break;
+			}
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
-		
-		//inform the progress to payout
-		cacheServ.publishMessage(Constants.TOPIC_PAY_OUT, lottoType + "|" + issueNum);
 	}
 
 	private void nonInterventional(String lottoType, String issueNum) {
+		logger.debug(String.format("lottoType   %s,  issueNum  %s", lottoType, issueNum));
 		String winningNum;
 		Issue issue;
 		BulletinBoard bulletinBoard = cacheServ.getBulletinBoard(lottoType);
@@ -282,11 +309,9 @@ public class FiveFCServiceImpl extends DefaultPrivateLottoTypeServiceImpl
 		}
 		
 		//inform the progress to payout
-		cacheServ.publishMessage(Constants.TOPIC_PAY_OUT, lottoType + "|" + issueNum);
-	}*/
-	
-	@Override
-	public String getCodeTypeName() {
-		return codeTypeName;
+		cacheServ.publishMessage(Constants.TOPIC_PAY_OUT, lottoType +"|"+ issueNum);
 	}
+	
+	
+	public abstract String getCodeTypeName();
 }

@@ -44,6 +44,10 @@ public class Constants {
 	
 	public final static String KEY_FACADE_BET_NUM_SAMPLE = "bet_num_sample";
 	
+	public final static String KEY_CURR_ISSUE = "curr_issue";
+	
+	public final static String KEY_IS_CHANGED = "is_changed";
+	
 	public static enum DepositOrderState{
 		
 		INIT_OR_PUSHED(0),
