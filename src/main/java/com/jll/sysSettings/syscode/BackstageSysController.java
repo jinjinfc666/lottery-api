@@ -1185,6 +1185,26 @@ public class BackstageSysController {
 		}
 		return ret;
 	}
+	//查询彩种属性类型下的某一条数据
+	@RequestMapping(value={"/querySmallLotteryConfigOne"}, method={RequestMethod.GET}, produces={"application/json"})
+	public Map<String, Object> querySmallLotteryConfigOne(@RequestParam(name = "bigCodeName", required = true) String bigCodeName,
+			  @RequestParam(name = "codeName", required = true) String codeName,
+			  HttpServletRequest request) {
+		Map<String, Object> ret = new HashMap<>();
+		String lotteryConfigCodeName=Constants.KEY_LOTTO_ATTRI_PREFIX+bigCodeName;
+		try {
+			SysCode sysCode1=cacheRedisService.getSysCode(lotteryConfigCodeName, codeName);
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+			ret.put(Message.KEY_DATA, sysCode1);
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+		}
+		return ret;
+	}
 	//修改排序
 	@RequestMapping(value={"/updateSmallLotteryConfigSeq"}, method={RequestMethod.PUT}, produces={"application/json"})
 	public Map<String, Object> updateSmallLotteryConfigSeq(@RequestParam(name = "bigCodeName", required = true) String bigCodeName,
