@@ -1,10 +1,12 @@
 package com.jll.report;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.NoResultException;
 
+import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.springframework.stereotype.Repository;
 
@@ -48,6 +50,16 @@ public class WithdrawApplicationDaoImpl extends DefaultGenericDaoImpl<WithdrawAp
 		
 		return queryCount(sql.toString(), params, WithdrawApplication.class);
 	}
-	
+	@Override
+	public void updateState(Integer id, Integer state,String remark) {
+		Session session=getSessionFactory().getCurrentSession();
+		String hql = ("update WithdrawApplication set state=:state,remark=:remark,updateTime=:updateTime where id=:id");  
+		Query query = session.createQuery(hql);
+		query.setParameter("state", state);
+		query.setParameter("remark", remark);
+		query.setParameter("updateTime", new Date());
+		query.setParameter("id", id);;
+		query.executeUpdate();
+	}
 }
 

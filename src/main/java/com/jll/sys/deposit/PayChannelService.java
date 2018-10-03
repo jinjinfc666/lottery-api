@@ -25,4 +25,7 @@ public interface PayChannelService
 	Map<String, Object> updatePayChannelState(Integer id,Integer state);
 	//修改激活
 	Map<String, Object> updatePayChannelEnableMaxAmount(Integer id,Integer enableMaxAmount);
+	//通过充值方式Id查询这个充值方式下的所有充值渠道
+	List<PayChannel> queryByPayTypeIdPayChannel(Integer payTypeId);
+	
 }

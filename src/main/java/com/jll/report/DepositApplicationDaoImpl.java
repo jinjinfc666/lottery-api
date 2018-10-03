@@ -2,6 +2,7 @@ package com.jll.report;
 
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.hibernate.Session;
@@ -68,9 +69,10 @@ public class DepositApplicationDaoImpl extends DefaultGenericDaoImpl<DepositAppl
 	@Override
 	public void updateState(Integer id, Integer state) {
 		Session session=getSessionFactory().getCurrentSession();
-		String hql = ("update DepositApplication set state=:state where id=:id");  
+		String hql = ("update DepositApplication set state=:state,updateTime=:updateTime where id=:id");  
 		Query query = session.createQuery(hql);
 		query.setParameter("state", state);
+		query.setParameter("updateTime", new Date());
 		query.setParameter("id", id);;
 		query.executeUpdate();
 	}

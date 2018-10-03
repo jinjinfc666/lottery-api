@@ -94,6 +94,7 @@ public class Message {
 		ERROR_TP_INVALID_SMS("020001", "Invalid SMS!!"),
 		ERROR_TP_INVALID_SMS_URL("020002", "Invalid SMS URL!!"),
 		ERROR_TP_SENDING_EMAIL("020003", "Failed sending Email!!"),
+		ERROR_TP_INVALID_EMAIL("020004", "Invalid Email!!"),
 		
 		/************************game module*******************************/
 		ERROR_GAME_LOTTERY_TYPE_INVALID("030001", "Invalid lottery type!!"),

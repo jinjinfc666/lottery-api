@@ -58,7 +58,6 @@ import com.jll.common.utils.PageQuery;
 import com.jll.common.utils.SecurityUtils;
 import com.jll.common.utils.StringUtils;
 import com.jll.common.utils.Utils;
-import com.jll.dao.PageBean;
 import com.jll.dao.PageQueryDao;
 import com.jll.dao.SupserDao;
 import com.jll.entity.DepositApplication;
@@ -145,7 +144,7 @@ public class UserInfoServiceImpl implements UserInfoService
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
 		UserInfo dbInfo = getCurLoginInfo();
-		if(StringUtils.checkFundPwdFmtIsOK(newPwd)
+		if(!StringUtils.checkFundPwdFmtIsOK(newPwd)
 				|| !newPwd.equals(checkPwd)
 				|| null == dbInfo){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
@@ -154,13 +153,13 @@ public class UserInfoServiceImpl implements UserInfoService
 			return ret;
 		}
 		BCryptPasswordEncoder bcEncoder = new  BCryptPasswordEncoder();
-		String oldDbPwd = bcEncoder.encode(oldPwd);
-		if(!oldDbPwd.equals(dbInfo.getFundPwd())){
-			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_OLD_FUND_PWD_ERROR);
-			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_OLD_FUND_PWD_ERROR.getErrorMes());
-			return ret;
-		}
+//		String oldDbPwd = bcEncoder.encode(oldPwd);
+//		if(!oldDbPwd.equals(dbInfo.getFundPwd())){
+//			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+//			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_OLD_FUND_PWD_ERROR);
+//			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_OLD_FUND_PWD_ERROR.getErrorMes());
+//			return ret;
+//		}
 		dbInfo.setFundPwd(bcEncoder.encode(newPwd));
 		supserDao.update(dbInfo);
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
@@ -172,7 +171,7 @@ public class UserInfoServiceImpl implements UserInfoService
 
 		Map<String, Object> ret = new HashMap<String, Object>();
 		UserInfo dbInfo = getCurLoginInfo();
-		if(StringUtils.checkLoginPwdFmtIsOK(newPwd)
+		if(!StringUtils.checkLoginPwdFmtIsOK(newPwd)
 				|| !newPwd.equals(checkPwd)
 				|| null == dbInfo){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
@@ -181,19 +180,45 @@ public class UserInfoServiceImpl implements UserInfoService
 			return ret;
 		}
 		BCryptPasswordEncoder bcEncoder = new  BCryptPasswordEncoder();
-		String oldDbPwd = bcEncoder.encode(oldPwd);
-		if(!oldDbPwd.equals(dbInfo.getLoginPwd())){
-			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_OLD_LOGIN_PWD_ERROR);
-			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_OLD_LOGIN_PWD_ERROR.getErrorMes());
-			return ret;
-		}
+//		String oldDbPwd = bcEncoder.encode(oldPwd);
+//		if(!oldDbPwd.equals(dbInfo.getLoginPwd())){
+//			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+//			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_OLD_LOGIN_PWD_ERROR);
+//			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_OLD_LOGIN_PWD_ERROR.getErrorMes());
+//			return ret;
+//		}
 		dbInfo.setLoginPwd(bcEncoder.encode(newPwd));
 		supserDao.update(dbInfo);
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		return ret;
 	}
-
+	@Override
+	public Map<String, Object> updateLoginPwdAdmin(String oldPwd, String newPwd, String checkPwd,Integer id) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+		UserInfo dbInfo = userDao.getUserById(id);
+		if(!StringUtils.checkLoginPwdFmtIsOK(newPwd)
+				|| !newPwd.equals(checkPwd)
+				|| null == dbInfo){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+			return ret;
+		}
+		BCryptPasswordEncoder bcEncoder = new  BCryptPasswordEncoder();
+//		String oldDbPwd = bcEncoder.encode(oldPwd);
+//		String oldDbPwdass = bcEncoder.encode(oldPwd);
+//		
+//		if(!oldDbPwd.equals(dbInfo.getLoginPwd())){
+//			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+//			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_OLD_LOGIN_PWD_ERROR);
+//			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_OLD_LOGIN_PWD_ERROR.getErrorMes());
+//			return ret;
+//		}
+		dbInfo.setLoginPwd(bcEncoder.encode(newPwd));
+		supserDao.update(dbInfo);
+		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		return ret;
+	}
 	@Override
 	public Map<String, Object> getUserInfo() {
 		Map<String, Object> ret = new HashMap<String, Object>();
@@ -889,7 +914,7 @@ public class UserInfoServiceImpl implements UserInfoService
 		DetachedCriteria dc = DetachedCriteria.forClass(MemberPlReport.class);
 		dc.add(Restrictions.eq("userName",getCurLoginInfo().getUserName()));
 		dc.add(Restrictions.ge("createTime",page.getStartDate()));
-		dc.add(Restrictions.le("createTime",page.getStartDate()));
+		dc.add(Restrictions.le("createTime",page.getEndDate()));
 		dc.addOrder(Order.desc("id"));
 		
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
@@ -1409,6 +1434,11 @@ public class UserInfoServiceImpl implements UserInfoService
 			ret.put(Message.KEY_DATA, userInfo);
 		}
 		return ret;
+	}
+
+	@Override
+	public void updateUser(UserInfo userInfo) {
+		supserDao.update(userInfo);
 	}
 	
 }

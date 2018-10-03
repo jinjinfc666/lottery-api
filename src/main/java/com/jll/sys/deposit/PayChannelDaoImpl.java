@@ -84,4 +84,13 @@ public class PayChannelDaoImpl extends DefaultGenericDaoImpl<PayChannel> impleme
 		query.setParameter("id", id);
 		query.executeUpdate();
 	}
+	//通过充值方式Id查询这个充值方式下的所有充值渠道
+	@Override
+	public List<PayChannel> queryByPayTypeIdPayChannel(Integer payTypeId) {
+		String sql = "from PayChannel where payType=:payTypeId";
+	    Query<PayChannel> query = getSessionFactory().getCurrentSession().createQuery(sql,PayChannel.class);
+	    query.setParameter("payTypeId", payTypeId);
+	    List<PayChannel> list = query.list();
+		return list;
+	}
 }

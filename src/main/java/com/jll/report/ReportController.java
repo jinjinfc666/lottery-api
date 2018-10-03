@@ -51,6 +51,8 @@ public class ReportController {
 	@Resource
 	DepositApplicationService depositApplicationService;
 	@Resource
+	WithdrawApplicationService withdrawApplicationService;
+	@Resource
 	MReportService mReportService;
 	@Resource
 	LReportService lReportService;
@@ -349,6 +351,49 @@ public class ReportController {
 		try {
 			map.clear();
 			map=depositApplicationService.updateState(ret);
+		}catch(Exception e){
+			map.clear();
+			map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+		}
+		return map;
+	}
+	//修改提现备注时需要的备注
+	@RequestMapping(value={"/DWD/DWDRemark"}, method={RequestMethod.GET}, produces={"application/json"})
+	public Map<String, Object> queryDWDRemark() {
+		Map<String, Object> ret = new HashMap<>();
+		try {
+		    ret.put("data", Constants.Remark.getMap());
+			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		}catch(Exception e){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+		}
+		return ret;
+	}
+	//修改取款状态
+	@RequestMapping(value={"/DWD/UpdateWithdrawState"}, method={RequestMethod.PUT}, produces={"application/json"})
+	public Map<String, Object> UpdateWithdrawState(@RequestParam(name = "id", required = true) Integer id,
+			  @RequestParam(name = "state", required = true) Integer state,//状态
+			  @RequestParam(name = "remark", required = true) Integer remark,//状态
+			  HttpServletRequest request) {
+		Map<String, Object> ret = new HashMap<>();
+		Map<String, Object> map = new HashMap<>();
+		if(id==null||state==null||(state!=1&&state!=2&&state!=3&&state!=4&&state!=5&&state!=0)) {
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+	    	return ret;
+		}
+		ret.put("id", id);
+		ret.put("state", state);
+		ret.put("remark", remark);
+		logger.debug(ret+"------------------------------UpdateDepositState--------------------------------------");
+		try {
+			map.clear();
+			map=withdrawApplicationService.updateState(ret);
 		}catch(Exception e){
 			map.clear();
 			map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());

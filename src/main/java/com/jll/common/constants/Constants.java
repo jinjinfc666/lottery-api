@@ -36,6 +36,8 @@ public class Constants {
 	
 	public final static String MMC_ISSUE_COUNT = "mmc_issue_count_";
 	
+	public final static String EMAIL = "email_";
+	
 	public final static String MMC_SERVICE_IMPL = "com.jll.game.lotterytypeservice.MmcServiceImpl";
 	
 	public final static String KEY_FACADE_PATTERN = "facade_pattern";
@@ -2093,5 +2095,53 @@ public class Constants {
 			return this.code;
 		}
 		
+	}
+	/**
+	 * 提现备注
+	 * */
+	public static enum Remark{
+		SUSSE(0,"银行付款失败"),
+		FIEL(1,"付款成功");
+		
+		private Integer code;
+		private String name;
+		
+		private Remark(Integer code,String name) {
+			this.code = code;
+			this.name = name;
+		}
+		
+		public Integer getCode() {
+			return this.code;
+		}
+		public String getName() {
+			return this.name;
+		}
+					
+		public static List<Integer> getList() {
+			List<Integer> map=new ArrayList<Integer>();
+			Remark[] names = Remark.values();
+			for(Remark name: names) {
+				map.add(name.getCode());
+			}
+			return map;
+		}
+		public static Map<Integer,String> getMap() {
+			Map<Integer,String> map=new HashMap<Integer,String>();
+			Remark[] names = Remark.values();
+			for(Remark name: names) {
+				map.put(name.getCode(), name.getName());
+			}
+			return map;
+		}
+		public static String getValueByCode(Integer code) {
+			Remark[] states = Remark.values();
+			for(Remark state: states) {
+				if(state.getCode() == code) {
+					return state.getName();
+				}
+			}
+			return null;
+		}
 	}
 }

@@ -403,6 +403,33 @@ public class DepositController {
 		}
 		return ret;
 	}
+	//通过充值方式Id查询这个充值方式下的所有充值渠道
+	@RequestMapping(value={"/ByPayTypeIdPayChannel"}, method={RequestMethod.GET}, produces={"application/json"})
+	public Map<String, Object> queryByPayTypeIdPayChannel(@RequestParam(name = "payTypeId", required = true) Integer payTypeId,
+			  HttpServletRequest request) {
+		Map<String, Object> ret = new HashMap<>();
+		try {
+			List<PayChannel> map=payChannelService.queryByPayTypeIdPayChannel(payTypeId);
+			Map<Integer,PayChannel> mapPayChannel=new HashMap<Integer, PayChannel>();
+			for(int i=0;i<map.size();i++) {
+				PayChannel payChannel=map.get(i);
+				if(payChannel.getSeq()!=null) {
+					mapPayChannel.put(payChannel.getSeq(), payChannel);
+				}
+			}
+			TreeMap treemap = new TreeMap(mapPayChannel);
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+			ret.put("data", treemap);
+			return ret;
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+		}
+		return ret;
+	}
 	//修改排序
 	@RequestMapping(value={"/updatePayChannelSeq"}, method={RequestMethod.PUT}, produces={"application/json"})
 	public Map<String, Object> updatePayChannelSeq(@RequestParam(name = "allId", required = true) String allId,
