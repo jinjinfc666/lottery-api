@@ -124,9 +124,10 @@
         <user name="user" password="user" authorities="ROLE_USER" />
         <user name="marissa" password="koala" authorities="ROLE_USER,ROLE_AGENT" />
         <user name="agent001" password="agent001" authorities="ROLE_USER,ROLE_AGENT" />
-        <user name="test001" password="test001" authorities="ROLE_USER" />
+        <user name="test001" password="test001" authorities="ROLE_USER,ROLE_ADMIN" />
         <user name="test002" password="test002" authorities="ROLE_USER" />
         <user name="test003" password="test003" authorities="ROLE_USER" />
+        <user name="zhaowei" password="zhaowei" authorities="ROLE_USER,ROLE_AGENT" />
       </user-service>
     </authentication-provider>
   </authentication-manager>

@@ -1248,7 +1248,7 @@ public class UserInfoServiceImpl implements UserInfoService
 	
 
 	@Override
-	public Map<String, Object> processDirectOperationUserAmount(UserAccountDetails dtl) {
+	public Map<String, Object> saveUpdateDirectOperationUserAmount(UserAccountDetails dtl) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
 		UserInfo userInfo = userDao.getUserById(dtl.getUserId());
