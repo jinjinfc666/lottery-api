@@ -1131,7 +1131,7 @@ public class UserController {
    	@RequestMapping(value="/operation/amount", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
    	public Map<String, Object> directOperationUserAmount(
    			@RequestBody UserAccountDetails dtl) {
-   		return userInfoService.processDirectOperationUserAmount(dtl);
+   		return userInfoService.saveUpdateDirectOperationUserAmount(dtl);
    	}
 	
 	
