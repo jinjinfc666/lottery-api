@@ -69,13 +69,12 @@ public class DWDetailsDaoImpl extends DefaultGenericDaoImpl<DepositApplication> 
 		String sql="";
 		String sql1="";
 		if(type.equals("1")) {
-			sql="from DepositApplication a,UserInfo b,UserAccountDetails c,SysCode d,PayChannel e,PayType f where a.userId=b.id and a.id=c.orderId and a.payType=f.id and a.payChannel=e.id and c.operationType=d.codeName and d.codeName=:codeName "+stateSql+userNameSql+orderNumSql+amountStartSql+amountEndSql+timeSql+" group by a.id order by a.id";
+			sql="from DepositApplication a,UserInfo b,PayChannel e,PayType f where a.userId=b.id and a.payType=f.id and a.payChannel=e.id "+stateSql+userNameSql+orderNumSql+amountStartSql+amountEndSql+timeSql+" group by a.id order by a.id";
 			sql1="select coalesce(SUM(a.amount),0) from DepositApplication a,UserInfo b where a.userId=b.id  "+stateSql+userNameSql+orderNumSql+amountStartSql+amountEndSql+timeSql+" order by a.id";
-			map.put("codeName", Constants.AccOperationType.DEPOSIT.getCode());
 		}else if(type.equals("2")){
-			sql="from WithdrawApplication a,UserInfo b,UserAccountDetails c,SysCode d,UserAccount e,UserBankCard f where a.userId=b.id and a.id=c.orderId and a.walletId=e.id and a.bankCardId=f.id and c.operationType=d.codeName and d.codeName=:codeName "+stateSql+userNameSql+orderNumSql+amountStartSql+amountEndSql+timeSql+" group by a.id order by a.id";
+			sql="from WithdrawApplication a,UserInfo b,UserAccount e,UserBankCard f where a.userId=b.id and a.walletId=e.id and a.bankCardId=f.id "
+					+ ""+stateSql+userNameSql+orderNumSql+amountStartSql+amountEndSql+timeSql+" group by a.id order by a.id";
 			sql1="select coalesce(SUM(a.amount),0) from WithdrawApplication a,UserInfo b where a.userId=b.id "+stateSql+userNameSql+orderNumSql+amountStartSql+amountEndSql+timeSql+" order by a.id";
-			map.put("codeName", Constants.AccOperationType.WITHDRAW.getCode());
 		}
 		logger.debug(sql+"-----------------------------queryLoyTst----SQL--------------------------------");
 		logger.debug(sql1+"-----------------------------queryLoyTst----SQL--------------------------------");
