@@ -32,7 +32,7 @@ public class PPLDaoImpl extends HibernateDaoSupport implements PPLDao {
 		String timeSql="";
 		Map<String,Object> map=new HashMap<String,Object>();
 		if(!StringUtils.isBlank(startTime)&&!StringUtils.isBlank(endTime)) {
-			timeSql=" where create_time >:startTime and create_time <=:endTime";
+			timeSql=" where create_time >=:startTime and create_time <:endTime";
 			Date beginDate = java.sql.Date.valueOf(startTime);
 		    Date endDate = java.sql.Date.valueOf(endTime);
 			map.put("startTime", beginDate);

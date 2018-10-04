@@ -159,7 +159,7 @@ public class UserInfoDaoImpl extends DefaultGenericDaoImpl<UserInfo> implements 
 		map.put("userType", userType);
 		String hql="";
 		if(proxyId!=null) {
-			hql=("select a.* from (select *,FIND_IN_SET(:proxyId,superior) as aa from user_info)a where a.aa=1 and a.user_type !=:userType and a.create_time>:startTime and a.create_time<=:endTime");
+			hql=("select a.* from (select *,FIND_IN_SET(:proxyId,superior) as aa from user_info)a where a.aa=1 and a.user_type !=:userType and a.create_time>=:startTime and a.create_time<:endTime");
 			map.put("proxyId", proxyId);
 			map.put("startTime", startTime);
 			map.put("endTime", endTime);
@@ -181,7 +181,7 @@ public class UserInfoDaoImpl extends DefaultGenericDaoImpl<UserInfo> implements 
 				userNameSql=" and userName=:userName";
 				map.put("userName", userName);
 			}
-			String timeSql=" where user_type !=:userType and create_time >:startTime and create_time <=:endTime";
+			String timeSql=" where user_type !=:userType and create_time >=:startTime and create_time <:endTime";
 			hql=("from UserInfo"+timeSql+idSql+userNameSql);
 			PageBean page=new PageBean();
 			page.setPageIndex(pageIndex);

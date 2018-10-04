@@ -60,7 +60,7 @@ public class DWDetailsDaoImpl extends DefaultGenericDaoImpl<DepositApplication> 
 			map.put("amountEnd", amountEnd);
 		}
 		if(!StringUtils.isBlank(startTime)&&!StringUtils.isBlank(endTime)) {
-			timeSql=" and a.createTime >:startTime and a.createTime <=:endTime ";
+			timeSql=" and a.createTime >=:startTime and a.createTime <:endTime ";
 			Date beginDate = java.sql.Date.valueOf(startTime);
 		    Date endDate = java.sql.Date.valueOf(endTime);
 			map.put("startTime", beginDate);

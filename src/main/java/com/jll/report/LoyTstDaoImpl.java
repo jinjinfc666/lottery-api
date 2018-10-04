@@ -1,6 +1,9 @@
 package com.jll.report;
 
 import java.sql.Date;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -60,7 +63,7 @@ public class LoyTstDaoImpl extends DefaultGenericDaoImpl<OrderInfo> implements L
 			map.put("terminalType", terminalType);
 		}
 		if(!StringUtils.isBlank(startTime)&&!StringUtils.isBlank(endTime)) {
-			timeSql=" and a.createTime >:startTime and a.createTime <=:endTime";
+			timeSql=" and a.createTime >=:startTime and a.createTime <:endTime";
 			Date beginDate = java.sql.Date.valueOf(startTime);
 		    Date endDate = java.sql.Date.valueOf(endTime);
 			map.put("startTime", beginDate);
