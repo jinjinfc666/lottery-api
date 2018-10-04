@@ -107,7 +107,8 @@
 		<oauth2:implicit />
 		<oauth2:refresh-token />
 		<oauth2:client-credentials />
-		<oauth2:password authentication-manager-ref="authenticationManager"/>
+		<oauth2:password authentication-manager-ref="authenticationManager2"/>
+		<!-- <oauth2:password authentication-manager-ref="authenticationManager"/> -->
 	</oauth2:authorization-server>
 
     <!--指定spring要保护的资源，如果没有这个，访问控制的时候会说没有Authentication object：-->
@@ -130,11 +131,11 @@
     </authentication-provider>
   </authentication-manager>
   
-  <authentication-manager>
+  <authentication-manager  id="authenticationManager2" alias="authenticationManager2">
 		<authentication-provider>
 			<password-encoder ref="encoder" />
 			<jdbc-user-service data-source-ref="dataSource"
-				users-by-username-query="select user_name username , login_pwd password, isUserEnabled(state, unlock_time) enabled from user_info where username = ?"
+				users-by-username-query="select user_name username , login_pwd password, isUserEnabled(state, unlock_time) enabled from user_info where user_name = ?"
 				authorities-by-username-query="select user_name username, role.role_name authority from sys_authority auth, user_info user, sys_role role where auth.user_id = `user`.id and auth.role_id = role.id and user_name=?" />
 			<!-- <user-service> <user name="user" password="password" authorities="ROLE_USER" 
 				/> <user name="admin" password="password" authorities="ROLE_USER,ROLE_ADMIN"/> 
