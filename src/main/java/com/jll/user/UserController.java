@@ -994,7 +994,7 @@ public class UserController {
 		int bankId = Utils.toInteger(params.get("bankId"));
 		String passoword = Utils.toString(params.get("passoword"));
 		double amount = Utils.toDouble(params.get("amount"));
-		return userInfoService.processUserWithdrawApply(bankId, amount,passoword);
+		return userInfoService.saveUpdateUserWithdrawApply(bankId, amount,passoword);
 	}
     
     
@@ -1005,7 +1005,7 @@ public class UserController {
 		wtd.setOrderNum(Utils.toString(params.get("orderNum")));
 		wtd.setRemark(Utils.toString(params.get("remark")));
 		wtd.setState(Utils.toInteger(params.get("state")));
-   		return userInfoService.processUserWithdrawNotices(wtd);
+   		return userInfoService.saveUpdateUserWithdrawNotices(wtd);
    	}
     
     

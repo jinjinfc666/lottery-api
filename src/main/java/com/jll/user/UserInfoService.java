@@ -106,8 +106,8 @@ public interface UserInfoService
 	UserInfo getCurLoginInfo();
 	
 	Map<String, Object> userProfitReport(PageQueryDao page);
-	Map<String, Object> processUserWithdrawApply(int bankId, double amount, String passoword);
-	Map<String, Object> processUserWithdrawNotices(WithdrawApplication wtd);
+	Map<String, Object> saveUpdateUserWithdrawApply(int bankId, double amount, String passoword);
+	Map<String, Object> saveUpdateUserWithdrawNotices(WithdrawApplication wtd);
 	Map<String, Object> processUserAmountTransfer(String fromUser, String toUser, double amount);
 	
 	//查询总代下面的所有一级代理
