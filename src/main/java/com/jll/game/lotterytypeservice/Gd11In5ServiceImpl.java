@@ -25,6 +25,7 @@ import com.jll.common.constants.Constants;
 import com.jll.common.constants.Constants.OrderDelayState;
 import com.jll.common.constants.Constants.OrderState;
 import com.jll.common.http.HttpRemoteStub;
+import com.jll.common.utils.DateUtil;
 import com.jll.entity.Issue;
 import com.jll.entity.OrderInfo;
 import com.jll.entity.PlayType;
@@ -74,7 +75,10 @@ public class Gd11In5ServiceImpl extends DefaultLottoTypeServiceImpl
 		List<Issue> issues = new ArrayList<>();
 		int maxAmount = 84;
 		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(new Date());
+		Date today = new Date();
+		today = DateUtil.addMinutes(today, 10);
+		calendar.setTime(today);
+		
 		calendar.set(Calendar.HOUR_OF_DAY, 9);
 		calendar.set(Calendar.MINUTE, 0);
 		calendar.set(Calendar.SECOND, 0);
@@ -84,7 +88,7 @@ public class Gd11In5ServiceImpl extends DefaultLottoTypeServiceImpl
 			issue.setStartTime(calendar.getTime());
 			calendar.add(Calendar.MINUTE, 10);
 			issue.setEndTime(calendar.getTime());
-			issue.setIssueNum(generateLottoNumber(i + 1));
+			issue.setIssueNum(generateLottoNumber(i + 1, today));
 			issue.setLotteryType(lotteryType);
 			issue.setState(Constants.IssueState.INIT.getCode());
 			
@@ -101,9 +105,9 @@ public class Gd11In5ServiceImpl extends DefaultLottoTypeServiceImpl
 	}
 	
 	
-	private String generateLottoNumber(int seq) {
+	private String generateLottoNumber(int seq, Date curr) {
 		StringBuffer buffer = new StringBuffer();
-		Date curr = new Date();
+		//Date curr = new Date();
 		SimpleDateFormat format = new SimpleDateFormat("yyMMdd");
 		DecimalFormat numFormat = new DecimalFormat("00");
 
@@ -130,14 +134,11 @@ public class Gd11In5ServiceImpl extends DefaultLottoTypeServiceImpl
 		Issue issue = null;
 		int maxCounter = 3600;
 		int currCounter = 0;
-		BulletinBoard bulletinBoard = null;
 		
 		lottoTypeAndIssueNum = ((String)message).split("\\|");
 		lottoType = lottoTypeAndIssueNum[0];
 		issueNum = lottoTypeAndIssueNum[1];
-		
-		bulletinBoard = cacheServ.getBulletinBoard(lottoType);
-		
+				
 		if(sysCode == null
 				|| StringUtils.isBlank(sysCode.getCodeVal())) {
 			return;
@@ -182,15 +183,7 @@ public class Gd11In5ServiceImpl extends DefaultLottoTypeServiceImpl
 									issue.setState(Constants.IssueState.LOTTO_DARW.getCode());
 									issueServ.saveIssue(issue);
 									
-									if(bulletinBoard != null) {
-										if(bulletinBoard.getLastIssue() != null) {
-											Issue lastIssue = bulletinBoard.getLastIssue();
-											if(lastIssue.getIssueNum().equals(issueNum)) {
-												lastIssue.setRetNum(issue.getRetNum());
-												cacheServ.setBulletinBoard(lottoType, bulletinBoard);												
-											}
-										}
-									}
+									changeBulletinBoard(lottoType, issueNum, issue);
 									
 									//inform the progress to payout
 									cacheServ.publishMessage(Constants.TOPIC_PAY_OUT, message);
@@ -249,17 +242,12 @@ public class Gd11In5ServiceImpl extends DefaultLottoTypeServiceImpl
 		List retItems = null;
 		try {
 			retItems = mapper.readValue(response, List.class);
-			//awardNumberInfoList = (List)retItems.get("awardNumberInfoList");
 			if(retItems != null && retItems.size() > 0) {
 				winningNumMap = (Map)retItems.get(0);
 				String winningNumber = (String)winningNumMap.get("code");
 				return winningNumber;
 			}
 			
-			//Map awardNumberInfoList = (Map)retItems.get("code");
-			/*String winningNumber = (String)retItems.get("code");*/
-			/*String winningNumber = null;
-			return winningNumber;*/
 		} catch (JsonParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -273,179 +261,4 @@ public class Gd11In5ServiceImpl extends DefaultLottoTypeServiceImpl
 		
 		return null;
 	}
-
-	/*@Override
-	public void payout(String issueNum) {
-		String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-		UserInfo user = null;
-		
-		Issue issue = issueServ.getIssueByIssueNum(issueNum);
-		List<OrderInfo> orders = null;
-		boolean isMatch = false;
-				
-		if(issue == null) {
-			return ;
-		}
-		
-		if(issue.getState() != Constants.IssueState.END_ISSUE.getCode()) {
-			return ;
-		}
-		
-		if(StringUtils.isBlank(issue.getRetNum())) {
-			return ;
-		}
-		
-		orders = orderInfoServ.queryOrdersByIssue(issue.getId());
-		
-		if(orders == null || orders.size() == 0) {
-			modifyIssueState(issue);
-			return ;
-		}
-		
-		for(OrderInfo order : orders) {
-			user = userServ.getUserById(order.getUserId());
-			//被取消的订单 或者延迟开奖的订单 跳过开奖
-			if(order.getState() == Constants.OrderState.SYS_CANCEL.getCode()
-					|| order.getState() == Constants.OrderState.USER_CANCEL.getCode()
-					|| (order.getDelayPayoutFlag() != null 
-							&& order.getDelayPayoutFlag() == OrderDelayState.DEPLAY.getCode())) {
-				continue;
-			}
-			
-			isMatch = isMatchWinningNum(issue, order);
-			
-			if(isMatch) {//赢
-				//TODO 发奖金
-				BigDecimal prize = calPrize(issue, order, user);
-				//TODO 增加账户流水
-				addUserAccountDetails(order, issue, prize);
-				//TODO 修改用户余额
-				modifyBal(order, user, prize);
-				
-				//TODO 修改订单状态
-				modifyOrderState(order, Constants.OrderState.WINNING);
-			}else {
-				//TODO 修改订单状态
-				modifyOrderState(order, Constants.OrderState.LOSTING);
-			}
-			
-			//TODO
-			rebate(issue, user, order);
-			
-		}
-		
-		modifyIssueState(issue);
-	}
-
-	private void modifyIssueState(Issue issue) {
-		issue.setState(Constants.IssueState.PAYOUT.getCode());
-		issueServ.saveIssue(issue);
-	}
-
-	private void rebate(Issue issue, UserInfo user, OrderInfo order) {
-		String superior = user.getSuperior();
-		BigDecimal prize = null;
-		
-		if(StringUtils.isBlank(superior) || "0".equals(superior)) {
-			return ;
-		}
-		
-		String[] superiors = superior.split(",");
-		
-		superior = superiors[0];
-		UserInfo superiorUser = userServ.getUserById(Integer.parseInt(superior));
-		prize = calRebate(user, order);
-		addUserAccountDetails(order, issue, prize);
-		
-		modifyBal(order, user, prize);
-		
-		rebate(issue, superiorUser, order);
-	}
-
-	private BigDecimal calRebate(UserInfo user, OrderInfo order) {
-		BigDecimal prize = null;
-		BigDecimal prizeRate = user.getRebate();
-		BigDecimal betAmount = new BigDecimal(order.getBetAmount());
-		
-		prize = betAmount.multiply(prizeRate);
-		return prize;
-	}
-
-	private void modifyOrderState(OrderInfo order, OrderState orderState) {
-		order.setState(orderState.getCode());
-		
-		orderInfoServ.saveOrder(order);
-	}
-
-	private void modifyBal(OrderInfo order, UserInfo user, BigDecimal prize) {
-		BigDecimal bal = null;
-		UserAccount wallet = walletServ.queryById(order.getWalletId());
-		bal = wallet.getBalance().add(prize);
-		wallet.setBalance(bal);
-		
-		walletServ.updateWallet(wallet);
-	}
-
-	private void addUserAccountDetails(OrderInfo order, Issue issue, BigDecimal prize) {
-		UserAccount wallet = walletServ.queryById(order.getWalletId());
-		UserAccountDetails accDetails = new UserAccountDetails();
-		BigDecimal preAmount = null;
-		BigDecimal postAmount = null;
-		
-		preAmount = wallet.getBalance();
-		postAmount = preAmount.add(prize);
-		accDetails.setAmount(prize.floatValue());
-		accDetails.setCreateTime(new Date());
-		accDetails.setDataItemType(Constants.DataItemType.BALANCE.getCode());
-		accDetails.setOperationType(Constants.AccOperationType.PAYOUT.getDesc());
-		accDetails.setOrderId(order.getId());
-		accDetails.setPostAmount(postAmount.floatValue());
-		accDetails.setPreAmount(preAmount.floatValue());
-		accDetails.setUserId(order.getUserId());
-		accDetails.setWalletId(order.getWalletId());
-		accDetailsServ.saveAccDetails(accDetails);
-	}
-
-	private BigDecimal calPrize(Issue issue, OrderInfo order, UserInfo user) {
-		PlayType playType = null;
-		String facadeName = null;
-		Integer playTypeId = order.getPlayType();
-		playType = playTypeServ.queryById(playTypeId);
-		if(playType == null) {
-			return null;
-		}
-		
-		//playType = playTypes.get(0);
-		facadeName = playType.getClassification() +"/" + playType.getPtName();
-		PlayTypeFacade playTypeFacade = PlayTypeFactory.getInstance().getPlayTypeFacade(facadeName);
-		
-		if(playTypeFacade == null) {
-			return null;
-		}
-		
-		return playTypeFacade.calPrize(issue, order, user);
-	}
-
-	private boolean isMatchWinningNum(Issue issue, OrderInfo order) {
-		PlayType playType = null;
-		String facadeName = null;
-		Integer playTypeId = order.getPlayType();
-		playType = playTypeServ.queryById(playTypeId);
-		if(playType == null) {
-			return false;
-		}
-		
-		
-		facadeName = playType.getClassification() +"/" + playType.getPtName();
-		PlayTypeFacade playTypeFacade = PlayTypeFactory.getInstance().getPlayTypeFacade(facadeName);
-		
-		if(playTypeFacade == null) {
-			return false;
-		}
-		
-		return playTypeFacade.isMatchWinningNum(issue, order);
-	}
-	
-	
-	*/
 }

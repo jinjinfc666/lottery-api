@@ -81,7 +81,7 @@ public class CqsscServiceImpl extends DefaultLottoTypeServiceImpl
 				issue.setStartTime(calendar.getTime());
 				calendar.add(Calendar.MINUTE, 5);
 				issue.setEndTime(calendar.getTime());
-				issue.setIssueNum(generateLottoNumber(i + 1));
+				issue.setIssueNum(generateLottoNumber(i + 1, today));
 				issue.setLotteryType(lotteryType);
 				issue.setState(Constants.IssueState.INIT.getCode());
 				
@@ -93,7 +93,7 @@ public class CqsscServiceImpl extends DefaultLottoTypeServiceImpl
 				issue.setStartTime(calendar.getTime());
 				calendar.add(Calendar.MINUTE, 10);
 				issue.setEndTime(calendar.getTime());
-				issue.setIssueNum(generateLottoNumber(i + 1));
+				issue.setIssueNum(generateLottoNumber(i + 1, today));
 				issue.setLotteryType(lotteryType);
 				issue.setState(Constants.IssueState.INIT.getCode());
 				
@@ -103,7 +103,7 @@ public class CqsscServiceImpl extends DefaultLottoTypeServiceImpl
 				issue.setStartTime(calendar.getTime());
 				calendar.add(Calendar.MINUTE, 10);
 				issue.setEndTime(calendar.getTime());
-				issue.setIssueNum(generateLottoNumber(i + 1));
+				issue.setIssueNum(generateLottoNumber(i + 1, today));
 				issue.setLotteryType(lotteryType);
 				issue.setState(Constants.IssueState.INIT.getCode());
 				
@@ -121,9 +121,9 @@ public class CqsscServiceImpl extends DefaultLottoTypeServiceImpl
 	}
 	
 	
-	private String generateLottoNumber(int seq) {
+	private String generateLottoNumber(int seq, Date curr) {
 		StringBuffer buffer = new StringBuffer();
-		Date curr = new Date();
+		//Date curr = new Date();
 		SimpleDateFormat format = new SimpleDateFormat("yyMMdd");
 		DecimalFormat numFormat = new DecimalFormat("000");
 
@@ -150,12 +150,10 @@ public class CqsscServiceImpl extends DefaultLottoTypeServiceImpl
 		Issue issue = null;
 		int maxCounter = 1800;
 		int currCounter = 0;
-		BulletinBoard bulletinBoard = null;
 		
 		lottoTypeAndIssueNum = ((String)message).split("\\|");
 		lottoType = lottoTypeAndIssueNum[0];
 		issueNum = lottoTypeAndIssueNum[1];
-		bulletinBoard = cacheServ.getBulletinBoard(lottoType);
 		if(sysCode == null
 				|| StringUtils.isBlank(sysCode.getCodeVal())) {
 			return;
@@ -191,15 +189,8 @@ public class CqsscServiceImpl extends DefaultLottoTypeServiceImpl
 						issue.setState(Constants.IssueState.LOTTO_DARW.getCode());
 						issueServ.saveIssue(issue);
 						
-						if(bulletinBoard != null) {
-							if(bulletinBoard.getLastIssue() != null) {
-								Issue lastIssue = bulletinBoard.getLastIssue();
-								if(lastIssue.getIssueNum().equals(issueNum)) {
-									lastIssue.setRetNum(issue.getRetNum());
-									cacheServ.setBulletinBoard(lottoType, bulletinBoard);												
-								}
-							}
-						}
+						changeBulletinBoard(lottoType, issueNum, issue);
+						
 						//inform the progress to payout
 						cacheServ.publishMessage(Constants.TOPIC_PAY_OUT, message);
 						return;

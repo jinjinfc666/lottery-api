@@ -192,7 +192,6 @@ public class MmcServiceImpl extends DefaultLottoTypeServiceImpl
 		Double maxRate = null;
 		String playTypeName = null;
 		PlayTypeFacade playTypeFacade = null;
-		BulletinBoard bulletinBoard = cacheServ.getBulletinBoard(lottoType);
 		
 		if(statInfo == null || statInfo.size() == 0) {
 			nonInterventional(lottoType, issueNum);
@@ -245,15 +244,7 @@ public class MmcServiceImpl extends DefaultLottoTypeServiceImpl
 		issue.setState(Constants.IssueState.LOTTO_DARW.getCode());
 		issueServ.saveIssue(issue);
 		
-		if(bulletinBoard != null) {
-			if(bulletinBoard.getLastIssue() != null) {
-				Issue lastIssue = bulletinBoard.getLastIssue();
-				if(lastIssue.getIssueNum().equals(issueNum)) {
-					lastIssue.setRetNum(issue.getRetNum());
-					cacheServ.setBulletinBoard(lottoType, bulletinBoard);												
-				}
-			}
-		}
+		changeBulletinBoard(lottoType, issueNum, issue);
 		
 		//inform the progress to payout
 		logger.debug(String.format("sending message to handle pay out %s", lottoType +"|"+ issueNum));
@@ -263,7 +254,6 @@ public class MmcServiceImpl extends DefaultLottoTypeServiceImpl
 	private void nonInterventional(String lottoType, String issueNum) {
 		String winningNum;
 		Issue issue;
-		BulletinBoard bulletinBoard = cacheServ.getBulletinBoard(lottoType);
 		
 		winningNum = Utils.produce5Digits0to9Number();
 		issue = issueServ.getIssueByIssueNum(lottoType, issueNum);
@@ -271,15 +261,7 @@ public class MmcServiceImpl extends DefaultLottoTypeServiceImpl
 		issue.setState(Constants.IssueState.LOTTO_DARW.getCode());
 		issueServ.saveIssue(issue);
 		
-		if(bulletinBoard != null) {
-			if(bulletinBoard.getLastIssue() != null) {
-				Issue lastIssue = bulletinBoard.getLastIssue();
-				if(lastIssue.getIssueNum().equals(issueNum)) {
-					lastIssue.setRetNum(issue.getRetNum());
-					cacheServ.setBulletinBoard(lottoType, bulletinBoard);
-				}
-			}
-		}
+		changeBulletinBoard(lottoType, issueNum, issue);
 		
 		//inform the progress to payout
 		logger.debug(String.format("sending message to handle pay out %s", lottoType +"|"+ issueNum));

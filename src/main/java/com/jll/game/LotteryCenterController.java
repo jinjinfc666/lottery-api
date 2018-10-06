@@ -194,11 +194,12 @@ public class LotteryCenterController {
 		List<PlayType> playTypes = null;
 		List<PlayType> playTypess = new ArrayList<PlayType>();
 		boolean isExisting = false;
-		boolean hasMoreIssue = false;
+		//boolean hasMoreIssue = false;
 		Issue currentIssue = null;
 		Issue lastIssue = null;
 		SysCode lotteryTypeObj = null;
-		Date nowTime = null;
+		Date nowTime = new Date();
+		Long downCounter = null;
 		
 		isExisting = cacheServ.isCodeExisting(SysCodeTypes.LOTTERY_TYPES, lotteryType);
 		if(!isExisting) {
@@ -208,29 +209,28 @@ public class LotteryCenterController {
 			return resp;
 		}
 		
-		hasMoreIssue = lotCenServ.hasMoreIssue(lotteryType);
+		/*hasMoreIssue = lotCenServ.hasMoreIssue(lotteryType);
 		if(!hasMoreIssue) {
 			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_GAME_END.getCode());
 			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_GAME_END.getErrorMes());
 			return resp;
-		}
-		if(!lotteryType.equals(Constants.LottoType.MMC.getCode())) {
-			currentIssue = lotCenServ.queryBettingIssue(lotteryType);
+		}*/
+		/*if(!lotteryType.equals(Constants.LottoType.MMC.getCode())) {
 			if(currentIssue == null) {
 				resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 				resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_GAME_NO_START.getCode());
 				resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_GAME_NO_START.getErrorMes());
 				return resp;
 			}
-		}
-		lastIssue = lotCenServ.queryLastIssue(lotteryType);
+		}*/
+		
 		
 		lotteryTypeObj = cacheServ.getSysCode(SysCodeTypes.LOTTERY_TYPES.getCode(), lotteryType);
 		
 		playTypes = cacheServ.getPlayType(lotteryTypeObj);
 		
-		if(playTypes!=null&&playTypes.size()>0) {
+		if(playTypes != null && playTypes.size() > 0) {
 			Integer stateas=null;
 			for(int i=0; i<playTypes.size();i++)    {   
 			     PlayType playType=playTypes.get(i);
@@ -241,8 +241,6 @@ public class LotteryCenterController {
 			 }
 		}
 		
-		
-		
 		if(playTypes == null || playTypes.size() == 0) {
 			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_GAME_MISSTING_PLAY_TYPE.getCode());
@@ -250,14 +248,41 @@ public class LotteryCenterController {
 			return resp;
 		}
 		
+		currentIssue = lotCenServ.queryBettingIssue(lotteryType);
+		lastIssue = lotCenServ.queryLastIssue(lotteryType);
+		
+		
 		if(!lotteryType.equals(Constants.LottoType.MMC.getCode())) {
-			String codeTypeName = "lottery_config_" + lotteryType;
-			String codeValName = Constants.LotteryAttributes.BETTING_END_TIME.getCode();
-			SysCode lottoAttri = cacheServ.getSysCode(codeTypeName, codeValName);
-			nowTime = new Date();
-			Long downCounter = currentIssue.getEndTime().getTime() - nowTime.getTime();
-			downCounter = downCounter/1000 - Long.valueOf(lottoAttri.getCodeVal());
-			currentIssue.setDownCounter(downCounter);
+			if(currentIssue == null) {
+				/*currentIssue = new Issue();
+				Issue nextIssue = lotCenServ.queryNextIssue(lastIssue);
+				if(nextIssue != null) {
+					downCounter = nextIssue.getStartTime().getTime() - nowTime.getTime();
+					downCounter = downCounter/1000;
+					currentIssue.setDownCounter(downCounter);
+				}else {
+					currentIssue.setDownCounter(-1L);
+				}*/
+			}else {
+				String codeTypeName = Constants.KEY_LOTTO_ATTRI_PREFIX + lotteryType;
+				String codeValName = Constants.LotteryAttributes.BETTING_END_TIME.getCode();
+				SysCode lottoAttri = cacheServ.getSysCode(codeTypeName, codeValName);
+				downCounter = currentIssue.getEndTime().getTime() - nowTime.getTime();
+				downCounter = downCounter/1000 - Long.valueOf(lottoAttri.getCodeVal());
+				
+				if(downCounter < 0) {
+					Issue nextIssue = lotCenServ.queryNextIssue(lastIssue);
+					if(nextIssue != null) {
+						downCounter = nextIssue.getStartTime().getTime() - nowTime.getTime();
+						downCounter = downCounter/1000;
+						currentIssue.setDownCounter(downCounter);
+					}else {
+						currentIssue.setDownCounter(-1L);
+					}
+				}else {
+					currentIssue.setDownCounter(downCounter);					
+				}
+			}
 			data.put("currIssue", currentIssue);
 		}else {
 			data.put("currIssue", null);

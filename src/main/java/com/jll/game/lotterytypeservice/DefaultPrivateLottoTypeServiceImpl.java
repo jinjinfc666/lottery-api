@@ -134,7 +134,6 @@ public abstract class DefaultPrivateLottoTypeServiceImpl extends DefaultLottoTyp
 	private void interventional(String lottoType, String issueNum, SysCode sysCodeWinningRate) {
 		String winningNum;
 		Issue issue;
-		BulletinBoard bulletinBoard = cacheServ.getBulletinBoard(lottoType);
 		StringBuffer buffer = null;
 		boolean isMatch = false;
 		
@@ -207,15 +206,7 @@ public abstract class DefaultPrivateLottoTypeServiceImpl extends DefaultLottoTyp
 				issue.setState(Constants.IssueState.LOTTO_DARW.getCode());
 				issueServ.saveIssue(issue);
 				
-				if(bulletinBoard != null) {
-					if(bulletinBoard.getLastIssue() != null) {
-						Issue lastIssue = bulletinBoard.getLastIssue();
-						if(lastIssue.getIssueNum().equals(issueNum)) {
-							lastIssue.setRetNum(issue.getRetNum());
-							cacheServ.setBulletinBoard(lottoType, bulletinBoard);												
-						}
-					}
-				}
+				changeBulletinBoard(lottoType, issueNum, issue);
 				
 				//inform the progress to payout
 				cacheServ.publishMessage(Constants.TOPIC_PAY_OUT, lottoType +"|"+ issueNum);
@@ -235,7 +226,6 @@ public abstract class DefaultPrivateLottoTypeServiceImpl extends DefaultLottoTyp
 		boolean isMatch = false;
 		Issue issue;
 		String winningNum;
-		BulletinBoard bulletinBoard = cacheServ.getBulletinBoard(lottoType);
 		
 		while(true) {
 			buffer = new StringBuffer();
@@ -263,15 +253,7 @@ public abstract class DefaultPrivateLottoTypeServiceImpl extends DefaultLottoTyp
 				issue.setState(Constants.IssueState.LOTTO_DARW.getCode());
 				issueServ.saveIssue(issue);
 				
-				if(bulletinBoard != null) {
-					if(bulletinBoard.getLastIssue() != null) {
-						Issue lastIssue = bulletinBoard.getLastIssue();
-						if(lastIssue.getIssueNum().equals(issueNum)) {
-							lastIssue.setRetNum(issue.getRetNum());
-							cacheServ.setBulletinBoard(lottoType, bulletinBoard);												
-						}
-					}
-				}
+				changeBulletinBoard(lottoType, issueNum, issue);
 				
 				//inform the progress to payout
 				cacheServ.publishMessage(Constants.TOPIC_PAY_OUT, lottoType +"|"+ issueNum);
@@ -290,7 +272,6 @@ public abstract class DefaultPrivateLottoTypeServiceImpl extends DefaultLottoTyp
 		logger.debug(String.format("lottoType   %s,  issueNum  %s", lottoType, issueNum));
 		String winningNum;
 		Issue issue;
-		BulletinBoard bulletinBoard = cacheServ.getBulletinBoard(lottoType);
 		
 		winningNum = Utils.produce5Digits0to9Number();
 		issue = issueServ.getIssueByIssueNum(lottoType, issueNum);
@@ -298,19 +279,13 @@ public abstract class DefaultPrivateLottoTypeServiceImpl extends DefaultLottoTyp
 		issue.setState(Constants.IssueState.LOTTO_DARW.getCode());
 		issueServ.saveIssue(issue);
 		
-		if(bulletinBoard != null) {
-			if(bulletinBoard.getLastIssue() != null) {
-				Issue lastIssue = bulletinBoard.getLastIssue();
-				if(lastIssue.getIssueNum().equals(issueNum)) {
-					lastIssue.setRetNum(issue.getRetNum());
-					cacheServ.setBulletinBoard(lottoType, bulletinBoard);												
-				}
-			}
-		}
+		changeBulletinBoard(lottoType, issueNum, issue);
 		
 		//inform the progress to payout
 		cacheServ.publishMessage(Constants.TOPIC_PAY_OUT, lottoType +"|"+ issueNum);
 	}
+
+	
 	
 	
 	public abstract String getCodeTypeName();

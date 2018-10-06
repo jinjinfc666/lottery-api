@@ -140,7 +140,7 @@ public class CacheRedisServiceImpl implements CacheRedisService
 	}
 
 	@Override
-	public void setBulletinBoard(String lottoType, BulletinBoard bulletinBoard) {
+	public synchronized void setBulletinBoard(String lottoType, BulletinBoard bulletinBoard) {
 		StringBuffer buffer = new StringBuffer();
 		buffer.append(Constants.KEY_PRE_BULLETINBOARD).append("_").append(lottoType);
 		

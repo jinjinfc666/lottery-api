@@ -28,12 +28,15 @@ public class BulletinBoard implements Serializable{
 	}
 
 	public void setCurrIssue(Issue currIssue) {
-		if(currIssue == null 
+		/*if(currIssue == null 
 				|| (this.currIssue != null && (this.currIssue.getId() == currIssue.getId()))) {
 			return ;
 		}
 		
-		this.lastIssue = this.currIssue;
+		this.lastIssue = this.currIssue;*/
+		if(currIssue == null) {
+			System.out.println("This will set current issue to null...................................................................................................");
+		}
 		this.currIssue = currIssue;
 	}
 	

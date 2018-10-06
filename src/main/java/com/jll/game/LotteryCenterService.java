@@ -46,4 +46,11 @@ public interface LotteryCenterService
 	String PreBet(Map<String, Object> params, Map<String, Object> data);
 
 	void processScheduleIssue();
+
+	/**
+	 * query the next issue of specified issue
+	 * @param lastIssue
+	 * @return
+	 */
+	Issue queryNextIssue(Issue lastIssue);
 }
