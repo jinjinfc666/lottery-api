@@ -377,7 +377,7 @@ public class ReportController {
 	@RequestMapping(value={"/DWD/UpdateWithdrawState"}, method={RequestMethod.PUT}, produces={"application/json"})
 	public Map<String, Object> UpdateWithdrawState(@RequestParam(name = "id", required = true) Integer id,
 			  @RequestParam(name = "state", required = true) Integer state,//状态
-			  @RequestParam(name = "remark", required = true) Integer remark,//状态
+			  @RequestParam(name = "remark", required = false) Integer remark,//状态
 			  HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
 		Map<String, Object> map = new HashMap<>();

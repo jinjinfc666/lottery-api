@@ -38,7 +38,7 @@ public class OrderSourceDaoImpl extends HibernateDaoSupport implements OrderSour
 			map.put("codeName", codeName);
 		}
 		if(!StringUtils.isBlank(startTime)&&!StringUtils.isBlank(endTime)) {
-			timeSql="create_time >:startTime and create_time <=:endTime";
+			timeSql="create_time >=:startTime and create_time <:endTime";
 			Date beginDate = java.sql.Date.valueOf(startTime);
 		    Date endDate = java.sql.Date.valueOf(endTime);
 			map.put("startTime", beginDate);

@@ -41,7 +41,10 @@ public class WithdrawApplicationServiceImpl implements WithdrawApplicationServic
 		Integer remarkInteger=(Integer) ret.get("remark");
 		boolean isNo=this.isNullById(id);
 		if(isNo) {
-			String remark=Constants.Remark.getValueByCode(remarkInteger);
+			String remark=null;
+			if(remarkInteger!=null) {
+				remark=Constants.Remark.getValueByCode(remarkInteger);
+			}
 			withdrawApplicationDao.updateState(id, state, remark);
 			map.clear();
 			map.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());

@@ -153,13 +153,13 @@ public class UserInfoServiceImpl implements UserInfoService
 			return ret;
 		}
 		BCryptPasswordEncoder bcEncoder = new  BCryptPasswordEncoder();
-//		String oldDbPwd = bcEncoder.encode(oldPwd);
-//		if(!oldDbPwd.equals(dbInfo.getFundPwd())){
-//			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-//			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_OLD_FUND_PWD_ERROR);
-//			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_OLD_FUND_PWD_ERROR.getErrorMes());
-//			return ret;
-//		}
+		String oldDbPwd = bcEncoder.encode(oldPwd);
+		if(!bcEncoder.matches(oldDbPwd, dbInfo.getLoginPwd())){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_OLD_LOGIN_PWD_ERROR);
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_OLD_LOGIN_PWD_ERROR.getErrorMes());
+			return ret;
+		}
 		dbInfo.setFundPwd(bcEncoder.encode(newPwd));
 		supserDao.update(dbInfo);
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
@@ -180,13 +180,13 @@ public class UserInfoServiceImpl implements UserInfoService
 			return ret;
 		}
 		BCryptPasswordEncoder bcEncoder = new  BCryptPasswordEncoder();
-//		String oldDbPwd = bcEncoder.encode(oldPwd);
-//		if(!oldDbPwd.equals(dbInfo.getLoginPwd())){
-//			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-//			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_OLD_LOGIN_PWD_ERROR);
-//			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_OLD_LOGIN_PWD_ERROR.getErrorMes());
-//			return ret;
-//		}
+		String oldDbPwd = bcEncoder.encode(oldPwd);
+		if(!bcEncoder.matches(oldDbPwd, dbInfo.getLoginPwd())){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_OLD_LOGIN_PWD_ERROR);
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_OLD_LOGIN_PWD_ERROR.getErrorMes());
+			return ret;
+		}
 		dbInfo.setLoginPwd(bcEncoder.encode(newPwd));
 		supserDao.update(dbInfo);
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
@@ -205,15 +205,14 @@ public class UserInfoServiceImpl implements UserInfoService
 			return ret;
 		}
 		BCryptPasswordEncoder bcEncoder = new  BCryptPasswordEncoder();
-//		String oldDbPwd = bcEncoder.encode(oldPwd);
-//		String oldDbPwdass = bcEncoder.encode(oldPwd);
-//		
+		String oldDbPwd = bcEncoder.encode(oldPwd);
 //		if(!oldDbPwd.equals(dbInfo.getLoginPwd())){
-//			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-//			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_OLD_LOGIN_PWD_ERROR);
-//			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_OLD_LOGIN_PWD_ERROR.getErrorMes());
-//			return ret;
-//		}
+		if(!bcEncoder.matches(oldDbPwd, dbInfo.getLoginPwd())){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_OLD_LOGIN_PWD_ERROR);
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_OLD_LOGIN_PWD_ERROR.getErrorMes());
+			return ret;
+		}
 		dbInfo.setLoginPwd(bcEncoder.encode(newPwd));
 		supserDao.update(dbInfo);
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
@@ -924,7 +923,7 @@ public class UserInfoServiceImpl implements UserInfoService
 	
 
 	@Override
-	public Map<String, Object> processUserWithdrawApply(int bankId, double amount, String passoword) {
+	public Map<String, Object> saveUpdateUserWithdrawApply(int bankId, double amount, String passoword) {
 		
 		Map<String, Object> ret = new HashMap<String, Object>();
 		UserInfo dbInfo = getCurLoginInfo();
@@ -963,7 +962,8 @@ public class UserInfoServiceImpl implements UserInfoService
 		
 		//资金密码
 		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-		if(!encoder.encode(passoword).equals(dbInfo.getFundPwd())){
+//		if(!encoder.encode(passoword).equals(dbInfo.getFundPwd())){
+		if(!encoder.matches(passoword, dbInfo.getFundPwd())){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_WTD_PWD_ERROR.getCode());
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_WTD_PWD_ERROR.getErrorMes());
@@ -1029,7 +1029,7 @@ public class UserInfoServiceImpl implements UserInfoService
 	}
 
 	@Override
-	public Map<String, Object> processUserWithdrawNotices(WithdrawApplication wtd) {
+	public Map<String, Object> saveUpdateUserWithdrawNotices(WithdrawApplication wtd) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		if(StringUtils.isEmpty(wtd.getOrderNum())
 				|| null == WithdrawOrderState.getValueByCode(wtd.getState())

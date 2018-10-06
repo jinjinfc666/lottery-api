@@ -10,6 +10,7 @@ import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.springframework.stereotype.Repository;
 
+import com.jll.common.utils.StringUtils;
 import com.jll.dao.DefaultGenericDaoImpl;
 import com.jll.entity.WithdrawApplication;
 
@@ -53,10 +54,16 @@ public class WithdrawApplicationDaoImpl extends DefaultGenericDaoImpl<WithdrawAp
 	@Override
 	public void updateState(Integer id, Integer state,String remark) {
 		Session session=getSessionFactory().getCurrentSession();
-		String hql = ("update WithdrawApplication set state=:state,remark=:remark,updateTime=:updateTime where id=:id");  
+		String remarkSql="";
+		if(!StringUtils.isBlank(remark)) {
+			remarkSql=",remark=:remark";
+		}
+		String hql = ("update WithdrawApplication set state=:state,updateTime=:updateTime"+remarkSql+" where id=:id");  
 		Query query = session.createQuery(hql);
 		query.setParameter("state", state);
-		query.setParameter("remark", remark);
+		if(!StringUtils.isBlank(remark)) {
+			query.setParameter("remark", remark);
+		}
 		query.setParameter("updateTime", new Date());
 		query.setParameter("id", id);;
 		query.executeUpdate();

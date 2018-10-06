@@ -41,7 +41,7 @@ public class MReportDaoImpl extends DefaultGenericDaoImpl<MemberPlReport> implem
 			map.put("userName", userName);
 		}
 		if(!StringUtils.isBlank(startTime)&&!StringUtils.isBlank(endTime)) {
-			timeSql=" where createTime >:startTime and createTime <=:endTime";
+			timeSql=" where createTime >=:startTime and createTime <:endTime";
 			Date beginDate = java.sql.Date.valueOf(startTime);
 		    Date endDate = java.sql.Date.valueOf(endTime);
 			map.put("startTime", beginDate);
@@ -87,7 +87,7 @@ public class MReportDaoImpl extends DefaultGenericDaoImpl<MemberPlReport> implem
 			map.put("userName", userName);
 		}
 		if(!StringUtils.isBlank(startTime)&&!StringUtils.isBlank(endTime)) {
-			timeSql=" where create_time >:startTime and create_time <=:endTime";
+			timeSql=" where create_time >=:startTime and create_time <:endTime";
 			Date beginDate = java.sql.Date.valueOf(startTime);
 		    Date endDate = java.sql.Date.valueOf(endTime);
 			map.put("startTime", beginDate);
@@ -156,7 +156,7 @@ public class MReportDaoImpl extends DefaultGenericDaoImpl<MemberPlReport> implem
 			map.put("userNameList", userNameList);
 		}
 		if(!StringUtils.isBlank(startTime)&&!StringUtils.isBlank(endTime)) {
-			timeSql="createTime >:startTime and createTime <=:endTime";
+			timeSql="createTime >=:startTime and createTime <:endTime";
 			Date beginDate = java.sql.Date.valueOf(startTime);
 		    Date endDate = java.sql.Date.valueOf(endTime);
 			map.put("startTime", beginDate);
@@ -205,7 +205,7 @@ public class MReportDaoImpl extends DefaultGenericDaoImpl<MemberPlReport> implem
 			map.put("userNameList", userNameList);
 		}
 		if(!StringUtils.isBlank(startTime)&&!StringUtils.isBlank(endTime)) {
-			timeSql=" create_time >:startTime and create_time <=:endTime";
+			timeSql=" create_time >=:startTime and create_time <:endTime";
 			Date beginDate = java.sql.Date.valueOf(startTime);
 		    Date endDate = java.sql.Date.valueOf(endTime);
 			map.put("startTime", beginDate);
@@ -281,7 +281,7 @@ public class MReportDaoImpl extends DefaultGenericDaoImpl<MemberPlReport> implem
 	    Query<?> query1 = getSessionFactory().getCurrentSession().createNativeQuery(sql1);
 	    query1.setParameter("id", id);
 	    List<?> userNameList=query1.list();
-	    String sql2="select user_name,SUM(deposit) as deposit,SUM(system_recharge) as system_recharge,SUM(withdrawal) as withdrawal,SUM(deduction) as deduction,SUM(consumption) as consumption,SUM(cancel_amount) as cancel_amount,SUM(return_prize) as return_prize,SUM(rebate) as rebate,SUM(current_balance) as current_balance,SUM(recharge_member) as recharge_member,SUM(new_members) as new_members,SUM(profit) as profit from member_pl_report where user_name in(:userNameList)  and create_time>:startTime and create_time<=:endTime GROUP BY user_name";
+	    String sql2="select user_name,SUM(deposit) as deposit,SUM(system_recharge) as system_recharge,SUM(withdrawal) as withdrawal,SUM(deduction) as deduction,SUM(consumption) as consumption,SUM(cancel_amount) as cancel_amount,SUM(return_prize) as return_prize,SUM(rebate) as rebate,SUM(current_balance) as current_balance,SUM(recharge_member) as recharge_member,SUM(new_members) as new_members,SUM(profit) as profit from member_pl_report where user_name in(:userNameList)  and create_time>=:startTime and create_time<:endTime GROUP BY user_name";
 	    Query<?> query2=getSessionFactory().getCurrentSession().createNativeQuery(sql2);
 	    query2.setParameterList("userNameList", userNameList);
 	    Date beginDate = java.sql.Date.valueOf(startTime);
@@ -322,7 +322,7 @@ public class MReportDaoImpl extends DefaultGenericDaoImpl<MemberPlReport> implem
 		    listRecord.add(m);
 		}
 		map.put("data", listRecord);
-		String sqlsum="select SUM(deposit) as deposit,SUM(system_recharge) as system_recharge,SUM(withdrawal) as withdrawal,SUM(deduction) as deduction,SUM(consumption) as consumption,SUM(cancel_amount) as cancel_amount,SUM(return_prize) as return_prize,SUM(rebate) as rebate,SUM(current_balance) as current_balance,SUM(recharge_member) as recharge_member,SUM(new_members) as new_members,SUM(profit) as profit from member_pl_report where user_name in(:userNameList)  and create_time>:startTime and create_time<=:endTime";
+		String sqlsum="select SUM(deposit) as deposit,SUM(system_recharge) as system_recharge,SUM(withdrawal) as withdrawal,SUM(deduction) as deduction,SUM(consumption) as consumption,SUM(cancel_amount) as cancel_amount,SUM(return_prize) as return_prize,SUM(rebate) as rebate,SUM(current_balance) as current_balance,SUM(recharge_member) as recharge_member,SUM(new_members) as new_members,SUM(profit) as profit from member_pl_report where user_name in(:userNameList)  and create_time>=:startTime and create_time<:endTime";
 		Query<?> querysum=getSessionFactory().getCurrentSession().createNativeQuery(sqlsum);
 		querysum.setParameterList("userNameList", userNameList);
 		querysum.setParameter("startTime", beginDate,DateType.INSTANCE);

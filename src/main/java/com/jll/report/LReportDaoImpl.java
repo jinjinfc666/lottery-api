@@ -55,7 +55,7 @@ public class LReportDaoImpl extends DefaultGenericDaoImpl<LotteryPlReport> imple
 			map.put("userNameList", userNameList);
 		}
 		if(!StringUtils.isBlank(startTime)&&!StringUtils.isBlank(endTime)) {
-			timeSql=" createTime >:startTime and createTime <=:endTime";
+			timeSql=" createTime >=:startTime and createTime <:endTime";
 			Date beginDate = java.sql.Date.valueOf(startTime);
 		    Date endDate = java.sql.Date.valueOf(endTime);
 			map.put("startTime", beginDate);
@@ -116,7 +116,7 @@ public class LReportDaoImpl extends DefaultGenericDaoImpl<LotteryPlReport> imple
 			map.put("userNameList", userNameList);
 		}
 		if(!StringUtils.isBlank(startTime)&&!StringUtils.isBlank(endTime)) {
-			timeSql=" create_time >:startTime and create_time <=:endTime";
+			timeSql=" create_time >=:startTime and create_time <:endTime";
 			Date beginDate = java.sql.Date.valueOf(startTime);
 		    Date endDate = java.sql.Date.valueOf(endTime);
 			map.put("startTime", beginDate);
@@ -180,7 +180,7 @@ public class LReportDaoImpl extends DefaultGenericDaoImpl<LotteryPlReport> imple
 	    Query<?> query1 = getSessionFactory().getCurrentSession().createNativeQuery(sql1);
 	    query1.setParameter("id", id);
 	    List<?> userNameList=query1.list();
-	    String sql2="select user_name,SUM(consumption) as consumption,SUM(cancel_amount) as cancel_amount,SUM(return_prize) as return_prize,SUM(rebate) as rebate, SUM(profit) as profit from lottery_pl_report where create_time>:startTime and create_time<=:endTime and  user_name in(:userNameList) and code_name=:codeName GROUP BY user_name";
+	    String sql2="select user_name,SUM(consumption) as consumption,SUM(cancel_amount) as cancel_amount,SUM(return_prize) as return_prize,SUM(rebate) as rebate, SUM(profit) as profit from lottery_pl_report where create_time>=:startTime and create_time<:endTime and  user_name in(:userNameList) and code_name=:codeName GROUP BY user_name";
 	    Query<?> query2=getSessionFactory().getCurrentSession().createNativeQuery(sql2);
 	    query2.setParameterList("userNameList", userNameList);
 	    query2.setParameter("codeName",codeName);
@@ -211,7 +211,7 @@ public class LReportDaoImpl extends DefaultGenericDaoImpl<LotteryPlReport> imple
 		}
 		map.put("data", listRecord);
 		
-		String sqlsum="select SUM(consumption) as consumption,SUM(cancel_amount) as cancel_amount,SUM(return_prize) as return_prize,SUM(rebate) as rebate, SUM(profit) as profit from lottery_pl_report where create_time>:startTime and create_time<=:endTime and  user_name in(:userNameList) and code_name=:codeName";
+		String sqlsum="select SUM(consumption) as consumption,SUM(cancel_amount) as cancel_amount,SUM(return_prize) as return_prize,SUM(rebate) as rebate, SUM(profit) as profit from lottery_pl_report where create_time>=:startTime and create_time<:endTime and  user_name in(:userNameList) and code_name=:codeName";
 		Query<?> querysum=getSessionFactory().getCurrentSession().createNativeQuery(sqlsum);
 		querysum.setParameterList("userNameList", userNameList);
 		querysum.setParameter("codeName",codeName);
