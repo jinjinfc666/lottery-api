@@ -20,11 +20,6 @@
                 <comment>�û����</comment>
             </column>
         </property>
-        <property generated="never" lazy="false" name="systemRecharge" optimistic-lock="true" type="big_decimal" unique="false">
-            <column name="system_recharge">
-                <comment>ϵͳ��ֵ</comment>
-            </column>
-        </property>
         <property generated="never" lazy="false" name="withdrawal" optimistic-lock="true" type="big_decimal" unique="false">
             <column name="withdrawal">
                 <comment>�û�ȡ��</comment>

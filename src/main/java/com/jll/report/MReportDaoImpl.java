@@ -93,7 +93,7 @@ public class MReportDaoImpl extends DefaultGenericDaoImpl<MemberPlReport> implem
 			map.put("startTime", beginDate);
 			map.put("endTime", endDate);
 		}
-		String sql="SELECT sum(deposit) as sumDeposit,sum(system_recharge) as sumSystemRecharge, sum(withdrawal) as sumWithdrawal, sum(deduction) as sumDeduction, sum(consumption) as sumConsumption, sum(cancel_amount) as sumCancelAmount, sum(return_prize) as sumReturnPrize, sum(rebate) as sumRebate, sum(current_balance) as sumCurrentBalance,sum(profit) as sumProfit FROM member_pl_report "+timeSql+userNameSql;
+		String sql="SELECT sum(deposit) as sumDeposit, sum(withdrawal) as sumWithdrawal, sum(deduction) as sumDeduction, sum(consumption) as sumConsumption, sum(cancel_amount) as sumCancelAmount, sum(return_prize) as sumReturnPrize, sum(rebate) as sumRebate, sum(current_balance) as sumCurrentBalance,sum(profit) as sumProfit FROM member_pl_report "+timeSql+userNameSql;
 		logger.debug(sql+"-----------------------------queryLoyTst----SQL--------------------------------");
 	    Query<?> query = getSessionFactory().getCurrentSession().createNativeQuery(sql);
 		if (map != null) {  
@@ -119,23 +119,21 @@ public class MReportDaoImpl extends DefaultGenericDaoImpl<MemberPlReport> implem
 			BigDecimal bd0 = (BigDecimal) obj[0];
 			m.setDeposit(bd0);
 			BigDecimal bd1 = (BigDecimal) obj[1];
-			m.setSystemRecharge(bd1);
+			m.setWithdrawal(bd1);
 			BigDecimal bd2 = (BigDecimal) obj[2];
-			m.setWithdrawal(bd2);
+			m.setDeduction(bd2);
 			BigDecimal bd3 = (BigDecimal) obj[3];
-			m.setDeduction(bd3);
+			m.setConsumption(bd3);
 			BigDecimal bd4 = (BigDecimal) obj[4];
-			m.setConsumption(bd4);
+			m.setCancelAmount(bd4);
 			BigDecimal bd5 = (BigDecimal) obj[5];
-			m.setCancelAmount(bd5);
+			m.setReturnPrize(bd5);
 			BigDecimal bd6 = (BigDecimal) obj[6];
-			m.setReturnPrize(bd6);
+			m.setRebate(bd6);
 			BigDecimal bd7 = (BigDecimal) obj[7];
-			m.setRebate(bd7);
+			m.setCurrentBalance(bd7);
 			BigDecimal bd8 = (BigDecimal) obj[8];
-			m.setCurrentBalance(bd8);
-			BigDecimal bd9 = (BigDecimal) obj[9];
-			m.setProfit(bd9);
+			m.setProfit(bd8);
 			listRecordSum.add(m);
 		}
 		map.clear();
@@ -213,9 +211,9 @@ public class MReportDaoImpl extends DefaultGenericDaoImpl<MemberPlReport> implem
 		}
 		String sql=null;
 		if(!StringUtils.isBlank(userName)) {
-			sql="SELECT sum(deposit) as sumDeposit,sum(system_recharge) as sumSystemRecharge, sum(withdrawal) as sumWithdrawal, sum(deduction) as sumDeduction, sum(consumption) as sumConsumption, sum(cancel_amount) as sumCancelAmount, sum(return_prize) as sumReturnPrize, sum(rebate) as sumRebate, sum(current_balance) as sumCurrentBalance,sum(recharge_member) as sumRechargeMember,sum(new_members) as sumNewMembers,sum(profit) as sumProfit FROM member_pl_report where "+timeSql+userNameSql;
+			sql="SELECT sum(deposit) as sumDeposit, sum(withdrawal) as sumWithdrawal, sum(deduction) as sumDeduction, sum(consumption) as sumConsumption, sum(cancel_amount) as sumCancelAmount, sum(return_prize) as sumReturnPrize, sum(rebate) as sumRebate, sum(current_balance) as sumCurrentBalance,sum(recharge_member) as sumRechargeMember,sum(new_members) as sumNewMembers,sum(profit) as sumProfit FROM member_pl_report where "+timeSql+userNameSql;
 		}else {
-			sql="SELECT sum(deposit) as sumDeposit,sum(system_recharge) as sumSystemRecharge, sum(withdrawal) as sumWithdrawal, sum(deduction) as sumDeduction, sum(consumption) as sumConsumption, sum(cancel_amount) as sumCancelAmount, sum(return_prize) as sumReturnPrize, sum(rebate) as sumRebate, sum(current_balance) as sumCurrentBalance,sum(recharge_member) as sumRechargeMember,sum(new_members) as sumNewMembers,sum(profit) as sumProfit FROM member_pl_report where "+timeSql+userNameSql;
+			sql="SELECT sum(deposit) as sumDeposit, sum(withdrawal) as sumWithdrawal, sum(deduction) as sumDeduction, sum(consumption) as sumConsumption, sum(cancel_amount) as sumCancelAmount, sum(return_prize) as sumReturnPrize, sum(rebate) as sumRebate, sum(current_balance) as sumCurrentBalance,sum(recharge_member) as sumRechargeMember,sum(new_members) as sumNewMembers,sum(profit) as sumProfit FROM member_pl_report where "+timeSql+userNameSql;
 		}
 		logger.debug(sql+"-----------------------------queryLoyTst----SQL--------------------------------");
 	    Query<?> query = getSessionFactory().getCurrentSession().createNativeQuery(sql);
@@ -242,25 +240,23 @@ public class MReportDaoImpl extends DefaultGenericDaoImpl<MemberPlReport> implem
 			BigDecimal bd0 = (BigDecimal) obj[0];
 			m.setDeposit(bd0);
 			BigDecimal bd1 = (BigDecimal) obj[1];
-			m.setSystemRecharge(bd1);
+			m.setWithdrawal(bd1);
 			BigDecimal bd2 = (BigDecimal) obj[2];
-			m.setWithdrawal(bd2);
+			m.setDeduction(bd2);
 			BigDecimal bd3 = (BigDecimal) obj[3];
-			m.setDeduction(bd3);
+			m.setConsumption(bd3);
 			BigDecimal bd4 = (BigDecimal) obj[4];
-			m.setConsumption(bd4);
+			m.setCancelAmount(bd4);
 			BigDecimal bd5 = (BigDecimal) obj[5];
-			m.setCancelAmount(bd5);
+			m.setReturnPrize(bd5);
 			BigDecimal bd6 = (BigDecimal) obj[6];
-			m.setReturnPrize(bd6);
+			m.setRebate(bd6);
 			BigDecimal bd7 = (BigDecimal) obj[7];
-			m.setRebate(bd7);
-			BigDecimal bd8 = (BigDecimal) obj[8];
-			m.setCurrentBalance(bd8);
-			m.setRechargeMember(Integer.parseInt(String.valueOf(obj[9])));
-			m.setNewMembers(Integer.parseInt(String.valueOf(obj[10])));
-			BigDecimal bd11 = (BigDecimal) obj[11];
-			m.setProfit(bd11);
+			m.setCurrentBalance(bd7);
+			m.setRechargeMember(Integer.parseInt(String.valueOf(obj[8])));
+			m.setNewMembers(Integer.parseInt(String.valueOf(obj[9])));
+			BigDecimal bd10 = (BigDecimal) obj[10];
+			m.setProfit(bd10);
 			listRecordSum.add(m);
 		}
 		map.clear();
@@ -281,7 +277,7 @@ public class MReportDaoImpl extends DefaultGenericDaoImpl<MemberPlReport> implem
 	    Query<?> query1 = getSessionFactory().getCurrentSession().createNativeQuery(sql1);
 	    query1.setParameter("id", id);
 	    List<?> userNameList=query1.list();
-	    String sql2="select user_name,SUM(deposit) as deposit,SUM(system_recharge) as system_recharge,SUM(withdrawal) as withdrawal,SUM(deduction) as deduction,SUM(consumption) as consumption,SUM(cancel_amount) as cancel_amount,SUM(return_prize) as return_prize,SUM(rebate) as rebate,SUM(current_balance) as current_balance,SUM(recharge_member) as recharge_member,SUM(new_members) as new_members,SUM(profit) as profit from member_pl_report where user_name in(:userNameList)  and create_time>=:startTime and create_time<:endTime GROUP BY user_name";
+	    String sql2="select user_name,SUM(deposit) as deposit,SUM(withdrawal) as withdrawal,SUM(deduction) as deduction,SUM(consumption) as consumption,SUM(cancel_amount) as cancel_amount,SUM(return_prize) as return_prize,SUM(rebate) as rebate,SUM(current_balance) as current_balance,SUM(recharge_member) as recharge_member,SUM(new_members) as new_members,SUM(profit) as profit from member_pl_report where user_name in(:userNameList)  and create_time>=:startTime and create_time<:endTime GROUP BY user_name";
 	    Query<?> query2=getSessionFactory().getCurrentSession().createNativeQuery(sql2);
 	    query2.setParameterList("userNameList", userNameList);
 	    Date beginDate = java.sql.Date.valueOf(startTime);
@@ -300,29 +296,27 @@ public class MReportDaoImpl extends DefaultGenericDaoImpl<MemberPlReport> implem
 			BigDecimal bd1 = (BigDecimal) obj[1];
 			m.setDeposit(bd1);
 			BigDecimal bd2 = (BigDecimal) obj[2];
-			m.setSystemRecharge(bd2);
+			m.setWithdrawal(bd2);
 			BigDecimal bd3 = (BigDecimal) obj[3];
-			m.setWithdrawal(bd3);
+			m.setDeduction(bd3);
 			BigDecimal bd4 = (BigDecimal) obj[4];
-			m.setDeduction(bd4);
+			m.setConsumption(bd4);
 			BigDecimal bd5 = (BigDecimal) obj[5];
-			m.setConsumption(bd5);
+			m.setCancelAmount(bd5);
 			BigDecimal bd6 = (BigDecimal) obj[6];
-			m.setCancelAmount(bd6);
+			m.setReturnPrize(bd6);
 			BigDecimal bd7 = (BigDecimal) obj[7];
-			m.setReturnPrize(bd7);
+			m.setRebate(bd7);
 			BigDecimal bd8 = (BigDecimal) obj[8];
-			m.setRebate(bd8);
-			BigDecimal bd9 = (BigDecimal) obj[9];
-			m.setCurrentBalance(bd9);
-			m.setRechargeMember(Integer.parseInt(String.valueOf(obj[10])));
-			m.setNewMembers(Integer.parseInt(String.valueOf(obj[11])));
-			BigDecimal bd12 = (BigDecimal) obj[12];
-			m.setProfit(bd12);
+			m.setCurrentBalance(bd8);
+			m.setRechargeMember(Integer.parseInt(String.valueOf(obj[9])));
+			m.setNewMembers(Integer.parseInt(String.valueOf(obj[10])));
+			BigDecimal bd11 = (BigDecimal) obj[11];
+			m.setProfit(bd11);
 		    listRecord.add(m);
 		}
 		map.put("data", listRecord);
-		String sqlsum="select SUM(deposit) as deposit,SUM(system_recharge) as system_recharge,SUM(withdrawal) as withdrawal,SUM(deduction) as deduction,SUM(consumption) as consumption,SUM(cancel_amount) as cancel_amount,SUM(return_prize) as return_prize,SUM(rebate) as rebate,SUM(current_balance) as current_balance,SUM(recharge_member) as recharge_member,SUM(new_members) as new_members,SUM(profit) as profit from member_pl_report where user_name in(:userNameList)  and create_time>=:startTime and create_time<:endTime";
+		String sqlsum="select SUM(deposit) as deposit,SUM(withdrawal) as withdrawal,SUM(deduction) as deduction,SUM(consumption) as consumption,SUM(cancel_amount) as cancel_amount,SUM(return_prize) as return_prize,SUM(rebate) as rebate,SUM(current_balance) as current_balance,SUM(recharge_member) as recharge_member,SUM(new_members) as new_members,SUM(profit) as profit from member_pl_report where user_name in(:userNameList)  and create_time>=:startTime and create_time<:endTime";
 		Query<?> querysum=getSessionFactory().getCurrentSession().createNativeQuery(sqlsum);
 		querysum.setParameterList("userNameList", userNameList);
 		querysum.setParameter("startTime", beginDate,DateType.INSTANCE);
@@ -342,25 +336,23 @@ public class MReportDaoImpl extends DefaultGenericDaoImpl<MemberPlReport> implem
 			BigDecimal bd0 = (BigDecimal) obj[0];
 			m.setDeposit(bd0);
 			BigDecimal bd1 = (BigDecimal) obj[1];
-			m.setSystemRecharge(bd1);
+			m.setWithdrawal(bd1);
 			BigDecimal bd2 = (BigDecimal) obj[2];
-			m.setWithdrawal(bd2);
+			m.setDeduction(bd2);
 			BigDecimal bd3 = (BigDecimal) obj[3];
-			m.setDeduction(bd3);
+			m.setConsumption(bd3);
 			BigDecimal bd4 = (BigDecimal) obj[4];
-			m.setConsumption(bd4);
+			m.setCancelAmount(bd4);
 			BigDecimal bd5 = (BigDecimal) obj[5];
-			m.setCancelAmount(bd5);
+			m.setReturnPrize(bd5);
 			BigDecimal bd6 = (BigDecimal) obj[6];
-			m.setReturnPrize(bd6);
+			m.setRebate(bd6);
 			BigDecimal bd7 = (BigDecimal) obj[7];
-			m.setRebate(bd7);
-			BigDecimal bd8 = (BigDecimal) obj[8];
-			m.setCurrentBalance(bd8);
-			m.setRechargeMember(Integer.parseInt(String.valueOf(obj[9])));
-			m.setNewMembers(Integer.parseInt(String.valueOf(obj[10])));
-			BigDecimal bd11 = (BigDecimal) obj[11];
-			m.setProfit(bd11);
+			m.setCurrentBalance(bd7);
+			m.setRechargeMember(Integer.parseInt(String.valueOf(obj[8])));
+			m.setNewMembers(Integer.parseInt(String.valueOf(obj[9])));
+			BigDecimal bd10 = (BigDecimal) obj[10];
+			m.setProfit(bd10);
 			listRecordSum.add(m);
 		}
 	    map.put("sumData", listRecordSum);

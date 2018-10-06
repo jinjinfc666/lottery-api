@@ -1430,7 +1430,7 @@ public class Constants {
 		PROMO_POINTS("promo_points","活动积分",1),
 		ACC_FREEZE("acc_freeze","账户资金冻结",-1),
 		ACC_UNFREEZE("acc_unfreeze","账户资金解冻",1),
-		SYS_DEDUCTION("sys_deduction","系统扣除",-1),
+		SYS_DEDUCTION("sys_deduction","系统扣款",-1),
 		SYS_ADD("sys_add","系统加钱",1),
 		DAILY_SIGN_IN("daily_sign_in","签到积分",1),
 		POINTS_EXCHANGE("points_exchange","积分兑换",-1),
@@ -1907,7 +1907,7 @@ public class Constants {
 		PROMO_POINTS("promo_points","活动积分",1),
 		ACC_FREEZE("acc_freeze","账户资金冻结",-1),
 		ACC_UNFREEZE("acc_unfreeze","账户资金解冻",1),
-		SYS_DEDUCTION("sys_deduction","系统扣除",-1),
+		SYS_DEDUCTION("sys_deduction","系统扣款",-1),
 		SYS_ADD("sys_add","系统加钱",1),
 		WITHDRAWAL_BACK("withdrawal_back","提款退还",1);
 
@@ -1966,7 +1966,7 @@ public class Constants {
 		PROMO_POINTS("promo_points","活动积分",1),
 		ACC_FREEZE("acc_freeze","账户资金冻结",-1),
 		ACC_UNFREEZE("acc_unfreeze","账户资金解冻",1),
-		SYS_DEDUCTION("sys_deduction","系统扣除",-1),
+		SYS_DEDUCTION("sys_deduction","系统扣款",-1),
 		SYS_ADD("sys_add","系统加钱",1);
 
 		
@@ -2100,8 +2100,15 @@ public class Constants {
 	 * 提现备注
 	 * */
 	public static enum Remark{
-		SUSSE(0,"银行付款失败"),
-		FIEL(1,"付款成功");
+		DATA_IS_NOT_LOCKED(0,"资料未锁定"),
+		NO_NAME(1,"名字未填写"),
+		BANK_NOT_SELECTED(2,"银行未选择"),
+		SPECIAL_REASON(3,"特殊原因"),
+		BANK_MAINTENANCE(4,"银行维护"),
+		CONSUMPTION_HAS_NOT_BEEN_REACHED(5,"消费未达到"),
+		CARD_NUMBER_NOT_FILLED_IN(6,"卡号未填写"),
+		DATA_ERROR(7,"资料错误"),
+		BANK_PUNCH(8,"银行冲正");
 		
 		private Integer code;
 		private String name;
