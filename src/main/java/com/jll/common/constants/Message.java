@@ -120,7 +120,7 @@ public class Message {
 		ERROR_SYSTEM_AUTH_NO_ACCESS_PERMISSION("050001", "No Permission to access resource!!"),
 		ERROR_SYSTEM_INVALID_BETTING_TIMES("050002", "Invalid betting times!!"),
 		ERROR_SYSTEM_INVALID_BETTING_MONEY_UNIT("050003", "Invalid betting money unit!!"),
-		
+		ERROR_SYSTEM_LOG_OUT("050004", "Error log out!!"),
 		/**************pay model*************************/
 		ERROR_MESSAGE_PAY_TYPE_DISABLE("060001", "This pay type is disable!!!"),
 		ERROR_MESSAGE_PAYMENT_AMOUNT_MORE("060001", "This pay type payment amount more than maximum %d !!!"),

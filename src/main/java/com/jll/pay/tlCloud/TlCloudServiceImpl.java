@@ -80,7 +80,7 @@ public class TlCloudServiceImpl implements TlCloudService
 		pushParams.put("pay_username", payerName);
 		pushParams.put("order_id",depositOrder.getOrderNum());
 		pushParams.put("bank_flag", rechargeType);
-		pushParams.put("card_number", params.get("cardNumber").toString());
+		pushParams.put("card_number", params.get("payCardNumber").toString());
 		pushParams.put("amount", amount);
 		pushParams.put("create_time", createTime);
 		pushParams.put("comment", depositOrder.getOrderNum());
