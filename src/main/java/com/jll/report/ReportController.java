@@ -359,7 +359,7 @@ public class ReportController {
 		}
 		return map;
 	}
-	//修改提现备注时需要的备注
+	//获取提现备注时需要的备注
 	@RequestMapping(value={"/DWD/DWDRemark"}, method={RequestMethod.GET}, produces={"application/json"})
 	public Map<String, Object> queryDWDRemark() {
 		Map<String, Object> ret = new HashMap<>();
