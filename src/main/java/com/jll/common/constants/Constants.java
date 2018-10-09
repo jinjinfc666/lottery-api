@@ -1396,8 +1396,6 @@ public class Constants {
 		WITHDRAWAL_BACK("withdrawal_back","提款退还",-1),
 		ACTIVITY_GIFT_RED("activity_gift_red","活动红包礼金",1),
 		RECOVERY_PAYOUT("recovery_payout","派奖回收",-1),
-		ISSUE_DISBALE("issue_disbale","期次作废",1),
-		POINT_EXCHANGE("point_exchange","积分兑换",-1),
 		USER_RED_BAG_WITHDRAWAL("user_red_bag_withdrawal","用户红包提现",-1),
 		USER_RED_ENVELOPE_WITHDRAWAL_DEDUCTION("user_red_envelope_withdrawal_deduction","用户红包提现扣除",-1),;
 		

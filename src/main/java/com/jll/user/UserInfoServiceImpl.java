@@ -873,7 +873,7 @@ public class UserInfoServiceImpl implements UserInfoService
 		addDtl.setPreAmount(dbAcc.getRewardPoints().floatValue());
 		addDtl.setPostAmount(Double.valueOf(BigDecimalUtil.sub(addDtl.getPreAmount(),addDtl.getAmount())).floatValue());
 		addDtl.setWalletId(dbAcc.getId());
-		addDtl.setOperationType(AccOperationType.POINT_EXCHANGE.getCode());
+		addDtl.setOperationType(AccOperationType.POINTS_EXCHANGE.getCode());
 		supserDao.save(addDtl);
 		dbAcc.setRewardPoints(addDtl.getPostAmount().longValue());
 		supserDao.update(dbAcc);
@@ -889,7 +889,7 @@ public class UserInfoServiceImpl implements UserInfoService
 		addRedDtl.setPreAmount(redAcc.getBalance().floatValue());
 		addRedDtl.setPostAmount(Double.valueOf(BigDecimalUtil.add(addRedDtl.getPreAmount(),addRedDtl.getAmount())).floatValue());
 		addRedDtl.setWalletId(redAcc.getId());
-		addRedDtl.setOperationType(AccOperationType.POINT_EXCHANGE.getCode());
+		addRedDtl.setOperationType(AccOperationType.POINTS_EXCHANGE.getCode());
 		supserDao.save(addRedDtl);
 		redAcc.setRewardPoints(addRedDtl.getPostAmount().longValue());
 		supserDao.update(redAcc);
