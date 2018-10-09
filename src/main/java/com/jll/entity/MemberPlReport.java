@@ -19,7 +19,8 @@ public class MemberPlReport implements java.io.Serializable {
 	private BigDecimal cancelAmount;
 	private BigDecimal returnPrize;
 	private BigDecimal rebate;
-	private BigDecimal currentBalance;
+	private BigDecimal mainWallet;
+	private BigDecimal redWallet;
 	private Integer rechargeMember;
 	private Integer newMembers;
 	private BigDecimal profit;
@@ -34,7 +35,7 @@ public class MemberPlReport implements java.io.Serializable {
 
 	public MemberPlReport(Date createTime, String userName, BigDecimal deposit,
 			BigDecimal withdrawal, BigDecimal deduction, BigDecimal consumption, BigDecimal cancelAmount,
-			BigDecimal returnPrize, BigDecimal rebate, BigDecimal currentBalance, Integer rechargeMember,
+			BigDecimal returnPrize, BigDecimal rebate, BigDecimal mainWallet,BigDecimal redWallet, Integer rechargeMember,
 			Integer newMembers, BigDecimal profit, Integer userType) {
 		this.createTime = createTime;
 		this.userName = userName;
@@ -45,11 +46,28 @@ public class MemberPlReport implements java.io.Serializable {
 		this.cancelAmount = cancelAmount;
 		this.returnPrize = returnPrize;
 		this.rebate = rebate;
-		this.currentBalance = currentBalance;
+		this.mainWallet = mainWallet;
+		this.redWallet = redWallet;
 		this.rechargeMember = rechargeMember;
 		this.newMembers = newMembers;
 		this.profit = profit;
 		this.userType = userType;
+	}
+
+	public BigDecimal getMainWallet() {
+		return mainWallet;
+	}
+
+	public void setMainWallet(BigDecimal mainWallet) {
+		this.mainWallet = mainWallet;
+	}
+
+	public BigDecimal getRedWallet() {
+		return redWallet;
+	}
+
+	public void setRedWallet(BigDecimal redWallet) {
+		this.redWallet = redWallet;
 	}
 
 	public Integer getId() {
@@ -131,14 +149,6 @@ public class MemberPlReport implements java.io.Serializable {
 
 	public void setRebate(BigDecimal rebate) {
 		this.rebate = rebate;
-	}
-
-	public BigDecimal getCurrentBalance() {
-		return this.currentBalance;
-	}
-
-	public void setCurrentBalance(BigDecimal currentBalance) {
-		this.currentBalance = currentBalance;
 	}
 
 	public Integer getRechargeMember() {

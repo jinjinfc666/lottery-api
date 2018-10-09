@@ -928,8 +928,7 @@ public class Constants {
 	 *报表统计 需要的类型：扣除
 	 */
 	public static enum Deduction{
-		RECHARGE_DEDUCTION("recharge_deduction","充值扣除"),//充值扣除
-		SYS_DEDUCTION("sys_deduction","系统扣除");//系统扣除
+		SYS_DEDUCTION("sys_deduction","系统扣款");//系统扣款
 		
 		private String code;
 		private String name;
@@ -967,7 +966,7 @@ public class Constants {
 	 *报表统计 需要的类型：用户存款
 	 */
 	public static enum UserDeposit{
-		USER_DEPOSIT("user_deposit","用户存款");
+		DEPOSIT("deposit","用户存款");
 		
 		private String code;
 		private String name;
@@ -1002,50 +1001,10 @@ public class Constants {
 		}
 	}
 	/**
-	 *报表统计 需要的类型：系统充值
-	 */
-	public static enum SystemRecharge{
-		SYSTEM_RECHARGE("system_recharge","系统充值"),
-		AGENT_RECHARGE("agent_recharge","代理充值");
-		
-		
-		private String code;
-		private String name;
-		
-		private SystemRecharge(String code,String name) {
-			this.code = code;
-			this.name = name;
-		}
-		
-		public String getCode() {
-			return this.code;
-		}
-		public String getName() {
-			return this.name;
-		}
-		
-		public static List<String> getList() {
-			List<String> map=new ArrayList<String>();
-			SystemRecharge[] names = SystemRecharge.values();
-			for(SystemRecharge name: names) {
-				map.add(name.getCode());
-			}
-			return map;
-		}
-		public static Map<String,Object> getMap() {
-			Map<String,Object> map=new HashMap<String,Object>();
-			SystemRecharge[] names = SystemRecharge.values();
-			for(SystemRecharge name: names) {
-				map.put(name.getCode(), name.getName());
-			}
-			return map;
-		}
-	}
-	/**
 	 *报表统计 需要的类型：用户取款
 	 */
 	public static enum UserWithdrawal{
-		USER_WITHDRAWAL("user_withdrawal","用户取款");
+		WITHDRAW("withdraw","用户取款");
 		
 		private String code;
 		private String name;
@@ -1083,7 +1042,7 @@ public class Constants {
 	 *报表统计 需要的类型：消费
 	 */
 	public static enum Consumption{
-		INITIATE_PURCHASING("initiate_purchasing","发起代购");
+		BETTING("betting","投注");
 		
 		private String code;
 		private String name;
@@ -1121,7 +1080,7 @@ public class Constants {
 	 *报表统计 需要的类型：撤单
 	 */
 	public static enum Withdrawal{
-		SYSTEM_WITHDRAWAL("system_withdrawal","系统撤单");
+		REFUND("refund","撤单返回本金");
 		
 		private String code;
 		private String name;
@@ -1159,7 +1118,7 @@ public class Constants {
 	 *报表统计 需要的类型：返奖
 	 */
 	public static enum ReturnPrize{
-		SYSTEM_AWARD("system_award","系统派奖");
+		PAYOUT("payout","系统派奖");
 		
 		private String code;
 		private String name;
@@ -1197,7 +1156,7 @@ public class Constants {
 	 *报表统计 需要的类型：返点
 	 */
 	public static enum Rebate{
-		SYSTEM_REBATE("system_rebate","系统返点");
+		REBATE("rebate","返点");
 		
 		private String code;
 		private String name;
