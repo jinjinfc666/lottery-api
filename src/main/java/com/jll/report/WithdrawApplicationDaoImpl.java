@@ -10,7 +10,9 @@ import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.springframework.stereotype.Repository;
 
+import com.jll.common.constants.Constants.WithdrawOrderState;
 import com.jll.common.utils.StringUtils;
+import com.jll.common.utils.Utils;
 import com.jll.dao.DefaultGenericDaoImpl;
 import com.jll.entity.WithdrawApplication;
 
@@ -68,5 +70,30 @@ public class WithdrawApplicationDaoImpl extends DefaultGenericDaoImpl<WithdrawAp
 		query.setParameter("id", id);;
 		query.executeUpdate();
 	}
+
+	@Override
+	public double getUserWithdrawAmountTotal(int userId, int walletId, Date start, Date end) {
+		String sql = "select sum(amount) from WithdrawApplication where userId=? and walletId=? and ( state=? or state=? ) and createTime >= ? and createTime < ?";
+		List<Object> params = new ArrayList<>();
+		params.add(userId);
+		params.add(walletId);
+		params.add(WithdrawOrderState.ORDER_END.getCode());
+		params.add(WithdrawOrderState.ORDER_INIT.getCode());
+		params.add(start);
+		params.add(end);
+		 Query<Double> query = getSessionFactory().getCurrentSession().createQuery(sql, Double.class);
+	    if(params != null) {
+	    	int indx = 0;
+	    	for(Object para : params) {
+	    		query.setParameter(indx, para);
+	    		
+	    		indx++;
+	    	}
+	    }
+		 return Utils.toDouble(query.getSingleResult());
+	
+	}
+
+	
 }
 

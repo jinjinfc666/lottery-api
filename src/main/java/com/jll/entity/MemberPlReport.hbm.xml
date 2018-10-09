@@ -50,8 +50,13 @@
                 <comment>����</comment>
             </column>
         </property>
-        <property generated="never" lazy="false" name="currentBalance" optimistic-lock="true" type="big_decimal" unique="false">
-            <column name="current_balance">
+        <property generated="never" lazy="false" name="mainWallet" optimistic-lock="true" type="big_decimal" unique="false">
+            <column name="main_wallet">
+                <comment>��ǰ���</comment>
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="redWallet" optimistic-lock="true" type="big_decimal" unique="false">
+            <column name="red_wallet">
                 <comment>��ǰ���</comment>
             </column>
         </property>

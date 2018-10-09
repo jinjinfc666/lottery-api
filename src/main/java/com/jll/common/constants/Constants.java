@@ -928,8 +928,7 @@ public class Constants {
 	 *报表统计 需要的类型：扣除
 	 */
 	public static enum Deduction{
-		RECHARGE_DEDUCTION("recharge_deduction","充值扣除"),//充值扣除
-		SYS_DEDUCTION("sys_deduction","系统扣除");//系统扣除
+		SYS_DEDUCTION("sys_deduction","系统扣款");//系统扣款
 		
 		private String code;
 		private String name;
@@ -967,7 +966,7 @@ public class Constants {
 	 *报表统计 需要的类型：用户存款
 	 */
 	public static enum UserDeposit{
-		USER_DEPOSIT("user_deposit","用户存款");
+		DEPOSIT("deposit","用户存款");
 		
 		private String code;
 		private String name;
@@ -1002,50 +1001,10 @@ public class Constants {
 		}
 	}
 	/**
-	 *报表统计 需要的类型：系统充值
-	 */
-	public static enum SystemRecharge{
-		SYSTEM_RECHARGE("system_recharge","系统充值"),
-		AGENT_RECHARGE("agent_recharge","代理充值");
-		
-		
-		private String code;
-		private String name;
-		
-		private SystemRecharge(String code,String name) {
-			this.code = code;
-			this.name = name;
-		}
-		
-		public String getCode() {
-			return this.code;
-		}
-		public String getName() {
-			return this.name;
-		}
-		
-		public static List<String> getList() {
-			List<String> map=new ArrayList<String>();
-			SystemRecharge[] names = SystemRecharge.values();
-			for(SystemRecharge name: names) {
-				map.add(name.getCode());
-			}
-			return map;
-		}
-		public static Map<String,Object> getMap() {
-			Map<String,Object> map=new HashMap<String,Object>();
-			SystemRecharge[] names = SystemRecharge.values();
-			for(SystemRecharge name: names) {
-				map.put(name.getCode(), name.getName());
-			}
-			return map;
-		}
-	}
-	/**
 	 *报表统计 需要的类型：用户取款
 	 */
 	public static enum UserWithdrawal{
-		USER_WITHDRAWAL("user_withdrawal","用户取款");
+		WITHDRAW("withdraw","用户取款");
 		
 		private String code;
 		private String name;
@@ -1083,7 +1042,7 @@ public class Constants {
 	 *报表统计 需要的类型：消费
 	 */
 	public static enum Consumption{
-		INITIATE_PURCHASING("initiate_purchasing","发起代购");
+		BETTING("betting","投注");
 		
 		private String code;
 		private String name;
@@ -1121,7 +1080,7 @@ public class Constants {
 	 *报表统计 需要的类型：撤单
 	 */
 	public static enum Withdrawal{
-		SYSTEM_WITHDRAWAL("system_withdrawal","系统撤单");
+		REFUND("refund","撤单返回本金");
 		
 		private String code;
 		private String name;
@@ -1159,7 +1118,7 @@ public class Constants {
 	 *报表统计 需要的类型：返奖
 	 */
 	public static enum ReturnPrize{
-		SYSTEM_AWARD("system_award","系统派奖");
+		PAYOUT("payout","系统派奖");
 		
 		private String code;
 		private String name;
@@ -1197,7 +1156,7 @@ public class Constants {
 	 *报表统计 需要的类型：返点
 	 */
 	public static enum Rebate{
-		SYSTEM_REBATE("system_rebate","系统返点");
+		REBATE("rebate","返点");
 		
 		private String code;
 		private String name;
@@ -1434,13 +1393,11 @@ public class Constants {
 		SYS_ADD("sys_add","系统加钱",1),
 		DAILY_SIGN_IN("daily_sign_in","签到积分",1),
 		POINTS_EXCHANGE("points_exchange","积分兑换",-1),
-		WITHDRAWAL_BACK("withdrawal_back","提款退还",-1),
+//		WITHDRAWAL_BACK("withdrawal_back","提款退还",-1),
 		ACTIVITY_GIFT_RED("activity_gift_red","活动红包礼金",1),
-		RECOVERY_PAYOUT("recovery_payout","派奖回收",-1),
-		ISSUE_DISBALE("issue_disbale","期次作废",1),
-		POINT_EXCHANGE("point_exchange","积分兑换",-1),
-		USER_RED_BAG_WITHDRAWAL("user_red_bag_withdrawal","用户红包提现",-1),
-		USER_RED_ENVELOPE_WITHDRAWAL_DEDUCTION("user_red_envelope_withdrawal_deduction","用户红包提现扣除",-1),;
+		RECOVERY_PAYOUT("recovery_payout","派奖回收",-1);
+//		USER_RED_BAG_WITHDRAWAL("user_red_bag_withdrawal","用户红包提现",-1);
+//		USER_RED_ENVELOPE_WITHDRAWAL_DEDUCTION("user_red_envelope_withdrawal_deduction","用户红包提现扣除",-1);
 		
 		private String code;
 		
@@ -1893,11 +1850,6 @@ public class Constants {
 	 * 后台管理人员操作主钱包时，需要操作的类型
 	 */
 	public static enum MainWallet{
-		DEPOSIT("deposit","充值",1),
-		WITHDRAW("withdraw","提款",-1),
-		WD_FREEZE("wd_freeze","提款冻结",-1),
-		WD_UNFREEZE("wd_unfreeze","提款解冻",1),
-		TRANSFER("transfer","转账",-1),
 		CUSTOMER_CLAIMS("customer_claims","平台奖励",1),
 		PLAT_REWARD("plat_reward","平台积分",1),
 		DEPOSIT_GIFT("deposit_gift","充值礼金",1),
@@ -1908,8 +1860,8 @@ public class Constants {
 		ACC_FREEZE("acc_freeze","账户资金冻结",-1),
 		ACC_UNFREEZE("acc_unfreeze","账户资金解冻",1),
 		SYS_DEDUCTION("sys_deduction","系统扣款",-1),
-		SYS_ADD("sys_add","系统加钱",1),
-		WITHDRAWAL_BACK("withdrawal_back","提款退还",1);
+		SYS_ADD("sys_add","系统加钱",1);
+//		WITHDRAWAL_BACK("withdrawal_back","提款退还",1);
 
 		
 		private String code;

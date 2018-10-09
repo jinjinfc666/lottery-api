@@ -39,6 +39,11 @@
                 <comment>�û�����,��Ӧ�û��������</comment>
             </column>
         </property>
+        <property generated="never" lazy="false" name="failLoginCount" optimistic-lock="true" type="java.lang.Integer" unique="false">
+            <column name="fail_login_count">
+                <comment>��½����</comment>
+            </column>
+        </property>
         <property generated="never" lazy="false" name="loginCount" optimistic-lock="true" type="java.lang.Integer" unique="false">
             <column name="login_count">
                 <comment>��½����</comment>

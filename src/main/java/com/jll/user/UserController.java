@@ -1087,12 +1087,23 @@ public class UserController {
 			return ret;
 		}
 	}
+	
+	/**
+	 * 
+	 * @param bankId   银行卡ID ,若小于0,则使用默认第一张银行卡，若为为银行卡id，则使用该id对应的银行卡
+	 * @param amount   提款金额
+	 * @param passoword 提款密码
+	 * @return
+	 */
 	@ApiComment(value="User Red Wallet Amount Transfer",seeClass=WithdrawApplication.class)
    	@RequestMapping(value="/red-wallet/amount/transfer", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
    	public Map<String, Object> userRedWalletAmountTransfer(@RequestBody Map<String, String> params) {
-		String userName = Utils.toString(params.get("userName"));
+		
+		int bankId = Utils.toInteger(params.get("bankId"));
+		String passoword = Utils.toString(params.get("passoword"));
 		double amount = Utils.toDouble(params.get("amount"));
-   		return userInfoService.processUserRedWalletAmountTransfer(userName,amount);
+		
+   		return userInfoService.processUserRedWalletAmountTransfer(bankId, amount,passoword);
    	}
 	
 	@ApiComment(value="User Add Bank",seeClass=BankCardState.class)

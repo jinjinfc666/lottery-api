@@ -179,7 +179,7 @@ public class IssueServiceImpl implements IssueService
 					if(addDtail1.getPostAmount() < 0){
 						break;
 					}else{
-						order.setState(backPoint?OrderState.DISABLE.getCode():OrderState.RE_PAYOUT.getCode());
+						order.setState(backPoint?OrderState.SYS_CANCEL.getCode():OrderState.RE_PAYOUT.getCode());
 						dtlLists.add(addDtail1);
 						curAcc.setBalance(new BigDecimal(addDtail1.getPostAmount()));
 					}

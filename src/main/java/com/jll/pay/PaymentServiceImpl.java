@@ -18,12 +18,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.jll.common.cache.CacheRedisService;
 import com.jll.common.constants.Constants;
+import com.jll.common.constants.Constants.DepositOrderState;
 import com.jll.common.constants.Constants.PayChannelType;
 import com.jll.common.constants.Constants.PayChannnelEMA;
 import com.jll.common.constants.Constants.PayTypeState;
+import com.jll.common.constants.Constants.UserType;
 import com.jll.common.constants.Message;
 import com.jll.common.utils.PageQuery;
 import com.jll.common.utils.StringUtils;
+import com.jll.common.utils.Utils;
 import com.jll.dao.PageQueryDao;
 import com.jll.dao.SupserDao;
 import com.jll.entity.DepositApplication;
@@ -32,8 +35,10 @@ import com.jll.entity.PayType;
 import com.jll.entity.UserInfo;
 import com.jll.pay.caiPay.CaiPayService;
 import com.jll.pay.order.DepositOrderDao;
+import com.jll.pay.order.DepositOrderService;
 import com.jll.pay.tlCloud.TlCloudService;
 import com.jll.pay.zhihpay.ZhihPayService;
+import com.jll.user.UserInfoService;
 
 @Service
 @Transactional
@@ -50,6 +55,9 @@ public class PaymentServiceImpl  implements PaymentService
   CaiPayService caiPayService;
   
   @Resource
+  UserInfoService userInfoService;
+  
+  @Resource
   ZhihPayService zhihPayService;
   
   @Resource
@@ -60,6 +68,9 @@ public class PaymentServiceImpl  implements PaymentService
   
   @Resource
   DepositOrderDao depositOrderDao;
+  
+  @Resource
+  DepositOrderService depositOrderService;
   
   public long queryDepositTimes(int userId){
     return this.trendAnalysisDao.queryDepositTimes(userId);
@@ -214,5 +225,26 @@ public class PaymentServiceImpl  implements PaymentService
 			}
 		}
 		return ret;
+	}
+
+	@Override
+	public Map<String, Object> processOrderEnd(Map<String, Object> params) {
+		 Map<String, Object> ret = new HashMap<String, Object>();
+		
+		 UserInfo curInfo = userInfoService.getCurLoginInfo();
+		 DepositApplication dbDep =  depositOrderDao.queryDepositOrderById(Utils.toString(params.get("orderNum")));
+		 if(null == dbDep
+				 ||  DepositOrderState.INIT_OR_PUSHED.getCode() != dbDep.getState()
+				 || null == curInfo
+				 || curInfo.getUserType() !=  UserType.SYS_ADMIN.getCode()){
+				ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+				ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+				ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+				return ret;
+		 }
+		 
+		 depositOrderService.receiveDepositOrder(Utils.toString(params.get("orderNum")), Utils.toString(params.get("remark")));
+		 ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		 return ret;
 	}
 }
