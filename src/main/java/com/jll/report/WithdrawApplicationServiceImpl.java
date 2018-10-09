@@ -65,4 +65,11 @@ public class WithdrawApplicationServiceImpl implements WithdrawApplicationServic
 		}
 		return false;
 	}
+
+	@Override
+	public double getUserWithdrawAmountTotal(int userId, int walletId,Date start, Date end) {
+		return withdrawApplicationDao.getUserWithdrawAmountTotal(userId, walletId,start, end);
+	}
+
+	
 }

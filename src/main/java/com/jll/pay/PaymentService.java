@@ -16,4 +16,5 @@ public abstract interface PaymentService
    public List<PayChannel> getUserPayChannel();
    public Map<String, Object> getUserPayOrder(int userId, PageQueryDao page);
    public Map<String, Object> payOrderToSystem(int userId, DepositApplication info,Map<String, Object> pramsInfo);
+   public Map<String, Object> processOrderEnd(Map<String, Object> params);
 }

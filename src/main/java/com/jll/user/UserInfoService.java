@@ -120,7 +120,7 @@ public interface UserInfoService
 	Float calPrizePattern(UserInfo user, String lottoType);
 	
 	
-	Map<String, Object> processUserRedWalletAmountTransfer(String userName, double amount);
+	Map<String, Object> processUserRedWalletAmountTransfer(int bankId, double amount, String passoword);
 	Map<String, Object> saveUpdateDirectOperationUserAmount(UserAccountDetails dtl);
 	Map<String, Object> updateUserWalletLockStatus(UserAccount dtl);
 	//用户登录后查询用户银行卡信息

@@ -34,18 +34,19 @@ public class DepositOrderServiceImpl implements DepositOrderService
 	}
 
 	@Override
-	public void receiveDepositOrder(String orderId) {
+	public void receiveDepositOrder(String orderId,String remark) {
 		DepositApplication depositOrder = depositOrderDao.queryDepositOrderById(orderId);
 		
 		//主钱包
 		UserAccount mainAcc = (UserAccount) supserDao.findByName(UserAccount.class, "userId", depositOrder.getUserId(), "accType", WalletType.MAIN_WALLET.getCode()).get(0);
 		
 		depositOrder.setState(DepositOrderState.END_ORDER.getCode());
-		
+		depositOrder.setRemark(remark);
 		//明细
 		UserAccountDetails addDtl = new UserAccountDetails();
 		addDtl.setUserId(mainAcc.getUserId());
 		addDtl.setCreateTime(new Date());
+		
 		addDtl.setAmount(depositOrder.getAmount().floatValue());
 		addDtl.setPreAmount(mainAcc.getBalance().floatValue());
 		addDtl.setPostAmount(Double.valueOf(BigDecimalUtil.add(addDtl.getPreAmount(),addDtl.getAmount())).floatValue());
