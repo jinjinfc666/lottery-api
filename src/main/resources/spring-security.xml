@@ -10,6 +10,12 @@
     <!--处理访问成功-->
 	<beans:bean id="oauth2AuthenticationEntryPoint" class="org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint" />
 		
+	<!--处理访问失败-->
+	<beans:bean id="oauth2AuthenticationFailureHandler" class="com.sys.security.LoginFailureHandler" />
+	
+	<!--处理访问失败-->
+	<beans:bean id="oauth2AuthenticationSuccessHandler" class="com.sys.security.LoginSuccessHandler" />
+	
     <!--处理访问拒绝-->
 	<beans:bean id="oauth2AccessDeniedHandler" class="org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler" />
 		
@@ -93,8 +99,10 @@
 		</beans:constructor-arg>
 	</beans:bean>
 
-	<beans:bean id="clientCredentialsTokenEndpointFilter" class="org.springframework.security.oauth2.provider.client.ClientCredentialsTokenEndpointFilter">
+	<beans:bean id="clientCredentialsTokenEndpointFilter" class="com.sys.security.AuthFilter">
 		<beans:property name="authenticationManager" ref="oauth2AuthenticationManager" />
+		<beans:property name="authenticationFailureHandler" ref="oauth2AuthenticationFailureHandler" />
+		<beans:property name="authenticationSuccessHandler" ref="oauth2AuthenticationSuccessHandler" />
 	</beans:bean>
 	
 	<!--oauth2 的server所能支持的请求类型-->
