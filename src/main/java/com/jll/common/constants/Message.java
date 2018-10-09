@@ -125,6 +125,8 @@ public class Message {
 		ERROR_MESSAGE_PAY_TYPE_DISABLE("060001", "This pay type is disable!!!"),
 		ERROR_MESSAGE_PAYMENT_AMOUNT_MORE("060001", "This pay type payment amount more than maximum %d !!!"),
 		
+		/**************log module*************************/
+		ERROR_LOGIN_INVALID_CAPTCHA("070001", "Invalid captcha!!!"),
 		;
 		
 		private String code;
