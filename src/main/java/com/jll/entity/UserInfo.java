@@ -18,6 +18,7 @@ public class UserInfo implements java.io.Serializable {
 	private Integer state;
 	private Integer level;
 	private Integer loginCount;
+	private Integer failLoginCount;
 	private Date unlockTime;
 	private Integer userType;
 	private String superior;
@@ -37,7 +38,7 @@ public class UserInfo implements java.io.Serializable {
 	}
 
 	public UserInfo(String realName, String userName, String userId, String loginPwd, String fundPwd, Integer state, Integer level,
-			Integer loginCount, Date unlockTime, Integer userType, String superior, BigDecimal rebate,
+			Integer loginCount,Integer failLoginCount, Date unlockTime, Integer userType, String superior, BigDecimal rebate,
 			BigDecimal platRebate, String phoneNum, String qq, String wechat, String email, Integer isValidPhone,
 			Integer isValidEmail, String regIp, Date createTime, Integer creator) {
 		this.realName = realName;
@@ -48,6 +49,7 @@ public class UserInfo implements java.io.Serializable {
 		this.state = state;
 		this.level = level;
 		this.loginCount = loginCount;
+		this.failLoginCount = failLoginCount;
 		this.unlockTime = unlockTime;
 		this.userType = userType;
 		this.superior = superior;
@@ -62,6 +64,14 @@ public class UserInfo implements java.io.Serializable {
 		this.regIp = regIp;
 		this.createTime = createTime;
 		this.creator = creator;
+	}
+
+	public Integer getFailLoginCount() {
+		return failLoginCount;
+	}
+
+	public void setFailLoginCount(Integer failLoginCount) {
+		this.failLoginCount = failLoginCount;
 	}
 
 	public Integer getId() {
