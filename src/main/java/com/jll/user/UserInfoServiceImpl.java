@@ -903,7 +903,7 @@ public class UserInfoServiceImpl implements UserInfoService
 		if(auth == null) {
 			return null;
 		}
-		return getUserByUserName("luwei");
+		return getUserByUserName("zhaowei");
 		//return getUserByUserName(auth.getName());
 	}
 
@@ -1003,7 +1003,7 @@ public class UserInfoServiceImpl implements UserInfoService
 			return ret;
 		}
 		
-		UserAccountDetails accDtal1 = userAccountDetailsService.initCreidrRecord(dbInfo.getId(), mainAcc, mainAcc.getBalance().doubleValue(), -amount, AccOperationType.WITHDRAW.getCode());
+		UserAccountDetails accDtal1 = userAccountDetailsService.initCreidrRecord(dbInfo.getId(), mainAcc, mainAcc.getBalance().doubleValue(), -amount, AccOperationType.WD_FREEZE.getCode());
 		mainAcc.setBalance(new BigDecimal(accDtal1.getPostAmount()));
 		supserDao.save(accDtal1);
 		
@@ -1053,7 +1053,7 @@ public class UserInfoServiceImpl implements UserInfoService
 		}
 		
 		UserAccount mainAcc = (UserAccount) supserDao.findByName(UserAccount.class, "userId", dbWtd.getUserId(), "accType", WalletType.MAIN_WALLET.getCode()).get(0);
-		UserAccountDetails addDtail1 = userAccountDetailsService.initCreidrRecord(dbWtd.getUserId(),mainAcc, mainAcc.getFreeze().doubleValue(), -mainAcc.getFreeze().doubleValue(), AccOperationType.ACC_UNFREEZE.getCode());
+		UserAccountDetails addDtail1 = userAccountDetailsService.initCreidrRecord(dbWtd.getUserId(),mainAcc, mainAcc.getFreeze().doubleValue(), -mainAcc.getFreeze().doubleValue(), AccOperationType.WD_UNFREEZE.getCode());
 		supserDao.save(addDtail1);
 		mainAcc.setFreeze(new BigDecimal(addDtail1.getPostAmount()));
 		
@@ -1065,7 +1065,7 @@ public class UserInfoServiceImpl implements UserInfoService
 		
 		//审核不通过，退还金额，
 		if(WithdrawOrderState.ORDER_END.getCode() != wtd.getState()){
-			UserAccountDetails addDtail2 = userAccountDetailsService.initCreidrRecord(dbWtd.getUserId(),mainAcc, mainAcc.getBalance().doubleValue(), mainAcc.getFreeze().doubleValue(), AccOperationType.WITHDRAWAL_BACK.getCode());
+			UserAccountDetails addDtail2 = userAccountDetailsService.initCreidrRecord(dbWtd.getUserId(),mainAcc, mainAcc.getBalance().doubleValue(), dbWtd.getAmount().doubleValue(), AccOperationType.WD_UNFREEZE.getCode());
 			supserDao.save(addDtail2);
 			mainAcc.setBalance(new BigDecimal(addDtail2.getPostAmount()));
 		}

@@ -49,7 +49,7 @@ public class CaiPayController
 	    if(isNotified) {
 	    	return "SUCCESS";
 	    }
-	    depositOrderService.receiveDepositOrder(notices.getPrdOrdNo());
+	    depositOrderService.receiveDepositOrder(notices.getPrdOrdNo(),"");
 	    return "SUCCESS";
   }
   
