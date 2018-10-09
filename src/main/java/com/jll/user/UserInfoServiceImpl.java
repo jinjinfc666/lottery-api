@@ -903,7 +903,8 @@ public class UserInfoServiceImpl implements UserInfoService
 		if(auth == null) {
 			return null;
 		}
-		return getUserByUserName(auth.getName());
+		return getUserByUserName("luwei");
+		//return getUserByUserName(auth.getName());
 	}
 
 	@Override
@@ -1006,7 +1007,7 @@ public class UserInfoServiceImpl implements UserInfoService
 		mainAcc.setBalance(new BigDecimal(accDtal1.getPostAmount()));
 		supserDao.save(accDtal1);
 		
-		UserAccountDetails accDtal2 = userAccountDetailsService.initCreidrRecord(dbInfo.getId(), mainAcc, mainAcc.getFreeze().doubleValue(), amount, AccOperationType.ACC_FREEZE.getCode());
+		UserAccountDetails accDtal2 = userAccountDetailsService.initCreidrRecord(dbInfo.getId(), mainAcc, mainAcc.getFreeze().doubleValue(), amount, AccOperationType.WD_FREEZE.getCode());
 		mainAcc.setFreeze(new BigDecimal(accDtal2.getPostAmount()));
 		
 		supserDao.save(accDtal2);
