@@ -47,8 +47,7 @@ public class LoginServiceImpl implements LoginService
 	}
 	//登录成功后的操作
 	@Override
-	public void successLogin() {
-		String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+	public void successLogin(String userName) {
 		UserInfo userInfo=userInfoDao.getUserByUserName(userName);
 		Integer failLoginCount=0;
 		userInfo.setFailLoginCount(failLoginCount);

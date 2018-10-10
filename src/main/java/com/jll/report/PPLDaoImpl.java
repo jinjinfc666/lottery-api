@@ -38,7 +38,7 @@ public class PPLDaoImpl extends HibernateDaoSupport implements PPLDao {
 			map.put("startTime", beginDate);
 			map.put("endTime", endDate);
 		}
-		String sql = "select sum(freezing_funds) as freezing_funds, sum(all_balances) as all_balances,SUM(recharge) as recharge,sum(withdraw) as withdraw from platform_fund_summary "+timeSql;
+		String sql = "select sum(freezing_funds) as freezing_funds,sum(freezing_red_funds) as freezing_red_funds, sum(all_balances) as all_balances,sum(all_red_balances) as all_red_balances,SUM(recharge) as recharge,sum(withdraw) as withdraw from platform_fund_summary "+timeSql;
 		logger.debug(sql+"-----------------------------queryLoyTst----SQL--------------------------------");
 		Query<?> query = getSessionFactory().getCurrentSession().createSQLQuery(sql);
 		if (map != null) {  
@@ -69,14 +69,16 @@ public class PPLDaoImpl extends HibernateDaoSupport implements PPLDao {
 				sbd=bd.toString();
 			}
 			p.setFreezingFunds(sbd);
-			BigDecimal bd1 = (BigDecimal)obj[1];
+			
+			BigDecimal bd1 = (BigDecimal) obj[1];
 			String sbd1=null;
 			if(bd1==null) {
 				sbd1="0";
 			}else {
 				sbd1=bd1.toString();
 			}
-			p.setAllBalances(sbd1);
+			p.setFreezingRedFunds(sbd1);
+			
 			BigDecimal bd2 = (BigDecimal)obj[2];
 			String sbd2=null;
 			if(bd2==null) {
@@ -84,7 +86,8 @@ public class PPLDaoImpl extends HibernateDaoSupport implements PPLDao {
 			}else {
 				sbd2=bd2.toString();
 			}
-			p.setRecharge(sbd2);
+			p.setAllBalances(sbd2);
+			
 			BigDecimal bd3 = (BigDecimal)obj[3];
 			String sbd3=null;
 			if(bd3==null) {
@@ -92,7 +95,25 @@ public class PPLDaoImpl extends HibernateDaoSupport implements PPLDao {
 			}else {
 				sbd3=bd3.toString();
 			}
-			p.setWithdraw(sbd3);
+			p.setAllRedBalances(sbd3);
+			
+			BigDecimal bd4 = (BigDecimal)obj[4];
+			String sbd4=null;
+			if(bd4==null) {
+				sbd4="0";
+			}else {
+				sbd4=bd4.toString();
+			}
+			p.setRecharge(sbd4);
+			
+			BigDecimal bd5 = (BigDecimal)obj[5];
+			String sbd5=null;
+			if(bd5==null) {
+				sbd5="0";
+			}else {
+				sbd5=bd5.toString();
+			}
+			p.setWithdraw(sbd5);
 		}
 		String codeNameSql="";
 		String issueNumSql="";

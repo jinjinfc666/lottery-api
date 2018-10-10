@@ -15,8 +15,18 @@
                 <comment>�����ʽ�</comment>
             </column>
         </property>
+        <property generated="never" lazy="false" name="freezingRedFunds" optimistic-lock="true" type="big_decimal" unique="false">
+            <column name="freezing_red_funds">
+                <comment>�����ʽ�</comment>
+            </column>
+        </property>
         <property generated="never" lazy="false" name="allBalances" optimistic-lock="true" type="big_decimal" unique="false">
             <column name="all_balances">
+                <comment>�������</comment>
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="allRedBalances" optimistic-lock="true" type="big_decimal" unique="false">
+            <column name="all_red_balances">
                 <comment>�������</comment>
             </column>
         </property>

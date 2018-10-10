@@ -18,10 +18,10 @@ public class AuthFilter extends ClientCredentialsTokenEndpointFilter {
 
 	private Logger logger = Logger.getLogger(AuthFilter.class);
 	
-	@Override
-	public void afterPropertiesSet() {
-		
-	}
+//	@Override
+//	public void afterPropertiesSet() {
+//		
+//	}
 	
 	
 	@Override

@@ -1852,7 +1852,7 @@ public class Constants {
 	public static enum MainWallet{
 		CUSTOMER_CLAIMS("customer_claims","平台奖励",1),
 		PLAT_REWARD("plat_reward","平台积分",1),
-		DEPOSIT_GIFT("deposit_gift","充值礼金",1),
+		DEPOSIT_CASH("deposit_cash","充值礼金",1),
 		REG_CASH("reg_cash","注册礼金",1),
 		BANK_FEES("bank_fees","银行手续费",1),
 		PROMO_CASH("promo_cash","活动现金",1),
@@ -1912,7 +1912,7 @@ public class Constants {
 	public static enum RedWallet{
 		CUSTOMER_CLAIMS("customer_claims","平台奖励",1),
 		PLAT_REWARD("plat_reward","平台积分",1),
-		DEPOSIT_GIFT("deposit_gift","充值礼金",1),
+		DEPOSIT_CASH("deposit_cash","充值礼金",1),
 		REG_CASH("reg_cash","注册礼金",1),
 		PROMO_CASH("promo_cash","活动现金",1),
 		PROMO_POINTS("promo_points","活动积分",1),

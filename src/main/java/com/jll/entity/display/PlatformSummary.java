@@ -2,7 +2,9 @@ package com.jll.entity.display;
 
 public class PlatformSummary {
 	private String freezingFunds;
+	private String freezingRedFunds;
 	private String allBalances;
+	private String allRedBalances;
 	private String recharge;
 	private String withdraw;
 	private String betting;
@@ -11,6 +13,18 @@ public class PlatformSummary {
 	private String rebate;
 	private String platformProfit;
 	
+	public String getFreezingRedFunds() {
+		return freezingRedFunds;
+	}
+	public void setFreezingRedFunds(String freezingRedFunds) {
+		this.freezingRedFunds = freezingRedFunds;
+	}
+	public String getAllRedBalances() {
+		return allRedBalances;
+	}
+	public void setAllRedBalances(String allRedBalances) {
+		this.allRedBalances = allRedBalances;
+	}
 	public String getBetting() {
 		return betting;
 	}

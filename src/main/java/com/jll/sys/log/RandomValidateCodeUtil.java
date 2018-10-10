@@ -74,6 +74,7 @@ public class RandomValidateCodeUtil {
         String sessionId=session.getId();
         String key=sessionId+randomString;
         session.removeAttribute(key);
+        logger.debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"+randomString+"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
         session.setAttribute(key, randomString);
         g.dispose();
         try {
