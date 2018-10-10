@@ -1851,17 +1851,14 @@ public class Constants {
 	 */
 	public static enum MainWallet{
 		CUSTOMER_CLAIMS("customer_claims","平台奖励",1),
-		PLAT_REWARD("plat_reward","平台积分",1),
 		DEPOSIT_CASH("deposit_cash","充值礼金",1),
 		REG_CASH("reg_cash","注册礼金",1),
 		BANK_FEES("bank_fees","银行手续费",1),
 		PROMO_CASH("promo_cash","活动现金",1),
-		PROMO_POINTS("promo_points","活动积分",1),
 		ACC_FREEZE("acc_freeze","账户资金冻结",-1),
 		ACC_UNFREEZE("acc_unfreeze","账户资金解冻",1),
 		SYS_DEDUCTION("sys_deduction","系统扣款",-1),
 		SYS_ADD("sys_add","系统加钱",1);
-//		WITHDRAWAL_BACK("withdrawal_back","提款退还",1);
 
 		
 		private String code;
@@ -1920,7 +1917,6 @@ public class Constants {
 		ACC_UNFREEZE("acc_unfreeze","账户资金解冻",1),
 		SYS_DEDUCTION("sys_deduction","系统扣款",-1),
 		SYS_ADD("sys_add","系统加钱",1);
-
 		
 		private String code;
 		
