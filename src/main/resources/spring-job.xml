@@ -21,7 +21,7 @@
 	<bean id="processScheduleIssueJobDetail"
 		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
 		<property name="targetObject" ref="lotteryCenterServiceImpl" />
-		<property name="targetMethod" value="processScheduleIssue" />
+		<property name="targetMethod" value="exeScheduleIssue" />
 	</bean>
 	
 	<bean id="cronTrigger"

@@ -156,7 +156,7 @@ public class LotteryCenterServiceImpl implements LotteryCenterService
 	 * 定时遍历期次，修改状态
 	 */
 	@Override
-	public synchronized void processScheduleIssue() {
+	public synchronized void exeScheduleIssue() {
 		//logger.debug(String.format("It's ready to process schedule....."));
 		Map<String, SysCode> lottoTypes = cacheServ.getSysCode(Constants.SysCodeTypes.LOTTERY_TYPES.getCode());
 		if(lottoTypes == null || lottoTypes.size() == 0) {
