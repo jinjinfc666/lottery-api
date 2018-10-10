@@ -11,10 +11,10 @@
 	<beans:bean id="oauth2AuthenticationEntryPoint" class="org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint" />
 		
 	<!--处理访问失败-->
-	<beans:bean id="oauth2AuthenticationFailureHandler" class="com.sys.security.LoginFailureHandler" />
+	<beans:bean id="oauth2AuthenticationFailureHandler" class="com.jll.sys.security.LoginFailureHandler" />
 	
-	<!--处理访问失败-->
-	<beans:bean id="oauth2AuthenticationSuccessHandler" class="com.sys.security.LoginSuccessHandler" />
+	<!--处理访问成功-->
+	<beans:bean id="oauth2AuthenticationSuccessHandler" class="com.jll.sys.security.LoginSuccessHandler" />
 	
     <!--处理访问拒绝-->
 	<beans:bean id="oauth2AccessDeniedHandler" class="org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler" />
@@ -81,7 +81,7 @@
 	
 	<beans:bean id="tokenStore" class="org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore" />
 	
-    <beans:bean id="tokenServices" class="com.sys.security.CusTokenService">
+    <beans:bean id="tokenServices" class="com.jll.sys.security.CusTokenService">
 		<beans:property name="tokenStore" ref="tokenStore" />
         <!--允许刷新token ， 默认不允许-->
 		<beans:property name="supportRefreshToken" value="true" />
@@ -99,7 +99,7 @@
 		</beans:constructor-arg>
 	</beans:bean>
 
-	<beans:bean id="clientCredentialsTokenEndpointFilter" class="com.sys.security.AuthFilter">
+	<beans:bean id="clientCredentialsTokenEndpointFilter" class="com.jll.sys.security.AuthFilter">
 		<beans:property name="authenticationManager" ref="oauth2AuthenticationManager" />
 		<beans:property name="authenticationFailureHandler" ref="oauth2AuthenticationFailureHandler" />
 		<beans:property name="authenticationSuccessHandler" ref="oauth2AuthenticationSuccessHandler" />
