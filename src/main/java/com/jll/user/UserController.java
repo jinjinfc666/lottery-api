@@ -1131,6 +1131,7 @@ public class UserController {
 	 * userId 用户ID
 	 * 
 	 * amount 操纵金额
+	 * walletId 钱包类型
 	 * 
 	 * operationType 流水类型
 	 * 

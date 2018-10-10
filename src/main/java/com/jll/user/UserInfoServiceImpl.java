@@ -35,7 +35,9 @@ import com.jll.common.constants.Constants;
 import com.jll.common.constants.Constants.AccOperationType;
 import com.jll.common.constants.Constants.DepositOrderState;
 import com.jll.common.constants.Constants.EmailValidState;
+import com.jll.common.constants.Constants.MainWallet;
 import com.jll.common.constants.Constants.PhoneValidState;
+import com.jll.common.constants.Constants.RedWallet;
 import com.jll.common.constants.Constants.SiteMessageReadType;
 import com.jll.common.constants.Constants.State;
 import com.jll.common.constants.Constants.SysCodeState;
@@ -1310,51 +1312,65 @@ public class UserInfoServiceImpl implements UserInfoService
 	@Override
 	public Map<String, Object> saveUpdateDirectOperationUserAmount(UserAccountDetails dtl) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		
 		UserInfo userInfo = userDao.getUserById(dtl.getUserId());
-		if(null == AccOperationType.getValueByCode(dtl.getOperationType())
+		if(null== getCurLoginInfo()
+				|| null == WalletType.getWalletTypeByCode(dtl.getWalletId())
 				|| null == userInfo
 				|| Utils.toDouble(dtl.getAmount()) <= 0.00
-				|| null == WalletType.getWalletTypeByCode(dtl.getWalletId())){
+				|| (WalletType.MAIN_WALLET.getCode()== dtl.getWalletId() && null == MainWallet.getValueByCode(dtl.getOperationType()))
+				|| (WalletType.RED_PACKET_WALLET.getCode()== dtl.getWalletId() && null == RedWallet.getValueByCode(dtl.getOperationType()))){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
 			return ret;
 		}
-		UserAccount mainAcc  = (UserAccount) supserDao.findByName(UserAccount.class, "userId",userInfo.getId(), "accType", dtl.getWalletId()).get(0);
+		UserAccount userAcc  = (UserAccount) supserDao.findByName(UserAccount.class, "userId",userInfo.getId(), "accType", dtl.getWalletId()).get(0);
 		
-		int userId=mainAcc.getUserId();
-		UserAccount userAcc=mainAcc;
-		double beforAmt=mainAcc.getBalance().doubleValue();
-		double addAmt=dtl.getAmount();
-		String operType=dtl.getOperationType();
+		int userId=userAcc.getUserId();
+		double addAmt=dtl.getAmount()* Constants.AccOperationType.getValueByCode(dtl.getOperationType()).getNumber();
 		
-		Map<String,Integer> map=Constants.AccOperationType.getNumberMap();
-		boolean isNo=map.containsKey(operType);
-		if(isNo) {
-			addAmt=addAmt*(map.get(operType));
-		}else {
-			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
-			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
-			return ret;
-		}
 		//账号
-		if(addAmt < 0
-				&& Utils.toDouble(mainAcc.getBalance()) < Math.abs(addAmt)){
+		if((addAmt < 0 && Utils.toDouble(userAcc.getBalance()) < Math.abs(addAmt))
+				|| (AccOperationType.ACC_UNFREEZE.getCode().equals(dtl.getOperationType()) && Utils.toDouble(userAcc.getFreeze()) < Math.abs(addAmt))){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_BALANCE_NOT_ENOUGH.getCode());
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_BALANCE_NOT_ENOUGH.getErrorMes());
 			return ret;
 		}
-		UserAccountDetails accDtal1 = userAccountDetailsService.initCreidrRecord(userId,userAcc,beforAmt,addAmt,operType);
-		mainAcc.setBalance(new BigDecimal(accDtal1.getPostAmount()));
-		supserDao.save(accDtal1);
-		supserDao.update(mainAcc);
 		
+		//只对余额进行操作
+		if(AccOperationType.CUSTOMER_CLAIMS.getCode().equals(dtl.getOperationType())
+				|| AccOperationType.DEPOSIT_CASH.getCode().equals(dtl.getOperationType())
+				|| AccOperationType.REG_CASH.getCode().equals(dtl.getOperationType())
+				|| AccOperationType.BANK_FEES.getCode().equals(dtl.getOperationType())
+				|| AccOperationType.PROMO_CASH.getCode().equals(dtl.getOperationType())
+				|| AccOperationType.PROMO_CASH.getCode().equals(dtl.getOperationType())
+				|| AccOperationType.SYS_DEDUCTION.getCode().equals(dtl.getOperationType())
+				|| AccOperationType.SYS_ADD.getCode().equals(dtl.getOperationType())){
+			UserAccountDetails accDtal1 = userAccountDetailsService.initCreidrRecord(userId,userAcc,userAcc.getBalance().doubleValue(),addAmt,dtl.getOperationType());
+			supserDao.save(accDtal1);
+			userAcc.setBalance(new BigDecimal(accDtal1.getPostAmount()));
+		}else if(AccOperationType.PLAT_REWARD.getCode().equals(dtl.getOperationType())
+				|| AccOperationType.PROMO_POINTS.getCode().equals(dtl.getOperationType())){
+			//只对积分进行操作
+			UserAccountDetails accDtal1 = userAccountDetailsService.initCreidrRecord(userId,userAcc,userAcc.getRewardPoints().doubleValue(),addAmt,dtl.getOperationType());
+			supserDao.save(accDtal1);
+			userAcc.setRewardPoints(accDtal1.getPostAmount().longValue());
+		
+		}else if(AccOperationType.ACC_FREEZE.getCode().equals(dtl.getOperationType())
+				|| AccOperationType.ACC_UNFREEZE.getCode().equals(dtl.getOperationType())){
+			//对余额和冻结金额进行操作
+			UserAccountDetails accDtal1 = userAccountDetailsService.initCreidrRecord(userId,userAcc,userAcc.getBalance().doubleValue(),addAmt,dtl.getOperationType());
+			supserDao.save(accDtal1);
+			userAcc.setBalance(new BigDecimal(accDtal1.getPostAmount()));
+			
+			UserAccountDetails accDtal2 = userAccountDetailsService.initCreidrRecord(userId,userAcc,userAcc.getFreeze().doubleValue(),-addAmt,dtl.getOperationType());
+			supserDao.save(accDtal2);
+			userAcc.setFreeze(new BigDecimal(accDtal2.getPostAmount()));
+		}
+		supserDao.update(userAcc);
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		return ret;
-		
 	}
 
 	@Override
