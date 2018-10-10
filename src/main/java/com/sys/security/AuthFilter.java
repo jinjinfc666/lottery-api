@@ -11,6 +11,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.provider.client.ClientCredentialsTokenEndpointFilter;
 
+import com.jll.common.constants.Message;
+
 public class AuthFilter extends ClientCredentialsTokenEndpointFilter {
 
 	private Logger logger = Logger.getLogger(AuthFilter.class);
@@ -28,11 +30,11 @@ public class AuthFilter extends ClientCredentialsTokenEndpointFilter {
 		String recCaptcha = request.getParameter("captcha");
 		String saveCaptcha = null;
 		
-		if(recCaptcha == null || saveCaptcha == null)
-            throw new CusAuthenticationException(this.messages.getMessage("LoginAuthentication.captchaInvalid"));  
+		/*if(recCaptcha == null || saveCaptcha == null)
+            throw new CusAuthenticationException(Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());  
         if(!saveCaptcha.equalsIgnoreCase(recCaptcha)){  
-            throw new CusAuthenticationException(this.messages.getMessage("LoginAuthentication.captchaNotEquals"));  
-        }
+            throw new CusAuthenticationException(Message.Error.ERROR_LOGIN_INVALID_CAPTCHA.getCode());  
+        }*/
         
 		return super.attemptAuthentication(request, response);
 	}

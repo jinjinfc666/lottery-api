@@ -158,4 +158,19 @@ public class WalletDaoImpl extends DefaultGenericDaoImpl<UserAccount> implements
 		map.put("data", list);
 		return map;
 	}
+
+	@Override
+	public UserAccount queryUserAccountByUserAndWalletId(Integer userId, Integer walletType) {
+		String sql = "from UserAccount where userId=:userId and accType=:accType";
+		Query<UserAccount> query = getSessionFactory().getCurrentSession().createQuery(sql, UserAccount.class);
+		query.setParameter("userId", userId);
+		query.setParameter("accType", walletType);
+		List<UserAccount> list = query.list();
+		
+		if(list != null && list.size() > 0) {
+			return list.get(0);
+		}
+		
+		return null;
+	}
 }

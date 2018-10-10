@@ -155,4 +155,10 @@ public class WalletServiceImpl implements WalletService
 		Map<String,Object> userAccountLists=walletDao.queryUserAccount(userInfo.getId(),Constants.WalletType.MAIN_WALLET.getCode());
 		return userAccountLists;
 	}
+
+	@Override
+	public UserAccount queryUserAccount(Integer id, Integer walletType) {
+		UserAccount wallet = walletDao.queryUserAccountByUserAndWalletId(id, walletType);
+		return wallet;
+	}
 }

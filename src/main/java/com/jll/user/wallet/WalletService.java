@@ -35,4 +35,6 @@ public interface WalletService
 	Map<String,Object> queryByUserIdUserAccount(Map<String,Object> ret);
 	//通过用户名查询用户的主钱包
 	Map<String, Object> queryUserAccount();
+
+	UserAccount queryUserAccount(Integer id, Integer walletType);
 }
