@@ -60,6 +60,7 @@
 		<intercept-url method="POST" pattern="/users/sys-users" access="hasRole('ROLE_ADMIN')" />
 		<intercept-url method="GET" pattern="/*/attrs/login-pwd/reset/sms" access="hasRole('ROLE_ANONYMOUS')" />
 		<intercept-url method="PUT" pattern="/*/attrs/login-pwd/reset/sms" access="hasRole('ROLE_ANONYMOUS')" />
+		<intercept-url method="GET" pattern="/captcha/VerificationCodeImg" access="hasRole('ROLE_ANONYMOUS')" />
 	</http>
 	
 	
