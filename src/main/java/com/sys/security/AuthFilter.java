@@ -5,6 +5,7 @@ import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.springframework.security.core.Authentication;
@@ -26,15 +27,17 @@ public class AuthFilter extends ClientCredentialsTokenEndpointFilter {
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
 			throws AuthenticationException, IOException, ServletException {
-		//TODO valid the captcha
-		String recCaptcha = null;
-		String saveCaptcha = null;
+		HttpSession session = request.getSession();
+		String sessionId=session.getId();
+		String recCaptcha = request.getParameter("captcha");
+		String key=sessionId+recCaptcha;
+		String saveCaptcha = (String) session.getAttribute(key);
 		
-		/*if(recCaptcha == null || saveCaptcha == null)
+		if(recCaptcha == null || saveCaptcha == null)
             throw new CusAuthenticationException(Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());  
-        if(!saveCaptcha.equalsIgnoreCase(recCaptcha)){  
+        if(!saveCaptcha.equalsIgnoreCase(recCaptcha)){   
             throw new CusAuthenticationException(Message.Error.ERROR_LOGIN_INVALID_CAPTCHA.getCode());  
-        }*/
+        }
         
 		return super.attemptAuthentication(request, response);
 	}
