@@ -25,7 +25,7 @@ public class AuthFilter extends ClientCredentialsTokenEndpointFilter {
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
 			throws AuthenticationException, IOException, ServletException {
 		//TODO valid the captcha
-		String recCaptcha = null;
+		String recCaptcha = request.getParameter("captcha");
 		String saveCaptcha = null;
 		
 		if(recCaptcha == null || saveCaptcha == null)
