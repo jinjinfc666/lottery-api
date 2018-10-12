@@ -82,9 +82,9 @@ public class RandomValidateCodeUtil{
         logger.info(randomString);
         //将生成的随机字符串保存到session中
         String sessionId=session.getId();
-        String key=sessionId+randomString;
+        String key=sessionId;
         cacheRedisService.setSessionIdCaptcha(key, randomString);
-        cacheRedisService.setSessionIdCaptchaExpired(key, 300);
+        cacheRedisService.deleteSessionIdCaptcha(key);
         logger.debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"+randomString+"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
 //        session.setAttribute(key, randomString);
         g.dispose();

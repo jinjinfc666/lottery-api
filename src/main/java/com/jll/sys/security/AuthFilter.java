@@ -37,9 +37,9 @@ public class AuthFilter extends ClientCredentialsTokenEndpointFilter {
 //		String sessionId=session.getId();
 		String recCaptcha = request.getParameter("captcha");
 		String sessionId = request.getParameter("jsSessionId");
-		String key=sessionId+recCaptcha;
+		String key=sessionId;
 		String saveCaptcha = cacheRedisService.getSessionIdCaptcha(key);
-		cacheRedisService.setSessionIdCaptchaExpired(key, 1);
+		cacheRedisService.deleteSessionIdCaptcha(key);
 		if(recCaptcha == null || saveCaptcha == null)
             throw new CusAuthenticationException(Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());  
         if(!saveCaptcha.equalsIgnoreCase(recCaptcha)){   

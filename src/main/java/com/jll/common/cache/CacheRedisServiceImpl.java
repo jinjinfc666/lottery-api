@@ -801,29 +801,36 @@ public class CacheRedisServiceImpl implements CacheRedisService
 	}
 	//存储图片验证码
 	@Override
-	public void setSessionIdCaptcha(String key, String captcha) {
-		CacheObject cacheObject=new CacheObject();
-		cacheObject.setContent(captcha);
+	public void setSessionIdCaptcha(String keyCaptcha, String value) {
+		String key=Constants.Captcha.CAPTCHA.getCode();
+		CacheObject<Map<String,String>> cacheObject=cacheDao.getSessionIdCaptcha(key);
+		Map<String,String> map=null;
+		if(cacheObject==null) {
+			map = new HashMap<>();
+			cacheObject= new CacheObject<>();
+		}
+		map.put(keyCaptcha, value);
+		cacheObject.setContent(map);
 		cacheObject.setKey(key);
 		cacheDao.setSessionIdCaptcha(cacheObject);
 		
 	}
 	//获取图片验证码
 	@Override
-	public String getSessionIdCaptcha(String key) {
-		CacheObject<String> valueap=cacheDao.getSessionIdCaptcha(key);
-		String value=valueap.getContent();
-		if(value==null) {
+	public String getSessionIdCaptcha(String keyCaptcha) {
+		String key=Constants.Captcha.CAPTCHA.getCode();
+		CacheObject<Map<String,String>> valueap=cacheDao.getSessionIdCaptcha(key);
+		Map<String,String> map=valueap.getContent();
+		if(map==null) {
 			return null;
 		}
+		String value=map.get(keyCaptcha);
 		return value;
 	}
 	//删除缓存中的图片验证码
 	@Override
-	public void setSessionIdCaptchaExpired(String key, Integer expired) {
-		CacheObject<String> valueap=cacheDao.getSessionIdCaptcha(key);
-		if(valueap!=null) {
-			cacheDao.setSessionIdCaptchaExpired(valueap, expired);
-		}
+	public void deleteSessionIdCaptcha(String keyCaptcha) {
+		String key=Constants.Captcha.CAPTCHA.getCode();
+		cacheDao.deleteSessionIdCaptcha(key, keyCaptcha);
 	}
 }

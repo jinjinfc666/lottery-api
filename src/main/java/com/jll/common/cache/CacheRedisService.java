@@ -207,9 +207,9 @@ public interface CacheRedisService {
 
 	void updatePlan(String lottoType, Issue issue);
 	//存储图片验证码
-	void setSessionIdCaptcha(String key, String captcha);
+	void setSessionIdCaptcha(String keyCaptcha, String value);
 	//获取图片验证码
-	String getSessionIdCaptcha(String key);
+	String getSessionIdCaptcha(String keyCaptcha);
 	//删除缓存中的图片验证码
-	void setSessionIdCaptchaExpired(String key,Integer expired);
+	void deleteSessionIdCaptcha(String keyCaptcha);
 }

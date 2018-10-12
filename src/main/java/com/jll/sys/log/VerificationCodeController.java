@@ -20,13 +20,13 @@ import com.jll.common.constants.Constants.UserType;
 import com.jll.entity.UserInfo;
 
 @RestController
-@RequestMapping({"/captcha"})
+@RequestMapping({"/captchas"})
 public class VerificationCodeController {
 	private Logger logger = Logger.getLogger(VerificationCodeController.class);
 	@Resource
 	CacheRedisService cacheRedisService;
 	//只查询当前表
-	@RequestMapping(value={"/VerificationCodeImg"}, method={RequestMethod.GET}, produces={"image/jpeg"})
+	@RequestMapping(value={"/verification-code-Img"}, method={RequestMethod.GET}, produces={"image/jpeg"})
 	public void getVerificationCodeImg(HttpServletRequest request, HttpServletResponse response) {
 		try {
 //	        response.setContentType("image/jpeg");//设置相应类型,告诉浏览器输出的内容为图片
@@ -39,8 +39,8 @@ public class VerificationCodeController {
 	        logger.error("获取验证码失败>>>>   ", e);
 	    }
 	}
-	@RequestMapping(value={"/getCapcha"}, method={RequestMethod.GET}, produces={"application/json"})
-	public Map<String, Object> getCapcha(HttpServletRequest request, HttpServletResponse response) {
+	@RequestMapping(value={"/query-sesionid"}, method={RequestMethod.GET}, produces={"application/json"})
+	public Map<String, Object> getSesionid(HttpServletRequest request, HttpServletResponse response) {
 		Map<String, Object> ret = new HashMap<>();
 		try {
 			HttpSession session = request.getSession();
@@ -56,4 +56,23 @@ public class VerificationCodeController {
 			return ret;
 		}
 	}
+	@RequestMapping(method={RequestMethod.GET}, produces={"application/json"})
+	public Map<String, Object> getCapcha(HttpServletRequest request, HttpServletResponse response) {
+		Map<String, Object> ret = new HashMap<>();
+		try {
+			String sessionId = request.getParameter("jsSessionId");
+			String key=sessionId;
+			String saveCaptcha = cacheRedisService.getSessionIdCaptcha(key);
+			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+			ret.put("data", saveCaptcha);
+			return ret;
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			return ret;
+		}
+	}
+	
 }

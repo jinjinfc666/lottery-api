@@ -2148,4 +2148,21 @@ public class Constants {
 			return null;
 		}
 	}
+	/**
+	 * 图片验证码key
+	 */
+	public static enum Captcha{
+		CAPTCHA("Captcha");
+		
+		private String code;
+		
+		private Captcha(String code) {
+			this.code = code;
+		}
+		
+		public String getCode() {
+			return this.code;
+		}
+		
+	}
 }
