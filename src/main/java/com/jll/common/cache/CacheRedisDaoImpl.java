@@ -304,5 +304,45 @@ public class CacheRedisDaoImpl  extends AbstractBaseRedisDao implements CacheRed
 		// TODO Auto-generated method stub
 		return null;
 	}
+	//存放图片验证码
+	@Override
+	public void setSessionIdCaptcha(CacheObject<Map<String,String>> cacheObj) {
+		this.saveOrUpdate(cacheObj);
+	}
+	//获取图片验证码
+	@Override
+	public CacheObject<Map<String,String>> getSessionIdCaptcha(String key) {
+		CacheObject<Map<String,String>> cacheObject=get(key);
+		if(cacheObject==null) {
+			return null;
+		}
+		return cacheObject;
+	}
+	@Override
+	public String getSessionIdCaptcha(String key, String keyCaptcha) {
+		CacheObject<Map<String, String>> cacheObject=get(key);
+		if(cacheObject==null) {
+			return null;
+		}
+		Map<String,String> map=cacheObject.getContent();
+		String value=map.get(keyCaptcha); 
+		return value;
+	}
+	//删除缓存中的图片验证码
+	@Override
+	public void deleteSessionIdCaptcha(String key,String keyCaptcha) {
+		CacheObject<Map<String, String>> cacheObject=get(key);
+		Map<String,String> map=null;
+		if(cacheObject!=null) {
+			map=cacheObject.getContent();
+			String value=null;
+			if(map!=null) {
+				value=map.get(keyCaptcha);
+				if(value!=null) {
+					map.remove(keyCaptcha);
+				}
+			}
+		}
+	}
 
 }

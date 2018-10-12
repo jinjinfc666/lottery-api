@@ -7,13 +7,20 @@ import java.awt.image.BufferedImage;
 import java.util.Random;
 
 import org.apache.log4j.Logger;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.jll.common.cache.CacheRedisService;
+
+import javax.annotation.Resource;
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-public class RandomValidateCodeUtil {
+public class RandomValidateCodeUtil{
 
+	CacheRedisService cacheRedisService;
 
     public static final String RANDOMCODEKEY= "RANDOMVALIDATECODEKEY";//放到session中的key
 //    private String randString = "0123456789";//随机产生只有数字的字符串 private String
@@ -27,7 +34,10 @@ public class RandomValidateCodeUtil {
     private static final Logger logger = Logger.getLogger(RandomValidateCodeUtil.class);
 
     private Random random = new Random();
-
+    
+    public RandomValidateCodeUtil(CacheRedisService cacheRedisService) {
+    	this.cacheRedisService=cacheRedisService;
+    }
     /**
      * 获得字体
      */
@@ -72,10 +82,11 @@ public class RandomValidateCodeUtil {
         logger.info(randomString);
         //将生成的随机字符串保存到session中
         String sessionId=session.getId();
-        String key=sessionId+randomString;
-        session.removeAttribute(key);
+        String key=sessionId;
+        cacheRedisService.setSessionIdCaptcha(key, randomString);
+        cacheRedisService.deleteSessionIdCaptcha(key);
         logger.debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"+randomString+"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-        session.setAttribute(key, randomString);
+//        session.setAttribute(key, randomString);
         g.dispose();
         try {
             // 将内存中的图片通过流动形式输出到客户端
