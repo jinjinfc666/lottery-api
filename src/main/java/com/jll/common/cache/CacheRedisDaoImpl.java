@@ -304,5 +304,24 @@ public class CacheRedisDaoImpl  extends AbstractBaseRedisDao implements CacheRed
 		// TODO Auto-generated method stub
 		return null;
 	}
+	//存放图片验证码
+	@Override
+	public void setSessionIdCaptcha(CacheObject<String> cacheObj) {
+		this.saveOrUpdate(cacheObj);
+	}
+	//获取图片验证码
+	@Override
+	public CacheObject<String> getSessionIdCaptcha(String key) {
+		CacheObject<String> cacheObject=get(key);
+		if(cacheObject==null) {
+			return null;
+		}
+		return cacheObject;
+	}
+	//删除缓存中的图片验证码
+	@Override
+	public void setSessionIdCaptchaExpired(CacheObject<String> cache,Integer expired) {
+		cache.setExpired(expired);
+	}
 
 }

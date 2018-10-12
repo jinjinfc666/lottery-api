@@ -206,4 +206,10 @@ public interface CacheRedisService {
 	void setMMCIssueCount(Date currTime, int i);
 
 	void updatePlan(String lottoType, Issue issue);
+	//存储图片验证码
+	void setSessionIdCaptcha(String key, String captcha);
+	//获取图片验证码
+	String getSessionIdCaptcha(String key);
+	//删除缓存中的图片验证码
+	void setSessionIdCaptchaExpired(String key,Integer expired);
 }

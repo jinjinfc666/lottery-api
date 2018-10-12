@@ -1,13 +1,16 @@
 package com.jll.report;
 
 import java.math.BigDecimal;
-import java.sql.Date;
+//import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Date;
 
 
 import org.apache.commons.lang3.StringUtils;
@@ -29,31 +32,17 @@ public class PPLDaoImpl extends HibernateDaoSupport implements PPLDao {
 	//平台盈亏
 	@Override
 	public List<?> queryPPL(String startTime, String endTime, String codeName, String issueNum, String playTypeid) {
-		String timeSql="";
-		Map<String,Object> map=new HashMap<String,Object>();
-		if(!StringUtils.isBlank(startTime)&&!StringUtils.isBlank(endTime)) {
-			timeSql=" where create_time >=:startTime and create_time <:endTime";
-			Date beginDate = java.sql.Date.valueOf(startTime);
-		    Date endDate = java.sql.Date.valueOf(endTime);
-			map.put("startTime", beginDate);
-			map.put("endTime", endDate);
-		}
-		String sql = "select sum(freezing_funds) as freezing_funds,sum(freezing_red_funds) as freezing_red_funds, sum(all_balances) as all_balances,sum(all_red_balances) as all_red_balances,SUM(recharge) as recharge,sum(withdraw) as withdraw from platform_fund_summary "+timeSql;
+		Calendar ca = Calendar.getInstance();// 得到一个Calendar的实例  
+	    ca.setTime(new Date()); // 设置时间为当前时间  
+	    ca.add(Calendar.DATE, -1);// 日期减1  
+	    Date resultDate = ca.getTime(); // 结果  
+	    SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd");  
+	    String startTime1=sdf2.format(resultDate); 
+	    Date beginDate1 = java.sql.Date.valueOf(startTime1);
+		String sql = "select freezing_funds,freezing_red_funds,all_balances,all_red_balances,recharge,withdraw from platform_fund_summary where create_time=:createTime";
 		logger.debug(sql+"-----------------------------queryLoyTst----SQL--------------------------------");
-		Query<?> query = getSessionFactory().getCurrentSession().createSQLQuery(sql);
-		if (map != null) {  
-            Set<String> keySet = map.keySet();  
-            for (String string : keySet) {  
-                Object obj = map.get(string);  
-            	if(obj instanceof Date){  
-                	query.setParameter(string, (Date)obj,DateType.INSTANCE); //query.setParameter(string, (Date)obj,DateType.INSTANCE);   此方法为setDate的替代方法 
-                }else if(obj instanceof Object[]){  
-                    query.setParameterList(string, (Object[])obj);  
-                }else{  
-                    query.setParameter(string, obj);  
-                }  
-            }  
-        }
+		Query<?> query = getSessionFactory().getCurrentSession().createNativeQuery(sql);
+		query.setParameter("createTime", beginDate1,DateType.INSTANCE); 
 		List<?> list = new ArrayList();
 		list = query.list();
 		List<PlatformSummary> list1=new ArrayList<PlatformSummary>();
@@ -114,6 +103,21 @@ public class PPLDaoImpl extends HibernateDaoSupport implements PPLDao {
 				sbd5=bd5.toString();
 			}
 			p.setWithdraw(sbd5);
+		}
+
+		
+		
+		
+		
+		
+		String timeSql="";
+		Map<String,Object> map=new HashMap<String,Object>();
+		if(!StringUtils.isBlank(startTime)&&!StringUtils.isBlank(endTime)) {
+			timeSql=" where create_time >=:startTime and create_time <:endTime";
+			Date beginDate = java.sql.Date.valueOf(startTime);
+		    Date endDate = java.sql.Date.valueOf(endTime);
+			map.put("startTime", beginDate);
+			map.put("endTime", endDate);
 		}
 		String codeNameSql="";
 		String issueNumSql="";

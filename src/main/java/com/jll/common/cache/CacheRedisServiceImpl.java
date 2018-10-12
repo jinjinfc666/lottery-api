@@ -799,4 +799,31 @@ public class CacheRedisServiceImpl implements CacheRedisService
 		String cacheKey = Constants.KEY_PRE_PLAN + lottoType;
 		cacheDao.upatePlan(cacheKey, issue);
 	}
+	//存储图片验证码
+	@Override
+	public void setSessionIdCaptcha(String key, String captcha) {
+		CacheObject cacheObject=new CacheObject();
+		cacheObject.setContent(captcha);
+		cacheObject.setKey(key);
+		cacheDao.setSessionIdCaptcha(cacheObject);
+		
+	}
+	//获取图片验证码
+	@Override
+	public String getSessionIdCaptcha(String key) {
+		CacheObject<String> valueap=cacheDao.getSessionIdCaptcha(key);
+		String value=valueap.getContent();
+		if(value==null) {
+			return null;
+		}
+		return value;
+	}
+	//删除缓存中的图片验证码
+	@Override
+	public void setSessionIdCaptchaExpired(String key, Integer expired) {
+		CacheObject<String> valueap=cacheDao.getSessionIdCaptcha(key);
+		if(valueap!=null) {
+			cacheDao.setSessionIdCaptchaExpired(valueap, expired);
+		}
+	}
 }

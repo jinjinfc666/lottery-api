@@ -106,5 +106,11 @@ public interface CacheRedisDao {
 	CacheObject<Integer> getMMCIssueCount(String string);
 
 	void setMMCIssueCount(CacheObject<Integer> cacheObj);
+	//存放图片验证码
+	void setSessionIdCaptcha(CacheObject<String> cacheObj);
+	//获取图片验证码
+	CacheObject<String> getSessionIdCaptcha(String key);
+	//删除缓存中的图片验证码
+	void setSessionIdCaptchaExpired(CacheObject<String> cache,Integer expired);
 }
 
