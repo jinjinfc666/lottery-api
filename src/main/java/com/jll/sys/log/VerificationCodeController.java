@@ -42,11 +42,13 @@ public class VerificationCodeController {
 	@RequestMapping(value={"/query-sesionid"}, method={RequestMethod.GET}, produces={"application/json"})
 	public Map<String, Object> getSesionid(HttpServletRequest request, HttpServletResponse response) {
 		Map<String, Object> ret = new HashMap<>();
+		Map<String, Object> map = new HashMap<>();
 		try {
 			HttpSession session = request.getSession();
 			String sessionId=session.getId();
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-			ret.put("jsSessionId", sessionId);
+			map.put("sessionId", sessionId);
+			ret.put("data", map);
 			return ret;
 		}catch(Exception e){
 			ret.clear();
@@ -59,12 +61,14 @@ public class VerificationCodeController {
 	@RequestMapping(method={RequestMethod.GET}, produces={"application/json"})
 	public Map<String, Object> getCapcha(HttpServletRequest request, HttpServletResponse response) {
 		Map<String, Object> ret = new HashMap<>();
+		Map<String, Object> map = new HashMap<>();
 		try {
 			String sessionId = request.getParameter("jsSessionId");
 			String key=sessionId;
 			String saveCaptcha = cacheRedisService.getSessionIdCaptcha(key);
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-			ret.put("data", saveCaptcha);
+			map.put("captcha", saveCaptcha);
+			ret.put("data", map);
 			return ret;
 		}catch(Exception e){
 			ret.clear();
