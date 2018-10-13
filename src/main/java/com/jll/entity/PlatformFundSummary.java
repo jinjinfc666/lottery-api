@@ -12,20 +12,40 @@ public class PlatformFundSummary implements java.io.Serializable {
 	private Integer id;
 	private Date createTime;
 	private BigDecimal freezingFunds;
+	private BigDecimal freezingRedFunds;
 	private BigDecimal allBalances;
+	private BigDecimal allRedBalances;
 	private BigDecimal recharge;
 	private BigDecimal withdraw;
 
 	public PlatformFundSummary() {
 	}
 
-	public PlatformFundSummary(Date createTime, BigDecimal freezingFunds, BigDecimal allBalances, BigDecimal recharge,
+	public PlatformFundSummary(Date createTime, BigDecimal freezingFunds,BigDecimal freezingRedFunds, BigDecimal allBalances, BigDecimal allRedBalances,BigDecimal recharge,
 			BigDecimal withdraw) {
 		this.createTime = createTime;
 		this.freezingFunds = freezingFunds;
+		this.freezingRedFunds = freezingRedFunds;
 		this.allBalances = allBalances;
+		this.allRedBalances = allRedBalances;
 		this.recharge = recharge;
 		this.withdraw = withdraw;
+	}
+
+	public BigDecimal getFreezingRedFunds() {
+		return freezingRedFunds;
+	}
+
+	public void setFreezingRedFunds(BigDecimal freezingRedFunds) {
+		this.freezingRedFunds = freezingRedFunds;
+	}
+
+	public BigDecimal getAllRedBalances() {
+		return allRedBalances;
+	}
+
+	public void setAllRedBalances(BigDecimal allRedBalances) {
+		this.allRedBalances = allRedBalances;
 	}
 
 	public Integer getId() {

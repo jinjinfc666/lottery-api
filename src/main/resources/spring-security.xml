@@ -61,6 +61,7 @@
 		<intercept-url method="GET" pattern="/*/attrs/login-pwd/reset/sms" access="hasRole('ROLE_ANONYMOUS')" />
 		<intercept-url method="PUT" pattern="/*/attrs/login-pwd/reset/sms" access="hasRole('ROLE_ANONYMOUS')" />
 		<intercept-url method="GET" pattern="/captcha/VerificationCodeImg" access="hasRole('ROLE_ANONYMOUS')" />
+		<intercept-url method="POST" pattern="/*/issue/*/manual-draw-result" access="hasRole('ROLE_ADMIN')" />
 	</http>
 	
 	
@@ -102,8 +103,8 @@
 
 	<beans:bean id="clientCredentialsTokenEndpointFilter" class="com.jll.sys.security.AuthFilter">
 		<beans:property name="authenticationManager" ref="oauth2AuthenticationManager" />
-		<beans:property name="authenticationFailureHandler" ref="oauth2AuthenticationFailureHandler" />
-		<beans:property name="authenticationSuccessHandler" ref="oauth2AuthenticationSuccessHandler" />
+<!-- 		<beans:property name="authenticationFailureHandler" ref="oauth2AuthenticationFailureHandler" /> -->
+<!-- 		<beans:property name="authenticationSuccessHandler" ref="oauth2AuthenticationSuccessHandler" /> -->
 	</beans:bean>
 	
 	<!--oauth2 的server所能支持的请求类型-->

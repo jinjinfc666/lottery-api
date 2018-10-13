@@ -41,4 +41,15 @@ public interface IssueService
 	Map<String, Object> orderCancel(String orderNum);
 
 	Map<String, Object> manualPayoutOrder(String orderNum);
+
+	/**
+	 * 手动开奖
+	 * @param lottoType
+	 * @param issueNum
+	 * @param winningNum
+	 * @return
+	 */
+	String manualDrawResult(String lottoType, 
+			String issueNum, 
+			String winningNum);
 }

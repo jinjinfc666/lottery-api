@@ -1966,13 +1966,14 @@ public class Constants {
 	 * 系统运行时参数
 	 */
 	public static enum SysRuntimeArgument{
-		
 		LOTTO_PRIZE_RATE("lotto_prize_rate"),
 		MAX_PLAT_REBATE("max_plat_rebate"),
 		NUMBER_OF_BANK_CARDS("number_of_bank_cards"),
 		SITE_MSG_VALID_DAY("site_msg_valid_day"),
 		NOTIFY_MSG_VALID_DAY("notify_msg_valid_day"),
-		POINT_EXCHANGE_SCALE("point_exchange_scale");
+		POINT_EXCHANGE_SCALE("point_exchange_scale"),
+		LOCKING_TIME("locking_time"),
+		FAIL_LOGIN_COUNT("fail_login_count");
 		
 		private String code;
 		
@@ -1987,7 +1988,7 @@ public class Constants {
 	}
 	
 	/**
-	 * 系统运行时参数
+	 * 系统运行模式
 	 */
 	public static enum PrizeMode{
 		MANUAL("0", "人工开奖模式"),
@@ -2100,5 +2101,70 @@ public class Constants {
 			}
 			return null;
 		}
+	}
+	/**
+	 * 日志类型
+	 * */
+	public static enum LogType{
+		MEMBER_LOGIN(0,"member_login"),
+		SYS_ADMINISTRATOR_LOGIN(1,"sys_administrator_login");
+		
+		private Integer code;
+		private String name;
+		
+		private LogType(Integer code,String name) {
+			this.code = code;
+			this.name = name;
+		}
+		
+		public Integer getCode() {
+			return this.code;
+		}
+		public String getName() {
+			return this.name;
+		}
+					
+		public static List<Integer> getList() {
+			List<Integer> map=new ArrayList<Integer>();
+			LogType[] names = LogType.values();
+			for(LogType name: names) {
+				map.add(name.getCode());
+			}
+			return map;
+		}
+		public static Map<Integer,String> getMap() {
+			Map<Integer,String> map=new HashMap<Integer,String>();
+			LogType[] names = LogType.values();
+			for(LogType name: names) {
+				map.put(name.getCode(), name.getName());
+			}
+			return map;
+		}
+		public static String getValueByCode(Integer code) {
+			LogType[] states = LogType.values();
+			for(LogType state: states) {
+				if(state.getCode() == code) {
+					return state.getName();
+				}
+			}
+			return null;
+		}
+	}
+	/**
+	 * 图片验证码key
+	 */
+	public static enum Captcha{
+		CAPTCHA("Captcha");
+		
+		private String code;
+		
+		private Captcha(String code) {
+			this.code = code;
+		}
+		
+		public String getCode() {
+			return this.code;
+		}
+		
 	}
 }

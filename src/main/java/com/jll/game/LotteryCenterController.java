@@ -209,21 +209,6 @@ public class LotteryCenterController {
 			return resp;
 		}
 		
-		/*hasMoreIssue = lotCenServ.hasMoreIssue(lotteryType);
-		if(!hasMoreIssue) {
-			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_GAME_END.getCode());
-			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_GAME_END.getErrorMes());
-			return resp;
-		}*/
-		/*if(!lotteryType.equals(Constants.LottoType.MMC.getCode())) {
-			if(currentIssue == null) {
-				resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-				resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_GAME_NO_START.getCode());
-				resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_GAME_NO_START.getErrorMes());
-				return resp;
-			}
-		}*/
 		
 		
 		lotteryTypeObj = cacheServ.getSysCode(SysCodeTypes.LOTTERY_TYPES.getCode(), lotteryType);
@@ -294,14 +279,7 @@ public class LotteryCenterController {
 		resp.put(Message.KEY_DATA, data);
 		return resp;
 	}
-	
-//	@RequestMapping(value="/{lottery-type}/play-types", method = { RequestMethod.GET }, consumes=MediaType.APPLICATION_JSON_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
-//	public Map<String, Object> queryPlayType(@PathVariable(name = "lottery-type", required = true) String lotteryType){
-//		
-//		
-//		return null;
-//	}
-	
+		
 	@RequestMapping(value="/{lottery-type}/times", method = { RequestMethod.GET }, consumes=MediaType.APPLICATION_JSON_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> queryTimes(@PathVariable(name = "lottery-type", required = true) String lotteryType){
 		Map<String, Object> resp = new HashMap<String, Object>();

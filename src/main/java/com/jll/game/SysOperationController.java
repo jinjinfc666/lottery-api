@@ -1,5 +1,6 @@
 package com.jll.game;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -10,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.jll.common.constants.Message;
+import com.jll.common.utils.StringUtils;
 import com.jll.entity.Issue;
 import com.terran4j.commons.api2doc.annotations.Api2Doc;
 import com.terran4j.commons.api2doc.annotations.ApiComment;
@@ -118,6 +121,37 @@ public class SysOperationController{
 	  @RequestMapping(value={"/order/{orderNum}/cancel"}, method={org.springframework.web.bind.annotation.RequestMethod.POST}, produces={"application/json"})
 	  public Map<String, Object> orderCancel(@PathVariable("orderNum") String orderNum){
 		  return issueService.orderCancel(orderNum);
+	  }
+	  
+	  @ApiComment("manual draw result")
+	  @RequestMapping(value={"{lottery-type}/issue/{issueNum}/manual-draw-result"}, method={org.springframework.web.bind.annotation.RequestMethod.POST}, produces={"application/json"})
+	  public Map<String, Object> manualDrawResult(@PathVariable(name="issueNum", required=true) String issueNum,
+			  @PathVariable("lottery-type") String lottoType,
+			  @RequestBody Map<String, String> params){
+		  
+		  Map<String, Object> response = new HashMap<>();
+		  String winningNum = params.get("winningNum");
+		  String ret = null;
+		  
+		  if(StringUtils.isBlank(winningNum)) {
+			  response.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			  response.put(Message.KEY_STATUS, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			  response.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+			  
+			  return response;
+		  }
+		  
+		  ret = issueService.manualDrawResult(lottoType,issueNum,winningNum);
+		  if(!Integer.toString(Message.status.SUCCESS.getCode()).equals(ret)) {
+			  response.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			  response.put(Message.KEY_STATUS, Message.Error.getErrorByCode(ret).getCode());
+			  response.put(Message.KEY_ERROR_MES, Message.Error.getErrorByCode(ret).getErrorMes());
+			  
+			  return response;
+		  }
+		  response.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		  
+		  return response;
 	  }
 	  
 }

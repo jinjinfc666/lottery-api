@@ -372,6 +372,17 @@ public class IssueServiceImpl implements IssueService
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		return ret;
 	}
-	
-	
+
+	@Override
+	public String manualDrawResult(String lottoType, 
+			String issueNum, 
+			String winningNum) {
+		
+		final String message = lottoType + "|" + issueNum + "|" + winningNum;
+		
+		cacheServ.publishMessage(Constants.TOPIC_WINNING_NUMBER, 
+				message);
+		
+		return Integer.toString(Message.status.SUCCESS.getCode());
+	}
 }
