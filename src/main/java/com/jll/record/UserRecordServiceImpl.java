@@ -1,19 +1,21 @@
 package com.jll.record;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
 
-import org.hibernate.criterion.DetachedCriteria;
-import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Service;
 
-import com.alibaba.druid.util.StringUtils;
 import com.jll.common.cache.CacheRedisService;
 import com.jll.common.constants.Constants;
 import com.jll.common.constants.Message;
 import com.jll.common.utils.PageQuery;
+import com.jll.common.utils.StringUtils;
+import com.jll.common.utils.Utils;
+import com.jll.dao.PageBean;
 import com.jll.dao.PageQueryDao;
 import com.jll.dao.SupserDao;
 import com.jll.entity.OrderInfo;
@@ -29,23 +31,54 @@ public class UserRecordServiceImpl implements UserRecordService{
 	CacheRedisService cacheRedisService;
 	
 	@Override
-	public Map<String, Object> getUserBetRecord(OrderInfo pramsInfo,PageQueryDao page) {
+	public Map<String, Object> getUserBetRecord(OrderInfo order,PageQueryDao page,Map<String, Object> parms) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		DetachedCriteria dc = DetachedCriteria.forClass(OrderInfo.class);
-		dc.add(Restrictions.eq("userId",pramsInfo.getUserId()));
-		/*if(!StringUtils.isEmpty(pramsInfo.getPlayType())){
-			dc.add(Restrictions.eq("playType",pramsInfo.getPlayType()));
+		StringBuffer querySql = new StringBuffer("FROM  OrderInfo o,UserInfo u1,SysCode sys,PlayType pl,Issue iu WHERE o.userId =? ");
+		List<Object> parmsList = new ArrayList<>();
+		
+		parmsList.add(order.getUserId());
+		
+		
+		querySql.append(" and o.createTime >= ?  and o.createTime <= ?");	
+		parmsList.add(page.getStartDate());
+		parmsList.add(page.getEndDate());
+		
+		if(order.getIsZh() > 0){
+			querySql.append(" and o.isZh = ?");
+			parmsList.add(order.getIsZh());
 		}
-		if(!StringUtils.isEmpty(pramsInfo.getBetNum())){
-			dc.add(Restrictions.eq("betNum",pramsInfo.getBetNum()));
-		}*/
-		if(null != pramsInfo.getIsZh()){
-			dc.add(Restrictions.eq("isZh",pramsInfo.getIsZh()));
+		
+		querySql.append(" and u1.id = o.userId ")
+				.append(" and o.issueId=iu.id ")
+				.append(" and o.playType=pl.id ")
+				.append(" and pl.lotteryType=sys.codeName and sys.codeType=? ");	
+		
+		parmsList.add(cacheRedisService.getSysCode(Constants.SysCodeTypes.LOTTERY_TYPES.getCode(),Constants.SysCodeTypes.LOTTERY_TYPES.getCode()).getId());
+		
+		
+		if(!StringUtils.isEmpty(Utils.toString(parms.get("issueNum")))){
+			querySql.append(" and iu.issueNum = ? ");
+			parmsList.add(Utils.toString(parms.get("issueNum")));
 		}
-		dc.add(Restrictions.le("createTime",page.getEndDate()));
-		dc.add(Restrictions.ge("createTime",page.getStartDate()));
+		if(!StringUtils.isEmpty(Utils.toString(parms.get("lotteryType")))){
+			querySql.append(" and pl.lotteryType = ? ");
+			parmsList.add(Utils.toString(parms.get("lotteryType")));
+		}
+		if(!StringUtils.isEmpty(Utils.toString(parms.get("playType")))){
+			querySql.append(" and pl.ptName = ? ");
+			parmsList.add(Utils.toString(parms.get("playType")));
+		}
+		
+		querySql.append(" order by o.id desc");
+		
+		
+
+		PageBean<OrderInfo> reqPage = new PageBean<>();
+		reqPage.setPageIndex(page.getPageIndex());
+		reqPage.setPageSize(page.getPageSize());
+		
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-		ret.put(Message.KEY_DATA,PageQuery.queryForPagenation(supserDao.getHibernateTemplate(), dc, page.getPageIndex(), page.getPageSize()));
+		ret.put(Message.KEY_DATA,PageQuery.queryForPagenationByHql(supserDao,querySql.toString(), Object.class, parmsList, page.getPageIndex(), page.getPageSize()));
 		return ret;
 	}
 
@@ -68,18 +101,27 @@ public class UserRecordServiceImpl implements UserRecordService{
 	@Override
 	public Map<String, Object> getUserCreditRecord(UserAccountDetails query, PageQueryDao page) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		DetachedCriteria dc = DetachedCriteria.forClass(UserAccountDetails.class);
-		dc.add(Restrictions.eq("userId",query.getUserId()));
+		
+		StringBuffer querySql = new StringBuffer("FROM  UserAccountDetails o,UserInfo u1,SysCode sys WHERE o.userId =? ");
+		List<Object> parmsList = new ArrayList<>();
+		parmsList.add(query.getUserId());
+		
+		querySql.append(" and o.createTime >= ?  and o.createTime <= ?");	
+		parmsList.add(page.getStartDate());
+		parmsList.add(page.getEndDate());
+		
 		if(!StringUtils.isEmpty(query.getOperationType())){
-			dc.add(Restrictions.eq("operationType",query.getOperationType()));
+			querySql.append(" and o.operationType = ?");
+			parmsList.add(query.getOperationType());
 		}
-		/*if(query.getOrderId() > 0 ){
-			dc.add(Restrictions.eq("orderId",query.getOrderId()));
-		}*/
-		dc.add(Restrictions.le("createTime",page.getEndDate()));
-		dc.add(Restrictions.ge("createTime",page.getStartDate()));
+		querySql.append(" and u1.id = o.userId ")
+				.append(" and o.operationType=sys.codeName and sys.codeType=? ");	
+		querySql.append(" order by o.id desc");
+		
+		parmsList.add(cacheRedisService.getSysCode(Constants.SysCodeTypes.FLOW_TYPES.getCode(),Constants.SysCodeTypes.FLOW_TYPES.getCode()).getId());
+		
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-		ret.put(Message.KEY_DATA,PageQuery.queryForPagenation(supserDao.getHibernateTemplate(), dc, page.getPageIndex(), page.getPageSize()));
+		ret.put(Message.KEY_DATA,PageQuery.queryForPagenationByHql(supserDao,querySql.toString(), UserAccountDetails.class, parmsList, page.getPageIndex(), page.getPageSize()));
 		return ret;
 	}
 	

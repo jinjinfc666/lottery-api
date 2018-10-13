@@ -425,7 +425,8 @@ public class Constants {
 		PLAYER(0, "玩家"),
 		AGENCY(1, "代理"),
 		SYS_ADMIN(2, "系统用户"),
-		GENERAL_AGENCY(3, "总代");
+		GENERAL_AGENCY(3, "总代"),
+		DEMO_PLAYER(4, "试玩玩家");;
 		
 		private int code;
 		
@@ -510,6 +511,7 @@ public class Constants {
 		SIGN_IN_DAY("sign_in_day"),
 		CT_PLAY_TYPE_CLASSICFICATION("ct_play_type_classicfication"),//"玩法类型"
 		WITHDRAWAL_CFG("withdrawal_cfg"),
+		DEMO_USER_CFG("demo_user_cfg"),//试玩用户属性
 		PAY_TYPE("pay_type"),//充值方式
 		SYS_RUNTIME_ARGUMENT("sys_runtime_argument");
 		private String value;
