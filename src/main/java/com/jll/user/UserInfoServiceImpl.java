@@ -905,8 +905,8 @@ public class UserInfoServiceImpl implements UserInfoService
 		if(auth == null) {
 			return null;
 		}
-//		return getUserByUserName("shiwan00000001");
-		return getUserByUserName(auth.getName());
+		return getUserByUserName("zhaowei");
+		//return getUserByUserName(auth.getName());
 	}
 
 	@Override
