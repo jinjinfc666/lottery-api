@@ -46,13 +46,13 @@ public class UserRecordController {
 	@RequestMapping(value="/{userId}/bet-order", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> getUserBetOrder(
 			@PathVariable("userId") int userId,
-			@RequestBody Map<String, String> params) {
+			@RequestBody Map<String, Object> params) {
 		PageQueryDao page = new PageQueryDao(Utils.toDate(params.get("startDate")),Utils.toDate(params.get("endDate")),Utils.toInteger(params.get("pageIndex")),
 				Utils.toInteger(params.get("pageSize")));
 		OrderInfo query = new OrderInfo();
 		query.setUserId(userId);
 		query.setIsZh(Utils.toInteger(params.get("isZh")));
-		return userRecordService.getUserBetRecord(query, page);
+		return userRecordService.getUserBetRecord(query, page,params);
 	}
 	
 	

@@ -32,6 +32,7 @@ import com.jll.dao.SupserDao;
 import com.jll.entity.DepositApplication;
 import com.jll.entity.PayChannel;
 import com.jll.entity.PayType;
+import com.jll.entity.UserAccountDetails;
 import com.jll.entity.UserInfo;
 import com.jll.pay.caiPay.CaiPayService;
 import com.jll.pay.order.DepositOrderDao;
@@ -112,18 +113,27 @@ public class PaymentServiceImpl  implements PaymentService
 
 	@Override
 	public Map<String, Object> getUserPayOrder(int userId, PageQueryDao page) {
+
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
-		DetachedCriteria criteria = DetachedCriteria.forClass(DepositApplication.class);
-		criteria.add(Restrictions.eq("userId",userId));
+		StringBuffer querySql = new StringBuffer("FROM  DepositApplication o,UserInfo u1 WHERE o.userId = ? ");
+		List<Object> parmsList = new ArrayList<>();
+		
+		parmsList.add(userId);
 		if(!StringUtils.isEmpty(page.getBillNo())){
-			criteria.add(Restrictions.eq("orderNum",page.getBillNo()));
+			querySql.append(" and o.orderNum =? ");
+			parmsList.add(page.getBillNo());
 		}
-		criteria.add(Restrictions.ge("createTime",page.getStartDate()));
-		criteria.add(Restrictions.le("createTime",page.getEndDate()));
-		criteria.addOrder(Order.desc("createTime"));
+		
+		querySql.append(" and o.createTime >= ?  and o.createTime <= ?");	
+		parmsList.add(page.getStartDate());
+		parmsList.add(page.getEndDate());
+		
+		querySql.append(" and u1.id = o.userId ")
+				.append(" order by o.id desc");
+		
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-		ret.put(Message.KEY_DATA,PageQuery.queryForPagenation(supserDao.getHibernateTemplate(), criteria, page.getPageIndex(), page.getPageSize()));
+		ret.put(Message.KEY_DATA,PageQuery.queryForPagenationByHql(supserDao,querySql.toString(), UserAccountDetails.class, parmsList, page.getPageIndex(), page.getPageSize()));
 		return ret;
 	}
 	
@@ -158,6 +168,13 @@ public class PaymentServiceImpl  implements PaymentService
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+			return ret;
+		}
+		
+		if(UserType.DEMO_PLAYER.getCode() == dbInfo.getUserType()){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_DEMO_USER_DISABLE_FUN.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_DEMO_USER_DISABLE_FUN.getErrorMes());
 			return ret;
 		}
 		

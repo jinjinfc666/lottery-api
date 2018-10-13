@@ -167,6 +167,13 @@ public class UserController {
 		return resp;
 	}
 	
+	
+	
+	@RequestMapping(value="/demo-players", method = { RequestMethod.GET }, produces=MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> regDemoUser() {
+		return userInfoService.saveRandomDemoUserInfo();
+	}
+	
 	/**
 	 * register the agent
 	 * this will be only called  by the user with role:role_admin

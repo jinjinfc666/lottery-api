@@ -9,7 +9,7 @@ import com.jll.entity.UserAccountDetails;
 
 public interface UserRecordService {
 	
-	Map<String, Object> getUserBetRecord(OrderInfo pramsInfo,PageQueryDao query);
+	Map<String, Object> getUserBetRecord(OrderInfo pramsInfo,PageQueryDao query,Map<String, Object> parms);
 	Map<String, Object> getUserBetType();
 	Map<String, Object> getUserCreditType();
 	Map<String, Object> getUserCreditRecord(UserAccountDetails query, PageQueryDao page);

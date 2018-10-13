@@ -79,8 +79,11 @@ public class SysOperationController{
 		  return issueService.betOrderRePayout("",issueNum,params);
 	  }
 	  
+	  
+	  
+	  
 	  /**
-	   * 
+	   * 根据期次  撤单（取消）
 	   * @param issueNum
 	   * @param params {lottoType}
 	   * @return
@@ -112,6 +115,8 @@ public class SysOperationController{
 		  return issueService.manualPayoutOrder(orderNum);
 	  }
 	  
+	  
+	  //单笔订单撤单
 	  @ApiComment("order cancel")
 	  @RequestMapping(value={"/order/{orderNum}/cancel"}, method={org.springframework.web.bind.annotation.RequestMethod.POST}, produces={"application/json"})
 	  public Map<String, Object> orderCancel(@PathVariable("orderNum") String orderNum){

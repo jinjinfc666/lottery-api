@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jll.common.constants.Message;
+import com.jll.user.UserInfoService;
 
 @RestController
 @RequestMapping({ "/security" })
@@ -21,6 +22,10 @@ public class LoginController {
 
 	@Autowired
 	private TokenStore tokenStore;
+	
+	
+	@Autowired
+	private UserInfoService userInfoService;
 
 	/**
 	 * revoke the access token
@@ -38,6 +43,7 @@ public class LoginController {
 			if (oAuth2AccessToken != null) {
 				tokenStore.removeAccessToken(oAuth2AccessToken);
 				map.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+				userInfoService.updateDemoUserDisableLogin();
 				return map;
 			}
 		}

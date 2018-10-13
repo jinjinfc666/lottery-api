@@ -390,7 +390,7 @@ public class SupserDao extends HibernateDaoSupport{
 	}
 	
 	public List excuteHqlForQuery(String hql, Class entity, List params, int pageIndex, int pageSize) {
-		Query<?> query = getSessionFactory().getCurrentSession().createQuery(hql, entity);
+		Query<?> query = getSessionFactory().getCurrentSession().createQuery(hql);
 		if(params != null) {
 	    	int indx = 0;
 	    	for(Object para : params) {
