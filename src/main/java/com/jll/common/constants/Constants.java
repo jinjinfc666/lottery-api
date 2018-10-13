@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.jll.common.utils.StringUtils;
+
 
 
 public class Constants {	
@@ -529,6 +531,21 @@ public class Constants {
 				}
 			}
 			return map;
+		}
+		
+		public static SysCodeTypes getLottoAttriFromLottoTye(String lottoType) {
+			if(StringUtils.isBlank(lottoType)) {
+				return null;
+			}
+			String lottoAttriName = Constants.KEY_LOTTO_ATTRI_PREFIX + lottoType;
+			SysCodeTypes[] sysCodeTypes = SysCodeTypes.values();
+			for(SysCodeTypes sysCodeType : sysCodeTypes) {
+				if(sysCodeType.getCode().equals(lottoAttriName)) {
+					return sysCodeType;
+				}
+			}
+			
+			return null;
 		}
 	}
 	
@@ -2044,6 +2061,16 @@ public class Constants {
 			return this.code;
 		}
 		
+		public static LottoType getFromCode(String code) {
+			LottoType[] lottoTypes = LottoType.values();
+			for(LottoType type : lottoTypes) {
+				if(type.getCode().equals(code)) {
+					return type;
+				}
+			}
+			
+			return null;
+		}
 	}
 	/**
 	 * 提现备注

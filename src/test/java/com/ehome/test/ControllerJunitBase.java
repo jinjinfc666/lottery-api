@@ -142,11 +142,17 @@ public class ControllerJunitBase extends ServletTestCase {
 	
 	protected String queryToken(String userName, String pwd) {
 		String token = null;
+		String sessionId = querySessionId();
 		String tokenURL = "http://localhost:8080/oauth/token";
 		String captcha = null;
 		ObjectMapper mapper = new ObjectMapper();
 		
-		captcha = queryCaptcha();
+		if(StringUtils.isBlank(sessionId)) {
+			return null;
+		}
+		
+		tokenURL += ";jsessionid=" + sessionId;
+		captcha = queryCaptcha(sessionId);
 		try {
 			WebRequest request = new PostMethodWebRequest(tokenURL);
 			WebConversation wc = new WebConversation();
@@ -157,6 +163,7 @@ public class ControllerJunitBase extends ServletTestCase {
 			request.setParameter("username", userName);
 			request.setParameter("password", pwd);
 			request.setParameter("captcha", captcha);
+			//request.setParameter("jsessionid", sessionId);
 			WebResponse response = wc.sendRequest(request);
 			
 			int  status = response.getResponseCode();
@@ -214,7 +221,7 @@ public class ControllerJunitBase extends ServletTestCase {
 	private void queryCaptchaImage(String sessionId) {		
 		//ObjectMapper mapper = new ObjectMapper();
 		try {
-			WebRequest request = new GetMethodWebRequest("http://localhost:8080/captchas/verification-code-img");
+			WebRequest request = new GetMethodWebRequest("http://localhost:8080/captchas/verification-code-Img;jsessionid=" + sessionId);
 			WebConversation wc = new WebConversation();
 			WebResponse response = wc.sendRequest(request);
 			
@@ -237,12 +244,12 @@ public class ControllerJunitBase extends ServletTestCase {
 		}
 	}
 	
-	private String queryCaptcha() {
+	private String queryCaptcha(String sessionId) {
 		String captcha = null;
-		String sessionId = null;
+		//String sessionId = null;
 		
 		
-		sessionId = querySessionId();
+		//sessionId = querySessionId();
 		if(StringUtils.isBlank(sessionId)) {
 			fail("Can not obtain the session id from the server!!!");
 			return null;

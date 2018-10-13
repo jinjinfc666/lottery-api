@@ -808,7 +808,10 @@ public class CacheRedisServiceImpl implements CacheRedisService
 		if(cacheObject==null) {
 			map = new HashMap<>();
 			cacheObject= new CacheObject<>();
+			cacheObject.setContent(map);
 		}
+		
+		map = cacheObject.getContent();
 		map.put(keyCaptcha, value);
 		cacheObject.setContent(map);
 		cacheObject.setKey(key);

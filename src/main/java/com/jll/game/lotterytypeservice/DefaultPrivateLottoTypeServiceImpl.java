@@ -65,7 +65,8 @@ public abstract class DefaultPrivateLottoTypeServiceImpl extends DefaultLottoTyp
 		String[] lottoTypeAndIssueNum = null;
 		String lottoType = null;
 		String issueNum = null;
-		String codeTypeName = Constants.SysCodeTypes.LOTTERY_CONFIG_5FC.getCode();
+		/*String codeTypeName = Constants.SysCodeTypes.LOTTERY_CONFIG_5FC.getCode();*/
+		String codeTypeName = getCodeTypeName();
 		String codeNamePrizeMode = Constants.LotteryAttributes.PRIZE_MODE.getCode();
 		String codeNameWinningRate = Constants.LotteryAttributes.WINING_RATE.getCode();
 		String codeNameUplimitProfitLoss = Constants.LotteryAttributes.UP_LIMIT_PROFIT_LOSS.getCode();

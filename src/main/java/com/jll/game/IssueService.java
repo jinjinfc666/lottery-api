@@ -52,4 +52,14 @@ public interface IssueService
 	String manualDrawResult(String lottoType, 
 			String issueNum, 
 			String winningNum);
+
+	/**
+	 * 判断是否允许手动开奖
+	 * 对于cqssc, gd11x5, bjpk10 默认允许手动开奖
+	 * 对于私彩，除非指定开奖模式，否则不许允许手动开奖
+	 * @param lottoType
+	 * @param issueNum
+	 * @return
+	 */
+	boolean isManualPrieModel(String lottoType, String issueNum);
 }

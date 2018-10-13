@@ -9,8 +9,10 @@ import org.apache.log4j.Logger;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.jll.common.constants.Constants;
 import com.jll.common.constants.Message;
 import com.jll.common.utils.StringUtils;
 import com.jll.entity.Issue;
@@ -119,7 +121,7 @@ public class SysOperationController{
 	  }
 	  
 	  @ApiComment("manual draw result")
-	  @RequestMapping(value={"{lottery-type}/issue/{issueNum}/manual-draw-result"}, method={org.springframework.web.bind.annotation.RequestMethod.POST}, produces={"application/json"})
+	  @RequestMapping(value={"{lottery-type}/issue/{issueNum}/manual-draw-result"}, method={RequestMethod.PUT}, produces={"application/json"})
 	  public Map<String, Object> manualDrawResult(@PathVariable(name="issueNum", required=true) String issueNum,
 			  @PathVariable("lottery-type") String lottoType,
 			  @RequestBody Map<String, String> params){
@@ -127,11 +129,41 @@ public class SysOperationController{
 		  Map<String, Object> response = new HashMap<>();
 		  String winningNum = params.get("winningNum");
 		  String ret = null;
+		  Issue issue = null;
+		  boolean isManualPrieModel = false;
 		  
 		  if(StringUtils.isBlank(winningNum)) {
 			  response.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			  response.put(Message.KEY_STATUS, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
 			  response.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+			  
+			  return response;
+		  }
+		  
+		  issue = issueService.getIssueByIssueNum(lottoType, issueNum);
+		  if(issue == null) {
+			  response.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			  response.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			  response.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+			  
+			  return response;
+		  }
+		  
+		  if(issue.getState() != Constants.IssueState.END_ISSUE.getCode()) {
+			  response.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			  response.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_ISSUE_INVALID_STATUS.getCode());
+			  response.put(Message.KEY_ERROR_MES, Message.Error.ERROR_ISSUE_INVALID_STATUS.getErrorMes());
+			  
+			  return response;
+		  }
+		  
+		  isManualPrieModel = issueService.isManualPrieModel(lottoType,issueNum);
+		  if(!isManualPrieModel) {
+			  response.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			  response.put(Message.KEY_ERROR_CODE, 
+					  Message.Error.ERROR_ISSUE_NOT_ALLOWED_MANUAL_DRAW_RESULT.getCode());
+			  response.put(Message.KEY_ERROR_MES, 
+					  Message.Error.ERROR_ISSUE_NOT_ALLOWED_MANUAL_DRAW_RESULT.getErrorMes());
 			  
 			  return response;
 		  }
