@@ -17,6 +17,7 @@ public interface UserInfoDao
 	 */
 	int getUserId(String userName);
 	long getCountUser(String userName);
+	long getCountUser(UserInfo user);
 	  
 	UserInfo getUserByUserName(String userName);
 	

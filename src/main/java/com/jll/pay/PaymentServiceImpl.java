@@ -161,6 +161,13 @@ public class PaymentServiceImpl  implements PaymentService
 			return ret;
 		}
 		
+		if(UserType.DEMO_PLAYER.getCode() == dbInfo.getUserType()){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_DEMO_USER_DISABLE_FUN.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_DEMO_USER_DISABLE_FUN.getErrorMes());
+			return ret;
+		}
+		
 		//验证支付渠道
 		PayChannel pcInfo = cacheRedisService.getPayChannel(Constants.PayChannel.PAY_CHANNEL.getCode()).get(info.getPayChannel());
 		if(null == pcInfo ||

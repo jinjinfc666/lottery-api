@@ -2,6 +2,7 @@ package com.jll.user;
 
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +12,7 @@ import org.hibernate.query.Query;
 import org.springframework.stereotype.Repository;
 
 import com.jll.common.constants.Constants.UserType;
+import com.jll.common.utils.DateUtil;
 import com.jll.common.utils.StringUtils;
 import com.jll.dao.DefaultGenericDaoImpl;
 import com.jll.dao.PageBean;
@@ -274,6 +276,25 @@ public class UserInfoDaoImpl extends DefaultGenericDaoImpl<UserInfo> implements 
 	    query.setParameter("userId", userId);
 	    long count = ((Number)query.iterate().next()).longValue();
 	    return count;
+	}
+
+	@Override
+	public long getCountUser(UserInfo user) {
+		String hql = "select count(*) from UserInfo where userType=? ";
+		List<Object> params = new ArrayList<>();
+		params.add(user.getUserType());
+		
+		if(!StringUtils.isEmpty(user.getRegIp())){
+			hql +=" and regIp = ?";
+			params.add(user.getRegIp());
+		}
+		
+		if(null != user.getCreateTime()){
+			hql +=" and createTime >= ? and createTime <= ? ";
+			params.add(DateUtil.getDateDayStart(user.getCreateTime()));
+			params.add(DateUtil.getDateDayEnd(user.getCreateTime()));
+		}
+	    return queryCount(hql, params,UserInfo.class);
 	}
   
 }

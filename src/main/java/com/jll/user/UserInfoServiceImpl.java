@@ -418,12 +418,12 @@ public class UserInfoServiceImpl implements UserInfoService
 		
 		UserInfo loginUser = userDao.getUserByUserName(loginUserName);
 		
-		if(loginUser == null) {
+		/*if(loginUser == null) {
 			logger.error(Message.Error.ERROR_USER_NO_VALID_USER.getErrorMes());
 			throw new RuntimeException(Message.Error.ERROR_USER_NO_VALID_USER.getErrorMes());
-		}
+		}*/
 		
-		user.setCreator(loginUser.getId());
+		user.setCreator(1);
 		user.setRegIp(request.getRemoteHost());
 		userDao.saveUser(user);
 		walletServ.createWallet(user);
@@ -905,8 +905,8 @@ public class UserInfoServiceImpl implements UserInfoService
 		if(auth == null) {
 			return null;
 		}
-		return getUserByUserName("zhaowei");
-		//return getUserByUserName(auth.getName());
+//		return getUserByUserName("shiwan00000001");
+		return getUserByUserName(auth.getName());
 	}
 
 	@Override
@@ -939,6 +939,12 @@ public class UserInfoServiceImpl implements UserInfoService
 			return ret;
 		}
 		
+		if(UserType.DEMO_PLAYER.getCode() == dbInfo.getUserType()){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_DEMO_USER_DISABLE_FUN.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_DEMO_USER_DISABLE_FUN.getErrorMes());
+			return ret;
+		}
 		double minAmt = Double.valueOf(cacheRedisService.getSysCode(SysCodeTypes.WITHDRAWAL_CFG.getCode(), WithdrawConif.MIN_WITHDRAWAL_AMT.getCode()).getCodeVal());
 		double maxAmt = Double.valueOf(cacheRedisService.getSysCode(SysCodeTypes.WITHDRAWAL_CFG.getCode(), WithdrawConif.MAX_WITHDRAWAL_AMT.getCode()).getCodeVal());
 		if(amount < minAmt
@@ -1200,6 +1206,13 @@ public class UserInfoServiceImpl implements UserInfoService
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+			return ret;
+		}
+		
+		if(UserType.DEMO_PLAYER.getCode() == dbInfo.getUserType()){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_DEMO_USER_DISABLE_FUN.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_DEMO_USER_DISABLE_FUN.getErrorMes());
 			return ret;
 		}
 		
@@ -1515,6 +1528,70 @@ public class UserInfoServiceImpl implements UserInfoService
 	@Override
 	public void updateUser(UserInfo userInfo) {
 		supserDao.update(userInfo);
+	}
+
+	@Override
+	public Map<String, Object> saveRandomDemoUserInfo() {
+		Map<String,Object> ret=new HashMap<String,Object>();
+		
+		Map<String,SysCode> maps =  cacheRedisService.getSysCode(SysCodeTypes.DEMO_USER_CFG.getCode());
+		
+		UserInfo user = new UserInfo();
+		user.setUserType(UserType.DEMO_PLAYER.getCode());
+		user.setRegIp(request.getRemoteHost());
+		user.setCreateTime(new Date());
+		
+		int maxIpReg = Utils.toInteger(maps.get("ip_max_reg_size").getCodeVal());
+		int curIpRegSize = Utils.toInteger(userDao.getCountUser(user));
+		if(curIpRegSize >= maxIpReg){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_SAME_IP_LIMIT_MAX_REG.getCode());
+			ret.put(Message.KEY_ERROR_MES, String.format(Message.Error.ERROR_SAME_IP_LIMIT_MAX_REG.getErrorMes(), user.getRegIp(),curIpRegSize));
+			return ret;
+		}
+		user.setRegIp("");
+		user.setCreateTime(null);
+		String demoName = String.format(maps.get("demo_user_name_format").getCodeVal(),userDao.getCountUser(user)+1);
+		String demoPwd = StringUtils.getRandomString(Utils.toInteger(maps.get("demo_user_pwd_format").getCodeVal()));
+		double demoBal = Utils.toDouble(maps.get("demo_user_bal").getCodeVal());
+		
+		
+		//查找总代理
+		UserInfo dbAgent = (UserInfo) supserDao.findByName(UserInfo.class, "userType", UserType.GENERAL_AGENCY.getCode()).get(0);
+		
+		user.setSuperior(dbAgent.getId().toString());
+		user.setUserName(demoName);
+		user.setLoginPwd(demoPwd);
+		user.setFundPwd(demoPwd);
+		regUser(user);
+		
+		UserAccount dbAcc = (UserAccount) supserDao.findByName(UserAccount.class, "userId", user.getId(), "accType", WalletType.MAIN_WALLET.getCode()).get(0);
+		dbAcc.setBalance(new BigDecimal(demoBal));
+		supserDao.update(dbAcc);
+		
+		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		ret.put(Message.KEY_DATA,demoName);
+		ret.put(Message.KEY_DEFAULT_PASSWORD,demoPwd);
+		ret.put("balance",demoBal);
+		return ret;
+	}
+
+	@Override
+	public Map<String, Object> updateDemoUserDisableLogin() {
+		Map<String, Object> ret = new HashMap<String, Object>();
+		UserInfo dbInfo = getCurLoginInfo();
+		if(null == dbInfo){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+			return ret;
+		}
+		if(UserType.DEMO_PLAYER.getCode() == dbInfo.getUserType()){
+			dbInfo.setState(UserState.REVOKED.getCode());
+			supserDao.update(dbInfo);
+		}
+		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		return ret;
 	}
 	
 }

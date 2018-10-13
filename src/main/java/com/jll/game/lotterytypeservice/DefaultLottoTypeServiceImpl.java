@@ -11,6 +11,7 @@ import com.jll.common.cache.CacheRedisService;
 import com.jll.common.constants.Constants;
 import com.jll.common.constants.Constants.OrderDelayState;
 import com.jll.common.constants.Constants.OrderState;
+import com.jll.common.constants.Constants.UserType;
 import com.jll.entity.Issue;
 import com.jll.entity.OrderInfo;
 import com.jll.entity.PlayType;
@@ -238,6 +239,7 @@ public abstract class DefaultLottoTypeServiceImpl implements LotteryTypeService
 		}
 		 
 		UserInfo user = userServ.getUserById(order.getUserId());
+		
 		//被取消的订单 或者延迟开奖的订单,或者已经开奖 跳过开奖
 		if(order.getState() == Constants.OrderState.SYS_CANCEL.getCode()
 				||	order.getState() == Constants.OrderState.WINNING.getCode()
@@ -254,10 +256,15 @@ public abstract class DefaultLottoTypeServiceImpl implements LotteryTypeService
 		if(isMatch) {//赢
 			//TODO 发奖金
 			BigDecimal prize = calPrize(issue, order, user);
-			//TODO 增加账户流水
-			addUserAccountDetails(order, user, issue, prize, Constants.AccOperationType.PAYOUT);
-			//TODO 修改用户余额
-			modifyBal(order, user, prize);
+			
+			//试玩用户跳过派奖
+			if(UserType.DEMO_PLAYER.getCode() != user.getUserType()){
+				//TODO 增加账户流水
+				addUserAccountDetails(order, user, issue, prize, Constants.AccOperationType.PAYOUT);
+				//TODO 修改用户余额
+				modifyBal(order, user, prize);
+			}
+			
 			//TODO 修改订单状态
 			modifyOrderState(order, Constants.OrderState.WINNING);
 		}else {
@@ -265,8 +272,9 @@ public abstract class DefaultLottoTypeServiceImpl implements LotteryTypeService
 			modifyOrderState(order, Constants.OrderState.LOSTING);
 		}
 		
-		//TODO
-		if(order.getState() != Constants.OrderState.RE_PAYOUT.getCode()){
+		//试玩用户跳过返点
+		if(UserType.DEMO_PLAYER.getCode() != user.getUserType()
+				&& order.getState() != Constants.OrderState.RE_PAYOUT.getCode()){
 			rebate(issue, user, order);
 		}
 		

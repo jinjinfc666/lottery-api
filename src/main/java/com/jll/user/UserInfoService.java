@@ -133,4 +133,8 @@ public interface UserInfoService
 	Map<String, Object> queryByUserIdBankList(Integer id);
 	
 	Map<String,Object> getUserNameById(Integer userId);
+	
+	Map<String, Object> saveRandomDemoUserInfo();
+	
+	Map<String, Object> updateDemoUserDisableLogin();
 }
