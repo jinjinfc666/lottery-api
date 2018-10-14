@@ -4,6 +4,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import com.jll.dao.PageBean;
 import com.jll.dao.PageQueryDao;
 import com.jll.entity.SiteMessFeedback;
@@ -70,7 +72,7 @@ public interface UserInfoService
 	 *		   Message.status.SUCCESS or
 	 *         Message.Error
 	 */
-	void regUser(UserInfo user);
+	void regUser(UserInfo user,HttpServletRequest request);
 
 	/**
 	 * query the general agency which is unique in the system
@@ -134,7 +136,7 @@ public interface UserInfoService
 	
 	Map<String,Object> getUserNameById(Integer userId);
 	
-	Map<String, Object> saveRandomDemoUserInfo();
+	Map<String, Object> saveRandomDemoUserInfo(HttpServletRequest request);
 	
 	Map<String, Object> updateDemoUserDisableLogin();
 }
