@@ -2,8 +2,10 @@ package com.jll.game;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import com.jll.entity.Issue;
+import com.jll.entity.SysCode;
 
 public interface IssueDao
 {
@@ -20,4 +22,6 @@ public interface IssueDao
 	List<Issue> queryByLTNumber(String lotteryType, Date time,Integer number);
 	//通过当前时间和彩种    获得离当前时间最近的一期成功的期次时间
 	List<Issue> queryByLTNumeber(String lotteryType);
+	//统一撤单需要的期号
+	Map<String,Object> queryAllByIssue(String lotteryType,Integer state,String startTime,String endTime,Integer pageIndex,Integer pageSize,String issueNum,Map<String, SysCode> sysCodes);
 }

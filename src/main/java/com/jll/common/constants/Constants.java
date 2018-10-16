@@ -915,6 +915,14 @@ public class Constants {
 			
 			return null;
 		}
+		public static Map<Integer,String> getMap() {
+			Map<Integer,String> map=new HashMap<Integer,String>();
+			IssueState[] names = IssueState.values();
+			for(IssueState name: names) {
+				map.put(name.getCode(), name.getNames());
+			}
+			return map;
+		}
 	}
 	/**
 	 *用户类型

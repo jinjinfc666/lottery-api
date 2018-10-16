@@ -273,7 +273,7 @@ public class IssueServiceImpl implements IssueService
 	}
 
 	@Override
-	public Map<String, Object> issueDisbale(String lottoType, String issueNum, Map<String, String> params) {
+	public Map<String, Object> updateIssueDisbale(String lottoType, String issueNum, Map<String, String> params) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		Issue curIssue = issueService.getIssueByIssueNum(Utils.toString(params.get("lottoType")),issueNum);
 		if(null == curIssue){
@@ -423,5 +423,13 @@ public class IssueServiceImpl implements IssueService
 		
 		
 		return true;
+	}
+
+	@Override
+	public Map<String, Object> queryAllByIssue(String lotteryType, Integer state,String startTime, String endTime, Integer pageIndex,
+			Integer pageSize, String issueNum) {
+		String codeTypeName=Constants.SysCodeTypes.LOTTERY_TYPES.getCode();
+		Map<String, SysCode> sysCodes=cacheServ.getSysCode(codeTypeName);
+		return issueDao.queryAllByIssue(lotteryType, state,startTime, endTime, pageIndex, pageSize, issueNum,sysCodes);
 	}
 }

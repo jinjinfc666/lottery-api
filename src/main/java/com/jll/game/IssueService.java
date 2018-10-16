@@ -34,7 +34,7 @@ public interface IssueService
 
 	Map<String, Object> betOrderRePayout(String lottoType, String issueNum, Map<String, String> params);
 
-	Map<String, Object> issueDisbale(String lottoType, String issueNum, Map<String, String> params);
+	Map<String, Object> updateIssueDisbale(String lottoType, String issueNum, Map<String, String> params);
 
 	Map<String, Object> issueDelayePayout(String issueNum, Map<String, String> params);
 
@@ -62,4 +62,6 @@ public interface IssueService
 	 * @return
 	 */
 	boolean isManualPrieModel(String lottoType, String issueNum);
+	//统一撤单需要的期号
+	Map<String,Object> queryAllByIssue(String lotteryType, Integer state,String startTime, String endTime, Integer pageIndex,Integer pageSize, String issueNum);
 }
