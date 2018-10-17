@@ -30,13 +30,13 @@ public class AuthFilter extends ClientCredentialsTokenEndpointFilter {
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
 			throws AuthenticationException, IOException, ServletException {
-//		HttpSession session = request.getSession(false);
+		HttpSession session = request.getSession(true);
 //		if(session==null) {
 //			session=request.getSession(true);
 //		}
-//		String sessionId=session.getId();
+		String sessionId = session.getId();
 		String recCaptcha = request.getParameter("captcha");
-		String sessionId = request.getParameter("jsSessionId");
+		//String sessionId = request.getParameter("jsessionid");
 		String key=sessionId;
 		String saveCaptcha = cacheRedisService.getSessionIdCaptcha(key);
 		cacheRedisService.deleteSessionIdCaptcha(key);

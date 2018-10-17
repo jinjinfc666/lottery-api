@@ -34,7 +34,7 @@ public interface IssueService
 
 	Map<String, Object> betOrderRePayout(String lottoType, String issueNum, Map<String, String> params);
 
-	Map<String, Object> issueDisbale(String lottoType, String issueNum, Map<String, String> params);
+	Map<String, Object> updateIssueDisbale(String lottoType, String issueNum, Map<String, String> params);
 
 	Map<String, Object> issueDelayePayout(String issueNum, Map<String, String> params);
 
@@ -52,4 +52,16 @@ public interface IssueService
 	String manualDrawResult(String lottoType, 
 			String issueNum, 
 			String winningNum);
+
+	/**
+	 * 判断是否允许手动开奖
+	 * 对于cqssc, gd11x5, bjpk10 默认允许手动开奖
+	 * 对于私彩，除非指定开奖模式，否则不许允许手动开奖
+	 * @param lottoType
+	 * @param issueNum
+	 * @return
+	 */
+	boolean isManualPrieModel(String lottoType, String issueNum);
+	//统一撤单需要的期号
+	Map<String,Object> queryAllByIssue(String lotteryType, Integer state,String startTime, String endTime, Integer pageIndex,Integer pageSize, String issueNum);
 }

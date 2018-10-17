@@ -63,7 +63,9 @@ public class VerificationCodeController {
 		Map<String, Object> ret = new HashMap<>();
 		Map<String, Object> map = new HashMap<>();
 		try {
-			String sessionId = request.getParameter("jsSessionId");
+			HttpSession session = request.getSession();
+			String sessionId = session.getId();
+			//String sessionId = request.getParameter("jsSessionId");
 			String key=sessionId;
 			String saveCaptcha = cacheRedisService.getSessionIdCaptcha(key);
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());

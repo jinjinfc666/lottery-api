@@ -2,7 +2,12 @@ package com.ehome.test;
 
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.jetty.http.HttpVersion;
@@ -15,7 +20,15 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.webapp.WebAppContext;
+import org.junit.Assert;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.meterware.httpunit.GetMethodWebRequest;
+import com.meterware.httpunit.PostMethodWebRequest;
+import com.meterware.httpunit.WebConversation;
+import com.meterware.httpunit.WebRequest;
+import com.meterware.httpunit.WebResponse;
 import com.meterware.servletunit.ServletTestCase;
 
 public class ControllerJunitBase extends ServletTestCase {
@@ -125,5 +138,149 @@ public class ControllerJunitBase extends ServletTestCase {
         https.setIdleTimeout(500000);
 		
 		return https;
+	}
+	
+	protected String queryToken(String userName, String pwd) {
+		String token = null;
+		String sessionId = querySessionId();
+		String tokenURL = "http://localhost:8080/oauth/token";
+		String captcha = null;
+		ObjectMapper mapper = new ObjectMapper();
+		
+		if(StringUtils.isBlank(sessionId)) {
+			return null;
+		}
+		
+		tokenURL += ";jsessionid=" + sessionId;
+		captcha = queryCaptcha(sessionId);
+		try {
+			WebRequest request = new PostMethodWebRequest(tokenURL);
+			WebConversation wc = new WebConversation();
+			
+			request.setParameter("grant_type", "password");
+			request.setParameter("client_id", "lottery-client");
+			request.setParameter("client_secret", "secret_1");
+			request.setParameter("username", userName);
+			request.setParameter("password", pwd);
+			request.setParameter("captcha", captcha);
+			//request.setParameter("jsessionid", sessionId);
+			WebResponse response = wc.sendRequest(request);
+			
+			int  status = response.getResponseCode();
+			
+			Assert.assertEquals(HttpServletResponse.SC_OK, status);
+			String result = response.getText();
+			
+			Map<String, Object> retItems = null;
+			
+			retItems = mapper.readValue(result, HashMap.class);
+			
+			Assert.assertNotNull(retItems);
+
+			Assert.assertNotNull(retItems.get("access_token"));
+			
+			token = (String)retItems.get("access_token");
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+		
+		return token;
+	}
+	
+	private String querySessionId() {
+		String sessionId = null;
+		
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+			WebRequest request = new GetMethodWebRequest("http://localhost:8080/captchas/query-sesionid");
+			WebConversation wc = new WebConversation();
+			WebResponse response = wc.sendRequest(request);
+			
+			int  status = response.getResponseCode();
+			
+			Assert.assertEquals(HttpServletResponse.SC_OK, status);
+			String result = response.getText();
+			
+			
+			Map<String, Object> retItems = null;
+			
+			retItems = mapper.readValue(result, HashMap.class);
+			
+			Assert.assertNotNull(retItems);
+
+			Assert.assertNotNull(retItems.get("data"));
+			
+			sessionId = (String)((Map)retItems.get("data")).get("sessionId");
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+		
+		return sessionId;
+	}
+	
+	private void queryCaptchaImage(String sessionId) {		
+		//ObjectMapper mapper = new ObjectMapper();
+		try {
+			WebRequest request = new GetMethodWebRequest("http://localhost:8080/captchas/verification-code-Img;jsessionid=" + sessionId);
+			WebConversation wc = new WebConversation();
+			WebResponse response = wc.sendRequest(request);
+			
+			int  status = response.getResponseCode();
+			
+			Assert.assertEquals(HttpServletResponse.SC_OK, status);
+			/*String result = response.getText();
+			
+			Map<String, Object> retItems = null;
+			
+			retItems = mapper.readValue(result, HashMap.class);
+			
+			Assert.assertNotNull(retItems);
+
+			Assert.assertNotNull(retItems.get("data"));
+			
+			sessionId = (String)retItems.get("data");*/
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
+	
+	private String queryCaptcha(String sessionId) {
+		String captcha = null;
+		//String sessionId = null;
+		
+		
+		//sessionId = querySessionId();
+		if(StringUtils.isBlank(sessionId)) {
+			fail("Can not obtain the session id from the server!!!");
+			return null;
+		}
+		
+		queryCaptchaImage(sessionId);
+		
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+			WebRequest request = new GetMethodWebRequest("http://localhost:8080/captchas;jsessionid=" + sessionId);
+			WebConversation wc = new WebConversation();
+			WebResponse response = wc.sendRequest(request);
+			
+			int  status = response.getResponseCode();
+			
+			Assert.assertEquals(HttpServletResponse.SC_OK, status);
+			String result = response.getText();
+			
+			Map<String, Object> retItems = null;
+			
+			retItems = mapper.readValue(result, HashMap.class);
+			
+			Assert.assertNotNull(retItems);
+
+			Assert.assertNotNull(retItems.get("data"));
+			
+			captcha = (String)((Map)retItems.get("data")).get("captcha");
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+		
+		return captcha;
 	}
 }

@@ -144,6 +144,28 @@ public class Pk10ServiceImpl extends DefaultLottoTypeServiceImpl
 			return;
 		}
 		
+		if(lottoTypeAndIssueNum.length == 3) {
+			winningNum = lottoTypeAndIssueNum[2];
+			if(StringUtils.isBlank(winningNum)) {
+				return;
+			}
+			
+			if(winningNum.split(",").length != 5) {
+				return;
+			}
+			
+			issue = issueServ.getIssueByIssueNum(lottoType, issueNum);
+			issue.setRetNum(winningNum.replaceAll(" ", ","));
+			issue.setState(Constants.IssueState.LOTTO_DARW.getCode());
+			issueServ.saveIssue(issue);
+			
+			changeBulletinBoard(lottoType, issueNum, issue);
+			
+			//inform the progress to payout
+			cacheServ.publishMessage(Constants.TOPIC_PAY_OUT, message);
+			return;
+		}
+		
 		urls = sysCode.getCodeVal().split(",");
 		while(currCounter < maxCounter) {
 			for(String url : urls) {

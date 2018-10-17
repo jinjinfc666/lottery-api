@@ -85,7 +85,7 @@ public class UserController {
 	 * @param request   给前台代理注册用户或者下级代理
 	 */
 	@RequestMapping(value="/players", method = { RequestMethod.POST }, produces=MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> regUser(@RequestBody UserInfo user) {
+	public Map<String, Object> regUser(@RequestBody UserInfo user,HttpServletRequest request) {
 		Map<String, Object> resp = new HashMap<String, Object>();
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		UserInfo superior = null;
@@ -155,7 +155,7 @@ public class UserController {
 		
 		user.setRebate(superior.getPlatRebate().subtract(user.getPlatRebate()));
 		try {
-			userInfoService.regUser(user);
+			userInfoService.regUser(user,request);
 		}catch(Exception ex) {
 			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_FAILED_REGISTER.getCode());
@@ -170,8 +170,8 @@ public class UserController {
 	
 	
 	@RequestMapping(value="/demo-players", method = { RequestMethod.GET }, produces=MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> regDemoUser() {
-		return userInfoService.saveRandomDemoUserInfo();
+	public Map<String, Object> regDemoUser(HttpServletRequest request) {
+		return userInfoService.saveRandomDemoUserInfo(request);
 	}
 	
 	/**
@@ -181,7 +181,8 @@ public class UserController {
 	 */
 	@RequestMapping(value="/agents/{agent-id}", method = { RequestMethod.POST }, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> regAgent(@PathVariable("agent-id") Integer agentId,
-			@RequestBody UserInfo user) {
+			@RequestBody UserInfo user,
+			HttpServletRequest request) {
 		Map<String, Object> resp = new HashMap<String, Object>();
 				
 		
@@ -232,7 +233,7 @@ public class UserController {
 		
 		user.setRebate(generalAgency.getPlatRebate().subtract(user.getPlatRebate()));
 		try {
-			userInfoService.regUser(user);
+			userInfoService.regUser(user,request);
 		}catch(Exception ex) {
 			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_FAILED_REGISTER.getCode());
@@ -304,7 +305,7 @@ public class UserController {
 	 * @param request   增加系统用户
 	 */
 	@RequestMapping(value="/sys-users", method = { RequestMethod.POST }, consumes = MediaType.APPLICATION_JSON_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> regSysUser(@RequestBody UserInfo user) {
+	public Map<String, Object> regSysUser(@RequestBody UserInfo user,HttpServletRequest request) {
 		Map<String, Object> resp = new HashMap<String, Object>();
 		
 		user.setUserType(UserType.SYS_ADMIN.getCode());
@@ -333,7 +334,7 @@ public class UserController {
 		}		
 		
 		try {
-			userInfoService.regUser(user);
+			userInfoService.regUser(user,request);
 		}catch(Exception ex) {
 			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_FAILED_REGISTER.getCode());

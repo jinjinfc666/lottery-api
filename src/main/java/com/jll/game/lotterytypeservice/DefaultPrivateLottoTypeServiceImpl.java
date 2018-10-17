@@ -65,7 +65,8 @@ public abstract class DefaultPrivateLottoTypeServiceImpl extends DefaultLottoTyp
 		String[] lottoTypeAndIssueNum = null;
 		String lottoType = null;
 		String issueNum = null;
-		String codeTypeName = Constants.SysCodeTypes.LOTTERY_CONFIG_5FC.getCode();
+		/*String codeTypeName = Constants.SysCodeTypes.LOTTERY_CONFIG_5FC.getCode();*/
+		String codeTypeName = getCodeTypeName();
 		String codeNamePrizeMode = Constants.LotteryAttributes.PRIZE_MODE.getCode();
 		String codeNameWinningRate = Constants.LotteryAttributes.WINING_RATE.getCode();
 		String codeNameUplimitProfitLoss = Constants.LotteryAttributes.UP_LIMIT_PROFIT_LOSS.getCode();
@@ -86,6 +87,11 @@ public abstract class DefaultPrivateLottoTypeServiceImpl extends DefaultLottoTyp
 		prizeMode = PrizeMode.getByCode(sysCodePrizeMode.getCodeVal());
 		switch(prizeMode) {
 			case MANUAL :{
+				if(lottoTypeAndIssueNum.length == 3) {
+					manualDrawResult(lottoType, 
+							issueNum, 
+							lottoTypeAndIssueNum[2]);					
+				}
 				return ;
 			}
 			case NON_INTERVENTIONAL : {
@@ -285,7 +291,30 @@ public abstract class DefaultPrivateLottoTypeServiceImpl extends DefaultLottoTyp
 		cacheServ.publishMessage(Constants.TOPIC_PAY_OUT, lottoType +"|"+ issueNum);
 	}
 
-	
+	private void manualDrawResult(String lottoType, String issueNum, String drawResult) {
+		logger.debug(String.format("lottoType   %s,  issueNum  %s", lottoType, issueNum));
+		String winningNum = null;
+		Issue issue = null;
+		
+		winningNum = drawResult;
+		if(StringUtils.isBlank(winningNum)) {
+			return;
+		}
+		
+		if(winningNum.split(",").length != 5) {
+			return;
+		}
+		
+		issue = issueServ.getIssueByIssueNum(lottoType, issueNum);
+		issue.setRetNum(winningNum.replaceAll(" ", ","));
+		issue.setState(Constants.IssueState.LOTTO_DARW.getCode());
+		issueServ.saveIssue(issue);
+		
+		changeBulletinBoard(lottoType, issueNum, issue);
+						
+		//inform the progress to payout
+		cacheServ.publishMessage(Constants.TOPIC_PAY_OUT, lottoType +"|"+ issueNum);
+	}
 	
 	
 	public abstract String getCodeTypeName();

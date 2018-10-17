@@ -131,6 +131,10 @@ public class Message {
 		
 		/**************log module*************************/
 		ERROR_LOGIN_INVALID_CAPTCHA("070001", "Invalid captcha!!!"),
+		
+		/**************Issue module*************************/
+		ERROR_ISSUE_INVALID_STATUS("080001", "Invalid issue status!!!"),
+		ERROR_ISSUE_NOT_ALLOWED_MANUAL_DRAW_RESULT("080002", "Not allowed to manual draw result!!!"),
 		;
 		
 		private String code;

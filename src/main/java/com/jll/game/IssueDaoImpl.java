@@ -1,19 +1,29 @@
 package com.jll.game;
 
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.query.Query;
 import org.hibernate.type.DateType;
 import org.hibernate.type.TimestampType;
 import org.springframework.stereotype.Repository;
 
+import com.jll.common.constants.Constants;
 import com.jll.dao.DefaultGenericDaoImpl;
+import com.jll.dao.PageBean;
 import com.jll.entity.IpBlackList;
 import com.jll.entity.Issue;
+import com.jll.entity.SysCode;
 
 @Repository
 public class IssueDaoImpl extends DefaultGenericDaoImpl<Issue> implements IssueDao
@@ -85,5 +95,74 @@ public class IssueDaoImpl extends DefaultGenericDaoImpl<Issue> implements IssueD
 	    query.setParameter("time", new Date(),TimestampType.INSTANCE);
 	    List<Issue> list = query.list();
 		return list;
+	}
+	//统一撤单需要的期号
+	@Override
+	public Map<String,Object> queryAllByIssue(String lotteryType,Integer state, String startTime, String endTime, Integer pageIndex,
+			Integer pageSize, String issueNum,Map<String, SysCode> sysCodes) {
+		String lotteryTypeSql="";
+		String issueNumSql="";
+		String timeSql="";
+		String stateSql="";
+		Map<String,Object> map=new HashMap();
+		if(!StringUtils.isBlank(lotteryType)) {
+			lotteryTypeSql=" and lotteryType=:lotteryType ";
+			map.put("lotteryType", lotteryType);
+		}
+		if(!StringUtils.isBlank(issueNum)) {
+			issueNumSql=" and issueNum=:issueNum ";
+			map.put("issueNum", issueNum);
+		}
+		if(!StringUtils.isBlank(startTime)&&!StringUtils.isBlank(endTime)) {
+			timeSql=" where startTime>=:startTime and endTime<:endTime ";
+		    String startTime1=startTime+" 00:00:00";//开始时间
+		    //结束时间
+		    Calendar ca = Calendar.getInstance();// 得到一个Calendar的实例  
+		    SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");  
+		    ca.setTime(new Date()); // 设置时间为当前时间  
+		    Date resultDate = ca.getTime(); // 结果   
+		    String nowTime=sdf1.format(resultDate); 
+		    Date nowTime1 = java.sql.Date.valueOf(nowTime);//当前时间
+		    Date oldTime = java.sql.Date.valueOf(endTime);//前端传过来的时间
+		    boolean b=DateUtils.isSameDay(nowTime1, oldTime);
+		    SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  
+		    String nowTime2=sdf2.format(resultDate);//当前时间  时分秒
+		    Date beginDate =null;
+			Date endDate=null;
+			String endTime1=null;
+		    if(b) {
+		    	endTime1=nowTime2;
+		    }else {
+		    	endTime1=endTime+" 00:00:00";
+		    }
+		    try {
+				beginDate = (Date) sdf2.parse(startTime1);
+				endDate = (Date) sdf2.parse(endTime1); 
+			}catch(ParseException  ex) {
+				
+			}
+			map.put("startTime", beginDate);
+			map.put("endTime", endDate);
+		}
+		
+		if(state!=null) {
+			stateSql=" and state>=:state ";
+			map.put("state", state);
+		}
+		String sql="From Issue "+timeSql+lotteryTypeSql+issueNumSql+stateSql+"ORDER BY id DESC";
+		PageBean page=new PageBean();
+		page.setPageIndex(pageIndex);
+		page.setPageSize(pageSize);
+		PageBean pageBean=queryByTimePagination(page,sql,map);
+		List<Issue> issues=pageBean.getContent();
+		for(Issue issue:issues) {
+			String codeName=issue.getLotteryType();
+			SysCode sysCode=sysCodes.get(codeName);
+			String lotteryTypeOld=issue.getLotteryType();
+			issue.setLotteryType(lotteryTypeOld+"/"+sysCode.getRemark());
+		}
+		map.clear();
+		map.put("data",pageBean);
+	    return map;
 	}
 }

@@ -66,7 +66,7 @@ public class SfcServiceImpl extends DefaultPrivateLottoTypeServiceImpl
 	
 	UserInfoService userServ = (UserInfoService)SpringContextUtil.getBean("userInfoServiceImpl");
 	
-	String codeTypeName = Constants.SysCodeTypes.LOTTERY_CONFIG_5FC.getCode();
+	String codeTypeName = Constants.SysCodeTypes.LOTTERY_CONFIG_SFC.getCode();
 	
 	@Override
 	public List<Issue> makeAPlan() {  

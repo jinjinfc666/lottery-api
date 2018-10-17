@@ -24,12 +24,15 @@ import com.jll.common.constants.Constants.AccOperationType;
 import com.jll.common.constants.Constants.IssueState;
 import com.jll.common.constants.Constants.OrderDelayState;
 import com.jll.common.constants.Constants.OrderState;
+import com.jll.common.constants.Constants.PrizeMode;
+import com.jll.common.constants.Constants.SysCodeTypes;
 import com.jll.common.constants.Message;
 import com.jll.common.utils.Utils;
 import com.jll.dao.SupserDao;
 import com.jll.entity.Issue;
 import com.jll.entity.OrderInfo;
 import com.jll.entity.PlayType;
+import com.jll.entity.SysCode;
 import com.jll.entity.UserAccount;
 import com.jll.entity.UserAccountDetails;
 import com.jll.game.order.OrderDao;
@@ -270,7 +273,7 @@ public class IssueServiceImpl implements IssueService
 	}
 
 	@Override
-	public Map<String, Object> issueDisbale(String lottoType, String issueNum, Map<String, String> params) {
+	public Map<String, Object> updateIssueDisbale(String lottoType, String issueNum, Map<String, String> params) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		Issue curIssue = issueService.getIssueByIssueNum(Utils.toString(params.get("lottoType")),issueNum);
 		if(null == curIssue){
@@ -384,5 +387,49 @@ public class IssueServiceImpl implements IssueService
 				message);
 		
 		return Integer.toString(Message.status.SUCCESS.getCode());
+	}
+
+	@Override
+	public boolean isManualPrieModel(String lottoType, String issueNum) {
+		String codeNamePrizeMode = Constants.LotteryAttributes.PRIZE_MODE.getCode();
+		SysCodeTypes lottoAttri = Constants.SysCodeTypes.getLottoAttriFromLottoTye(lottoType);
+		SysCode sysCodePrizeMode = null;
+		Constants.LottoType type = null;
+		
+		if(lottoAttri == null) {
+			return false;
+		}
+		
+		sysCodePrizeMode = cacheServ.getSysCode(lottoAttri.getCode(), 
+				codeNamePrizeMode);
+		
+		type = Constants.LottoType.getFromCode(lottoType);
+		if(type == null) {
+			return false;
+		}
+		
+		if(Constants.LottoType.CQSSC.getCode().equals(lottoType)
+				|| Constants.LottoType.GD11X5.getCode().equals(lottoType)
+				|| Constants.LottoType.BJPK10.getCode().equals(lottoType)) {
+			return true;
+		}
+		
+		//对于私彩需要验证开奖模式
+		if(sysCodePrizeMode == null
+				|| (!sysCodePrizeMode.getCodeVal()
+					.equals(PrizeMode.MANUAL.getCode()))) {
+			return false;
+		}
+		
+		
+		return true;
+	}
+
+	@Override
+	public Map<String, Object> queryAllByIssue(String lotteryType, Integer state,String startTime, String endTime, Integer pageIndex,
+			Integer pageSize, String issueNum) {
+		String codeTypeName=Constants.SysCodeTypes.LOTTERY_TYPES.getCode();
+		Map<String, SysCode> sysCodes=cacheServ.getSysCode(codeTypeName);
+		return issueDao.queryAllByIssue(lotteryType, state,startTime, endTime, pageIndex, pageSize, issueNum,sysCodes);
 	}
 }
