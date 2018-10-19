@@ -120,7 +120,7 @@ public class UserInfoServiceImpl implements UserInfoService
 	UserBankCardService userBankCardService;
 	
 	@Resource
-	HttpServletRequest request;
+	//HttpServletRequest request;
  	
 	@Value("${sys_reset_pwd_default_pwd}")
 	String defaultPwd;
@@ -392,7 +392,7 @@ public class UserInfoServiceImpl implements UserInfoService
 	}
 
 	@Override
-	public void regUser(UserInfo user) {
+	public void regUser(UserInfo user,HttpServletRequest request) {
 		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String loginUserName = null;
@@ -905,8 +905,8 @@ public class UserInfoServiceImpl implements UserInfoService
 		if(auth == null) {
 			return null;
 		}
-		return getUserByUserName("zhaowei");
-		//return getUserByUserName(auth.getName());
+//		return getUserByUserName("zhaowei");
+		return getUserByUserName(auth.getName());
 	}
 
 	@Override
@@ -1531,7 +1531,7 @@ public class UserInfoServiceImpl implements UserInfoService
 	}
 
 	@Override
-	public Map<String, Object> saveRandomDemoUserInfo() {
+	public Map<String, Object> saveRandomDemoUserInfo(HttpServletRequest request) {
 		Map<String,Object> ret=new HashMap<String,Object>();
 		
 		Map<String,SysCode> maps =  cacheRedisService.getSysCode(SysCodeTypes.DEMO_USER_CFG.getCode());
@@ -1563,7 +1563,7 @@ public class UserInfoServiceImpl implements UserInfoService
 		user.setUserName(demoName);
 		user.setLoginPwd(demoPwd);
 		user.setFundPwd(demoPwd);
-		regUser(user);
+		regUser(user,request);
 		
 		UserAccount dbAcc = (UserAccount) supserDao.findByName(UserAccount.class, "userId", user.getId(), "accType", WalletType.MAIN_WALLET.getCode()).get(0);
 		dbAcc.setBalance(new BigDecimal(demoBal));

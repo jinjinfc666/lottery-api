@@ -1,13 +1,18 @@
 package com.jll.game;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang3.time.DateUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
@@ -170,9 +175,9 @@ public class IssueServiceImpl implements IssueService
 						isOk = false;
 					}
 //					criteria.add(Restrictions.eq("dataItemType",Constants.DataItemType.BALANCE.getCode()));
-					criteria.add(Restrictions.eq("operationType",Constants.AccOperationType.PAYOUT.getDesc()));
+					criteria.add(Restrictions.eq("operationType",Constants.AccOperationType.PAYOUT.getCode()));
 				}else{
-					criteria.add(Restrictions.eq("operationType",Constants.AccOperationType.BETTING.getDesc()));
+					criteria.add(Restrictions.eq("operationType",Constants.AccOperationType.BETTING.getCode()));
 				}
 				//收回盈利金额 或本金
 				if(isOk){
@@ -273,7 +278,7 @@ public class IssueServiceImpl implements IssueService
 	}
 
 	@Override
-	public Map<String, Object> issueDisbale(String lottoType, String issueNum, Map<String, String> params) {
+	public Map<String, Object> updateIssueDisbale(String lottoType, String issueNum, Map<String, String> params) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		Issue curIssue = issueService.getIssueByIssueNum(Utils.toString(params.get("lottoType")),issueNum);
 		if(null == curIssue){
@@ -423,5 +428,38 @@ public class IssueServiceImpl implements IssueService
 		
 		
 		return true;
+	}
+
+	@Override
+	public Map<String, Object> queryAllByIssue(String lotteryType, Integer state,String startTime, String endTime, Integer pageIndex,
+			Integer pageSize, String issueNum) {
+		String codeTypeName=Constants.SysCodeTypes.LOTTERY_TYPES.getCode();
+		Map<String, SysCode> sysCodes=cacheServ.getSysCode(codeTypeName);
+		return issueDao.queryAllByIssue(lotteryType, state,startTime, endTime, pageIndex, pageSize, issueNum,sysCodes);
+	}
+	//追号需要的期号信息
+	@Override
+	public Map<String, Object> queryIsZhIssue(String lotteryType) {
+		Map<String,Object> map=new HashMap<String,Object>();
+		Calendar ca = Calendar.getInstance();// 得到一个Calendar的实例  
+	    SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");  
+	    ca.setTime(new Date()); // 设置时间为当前时间  
+	    Date resultDate = ca.getTime(); // 结果   
+	    
+	    String endTime=sdf1.format(resultDate)+" 23:59:59"; 
+	    
+	    SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  
+	    String startTime=sdf2.format(resultDate);//当前时间  时分秒
+	    Date beginDate =null;
+		Date endDate=null;
+		try {
+			beginDate = (Date) sdf2.parse(startTime);
+			endDate = (Date) sdf2.parse(endTime); 
+		}catch(ParseException  ex) {
+			
+		}
+	    List<Issue> issueList=issueDao.queryIsZhIssue(lotteryType, beginDate, endDate);
+	    map.put(Message.KEY_DATA, issueList);
+		return map;
 	}
 }

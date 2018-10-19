@@ -345,4 +345,16 @@ public class CacheRedisDaoImpl  extends AbstractBaseRedisDao implements CacheRed
 		}
 	}
 
+	@Override
+	public PageBean queryByTimePagination(PageBean page, String HQL, Map<String, Object> params) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public long queryTimeCount(String HQL, Map<String, Object> params) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 }

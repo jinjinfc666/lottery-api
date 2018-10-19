@@ -915,6 +915,14 @@ public class Constants {
 			
 			return null;
 		}
+		public static Map<Integer,String> getMap() {
+			Map<Integer,String> map=new HashMap<Integer,String>();
+			IssueState[] names = IssueState.values();
+			for(IssueState name: names) {
+				map.put(name.getCode(), name.getNames());
+			}
+			return map;
+		}
 	}
 	/**
 	 *用户类型
@@ -2193,5 +2201,71 @@ public class Constants {
 			return this.code;
 		}
 		
+	}
+	/**
+	 * 智慧付
+	 */
+	public static enum WisdomPayment{
+		WEIXIN1("001","微信支付1"),
+		WEIXIN2("002","微信支付2"),
+		WEIXIN3("003","微信支付3"),
+		WEIXIN4("004","微信支付4"),
+		WEIXIN5("005","微信支付5");
+		
+		private String code;
+		private String name;
+		
+		private WisdomPayment(String code,String name) {
+			this.code = code;
+			this.name = name;
+		}
+		
+		public String getCode() {
+			return this.code;
+		}
+		public String getName() {
+			return this.name;
+		}
+		public static Map<String,String> getMap() {
+			Map<String,String> map=new HashMap<String,String>();
+			WisdomPayment[] names = WisdomPayment.values();
+			for(WisdomPayment name: names) {
+				map.put(name.getCode(), name.getName());
+			}
+			return map;
+		}
+	}
+	/**
+	 * 彩付
+	 */
+	public static enum CaiPay{
+		WEIXIN1("001","微信支付1"),
+		WEIXIN2("002","微信支付2"),
+		WEIXIN3("003","微信支付3"),
+		WEIXIN4("004","微信支付4"),
+		WEIXIN5("005","微信支付5");
+		
+		private String code;
+		private String name;
+		
+		private CaiPay(String code,String name) {
+			this.code = code;
+			this.name = name;
+		}
+		
+		public String getCode() {
+			return this.code;
+		}
+		public String getName() {
+			return this.name;
+		}
+		public static Map<String,String> getMap() {
+			Map<String,String> map=new HashMap<String,String>();
+			CaiPay[] names = CaiPay.values();
+			for(CaiPay name: names) {
+				map.put(name.getCode(), name.getName());
+			}
+			return map;
+		}
 	}
 }

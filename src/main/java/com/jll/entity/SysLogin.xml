@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated 2018-8-14 16:52:58 by Hibernate Tools 5.2.10.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping auto-import="true" default-access="property" default-cascade="none" default-lazy="true">
+    <class catalog="lottery" dynamic-insert="false" dynamic-update="false" mutable="true" name="com.jll.entity.SysLogin" optimistic-lock="version" polymorphism="implicit" select-before-update="false" table="sys_login">
+        <id name="id" type="java.lang.Integer">
+            <column name="id"/>
+            <generator class="identity"/>
+        </id>
+        <property generated="never" lazy="false" name="logType" optimistic-lock="true" type="string" unique="false">
+            <column length="30" name="log_type">
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="logOpeType" optimistic-lock="true" type="string" unique="false">
+            <column length="30" name="log_ope_type">
+                <comment>Ȩ��</comment>
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="userId" optimistic-lock="true" type="java.lang.Integer" unique="false">
+            <column name="user_id">
+                <comment>0:��Ч;1:��Ч</comment>
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="logData" optimistic-lock="true" type="string" unique="false">
+            <column length="1000" name="log_data">
+                <comment>Ȩ��</comment>
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="createTime" optimistic-lock="true" type="timestamp" unique="false">
+            <column length="19" name="create_time"/>
+        </property>
+    </class>
+</hibernate-mapping>

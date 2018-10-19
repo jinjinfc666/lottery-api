@@ -95,7 +95,7 @@ public class SysOperationController{
 	  public Map<String, Object> issueDisbale(@PathVariable("issueNum") String issueNum,
 			  //@PathVariable("lottoType") String lottoType,
 			  @RequestBody Map<String, String> params){
-		  return issueService.issueDisbale("",issueNum,params);
+		  return issueService.updateIssueDisbale("",issueNum,params);
 	  }
 	  
 	  /**
@@ -139,7 +139,7 @@ public class SysOperationController{
 		  
 		  if(StringUtils.isBlank(winningNum)) {
 			  response.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			  response.put(Message.KEY_STATUS, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			  response.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
 			  response.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
 			  
 			  return response;

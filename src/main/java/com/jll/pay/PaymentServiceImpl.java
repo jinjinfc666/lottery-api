@@ -231,6 +231,7 @@ public class PaymentServiceImpl  implements PaymentService
 				getScanPayInfo(ret, retCode, StringUtils.getStringValue(pramsInfo.get("qrcode")));
 			}
 		}else if(pt.getPlatId().equals(Constants.PayType.TLY_PAY.getCode())){
+			pramsInfo.put("card_number", pcInfo.getBankAcc());
 			String retCode = tlCloudService.saveDepositOrder(pramsInfo);
 			
 			if(retCode.equals(String.valueOf(Message.status.SUCCESS.getCode()))) {
@@ -259,8 +260,7 @@ public class PaymentServiceImpl  implements PaymentService
 				ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
 				return ret;
 		 }
-		 
-		 depositOrderService.receiveDepositOrder(Utils.toString(params.get("orderNum")), Utils.toString(params.get("remark")));
+		 depositOrderService.receiveDepositOrder(Utils.toString(params.get("orderNum")),"");
 		 ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		 return ret;
 	}

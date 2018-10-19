@@ -96,16 +96,11 @@ public class OrderDaoImpl extends DefaultGenericDaoImpl<OrderInfo> implements Or
 			params.add(delayPayoutFlag);
 		}
 		
-		if(StringUtils.isEmpty(orderNum)){
+		if(!StringUtils.isEmpty(orderNum)){
 			sql += ("  and order.orderNum = ? ");
 			params.add(orderNum);
 		}
-		if(StringUtils.isEmpty(userName)){
-			sql += ("  and u.userName = ? ");
-			params.add(userName);
-		}
-		
-		if(StringUtils.isEmpty(userName)){
+		if(!StringUtils.isEmpty(userName)){
 			sql += ("  and u.userName = ? ");
 			params.add(userName);
 		}
