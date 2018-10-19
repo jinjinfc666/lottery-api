@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.apache.log4j.Logger;
 
@@ -41,7 +42,7 @@ public class Wxq2ZxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl  {
 				
 		winNum = issue.getRetNum();
 		betNum = order.getBetNum();
-		winNum = winNum.substring(0, 2);
+		winNum = winNum.substring(0, 3);
 		winNumSet = winNum.split(",");
 		betNumMul = betNum.split(";");
 		
@@ -50,7 +51,9 @@ public class Wxq2ZxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl  {
 		for(String temp : betNumMul) {
 			if(temp.contains(winNumSet[0]) 
 					&& temp.contains(winNumSet[1])) {
-				return true;
+				if(!winNumSet[0].equals(winNumSet[1])) {					
+					return true;
+				}
 			}
 		}
 		
@@ -77,7 +80,7 @@ public class Wxq2ZxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl  {
 		betTotal = (int)(MathUtil.combination(2, len));
 		
 		betAmount = MathUtil.multiply(betTotal, times, Float.class);
-		betAmount = MathUtil.multiply(betAmount, monUnit, Float.class);
+		betAmount = MathUtil.multiply(betAmount, monUnit.floatValue(), Float.class);
 		maxWinAmount = MathUtil.multiply(betAmount, singleBettingPrize.floatValue(), Float.class);
 		
 		ret.put("playType", playType);
@@ -136,7 +139,7 @@ public class Wxq2ZxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl  {
 		
 		winNum = issue.getRetNum();
 		betNum = order.getBetNum();
-		winNum = winNum.substring(0, 2);
+		winNum = winNum.substring(0, 3);
 		winNumSet = winNum.split(",");
 		betNumMul = betNum.split(";");
 		
@@ -144,7 +147,9 @@ public class Wxq2ZxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl  {
 		for(String temp : betNumMul) {
 			if(temp.contains(winNumSet[0]) 
 					&& temp.contains(winNumSet[1])) {
-				winningBetAmount++;
+				if(!winNumSet[0].equals(winNumSet[1])) {					
+					winningBetAmount++;
+				}
 			}
 		}
 		
@@ -230,4 +235,25 @@ public class Wxq2ZxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl  {
 		
 		return false;
 	}
+	
+	@Override
+	public String obtainSampleBetNumber(){
+		Random random = new Random();
+		StringBuffer betNum = new StringBuffer();
+		
+		int bit = random.nextInt(10);
+		int bit2 = -1;
+		betNum.append(Integer.toString(bit));
+		while(true) {
+			bit2 = random.nextInt(10);
+			if(bit != bit2) {
+				betNum.append(Integer.toString(bit2));
+				break;
+			}
+		}
+		
+		return betNum.toString();
+	}
+	
+	
 }

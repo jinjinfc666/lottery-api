@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.apache.log4j.Logger;
 
@@ -32,8 +33,6 @@ public class Wxh2ZxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl  {
 	public boolean isMatchWinningNum(Issue issue, OrderInfo order) {
 		//开奖号码的每一位
 		String[] winNumSet = null;
-		//投注号码的每个位的号码，可能多个号码
-		String[] betNumSet = new String[2];
 		//每次点击选号按钮所选号码，多个所选号码以;分割
 		String[] betNumMul = null;
 		String betNum = null;
@@ -41,16 +40,18 @@ public class Wxh2ZxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl  {
 				
 		winNum = issue.getRetNum();
 		betNum = order.getBetNum();
-		winNum = winNum.substring(0, 2);
+		winNum = winNum.substring(6, 9);
 		winNumSet = winNum.split(",");
 		betNumMul = betNum.split(";");
 		
-		logger.debug("proceed bet number is :: " + Arrays.asList(betNumSet));
+		logger.debug(String.format("betNum  %s,  winNum %s", betNum, winNum));
 		
 		for(String temp : betNumMul) {
 			if(temp.contains(winNumSet[0]) 
 					&& temp.contains(winNumSet[1])) {
-				return true;
+				if(!winNumSet[0].equals(winNumSet[1])) {					
+					return true;
+				}
 			}
 		}
 		
@@ -136,7 +137,7 @@ public class Wxh2ZxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl  {
 		
 		winNum = issue.getRetNum();
 		betNum = order.getBetNum();
-		winNum = winNum.substring(0, 2);
+		winNum = winNum.substring(6, 9);
 		winNumSet = winNum.split(",");
 		betNumMul = betNum.split(";");
 		
@@ -144,14 +145,16 @@ public class Wxh2ZxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl  {
 		for(String temp : betNumMul) {
 			if(temp.contains(winNumSet[0]) 
 					&& temp.contains(winNumSet[1])) {
-				winningBetAmount++;
+				if(!winNumSet[0].equals(winNumSet[1])) {					
+					winningBetAmount++;
+				}				
 			}
 		}
 		
 		
 		betAmount = MathUtil.multiply(winningBetAmount, times, Float.class);
-		betAmount = MathUtil.multiply(betAmount, monUnit, Float.class);
-		maxWinAmount = MathUtil.multiply(betAmount, singleBettingPrize, Float.class);
+		betAmount = MathUtil.multiply(betAmount, monUnit.floatValue(), Float.class);
+		maxWinAmount = MathUtil.multiply(betAmount, singleBettingPrize.floatValue(), Float.class);
 		
 		return new BigDecimal(maxWinAmount);
 	}
@@ -230,5 +233,24 @@ public class Wxh2ZxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl  {
 		}
 		
 		return false;
+	}
+	
+	@Override
+	public String obtainSampleBetNumber(){
+		Random random = new Random();
+		StringBuffer betNum = new StringBuffer();
+		
+		int bit = random.nextInt(10);
+		int bit2 = -1;
+		betNum.append(Integer.toString(bit));
+		while(true) {
+			bit2 = random.nextInt(10);
+			if(bit != bit2) {
+				betNum.append(Integer.toString(bit2));
+				break;
+			}
+		}
+		
+		return betNum.toString();
 	}
 }

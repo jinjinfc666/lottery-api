@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.apache.log4j.Logger;
 
@@ -102,7 +103,7 @@ private Logger logger = Logger.getLogger(QszxPlayTypeFacadeImpl.class);
 		}
 		
 		betAmount = MathUtil.multiply(betTotal, times, Float.class);
-		betAmount = MathUtil.multiply(betAmount, monUnit, Float.class);
+		betAmount = MathUtil.multiply(betAmount, monUnit.floatValue(), Float.class);
 		maxWinAmount = MathUtil.multiply(betAmount, singleBettingPrize.floatValue(), Float.class);
 		
 		ret.put("playType", playType);
@@ -195,7 +196,7 @@ private Logger logger = Logger.getLogger(QszxPlayTypeFacadeImpl.class);
 		
 		tempVal = Math.pow(tempVal, 3);
 		totalCount = new BigDecimal(tempVal);
-		winningRate = winCount.divide(totalCount);
+		winningRate = winCount.divide(totalCount, 4, BigDecimal.ROUND_HALF_UP);
 		return winningRate;
 	}
 
@@ -228,4 +229,17 @@ private Logger logger = Logger.getLogger(QszxPlayTypeFacadeImpl.class);
 		return betNumList;
 	}
 	
+	@Override
+	public String obtainSampleBetNumber(){
+		Random random = new Random();
+		StringBuffer betNum = new StringBuffer();
+		for(int i = 0 ; i < 3; i++) {
+			int bit = random.nextInt(10);
+			betNum.append(Integer.toString(bit)).append(",");
+		}
+		
+		betNum.delete(betNum.length()-1, betNum.length());
+		
+		return betNum.toString();
+	}
 }

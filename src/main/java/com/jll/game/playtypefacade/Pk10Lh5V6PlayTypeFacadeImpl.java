@@ -87,7 +87,7 @@ public class Pk10Lh5V6PlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 		}
 		
 		betAmount = MathUtil.multiply(betTotal, times, Float.class);
-		betAmount = MathUtil.multiply(betAmount, monUnit, Float.class);
+		betAmount = MathUtil.multiply(betAmount, monUnit.floatValue(), Float.class);
 		maxWinAmount = MathUtil.multiply(betAmount, singleBettingPrize.floatValue(), Float.class);
 		
 		ret.put("playType", playType);

@@ -65,4 +65,24 @@ public class QszuxZlPlayTypeFacadeImplTest extends ServiceJunitBase{
 		Assert.assertNotNull(ret);
 		
 	}
+	
+	public void testIsMatchWinningNum_not_match(){
+		Date startTime = new Date();
+		String betNum = "809";
+		Issue issue = new Issue();
+		issue.setIssueNum("");
+		issue.setLotteryType(Constants.LottoType.CQSSC.getCode());
+		issue.setRetNum("9,0,0,0,3");
+		issue.setStartTime(startTime);
+		issue.setState(Constants.IssueState.LOTTO_DARW.getCode());
+		issue.setEndTime(DateUtil.addMinutes(startTime, 10));
+		
+		OrderInfo order = new OrderInfo();
+		//order.setIssueId(issueId);
+		order.setBetNum(betNum);
+		
+		boolean ret = playTypeFacade.isMatchWinningNum(issue, order);
+		Assert.assertFalse(ret);
+		
+	}
 }

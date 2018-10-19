@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.apache.log4j.Logger;
 
@@ -199,8 +200,13 @@ public class QszuxZsPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 		}
 		
 		betAmount = MathUtil.multiply(winningBetAmount, times, Float.class);
-		betAmount = MathUtil.multiply(betAmount, monUnit, Float.class);
-		maxWinAmount = MathUtil.multiply(betAmount, singleBettingPrize, Float.class);
+		
+		logger.debug(String.format("betAmount   %s,  monUnit  %s", 
+				(betAmount == null?"":betAmount.floatValue()),
+				(monUnit == null?"":monUnit.floatValue())));
+		
+		betAmount = MathUtil.multiply(betAmount, monUnit.floatValue(), Float.class);
+		maxWinAmount = MathUtil.multiply(betAmount, singleBettingPrize.floatValue(), Float.class);
 		
 		return new BigDecimal(maxWinAmount);
 	}
@@ -228,5 +234,45 @@ public class QszuxZsPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 		List<Map<String,String>> betNumList = Utils.parseQszuxZsBetNumber(betNum);
 		
 		return betNumList;
+	}
+	
+	@Override
+	public String obtainSampleBetNumber(){
+		Random random = new Random();
+		StringBuffer betNum = new StringBuffer();
+		
+		int bit = random.nextInt(10);
+		int bit2 = -1;
+		betNum.append(Integer.toString(bit));
+		
+		while(true) {
+			bit2 = random.nextInt(10);
+			if(bit != bit2) {
+				betNum.append(Integer.toString(bit2));
+				break;
+			}
+		}
+				
+		return betNum.toString();
+	}
+	
+	
+	/**
+	 * 是否组选组三
+	 * @param singleBetNumArray
+	 * @return
+	 */
+	private boolean isZxZs(String singleBetNumArray) {
+		Map<String,String> betNumBits = new HashMap<>();
+		for(int i = 0; i < singleBetNumArray.length(); i++) {
+			String bit = singleBetNumArray.substring(i, i + 1);
+			betNumBits.put(bit, bit);
+		}
+		
+		if(betNumBits.size() == 2) {
+			return true;
+		}
+		
+		return false;
 	}
 }

@@ -1,8 +1,6 @@
 package com.jll.game.playtype;
 
-import java.math.BigDecimal;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -15,19 +13,18 @@ import com.jll.common.constants.Constants;
 import com.jll.common.utils.DateUtil;
 import com.jll.entity.Issue;
 import com.jll.entity.OrderInfo;
-import com.jll.entity.UserInfo;
 import com.jll.game.playtypefacade.PlayTypeFactory;
 
-public class QszxPlayTypeFacadeImplTest extends ServiceJunitBase{
+public class EleIn5Wxh2ZxPlayTypeFacadeImplTest extends ServiceJunitBase{
 		
-	public QszxPlayTypeFacadeImplTest(String name) {
+	public EleIn5Wxh2ZxPlayTypeFacadeImplTest(String name) {
 		super(name);
 	}	
 	
 	@Resource
 	PlayTypeFacade playTypeFacade;
 	
-	final String facadeName = "qszx|前三直选/fs-ds";
+	final String facadeName = "wxh2|五星后二/zxfs";
 	
 	@Override
 	protected void setUp() throws Exception {
@@ -41,21 +38,21 @@ public class QszxPlayTypeFacadeImplTest extends ServiceJunitBase{
 	}
 	
 	public void ItestParseBetNumber(){
-		String betNum = "12,23,456";
+		String betNum = "123";
 		
-		List<Map<String, String>> ret = playTypeFacade.parseBetNumber(betNum);
+		List<Map<String,String>> ret = playTypeFacade.parseBetNumber(betNum);
 		Assert.assertNotNull(ret);
 		
-		Assert.assertTrue(ret.size() == 12);
+		Assert.assertTrue(ret.size() == 6);
 	}
 	
-	public void ItestIsMatchWinningNum_winning(){
+	public void testIsMatchWinningNum_winning(){
 		Date startTime = new Date();
-		String betNum = "12,23,456";
+		String betNum = "60";
 		Issue issue = new Issue();
 		issue.setIssueNum("");
 		issue.setLotteryType(Constants.LottoType.CQSSC.getCode());
-		issue.setRetNum("1,2,4,9,6");
+		issue.setRetNum("9,0,7,0,0");
 		issue.setStartTime(startTime);
 		issue.setState(Constants.IssueState.LOTTO_DARW.getCode());
 		issue.setEndTime(DateUtil.addMinutes(startTime, 10));
@@ -65,32 +62,8 @@ public class QszxPlayTypeFacadeImplTest extends ServiceJunitBase{
 		order.setBetNum(betNum);
 		
 		boolean ret = playTypeFacade.isMatchWinningNum(issue, order);
-		Assert.assertNotNull(ret);
+		Assert.assertFalse(ret);
 		
 	}
 	
-	public void testPreProcessNumber(){
-		Map<String, Object> params = new HashMap<>();
-		//Date startTime = new Date();
-		String betNum = "7,8,5";
-		Integer times = 1;
-		Float monUnit = 1.0F;
-		Integer playType = 1;
-		String lottoType = "cqssc";
-				
-		UserInfo user = new UserInfo();
-		user.setId(14);
-		user.setPlatRebate(new BigDecimal(5.0F));
-		
-		
-		params.put("betNum", betNum);
-		params.put("times", times);
-		params.put("monUnit", monUnit);
-		params.put("playType", playType);
-		params.put("lottoType", lottoType);
-		
-		Map<String, Object> ret = playTypeFacade.preProcessNumber(params, user);
-		Assert.assertNotNull(ret);
-		
-	}
 }

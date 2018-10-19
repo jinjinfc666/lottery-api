@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.apache.log4j.Logger;
 
@@ -52,7 +53,9 @@ public class ZszuxZlPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl  {
 			if(temp.contains(winNumSet[0]) 
 					&& temp.contains(winNumSet[1])
 					&& temp.contains(winNumSet[2])) {
-				return true;
+				if(isZxZl(winNum.replaceAll(",", ""))) {
+					return true;
+				}	
 			}
 		}
 		
@@ -149,14 +152,16 @@ public class ZszuxZlPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl  {
 			if(temp.contains(winNumSet[0]) 
 					&& temp.contains(winNumSet[1])
 					&& temp.contains(winNumSet[2])) {
-				winningBetAmount++;
+				if(isZxZl(winNum.replaceAll(",", ""))) {
+					winningBetAmount++;					
+				}
 			}
 		}
 		
 		
 		betAmount = MathUtil.multiply(winningBetAmount, times, Float.class);
-		betAmount = MathUtil.multiply(betAmount, monUnit, Float.class);
-		maxWinAmount = MathUtil.multiply(betAmount, singleBettingPrize, Float.class);
+		betAmount = MathUtil.multiply(betAmount, monUnit.floatValue(), Float.class);
+		maxWinAmount = MathUtil.multiply(betAmount, singleBettingPrize.floatValue(), Float.class);
 		
 		return new BigDecimal(maxWinAmount);
 	}
@@ -233,6 +238,57 @@ public class ZszuxZlPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl  {
 			if(betNum.equals(tempStr)) {
 				return true;
 			}
+		}
+		
+		return false;
+	}
+	
+	@Override
+	public String obtainSampleBetNumber(){
+		Random random = new Random();
+		StringBuffer betNum = new StringBuffer();
+		
+		int bit = random.nextInt(10);
+		int bit2 = -1;
+		int bit3 = -1;
+		betNum.append(Integer.toString(bit));
+		while(true) {
+			bit2 = random.nextInt(10);
+			if(bit != bit2) {
+				betNum.append(Integer.toString(bit2));
+				break;
+			}
+		}
+		
+		
+		while(true) {
+			bit3 = random.nextInt(10);
+			if(bit3 != bit2
+					&& bit3 != bit) {
+				betNum.append(Integer.toString(bit3));
+				break;
+			}
+		}		
+		
+		return betNum.toString();
+	}
+	
+	
+	
+	/**
+	 * 是否组选组三
+	 * @param singleBetNumArray
+	 * @return
+	 */
+	private boolean isZxZl(String singleBetNumArray) {
+		Map<String,String> betNumBits = new HashMap<>();
+		for(int i = 0; i < singleBetNumArray.length(); i++) {
+			String bit = singleBetNumArray.substring(i, i + 1);
+			betNumBits.put(bit, bit);
+		}
+		
+		if(betNumBits.size() == 3) {
+			return true;
 		}
 		
 		return false;

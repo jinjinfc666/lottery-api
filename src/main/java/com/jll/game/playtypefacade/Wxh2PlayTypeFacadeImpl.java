@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.apache.log4j.Logger;
 
@@ -173,8 +174,8 @@ public class Wxh2PlayTypeFacadeImpl  extends DefaultPlayTypeFacadeImpl {
 		}
 		
 		betAmount = MathUtil.multiply(winningBetAmount, times, Float.class);
-		betAmount = MathUtil.multiply(betAmount, monUnit, Float.class);
-		maxWinAmount = MathUtil.multiply(betAmount, singleBettingPrize, Float.class);
+		betAmount = MathUtil.multiply(betAmount, monUnit.floatValue(), Float.class);
+		maxWinAmount = MathUtil.multiply(betAmount, singleBettingPrize.floatValue(), Float.class);
 		
 		return new BigDecimal(maxWinAmount);
 	}
@@ -224,5 +225,26 @@ public class Wxh2PlayTypeFacadeImpl  extends DefaultPlayTypeFacadeImpl {
 		
 		
 		return betNumList;
+	}
+	
+	@Override
+	public String obtainSampleBetNumber(){
+		Random random = new Random();
+		StringBuffer betNum = new StringBuffer();
+		
+		int bit = random.nextInt(10);
+		int bit2 = -1;
+		betNum.append(Integer.toString(bit)).append(",");
+		while(true) {
+			bit2 = random.nextInt(10);
+			if(bit != bit2) {
+				betNum.append(Integer.toString(bit2)).append(",");
+				break;
+			}
+		}
+		
+		betNum.delete(betNum.length()-1, betNum.length());
+		
+		return betNum.toString();
 	}
 }

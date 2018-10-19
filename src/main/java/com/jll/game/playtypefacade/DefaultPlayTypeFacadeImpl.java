@@ -65,7 +65,7 @@ public abstract class DefaultPlayTypeFacadeImpl implements PlayTypeFacade {
 		BigDecimal singleBettingPrize = null;
 		BigDecimal priP = new BigDecimal(prizePattern);
 		winningRate = winningRate.multiply(new BigDecimal(1000));
-		singleBettingPrize = priP.divide(winningRate, 3, BigDecimal.ROUND_HALF_UP);
+		singleBettingPrize = priP.divide(winningRate, 4, BigDecimal.ROUND_HALF_UP);
 		
 		return singleBettingPrize;
 	}
@@ -88,6 +88,11 @@ public abstract class DefaultPlayTypeFacadeImpl implements PlayTypeFacade {
 	
 	@Override
 	public List<Map<String, String>> parseBetNumber(String betNum){
+		return null;
+	}
+	
+	@Override
+	public String obtainSampleBetNumber(){
 		return null;
 	}
 }

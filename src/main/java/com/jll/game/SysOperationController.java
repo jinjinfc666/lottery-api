@@ -154,6 +154,7 @@ public class SysOperationController{
 			  return response;
 		  }
 		  
+		  
 		  if(issue.getState() != Constants.IssueState.END_ISSUE.getCode()) {
 			  response.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			  response.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_ISSUE_INVALID_STATUS.getCode());

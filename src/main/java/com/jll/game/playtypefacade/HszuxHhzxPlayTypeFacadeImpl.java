@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.apache.log4j.Logger;
 
@@ -51,7 +52,15 @@ public class HszuxHhzxPlayTypeFacadeImpl  extends DefaultPlayTypeFacadeImpl  {
 			if (temp.contains(winNumSet[0]) 
 					&& temp.contains(winNumSet[1]) 
 					&& temp.contains(winNumSet[2])) {
-				return true;
+				if(isZxZs(temp)) {
+					if(isZxZs(winNum.replace(",", ""))) {
+						return true;
+					}
+				}else {
+					if(isZxZl(winNum.replace(",", ""))) {
+						return true;		
+					}
+				}
 			}
 		}
 
@@ -89,7 +98,7 @@ public class HszuxHhzxPlayTypeFacadeImpl  extends DefaultPlayTypeFacadeImpl  {
 		
 		for(String tempBettingNum : betNumMul) {
 			Float singleWinAmount = 0F;
-			boolean isZsBettingNum = isZsBettingNum(tempBettingNum);
+			boolean isZsBettingNum = isZxZs(tempBettingNum);
 			if(isZsBettingNum) {				
 				singleWinAmount = MathUtil.multiply(singleBetAmount, 
 						singleBettingPrizeZs.floatValue(), 
@@ -115,14 +124,6 @@ public class HszuxHhzxPlayTypeFacadeImpl  extends DefaultPlayTypeFacadeImpl  {
 		return ret;
 	}
 	
-	private boolean isZsBettingNum(String tempBettingNum) {
-		Map<String, String> bettingNumBit = new HashMap<>();
-		for(int i = 0;i < tempBettingNum.length(); i++) {
-			String numBit = tempBettingNum.substring(i, i+1);
-			bettingNumBit.put(numBit, numBit);
-		}
-		return (bettingNumBit.size() == 2)?true:false;
-	}
 
 	@Override
 	public boolean validBetNum(OrderInfo order) {
@@ -185,11 +186,11 @@ public class HszuxHhzxPlayTypeFacadeImpl  extends DefaultPlayTypeFacadeImpl  {
 					&& temp.contains(winNumSet[1])
 					&& temp.contains(winNumSet[2])) {
 				Float singleWinAmount = 0F;
-				boolean isZsBettingNum = isZsBettingNum(temp);
+				boolean isZsBettingNum = isZxZs(temp);
 				if(isZsBettingNum) {
-					singleWinAmount = MathUtil.multiply(singleBetAmount, singleBettingPrizeZs, Float.class);
+					singleWinAmount = MathUtil.multiply(singleBetAmount, singleBettingPrizeZs.floatValue(), Float.class);
 				}else {
-					singleWinAmount = MathUtil.multiply(singleBetAmount, singleBettingPrizeZl, Float.class);
+					singleWinAmount = MathUtil.multiply(singleBetAmount, singleBettingPrizeZl.floatValue(), Float.class);
 				}				
 				
 				maxWinAmount = MathUtil.add(maxWinAmount, singleWinAmount, Float.class);		
@@ -239,7 +240,7 @@ public class HszuxHhzxPlayTypeFacadeImpl  extends DefaultPlayTypeFacadeImpl  {
 		String[] betNumArray = betNum.split(";");
 		
 		for(String singleBetNumArray : betNumArray) {
-			boolean isZx = isZx(singleBetNumArray);
+			boolean isZx = isZxZs(singleBetNumArray);
 			List<Map<String, String>> partRet = new ArrayList<>();
 			if(isZx) {
 				Map<String, String> row = new HashMap<String, String>();
@@ -279,19 +280,6 @@ public class HszuxHhzxPlayTypeFacadeImpl  extends DefaultPlayTypeFacadeImpl  {
 		return betNumList;
 	}
 
-	private boolean isZx(String singleBetNumArray) {
-		Map<String,String> betNumBits = new HashMap<>();
-		for(int i = 0; i < singleBetNumArray.length(); i++) {
-			String bit = singleBetNumArray.substring(i, i + 1);
-			betNumBits.put(bit, bit);
-		}
-		
-		if(betNumBits.size() == 2) {
-			return true;
-		}
-		
-		return false;
-	}
 	
 	private List<Map<String, String>> parseHszuxZLBetNumber(String betNum){
 		List<Map<String, String>> betNumList = new ArrayList<>();
@@ -344,6 +332,65 @@ public class HszuxHhzxPlayTypeFacadeImpl  extends DefaultPlayTypeFacadeImpl  {
 			if(betNum.equals(tempStr)) {
 				return true;
 			}
+		}
+		
+		return false;
+	}
+	
+	@Override
+	public String obtainSampleBetNumber(){
+		Random random = new Random();
+		StringBuffer betNum = new StringBuffer();
+		
+		int bit = random.nextInt(10);
+		int bit2 = -1;
+		//拼装组三号码
+		betNum.append(Integer.toString(bit));
+		betNum.append(Integer.toString(bit));
+		while(true) {
+			bit2 = random.nextInt(10);
+			if(bit != bit2) {
+				betNum.append(Integer.toString(bit2));
+				break;
+			}
+		}
+				
+		return betNum.toString();
+	}
+	
+	/**
+	 * 是否组选组三
+	 * @param singleBetNumArray
+	 * @return
+	 */
+	private boolean isZxZs(String singleBetNumArray) {
+		Map<String,String> betNumBits = new HashMap<>();
+		for(int i = 0; i < singleBetNumArray.length(); i++) {
+			String bit = singleBetNumArray.substring(i, i + 1);
+			betNumBits.put(bit, bit);
+		}
+		
+		if(betNumBits.size() == 2) {
+			return true;
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * 是否组选组三
+	 * @param singleBetNumArray
+	 * @return
+	 */
+	private boolean isZxZl(String singleBetNumArray) {
+		Map<String,String> betNumBits = new HashMap<>();
+		for(int i = 0; i < singleBetNumArray.length(); i++) {
+			String bit = singleBetNumArray.substring(i, i + 1);
+			betNumBits.put(bit, bit);
+		}
+		
+		if(betNumBits.size() == 3) {
+			return true;
 		}
 		
 		return false;
