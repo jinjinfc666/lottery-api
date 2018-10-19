@@ -69,4 +69,21 @@ public class IssueController {
 		}
 		return ret;
 	}
+	//追号需要的期号信息
+	@RequestMapping(value="/IsZhIssues", method = { RequestMethod.GET },  produces={"application/json"})
+	public Map<String, Object> getIsZhIssues(@RequestParam(name = "lotteryType", required = true) String lotteryType,
+			  HttpServletRequest request){
+		Map<String,Object> ret=new HashMap<String,Object>();
+		try {
+			ret.clear();
+			ret=issueServ.queryIsZhIssue(lotteryType);
+			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+		}
+		return ret;
+	}
 }

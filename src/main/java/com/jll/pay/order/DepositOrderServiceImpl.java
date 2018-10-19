@@ -12,6 +12,7 @@ import com.jll.common.constants.Constants;
 import com.jll.common.constants.Constants.DepositOrderState;
 import com.jll.common.constants.Constants.WalletType;
 import com.jll.common.utils.BigDecimalUtil;
+import com.jll.common.utils.StringUtils;
 import com.jll.dao.SupserDao;
 import com.jll.entity.DepositApplication;
 import com.jll.entity.UserAccount;
@@ -41,7 +42,9 @@ public class DepositOrderServiceImpl implements DepositOrderService
 		UserAccount mainAcc = (UserAccount) supserDao.findByName(UserAccount.class, "userId", depositOrder.getUserId(), "accType", WalletType.MAIN_WALLET.getCode()).get(0);
 		
 		depositOrder.setState(DepositOrderState.END_ORDER.getCode());
-		depositOrder.setRemark(remark);
+		if(StringUtils.isNotEmpty(remark)){
+			   depositOrder.setRemark(depositOrder.getRemark()+StringUtils.COMMA+remark);
+		}
 		//明细
 		UserAccountDetails addDtl = new UserAccountDetails();
 		addDtl.setUserId(mainAcc.getUserId());
