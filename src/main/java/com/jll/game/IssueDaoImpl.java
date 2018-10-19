@@ -114,7 +114,7 @@ public class IssueDaoImpl extends DefaultGenericDaoImpl<Issue> implements IssueD
 			map.put("issueNum", issueNum);
 		}
 		if(!StringUtils.isBlank(startTime)&&!StringUtils.isBlank(endTime)) {
-			timeSql=" where startTime>=:startTime and endTime<:endTime ";
+			timeSql=" where startTime>=:startTime and startTime<:endTime ";
 		    String startTime1=startTime+" 00:00:00";//开始时间
 		    //结束时间
 		    Calendar ca = Calendar.getInstance();// 得到一个Calendar的实例  
