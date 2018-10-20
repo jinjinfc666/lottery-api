@@ -138,7 +138,7 @@ public class IssueServiceImpl implements IssueService
 		supserDao.update(curIssue);
 		
 		List<OrderInfo> winLists = orderDao.queryWinOrdersByIssue(curIssue.getId());
-		calcelOrderWinAmtAndAccRecord(winLists,false);
+		processCalcelOrderWinAmtAndAccRecord(winLists,false);
 		supserDao.updateList(winLists);
 		
 		cacheServ.publishMessage(Constants.TOPIC_PAY_OUT, issueNum);
@@ -147,7 +147,7 @@ public class IssueServiceImpl implements IssueService
 		return ret;
 	}
 
-	private void calcelOrderWinAmtAndAccRecord(List<OrderInfo> winLists,boolean backPoint){
+	private void processCalcelOrderWinAmtAndAccRecord(List<OrderInfo> winLists,boolean backPoint){
 		if(!winLists.isEmpty()){
 			
 			Map<Integer,UserAccount> accMaps = new HashMap<>();
@@ -221,7 +221,7 @@ public class IssueServiceImpl implements IssueService
 		}
 	}
 	@Override
-	public Map<String, Object> betOrderPayout(String lottoType, String issueNum, Map<String, String> params) {
+	public Map<String, Object> processBetOrderPayout(String lottoType, String issueNum, Map<String, String> params) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		Issue curIssue = issueService.getIssueByIssueNum(Utils.toString(params.get("lottoType")),issueNum);
 		if(null == curIssue){
@@ -236,7 +236,7 @@ public class IssueServiceImpl implements IssueService
 	}
 
 	@Override
-	public Map<String, Object> calcelIssuePayout(String lottoType, String issueNum, Map<String, String> params) {
+	public Map<String, Object> processCalcelIssuePayout(String lottoType, String issueNum, Map<String, String> params) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		Issue curIssue = issueService.getIssueByIssueNum(Utils.toString(params.get("lottoType")),issueNum);
 		if(null == curIssue){
@@ -246,7 +246,7 @@ public class IssueServiceImpl implements IssueService
 			return ret;
 		}
 		List<OrderInfo> winLists = orderDao.queryWinOrdersByIssue(curIssue.getId());
-		calcelOrderWinAmtAndAccRecord(winLists,false);
+		processCalcelOrderWinAmtAndAccRecord(winLists,false);
 		supserDao.updateList(winLists);
 		
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
@@ -254,7 +254,7 @@ public class IssueServiceImpl implements IssueService
 	}
 
 	@Override
-	public Map<String, Object> betOrderRePayout(String lottoType, String issueNum, Map<String, String> params) {
+	public Map<String, Object> processBetOrderRePayout(String lottoType, String issueNum, Map<String, String> params) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		Issue curIssue = issueService.getIssueByIssueNum(Utils.toString(params.get("lottoType")),issueNum);
 		if(null == curIssue){
@@ -287,7 +287,7 @@ public class IssueServiceImpl implements IssueService
 		supserDao.update(curIssue);
 		
 		List<OrderInfo> winLists = orderDao.queryOrdersByIssue(curIssue.getId());
-		calcelOrderWinAmtAndAccRecord(winLists,true);
+		processCalcelOrderWinAmtAndAccRecord(winLists,true);
 		supserDao.updateList(winLists);
 		
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
@@ -295,7 +295,7 @@ public class IssueServiceImpl implements IssueService
 	}
 
 	@Override
-	public Map<String, Object> issueDelayePayout(String issueNum, Map<String, String> params) {
+	public Map<String, Object> processIssueDelayePayout(String issueNum, Map<String, String> params) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
 		Issue curIssue = issueService.getIssueByIssueNum(Utils.toString(params.get("lottoType")),issueNum);
@@ -332,7 +332,7 @@ public class IssueServiceImpl implements IssueService
 	}
 
 	@Override
-	public Map<String, Object> orderCancel(String orderNum) {
+	public Map<String, Object> processOrderCancel(String orderNum) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		OrderInfo order = orderDao.getOrderInfo(orderNum);
 		if(null == order){
@@ -344,8 +344,8 @@ public class IssueServiceImpl implements IssueService
 		
 		List<OrderInfo> winLists = new ArrayList<>();
 		winLists.add(order);
-		calcelOrderWinAmtAndAccRecord(winLists,false);
-		calcelOrderWinAmtAndAccRecord(winLists,true);
+		processCalcelOrderWinAmtAndAccRecord(winLists,false);
+		processCalcelOrderWinAmtAndAccRecord(winLists,true);
 		
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		return ret;
