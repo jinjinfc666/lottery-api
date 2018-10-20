@@ -65,4 +65,27 @@ public class Wxq2ZuxPlayTypeFacadeImplTest extends ServiceJunitBase{
 		Assert.assertNotNull(ret);
 		
 	}
+	
+	/**
+	 * 前2位相同，只匹配投注号码的一位
+	 */
+	public void testIsMatchWinningNum_sameBits(){
+		Date startTime = new Date();
+		String betNum = "60";
+		Issue issue = new Issue();
+		issue.setIssueNum("");
+		issue.setLotteryType(Constants.LottoType.CQSSC.getCode());
+		issue.setRetNum("0,0,9,0,7");
+		issue.setStartTime(startTime);
+		issue.setState(Constants.IssueState.LOTTO_DARW.getCode());
+		issue.setEndTime(DateUtil.addMinutes(startTime, 10));
+		
+		OrderInfo order = new OrderInfo();
+		//order.setIssueId(issueId);
+		order.setBetNum(betNum);
+		
+		boolean ret = playTypeFacade.isMatchWinningNum(issue, order);
+		Assert.assertNotNull(ret);
+		
+	}
 }

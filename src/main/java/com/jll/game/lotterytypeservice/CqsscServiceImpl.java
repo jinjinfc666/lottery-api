@@ -154,8 +154,9 @@ public class CqsscServiceImpl extends DefaultLottoTypeServiceImpl
 		lottoTypeAndIssueNum = ((String)message).split("\\|");
 		lottoType = lottoTypeAndIssueNum[0];
 		issueNum = lottoTypeAndIssueNum[1];
-		if(sysCode == null
-				|| StringUtils.isBlank(sysCode.getCodeVal())) {
+		if(lottoTypeAndIssueNum.length == 2
+				&& (sysCode == null
+				|| StringUtils.isBlank(sysCode.getCodeVal()))) {
 			return;
 		}
 		

@@ -64,4 +64,6 @@ public interface IssueService
 	boolean isManualPrieModel(String lottoType, String issueNum);
 	//统一撤单需要的期号
 	Map<String,Object> queryAllByIssue(String lotteryType, Integer state,String startTime, String endTime, Integer pageIndex,Integer pageSize, String issueNum);
+	//追号需要的期号信息
+	Map<String,Object> queryIsZhIssue(String lotteryType);
 }

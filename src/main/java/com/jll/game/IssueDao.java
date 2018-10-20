@@ -24,4 +24,6 @@ public interface IssueDao
 	List<Issue> queryByLTNumeber(String lotteryType);
 	//统一撤单需要的期号
 	Map<String,Object> queryAllByIssue(String lotteryType,Integer state,String startTime,String endTime,Integer pageIndex,Integer pageSize,String issueNum,Map<String, SysCode> sysCodes);
+	//追号需要的期号信息
+	List<Issue> queryIsZhIssue(String lotteryType,Date startTime,Date endTime);
 }

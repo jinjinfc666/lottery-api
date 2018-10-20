@@ -39,7 +39,7 @@ public class HszuxMixPlayTypeFacadeImplTest extends ServiceJunitBase{
 		//super.tearDown();
 	}
 	
-	public void testParseBetNumber(){
+	public void ItestParseBetNumber(){
 		String betNum = "122;123";
 		List<String> content = new ArrayList<>();
 		content.add("[0-9]{2}122");
@@ -83,6 +83,16 @@ public class HszuxMixPlayTypeFacadeImplTest extends ServiceJunitBase{
 		
 		boolean ret = playTypeFacade.isMatchWinningNum(issue, order);
 		Assert.assertNotNull(ret);
+		
+	}
+	
+	public void testValidBetNum(){
+		String betNum = "51";				
+		OrderInfo order = new OrderInfo();
+		order.setBetNum(betNum);
+		
+		boolean ret = playTypeFacade.validBetNum(order);
+		Assert.assertFalse(ret);
 		
 	}
 }

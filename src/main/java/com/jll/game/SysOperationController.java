@@ -126,7 +126,7 @@ public class SysOperationController{
 	  }
 	  
 	  @ApiComment("manual draw result")
-	  @RequestMapping(value={"{lottery-type}/issue/{issueNum}/manual-draw-result"}, method={RequestMethod.PUT}, produces={"application/json"})
+	  @RequestMapping(value={"/{lottery-type}/issue/{issueNum}/manual-draw-result"}, method={RequestMethod.PUT}, produces={"application/json"})
 	  public Map<String, Object> manualDrawResult(@PathVariable(name="issueNum", required=true) String issueNum,
 			  @PathVariable("lottery-type") String lottoType,
 			  @RequestBody Map<String, String> params){
@@ -153,6 +153,7 @@ public class SysOperationController{
 			  
 			  return response;
 		  }
+		  
 		  
 		  if(issue.getState() != Constants.IssueState.END_ISSUE.getCode()) {
 			  response.put(Message.KEY_STATUS, Message.status.FAILED.getCode());

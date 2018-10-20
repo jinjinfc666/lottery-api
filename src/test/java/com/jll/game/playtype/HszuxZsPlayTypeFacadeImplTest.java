@@ -1,5 +1,6 @@
 package com.jll.game.playtype;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,7 @@ import com.jll.common.constants.Constants;
 import com.jll.common.utils.DateUtil;
 import com.jll.entity.Issue;
 import com.jll.entity.OrderInfo;
+import com.jll.entity.UserInfo;
 import com.jll.game.playtypefacade.PlayTypeFactory;
 
 public class HszuxZsPlayTypeFacadeImplTest extends ServiceJunitBase{
@@ -37,7 +39,7 @@ public class HszuxZsPlayTypeFacadeImplTest extends ServiceJunitBase{
 		//super.tearDown();
 	}
 	
-	public void testParseBetNumber(){
+	public void ItestParseBetNumber(){
 		String betNum = "123";
 		
 		List<Map<String, String>> ret = playTypeFacade.parseBetNumber(betNum);
@@ -64,5 +66,39 @@ public class HszuxZsPlayTypeFacadeImplTest extends ServiceJunitBase{
 		boolean ret = playTypeFacade.isMatchWinningNum(issue, order);
 		Assert.assertNotNull(ret);
 		
+	}
+	
+	public void testCalPrize_zszux_zs(){
+		String winningNum = "0,0,1,1,9";
+		String betNum = "19";
+		String lottoType = "cqssc";
+		BigDecimal prize = null;
+		
+		Issue issue = new Issue();
+		issue.setId(5);
+		issue.setIssueNum("181016-005");
+		issue.setLotteryType(lottoType);
+		issue.setRetNum(winningNum);
+		
+		
+		OrderInfo order = new OrderInfo();
+		order.setIssueId(issue.getId());
+		order.setBetNum(betNum);
+		//hszux|后三组选|zsfs--组三复式
+		order.setPlayType(13);
+		order.setTimes(1);
+		order.setIsZh(0);
+		order.setPattern(new BigDecimal(1));
+		
+		
+		UserInfo user = new UserInfo();
+		user.setId(14);
+		user.setUserName("test001");
+		user.setUserType(Constants.UserType.PLAYER.getCode());
+		user.setPlatRebate(new BigDecimal(5.0F));
+		prize = playTypeFacade.calPrize(issue, order, user);
+		Assert.assertNotNull(prize);
+				
+		Assert.assertTrue(prize.compareTo(new BigDecimal(311.18F)) == 0);
 	}
 }

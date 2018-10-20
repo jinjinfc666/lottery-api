@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.apache.log4j.Logger;
 
@@ -182,8 +183,8 @@ public class DwdPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 		}
 		
 		betAmount = MathUtil.multiply(winningBetAmount, times, Float.class);
-		betAmount = MathUtil.multiply(betAmount, monUnit, Float.class);
-		maxWinAmount = MathUtil.multiply(betAmount, singleBettingPrize, Float.class);
+		betAmount = MathUtil.multiply(betAmount, monUnit.floatValue(), Float.class);
+		maxWinAmount = MathUtil.multiply(betAmount, singleBettingPrize.floatValue(), Float.class);
 		
 		return new BigDecimal(maxWinAmount);
 	}
@@ -270,7 +271,7 @@ public class DwdPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 					Map<String, String> row = new HashMap<String, String>();
 					row.put(Constants.KEY_FACADE_BET_NUM, a);
 					row.put(Constants.KEY_FACADE_PATTERN, "[0-9]{3}" + a + "[0-9]{1}");
-					row.put(Constants.KEY_FACADE_BET_NUM_SAMPLE, "000" + a + "0");				
+					row.put(Constants.KEY_FACADE_BET_NUM_SAMPLE, "000" + a + "0");
 					betNumList.add(row);
 				}
 			}
@@ -290,5 +291,25 @@ public class DwdPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 		
 		
 		return betNumList;
+	}
+	
+	@Override
+	public String obtainSampleBetNumber(){
+		Random random = new Random();
+		StringBuffer betNum = new StringBuffer();
+		
+		int bit = random.nextInt(10);
+		int bit2 = random.nextInt(10);
+		int bit3 = random.nextInt(10);
+		int bit4 = random.nextInt(10);
+		int bit5 = random.nextInt(10);
+		
+		betNum.append(Integer.toString(bit)).append(",");
+		betNum.append(Integer.toString(bit2)).append(",");
+		betNum.append(Integer.toString(bit3)).append(",");
+		betNum.append(Integer.toString(bit4)).append(",");
+		betNum.append(Integer.toString(bit5));
+				
+		return betNum.toString();
 	}
 }

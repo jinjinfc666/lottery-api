@@ -30,10 +30,6 @@ import com.jll.user.UserInfoService;
 import com.jll.user.details.UserAccountDetailsService;
 import com.jll.user.wallet.WalletService;
 
-/*@Configuration
-@PropertySource("classpath:sys-setting.properties")*/
-//@Service
-//@Transactional
 public abstract class DefaultLottoTypeServiceImpl implements LotteryTypeService
 {
 	private Logger logger = Logger.getLogger(DefaultLottoTypeServiceImpl.class);
@@ -172,8 +168,10 @@ public abstract class DefaultLottoTypeServiceImpl implements LotteryTypeService
 		UserAccountDetails accDetails = new UserAccountDetails();
 		BigDecimal preAmount = null;
 		BigDecimal postAmount = null;
-		
 		preAmount = wallet.getBalance();
+		logger.debug(String.format("prize %s,  preAmount   %s", 
+				(prize == null?"":prize.floatValue()), 
+				(preAmount == null?"":preAmount.floatValue())));
 		postAmount = preAmount.add(prize);
 		accDetails.setAmount(prize.floatValue());
 		accDetails.setCreateTime(new Date());
@@ -188,17 +186,21 @@ public abstract class DefaultLottoTypeServiceImpl implements LotteryTypeService
 	}
 
 	private BigDecimal calPrize(Issue issue, OrderInfo order, UserInfo user) {
+		String playTypeName = null;
+		PlayTypeFacade playTypeFacade = null;
 		PlayType playType = null;
-		String facadeName = null;
 		Integer playTypeId = order.getPlayType();
 		playType = playTypeServ.queryById(playTypeId);
 		if(playType == null) {
 			return null;
 		}
 		
-		//playType = playTypes.get(0);
-		facadeName = playType.getClassification() +"/" + playType.getPtName();
-		PlayTypeFacade playTypeFacade = PlayTypeFactory.getInstance().getPlayTypeFacade(facadeName);
+		if(playType.getPtName().equals("fs") || playType.getPtName().equals("ds")) {
+			playTypeName = playType.getClassification() + "/fs-ds";
+		}else {
+			playTypeName = playType.getClassification() + "/" + playType.getPtName();			
+		}
+		playTypeFacade = PlayTypeFactory.getInstance().getPlayTypeFacade(playTypeName);
 		
 		if(playTypeFacade == null) {
 			return null;

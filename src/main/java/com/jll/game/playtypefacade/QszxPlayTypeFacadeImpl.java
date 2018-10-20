@@ -80,9 +80,15 @@ public class QszxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 		betAmount = MathUtil.multiply(betTotal, times, Float.class);
 		betAmount = MathUtil.multiply(betAmount, monUnit, Float.class);
 		
-		maxWinAmount = MathUtil.multiply(winBetTotal, times, Float.class);
-		maxWinAmount = MathUtil.multiply(maxWinAmount, monUnit, Float.class);
-		maxWinAmount = MathUtil.multiply(maxWinAmount, singleBettingPrize.floatValue(), Float.class);
+		maxWinAmount = MathUtil.multiply(winBetTotal, 
+				times, 
+				Float.class);
+		maxWinAmount = MathUtil.multiply(maxWinAmount, 
+				monUnit, 
+				Float.class);
+		maxWinAmount = MathUtil.multiply(maxWinAmount, 
+				singleBettingPrize.floatValue(), 
+				Float.class);
 		
 		ret.put("playType", playType);
 		ret.put("betAmount", betAmount);
@@ -164,8 +170,8 @@ public class QszxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 		}
 		
 		betAmount = MathUtil.multiply(winningBetAmount, times, Float.class);
-		betAmount = MathUtil.multiply(betAmount, monUnit, Float.class);
-		maxWinAmount = MathUtil.multiply(betAmount, singleBettingPrize, Float.class);
+		betAmount = MathUtil.multiply(betAmount, monUnit.floatValue(), Float.class);
+		maxWinAmount = MathUtil.multiply(betAmount, singleBettingPrize.floatValue(), Float.class);
 		
 		return new BigDecimal(maxWinAmount);
 	}
@@ -184,7 +190,7 @@ public class QszxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 		
 		tempVal = Math.pow(tempVal, 3);
 		totalCount = new BigDecimal(tempVal);
-		winningRate = winCount.divide(totalCount);
+		winningRate = winCount.divide(totalCount, 4, BigDecimal.ROUND_HALF_UP);
 		return winningRate;
 	}
 
@@ -261,5 +267,19 @@ public class QszxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 		
 		
 		return betNumList;
+	}
+	
+	@Override
+	public String obtainSampleBetNumber(){
+		Random random = new Random();
+		StringBuffer betNum = new StringBuffer();
+		for(int i = 0 ; i < 3; i++) {
+			int bit = random.nextInt(10);
+			betNum.append(Integer.toString(bit)).append(",");
+		}
+		
+		betNum.delete(betNum.length()-1, betNum.length());
+		
+		return betNum.toString();
 	}
 }

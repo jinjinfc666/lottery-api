@@ -47,7 +47,9 @@ public class EleIn5Wxh2ZxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl  {
 		for(String temp : betNumMul) {
 			if(temp.contains(winNumSet[0]) 
 					&& temp.contains(winNumSet[1])) {
-				return true;
+				if(!winNumSet[0].equals(winNumSet[1])) {					
+					return true;
+				}
 			}
 		}
 		
@@ -141,14 +143,16 @@ public class EleIn5Wxh2ZxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl  {
 		for(String temp : betNumMul) {
 			if(temp.contains(winNumSet[0]) 
 					&& temp.contains(winNumSet[1])) {
-				winningBetAmount++;
+				if(!winNumSet[0].equals(winNumSet[1])) {					
+					winningBetAmount++;
+				}				
 			}
 		}
 		
 		
 		betAmount = MathUtil.multiply(winningBetAmount, times, Float.class);
-		betAmount = MathUtil.multiply(betAmount, monUnit, Float.class);
-		maxWinAmount = MathUtil.multiply(betAmount, singleBettingPrize, Float.class);
+		betAmount = MathUtil.multiply(betAmount, monUnit.floatValue(), Float.class);
+		maxWinAmount = MathUtil.multiply(betAmount, singleBettingPrize.floatValue(), Float.class);
 		
 		return new BigDecimal(maxWinAmount);
 	}

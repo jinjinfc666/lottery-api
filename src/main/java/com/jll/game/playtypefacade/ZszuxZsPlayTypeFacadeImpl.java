@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.apache.log4j.Logger;
 
@@ -93,18 +94,29 @@ public class ZszuxZsPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 		Float prizePattern = userServ.calPrizePattern(user, lottoType);
 		BigDecimal winningRate = calWinningRate();
 		BigDecimal singleBettingPrize = calSingleBettingPrize(prizePattern, winningRate);
-		int betTotal = 1;
+		int betTotal = 0;
 		Float betAmount = 0F;
 		Float maxWinAmount = 0F;
+		int winBetTotal = 0;
+		String[] betNumSet = null;
 		
 		
-		int len = betNum.length();
-		betTotal = (int)(MathUtil.combination(2, len) 
-						* MathUtil.combination(1, 2));
+		betNumSet = betNum.split(";");
+		for(String singleBetNum : betNumSet) {
+			int len = singleBetNum.length();
+			betTotal += (int)(MathUtil.combination(2, len) 
+					* MathUtil.combination(1, 2));
+			
+			winBetTotal++;
+		}
+		
 		
 		betAmount = MathUtil.multiply(betTotal, times, Float.class);
 		betAmount = MathUtil.multiply(betAmount, monUnit, Float.class);
-		maxWinAmount = MathUtil.multiply(betAmount, singleBettingPrize.floatValue(), Float.class);
+		
+		maxWinAmount = MathUtil.multiply(winBetTotal, times, Float.class);
+		maxWinAmount = MathUtil.multiply(maxWinAmount, monUnit.floatValue(), Float.class);
+		maxWinAmount = MathUtil.multiply(maxWinAmount, singleBettingPrize.floatValue(), Float.class);
 		
 		ret.put("playType", playType);
 		ret.put("betAmount", betAmount);
@@ -189,11 +201,11 @@ public class ZszuxZsPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 					&&temp.contains(winNumBit2)) {
 				winningBetAmount++;
 			}
-		}
+		} 
 		
 		betAmount = MathUtil.multiply(winningBetAmount, times, Float.class);
-		betAmount = MathUtil.multiply(betAmount, monUnit, Float.class);
-		maxWinAmount = MathUtil.multiply(betAmount, singleBettingPrize, Float.class);
+		betAmount = MathUtil.multiply(betAmount, monUnit.floatValue(), Float.class);
+		maxWinAmount = MathUtil.multiply(betAmount, singleBettingPrize.floatValue(), Float.class);
 		
 		return new BigDecimal(maxWinAmount);
 	}
@@ -299,5 +311,25 @@ public class ZszuxZsPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 		}
 		
 		return false;
+	}
+	
+	@Override
+	public String obtainSampleBetNumber(){
+		Random random = new Random();
+		StringBuffer betNum = new StringBuffer();
+		
+		int bit = random.nextInt(10);
+		int bit2 = -1;
+		betNum.append(Integer.toString(bit));
+		
+		while(true) {
+			bit2 = random.nextInt(10);
+			if(bit != bit2) {
+				betNum.append(Integer.toString(bit2));
+				break;
+			}
+		}
+				
+		return betNum.toString();
 	}
 }

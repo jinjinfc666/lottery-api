@@ -114,7 +114,7 @@ public class IssueDaoImpl extends DefaultGenericDaoImpl<Issue> implements IssueD
 			map.put("issueNum", issueNum);
 		}
 		if(!StringUtils.isBlank(startTime)&&!StringUtils.isBlank(endTime)) {
-			timeSql=" where startTime>=:startTime and endTime<:endTime ";
+			timeSql=" where startTime>=:startTime and startTime<:endTime ";
 		    String startTime1=startTime+" 00:00:00";//开始时间
 		    //结束时间
 		    Calendar ca = Calendar.getInstance();// 得到一个Calendar的实例  
@@ -165,4 +165,19 @@ public class IssueDaoImpl extends DefaultGenericDaoImpl<Issue> implements IssueD
 		map.put("data",pageBean);
 	    return map;
 	}
+	//追号需要的期号信息
+	@Override
+	public List<Issue> queryIsZhIssue(String lotteryType, Date startTime, Date endTime) {
+		String sql="From Issue where lotteryType=:lotteryType and startTime>:startTime and startTime<=:endTime";
+		Query<Issue> query = getSessionFactory().getCurrentSession().createQuery(sql,Issue.class);
+		query.setParameter("lotteryType", lotteryType);
+	    query.setParameter("startTime", startTime,TimestampType.INSTANCE);
+	    query.setParameter("endTime", endTime,TimestampType.INSTANCE);
+	    List<Issue> list = query.list();
+	    if(list!=null&& list.size()>0) {
+	    	return list;
+	    }
+		return null;
+	}
+	
 }

@@ -73,4 +73,10 @@ public interface PlayTypeFacade
 	String produceLostNumber(String betNum);
 	
 	List<Map<String, String>> parseBetNumber(String betNum);
+	
+	/**
+	 * 给出一个示例投注号码，主要是为了支持单元测试
+	 * @return
+	 */
+	String obtainSampleBetNumber();
 }

@@ -272,43 +272,10 @@ public class CacheRedisServiceImpl implements CacheRedisService
 			if(playType.getPtName().equals("fs") || playType.getPtName().equals("ds")) {
 				playTypeName = playType.getClassification() + "/fs-ds";
 			}else {
-				playTypeName = playType.getClassification() + "/" + playType.getPtName();			
+				playTypeName = playType.getClassification() + "/" + playType.getPtName();
 			}
 			playTypeFacade = PlayTypeFactory.getInstance().getPlayTypeFacade(playTypeName);
-		}
-		
-		
-		
-		//betNumSet = betNums.split(";");
-		/*for(String betNum : betNumSet) {
-			params.put("betNum", betNum);
-			params.put("times", order.getTimes());
-			params.put("monUnit", order.getPattern().floatValue());
-			params.put("lottoType", lotteryType);
-			preBetResult = playTypeFacade.preProcessNumber(params, user);
-			
-			statInfo = cacheObj.getContent();
-			if(statInfo.get(playTypeId + "|" + betNum) == null) {
-				statInfo.put(playTypeId + "|" + betNum, preBetResult.get("maxWinAmount"));
-			}else {				
-				statInfo.put(playTypeId + "|" + betNum, 
-						MathUtil.add((Float)statInfo.get(playTypeId + "|" + betNum), 
-								(Float)preBetResult.get("maxWinAmount"), 
-								Float.class));
-			}
-			
-			if(statInfo.get(Constants.KEY_ISSUE_TOTAL_BETTING_AMOUNT) == null) {
-				statInfo.put(Constants.KEY_ISSUE_TOTAL_BETTING_AMOUNT, 
-						preBetResult.get("betAmount"));
-			}else {
-				Float total = (Float)statInfo.get(Constants.KEY_ISSUE_TOTAL_BETTING_AMOUNT);
-				total = MathUtil.add(total, 
-						(Float)preBetResult.get("betAmount"), 
-						Float.class);
-				statInfo.put(Constants.KEY_ISSUE_TOTAL_BETTING_AMOUNT, 
-						total);
-			}			
-		}*/
+		}		
 		
 		betNumMapping = playTypeFacade.parseBetNumber(betNums);
 		statInfo = cacheObj.getContent();
@@ -325,6 +292,8 @@ public class CacheRedisServiceImpl implements CacheRedisService
 				boolean isMatch = Pattern.matches(key, sample);
 				if(isMatch) {
 					isExisting = true;
+					pattern = key;
+					logger.debug(String.format("key  %s    pattern   %s     sample  %s", key, pattern, sample));
 					break;
 				}
 			}

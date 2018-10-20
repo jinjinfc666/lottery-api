@@ -37,7 +37,7 @@ public class Wxh2PlayTypeFacadeImplTest extends ServiceJunitBase{
 		//super.tearDown();
 	}
 	
-	public void testParseBetNumber(){
+	public void ItestParseBetNumber(){
 		String betNum = "12,23";
 		
 		List<Map<String, String>> ret = playTypeFacade.parseBetNumber(betNum);
@@ -65,4 +65,11 @@ public class Wxh2PlayTypeFacadeImplTest extends ServiceJunitBase{
 		Assert.assertNotNull(ret);
 		
 	}
+	
+	public void testObtainSampleBetNumber(){		
+		String ret = playTypeFacade.obtainSampleBetNumber();
+		Assert.assertNotNull(ret);
+		
+	}
+	
 }
