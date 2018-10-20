@@ -39,8 +39,8 @@ public class SysUserServiceImpl implements SysUserService
 		if(isOrNo) {
 			map.clear();
 			map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
-			map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_EXISTING.getCode());
+			map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_EXISTING.getErrorMes());
 			return map;
 		}else {
 			userDao.saveOrUpdateUserInfo(userInfo);
@@ -67,8 +67,8 @@ public class SysUserServiceImpl implements SysUserService
 		if(StringUtils.isBlank(userName)||StringUtils.isBlank(loginPwd)||state==null||userType==null) {
 			map.clear();
 			map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
-			map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
 			return map;
 		}
 		UserInfo userInfo=userDao.queryById(id).get(0);

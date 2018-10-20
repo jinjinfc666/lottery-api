@@ -39,14 +39,14 @@ public class Message {
 		ERROR_COMMON_NO_ACCOUNT_OPERATION("000004", "Account operation is required!!"),		
 		ERROR_COMMON_OTHERS("009999", "Others!!"),
 		
-		ERROR_PAYMENT_TLCLOUD_CONFIGURATION("010001", "configuration of tl-cloud is wrong!!"),
-		ERROR_PAYMENT_TLCLOUD_FAILED_PUSH_ORDER("010002", "Failed to push order!!"),
-		ERROR_PAYMENT_TLCLOUD_FAILED_CANCEL_ORDER("010003", "Failed to cancel order!!"),
-		ERROR_PAYMENT_DEPOSIT_ERROR_ORDER("010004", "No order existing!!"),
+		ERROR_PAYMENT_TLCLOUD_CONFIGURATION("090001", "configuration of tl-cloud is wrong!!"),
+		ERROR_PAYMENT_TLCLOUD_FAILED_PUSH_ORDER("090002", "Failed to push order!!"),
+		ERROR_PAYMENT_TLCLOUD_FAILED_CANCEL_ORDER("090003", "Failed to cancel order!!"),
+		ERROR_PAYMENT_DEPOSIT_ERROR_ORDER("090004", "No order existing!!"),
 		
-		ERROR_PAYMENT_CAIPAY_FAILED_CANCEL_ORDER("010005", "configuration of cai-pay is wrong!!"),
-		ERROR_PAYMENT_CAIPAY_FAILED_SIGNATURE_PARAMS("010006", "Can not sign the parameters!!"),
-		ERROR_SYSTEM_CONFIG_NO_RECEIVER_BANK_CARD("020001", "No Receiver bank card is specified!!"),
+		ERROR_PAYMENT_CAIPAY_FAILED_CANCEL_ORDER("090005", "configuration of cai-pay is wrong!!"),
+		ERROR_PAYMENT_CAIPAY_FAILED_SIGNATURE_PARAMS("090006", "Can not sign the parameters!!"),
+		ERROR_SYSTEM_CONFIG_NO_RECEIVER_BANK_CARD("090007", "No Receiver bank card is specified!!"),
 				
 		/******user module**************/
 		ERROR_USER_EXISTING("010001", "The user is existing!!"),
@@ -90,7 +90,8 @@ public class Message {
 		ERROR_USER_TRANS_RED_WALLET_FAIL("010038", "The current user flow is %s, less than %s, transaction fail !!!"),
 		ERROR_WALLET_IS_FREEZE("010039", "This wallet is freeze!!!!"),
 		ERROR_SAME_IP_LIMIT_MAX_REG("010040", "The same IP(%s) can only register %s demo users!!!!"),
-		ERROR_DEMO_USER_DISABLE_FUN("010041", "Demo user disable current function!!!!"),
+		ERROR_DEMO_USER_DISABLE_FUN("010041", "Demo user disable current function!!!!"),		
+		ERROR_USER_NO_BANKCARD("010042", "user no bankcard!!!!"),
 		
 		
 		
@@ -119,7 +120,7 @@ public class Message {
 		ERROR_MESSAGE_TITLE_IS_EMPTY("040001", "Message title is empty!!"),
 		ERROR_MESSAGE_CONTENT_IS_EMPTY("040002", "Message content is empty!!"),
 		ERROR_NOTIFY_RECEIVER_TYPE_ERROR("040003", "Notify receiver type error!!"),
-		ERROR_NOTIFY_RECEIVER_ERROR("040003", "Notify receiver error!!"),
+		ERROR_NOTIFY_RECEIVER_ERROR("040004", "Notify receiver error!!"),
 		
 		ERROR_SYSTEM_AUTH_NO_ACCESS_PERMISSION("050001", "No Permission to access resource!!"),
 		ERROR_SYSTEM_INVALID_BETTING_TIMES("050002", "Invalid betting times!!"),
@@ -127,7 +128,7 @@ public class Message {
 		ERROR_SYSTEM_LOG_OUT("050004", "Error log out!!"),
 		/**************pay model*************************/
 		ERROR_MESSAGE_PAY_TYPE_DISABLE("060001", "This pay type is disable!!!"),
-		ERROR_MESSAGE_PAYMENT_AMOUNT_MORE("060001", "This pay type payment amount more than maximum %d !!!"),
+		ERROR_MESSAGE_PAYMENT_AMOUNT_MORE("060002", "This pay type payment amount more than maximum %d !!!"),
 		
 		/**************log module*************************/
 		ERROR_LOGIN_INVALID_CAPTCHA("070001", "Invalid captcha!!!"),
@@ -135,6 +136,28 @@ public class Message {
 		/**************Issue module*************************/
 		ERROR_ISSUE_INVALID_STATUS("080001", "Invalid issue status!!!"),
 		ERROR_ISSUE_NOT_ALLOWED_MANUAL_DRAW_RESULT("080002", "Not allowed to manual draw result!!!"),
+		/**************PlayType module*************************/
+		ERROR_PLAYTYPE_ALREADY_EXISTS("100001","playType already exists!!!"),
+		ERROR_PLAYTYPE_DOES_NOT_EXIST("100002","playType does not exist!!!"),
+		/**************DepositApplication Or withdrawApplication module*************************/
+		ERROR_DEPOSITAPPLICATION_DOES_NOT_EXIST("110001","DepositApplication does not exist!!!"),
+		ERROR_WITHDRAWAPPLICATION_DOES_NOT_EXIST("110002","withdrawApplication does not exist!!!"),
+		/**************IP module*************************/
+		ERROR_IP_ALREADY_EXISTS("120001","ip already exists!!!"),
+		ERROR_IP_DATA_DOES_NOT_EXIST_MODIFIED_IP_ALREADY_EXISTS("120002","Data does not exist or Modified ip already exists!!!"),
+		/**************payType module*************************/
+		ERROR_PAYTYPE_ALREADY_EXISTS("130001","payType already exists!!!"),
+		ERROR_PAYTYPE_DOES_NOT_EXIST("130002","payType does not exist!!!"),
+		/**************payChannel module*************************/
+		ERROR_PAYCHANNEL_DOES_NOT_EXIST("140001","payChannel does not exist!!!"),
+		/**************payChannel module*************************/
+		ERROR_SYSROLE_ALREADY_EXISTS("150001","SysRole already exists!!!"),
+		ERROR_SYSROLE_DOES_NOT_EXIST("150002","SysRole does not exist!!!"),
+		/**************SysCode module*************************/
+		ERROR_SYSCODE_ALREADY_EXISTS("160001","SysCode already exists!!!"),
+		ERROR_CODE_VALUE_ALREADY_EXISTS("160002","Code value already exists!!!"),
+		/**************userBank module*************************/
+		ERROR_USERBANK_DOES_NOT_EXIST("170001","userBank does not exist!!!"),
 		;
 		
 		private String code;

@@ -516,14 +516,14 @@ public class ReportController {
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
 	    	return ret;
 		}
-		UserInfo userinfo=new UserInfo();
-		userinfo.setUserName(userName);
-		if(!userInfoService.isUserExisting(userinfo)) {
-			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
-			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
-	    	return ret;
-		}
+//		UserInfo userinfo=new UserInfo();
+//		userinfo.setUserName(userName);
+//		if(!userInfoService.isUserExisting(userinfo)) {
+//			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+//			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+//			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+//	    	return ret;
+//		}
 		ret.put("userName", userName);
 		ret.put("startTime", startTime);
 		ret.put("endTime", endTime);
@@ -594,14 +594,14 @@ public class ReportController {
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
 	    	return ret;
 		}
-		UserInfo userinfo=new UserInfo();
-		userinfo.setUserName(userName);
-		if(!userInfoService.isUserExisting(userinfo)) {
-			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
-			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
-	    	return ret;
-		}
+//		UserInfo userinfo=new UserInfo();
+//		userinfo.setUserName(userName);
+//		if(!userInfoService.isUserExisting(userinfo)) {
+//			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+//			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+//			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+//	    	return ret;
+//		}
 		ret.put("userName", userName);
 		ret.put("startTime", startTime);
 		ret.put("endTime", endTime);
@@ -633,14 +633,14 @@ public class ReportController {
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
 	    	return ret;
 		}
-		UserInfo userinfo=new UserInfo();
-		userinfo.setUserName(userName);
-		if(!userInfoService.isUserExisting(userinfo)) {
-			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
-			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
-	    	return ret;
-		}
+//		UserInfo userinfo=new UserInfo();
+//		userinfo.setUserName(userName);
+//		if(!userInfoService.isUserExisting(userinfo)) {
+//			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+//			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+//			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+//	    	return ret;
+//		}
 		ret.put("userName", userName);
 		ret.put("startTime", startTime);
 		ret.put("endTime", endTime);
@@ -713,14 +713,14 @@ public class ReportController {
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
 	    	return ret;
 		}
-		UserInfo userinfo=new UserInfo();
-		userinfo.setUserName(userName);
-		if(!userInfoService.isUserExisting(userinfo)) {
-			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
-			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
-	    	return ret;
-		}
+//		UserInfo userinfo=new UserInfo();
+//		userinfo.setUserName(userName);
+//		if(!userInfoService.isUserExisting(userinfo)) {
+//			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+//			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+//			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+//	    	return ret;
+//		}
 		ret.put("codeName", codeName);
 		ret.put("userName", userName);
 		ret.put("startTime", startTime);
@@ -755,14 +755,14 @@ public class ReportController {
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
 	    	return ret;
 		}
-		UserInfo userinfo=new UserInfo();
-		userinfo.setUserName(userName);
-		if(!userInfoService.isUserExisting(userinfo)) {
-			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
-			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
-	    	return ret;
-		}
+//		UserInfo userinfo=new UserInfo();
+//		userinfo.setUserName(userName);
+//		if(!userInfoService.isUserExisting(userinfo)) {
+//			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+//			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+//			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+//	    	return ret;
+//		}
 		ret.put("codeName", codeName);
 		ret.put("userName", userName);
 		ret.put("startTime", startTime);

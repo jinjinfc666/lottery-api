@@ -50,8 +50,8 @@ public class PayChannelServiceImpl implements PayChannelService
 		{
 			map.clear();
 			map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
-			map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
 			return map;
 		}
 		PayType payType1=payTypeService.queryById(payType);
@@ -63,8 +63,8 @@ public class PayChannelServiceImpl implements PayChannelService
 				if(StringUtils.isBlank(qrUrl)||StringUtils.isBlank(bankAcc)||StringUtils.isBlank(bankName)) {
 					map.clear();
 					map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-					map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
-					map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+					map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+					map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
 					return map;
 				}
 			}else if((int)payType1.getIsTp()==1){
@@ -72,23 +72,23 @@ public class PayChannelServiceImpl implements PayChannelService
 					if(StringUtils.isBlank(bankAcc)||StringUtils.isBlank(bankName)) {
 						map.clear();
 						map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-						map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
-						map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+						map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+						map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
 						return map;
 					}
 				}else if(!StringUtils.isBlank(qrUrl)||!StringUtils.isBlank(bankAcc)||!StringUtils.isBlank(bankName)) {
 					map.clear();
 					map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-					map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
-					map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+					map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+					map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
 					return map;
 				}
 			}
 		}else {
 			map.clear();
 			map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
-			map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_PAYTYPE_DOES_NOT_EXIST.getCode());
+			map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_PAYTYPE_DOES_NOT_EXIST.getErrorMes());
 			return map;
 		}
 		Integer seq=payChannelDao.quertPayChannelSeq()+1;
@@ -272,8 +272,8 @@ public class PayChannelServiceImpl implements PayChannelService
 		}else {
 			map.clear();
 			map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
-			map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
 			return map;
 		}
 	}
@@ -296,8 +296,8 @@ public class PayChannelServiceImpl implements PayChannelService
 		}else {
 			map.clear();
 			map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
-			map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_PAYCHANNEL_DOES_NOT_EXIST.getCode());
+			map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_PAYCHANNEL_DOES_NOT_EXIST.getErrorMes());
 			return map;
 		}
 	}
@@ -320,8 +320,8 @@ public class PayChannelServiceImpl implements PayChannelService
 		}else {
 			map.clear();
 			map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
-			map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_PAYCHANNEL_DOES_NOT_EXIST.getCode());
+			map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_PAYCHANNEL_DOES_NOT_EXIST.getErrorMes());
 			return map;
 		}
 	}
