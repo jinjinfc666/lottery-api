@@ -36,8 +36,8 @@ public class IpBlackListServiceImpl implements IpBlackListService
 		if(aa) {
 			map.clear();
 			map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
-			map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_IP_ALREADY_EXISTS.getCode());
+			map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_IP_ALREADY_EXISTS.getErrorMes());
 		}else {
 			iPRestrictionsDao.addIp(ipBlackList);
 			map.clear();
@@ -96,8 +96,8 @@ public class IpBlackListServiceImpl implements IpBlackListService
 		}else {
 			map.clear();
 			map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
-			map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_IP_DATA_DOES_NOT_EXIST_MODIFIED_IP_ALREADY_EXISTS.getCode());
+			map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_IP_DATA_DOES_NOT_EXIST_MODIFIED_IP_ALREADY_EXISTS.getErrorMes());
 		}
 		return map;
 	}
@@ -113,8 +113,8 @@ public class IpBlackListServiceImpl implements IpBlackListService
 		}else {
 			map.clear();
 			map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
-			map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_IP_DATA_DOES_NOT_EXIST_MODIFIED_IP_ALREADY_EXISTS.getCode());
+			map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_IP_DATA_DOES_NOT_EXIST_MODIFIED_IP_ALREADY_EXISTS.getErrorMes());
 		}
 		return map;
 	}

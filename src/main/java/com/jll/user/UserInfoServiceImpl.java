@@ -1158,8 +1158,8 @@ public class UserInfoServiceImpl implements UserInfoService
 		}else {
 			map.clear();
 			map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
-			map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_NO_VALID_USER.getCode());
+			map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_NO_VALID_USER.getErrorMes());
 			return map;
 		}
 	}
@@ -1484,8 +1484,8 @@ public class UserInfoServiceImpl implements UserInfoService
 		boolean haveOrNot=userBankCardService.haveOrNot(id);
 		if(!haveOrNot) {
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
-			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_NO_BANKCARD.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_NO_BANKCARD.getErrorMes());
 			return ret;
 		}
 		String codeName=Constants.SysCodeTypes.BANK_CODE_LIST.getCode();
@@ -1502,8 +1502,8 @@ public class UserInfoServiceImpl implements UserInfoService
 		UserInfo userInfo=userDao.getUserById(userId);
 		if(userInfo==null) {
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
-			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_NO_VALID_USER.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_NO_VALID_USER.getErrorMes());
 			return ret;
 		}
 		String superior=userInfo.getSuperior();
