@@ -79,7 +79,15 @@ public class LotteryCenterController {
 		Map<String, Object> data = new HashMap<String, Object>();
 		String betNum = (String)params.get("betNum");
 		Integer times = (Integer)params.get("times");
-		Float monUnit = ((Double)params.get("monUnit")).floatValue();
+		Float monUnit =null;
+		try {
+			monUnit = Float.parseFloat((String)params.get("monUnit"));
+		}catch(Exception e) {
+			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+			return resp;
+		}
 		Integer playType = (Integer)params.get("playType");
 		String retCode = null;
 		
