@@ -39,7 +39,7 @@ public class UserAccountDetailsServiceImpl implements UserAccountDetailsService
 	}
 	
 	@Override
-	public UserAccountDetails initCreidrRecord(int userId,UserAccount userAcc,double beforAmt,double addAmt,String operType){
+	public UserAccountDetails initCreidrRecord(int userId,UserAccount userAcc,double beforAmt,double addAmt,String operType,Integer orderId){
 		UserAccountDetails addRedDtl = new UserAccountDetails();
 		addRedDtl.setUserId(userId);
 		addRedDtl.setCreateTime(new Date());
@@ -47,6 +47,7 @@ public class UserAccountDetailsServiceImpl implements UserAccountDetailsService
 		addRedDtl.setPreAmount(Double.valueOf(beforAmt).floatValue());
 		addRedDtl.setPostAmount(Double.valueOf(BigDecimalUtil.add(addRedDtl.getPreAmount(),addAmt)).floatValue());
 		addRedDtl.setWalletId(userAcc.getId());
+		addRedDtl.setOrderId(orderId);
 		addRedDtl.setOperationType(operType);
 		return addRedDtl;
 	}

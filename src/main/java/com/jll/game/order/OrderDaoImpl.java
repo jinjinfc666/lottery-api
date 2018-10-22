@@ -83,28 +83,27 @@ public class OrderDaoImpl extends DefaultGenericDaoImpl<OrderInfo> implements Or
 	@Override
 	public List<OrderInfo> getOrderInfoByPrams(Integer issueId, String userName, String orderNum,Integer delayPayoutFlag) {
 		List<Object> params = new ArrayList<>();
-		String sql = "select order from OrderInfo order,UserInfo u where u.id = order.userId and state = ? ";
+		String sql = "select o from OrderInfo o,UserInfo u where u.id = o.userId and o.state = ? ";
+		params.add(OrderState.WAITTING_PAYOUT.getCode());
+		
 		if(issueId > -1){
-			sql += (" and order.issueId=?  ");
+			sql += (" and o.issueId=?  ");
 			params.add(issueId);
 		}
 		
-		params.add(OrderState.WAITTING_PAYOUT.getCode());
-		
 		if(delayPayoutFlag > -1){
-			sql += ("  and order.delayPayoutFlag = ? ");
+			sql += ("  and o.delayPayoutFlag = ? ");
 			params.add(delayPayoutFlag);
 		}
 		
 		if(!StringUtils.isEmpty(orderNum)){
-			sql += ("  and order.orderNum = ? ");
+			sql += ("  and o.orderNum = ? ");
 			params.add(orderNum);
 		}
 		if(!StringUtils.isEmpty(userName)){
 			sql += ("  and u.userName = ? ");
 			params.add(userName);
 		}
-		
 		return this.query(sql, params, OrderInfo.class);
 	}
 	

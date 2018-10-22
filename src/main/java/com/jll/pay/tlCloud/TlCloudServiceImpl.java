@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jll.common.constants.Constants;
 import com.jll.common.constants.Message;
 import com.jll.common.http.HttpRemoteStub;
+import com.jll.common.utils.Utils;
 import com.jll.entity.DepositApplication;
 import com.jll.pay.PaymentDao;
 import com.jll.pay.order.DepositOrderDao;
@@ -80,7 +81,7 @@ public class TlCloudServiceImpl implements TlCloudService
 		pushParams.put("pay_username", payerName);
 		pushParams.put("order_id",depositOrder.getOrderNum());
 		pushParams.put("bank_flag", rechargeType);
-		pushParams.put("card_number", params.get("card_number").toString());
+		pushParams.put("card_number", Utils.toString(params.get("card_number")));
 		pushParams.put("amount", amount);
 		pushParams.put("create_time", createTime);
 		pushParams.put("comment", depositOrder.getOrderNum());
