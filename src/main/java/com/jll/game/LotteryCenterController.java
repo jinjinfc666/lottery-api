@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 import org.eclipse.jetty.util.StringUtil;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jll.common.cache.CacheRedisService;
@@ -343,7 +345,9 @@ public class LotteryCenterController {
 	}
 	
 	@RequestMapping(value="/{lottery-type}/prize-rates", method = { RequestMethod.GET }, consumes=MediaType.APPLICATION_JSON_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> queryPrizeRate(@PathVariable(name = "lottery-type", required = true) String lotteryType){
+	public Map<String, Object> queryPrizeRate(@PathVariable(name = "lottery-type", required = true) String lotteryType,
+			  @RequestBody Map<String, Object> params,
+			  HttpServletRequest request){
 		Map<String, Object> resp = new HashMap<String, Object>();
 		String userName = null;
 		boolean isExisting = false;
