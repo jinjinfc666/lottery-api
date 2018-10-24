@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.jll.common.constants.Constants.PayType;
 import com.jll.entity.display.CaiPayNotices;
 import com.jll.pay.order.DepositOrderService;
 
@@ -45,9 +46,9 @@ public class CaiPayController
 	    if(!caiPayService.isNoticesValid(notices)) {
 	    	return "FAIL";
 	    }
-	    boolean isNotified = depositOrderService.isOrderNotified(notices.getPrdOrdNo());
+	    boolean isNotified = depositOrderService.isOrderNotified(notices.getPrdOrdNo(),PayType.CAI_PAY);
 	    if(isNotified) {
-	    	return "SUCCESS";
+	    	return "FAIL";
 	    }
 	    depositOrderService.receiveDepositOrder(notices.getPrdOrdNo(),"");
 	    return "SUCCESS";

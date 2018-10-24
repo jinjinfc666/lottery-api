@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.jll.common.constants.Constants.PayType;
 import com.jll.entity.display.ZhihPayNotices;
 import com.jll.pay.order.DepositOrderService;
 
@@ -50,7 +51,7 @@ public class ZhihPayController
     	return "FAIL";
     }
     
-    boolean isNotified = depositOrderService.isOrderNotified(notices.getOrder_no());
+    boolean isNotified = depositOrderService.isOrderNotified(notices.getOrder_no(),PayType.WISDOM_PAYMENT);
     if(isNotified) {
     	return "SUCCESS";
     }
