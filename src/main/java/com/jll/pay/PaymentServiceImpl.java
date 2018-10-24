@@ -260,7 +260,7 @@ public class PaymentServiceImpl  implements PaymentService
 				ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
 				return ret;
 		 }
-		 depositOrderService.receiveDepositOrder(Utils.toString(params.get("orderNum")),"");
+		 depositOrderService.processReceiveDepositOrder(Utils.toString(params.get("orderNum")),"");
 		 ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		 return ret;
 	}

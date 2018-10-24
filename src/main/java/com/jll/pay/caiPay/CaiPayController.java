@@ -50,7 +50,7 @@ public class CaiPayController
 	    if(isNotified) {
 	    	return "FAIL";
 	    }
-	    depositOrderService.receiveDepositOrder(notices.getPrdOrdNo(),"");
+	    depositOrderService.processReceiveDepositOrder(notices.getPrdOrdNo(),"");
 	    return "SUCCESS";
   }
   

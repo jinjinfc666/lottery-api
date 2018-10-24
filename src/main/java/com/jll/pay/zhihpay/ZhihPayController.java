@@ -55,7 +55,7 @@ public class ZhihPayController
     if(isNotified) {
     	return "SUCCESS";
     }
-    depositOrderService.receiveDepositOrder(notices.getOrder_no(),"");
+    depositOrderService.processReceiveDepositOrder(notices.getOrder_no(),"");
     return "SUCCESS";
   }
 }
