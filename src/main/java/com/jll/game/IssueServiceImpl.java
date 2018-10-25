@@ -142,7 +142,7 @@ public class IssueServiceImpl implements IssueService
 		supserDao.update(curIssue);
 		
 		List<OrderInfo> winLists = orderDao.queryWinOrdersByIssue(curIssue.getId());
-		processCalcelOrderWinAmtAndAccRecord(winLists,false,true,false);
+		//processCalcelOrderWinAmtAndAccRecord(winLists,false,true,false);
 		supserDao.updateList(winLists);
 		
 		cacheServ.publishMessage(Constants.TOPIC_PAY_OUT, issueNum);
@@ -151,12 +151,13 @@ public class IssueServiceImpl implements IssueService
 		return ret;
 	}
 
-	private void processCalcelOrderWinAmtAndAccRecord(List<OrderInfo> winLists,boolean backBetAmt,boolean backWinAmt,boolean backPoint){
+	private void processCalcelOrderWinAmtAndAccRecord(List<OrderInfo> winLists,boolean backBetAmt,boolean backWinAmt,boolean backPoint,OrderState state){
 		if(!winLists.isEmpty()){
 			
 			Map<Integer,UserAccount> accMaps = new HashMap<>();
 			List<UserAccountDetails> dtlLists = new ArrayList<>();
 			for (OrderInfo order : winLists) {
+				order.setState(state.getCode());
 				UserAccount curAcc = accMaps.get(order.getWalletId());
 				if(null == curAcc){
 					UserAccount acc = (UserAccount) supserDao.get(UserAccount.class, order.getWalletId());
@@ -165,7 +166,7 @@ public class IssueServiceImpl implements IssueService
 				}
 				
 				//查找出返点
-				if(backPoint && OrderState.SYS_CANCEL.getCode() != order.getState()){
+				if(backPoint && OrderState.SYS_CANCEL.getCode() != order.getState().intValue()){
 					DetachedCriteria criteria2 = DetachedCriteria.forClass(UserAccountDetails.class);
 					criteria2.add(Restrictions.eq("orderId",order.getId()));
 					criteria2.add(Restrictions.eq("operationType",Constants.AccOperationType.REBATE.getCode()));
@@ -195,8 +196,7 @@ public class IssueServiceImpl implements IssueService
 					
 					List<UserAccountDetails> ret = supserDao.findByCriteria(criteria);
 					double prize = Utils.toDouble(ret.get(0).getAmount());
-					UserAccountDetails addDtail = userAccountDetailsService.initCreidrRecord(curAcc.getUserId(),curAcc, curAcc.getBalance().doubleValue(), -prize, AccOperationType.REFUND.getCode(),order.getId());
-					order.setState(OrderState.SYS_CANCEL.getCode());
+					UserAccountDetails addDtail = userAccountDetailsService.initCreidrRecord(curAcc.getUserId(),curAcc, curAcc.getBalance().doubleValue(), prize, AccOperationType.REFUND.getCode(),order.getId());
 					dtlLists.add(addDtail);
 					curAcc.setBalance(new BigDecimal(addDtail.getPostAmount()));
 				}
@@ -212,7 +212,6 @@ public class IssueServiceImpl implements IssueService
 					List<UserAccountDetails> ret = supserDao.findByCriteria(criteria);
 					double prize = Utils.toDouble(ret.get(0).getAmount());
 					UserAccountDetails addDtail = userAccountDetailsService.initCreidrRecord(curAcc.getUserId(),curAcc, curAcc.getBalance().doubleValue(), -prize, AccOperationType.REFUND.getCode(),order.getId());
-					order.setState(backPoint?OrderState.SYS_CANCEL.getCode():OrderState.RE_PAYOUT.getCode());
 					dtlLists.add(addDtail);
 					curAcc.setBalance(new BigDecimal(addDtail.getPostAmount()));
 				}
@@ -232,7 +231,8 @@ public class IssueServiceImpl implements IssueService
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_ISSUE_INVALID_STATUS.getErrorMes());
 			return ret;
 		}
-		cacheServ.publishMessage(Constants.TOPIC_PAY_OUT, issueNum);
+		final String message = Utils.toString(params.get("lottoType")) + "|" + issueNum + "|" + curIssue.getRetNum();
+		cacheServ.publishMessage(Constants.TOPIC_PAY_OUT, message);
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		return ret;
 	}
@@ -241,15 +241,18 @@ public class IssueServiceImpl implements IssueService
 	public Map<String, Object> processCalcelIssuePayout(String lottoType, String issueNum, Map<String, String> params) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		Issue curIssue = issueService.getIssueByIssueNum(Utils.toString(params.get("lottoType")),issueNum);
-		if(null == curIssue){
+		if(null == curIssue
+				|| (IssueState.PAYOUT.getCode() != curIssue.getState() 
+				&& IssueState.RE_PAYOUT.getCode() != curIssue.getState())){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_ISSUE_INVALID_STATUS.getCode());
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_ISSUE_INVALID_STATUS.getErrorMes());
 			return ret;
 		}
 		List<OrderInfo> winLists = orderDao.queryOrdersByIssue(curIssue.getId());
-		processCalcelOrderWinAmtAndAccRecord(winLists,false,true,true);
+		processCalcelOrderWinAmtAndAccRecord(winLists,false,true,false,OrderState.WAITTING_PAYOUT);
 		supserDao.updateList(winLists);
+		curIssue.setState(IssueState.LOTTO_DARW.getCode());
 		
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		return ret;
@@ -258,18 +261,16 @@ public class IssueServiceImpl implements IssueService
 	@Override
 	public Map<String, Object> processBetOrderRePayout(String lottoType, String issueNum, Map<String, String> params) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		Issue curIssue = issueService.getIssueByIssueNum(Utils.toString(params.get("lottoType")),issueNum);
-		if(null == curIssue){
-			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_ISSUE_INVALID_STATUS.getCode());
-			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_ISSUE_INVALID_STATUS.getErrorMes());
-			return ret;
+		Map<String, Object> retCancel = processCalcelIssuePayout(lottoType, issueNum, params);
+		if(!retCancel.get(Message.KEY_STATUS).equals( Message.status.SUCCESS.getCode())){
+			return retCancel;
 		}
-		
+		Issue curIssue = issueService.getIssueByIssueNum(Utils.toString(params.get("lottoType")),issueNum);
 		curIssue.setState(IssueState.RE_PAYOUT.getCode());
 		supserDao.update(curIssue);
 		
-		cacheServ.publishMessage(Constants.TOPIC_PAY_OUT, issueNum);
+		final String message = Utils.toString(params.get("lottoType")) + "|" + issueNum + "|" + curIssue.getRetNum();
+		cacheServ.publishMessage(Constants.TOPIC_PAY_OUT, message);
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		return ret;
 	}
@@ -290,7 +291,7 @@ public class IssueServiceImpl implements IssueService
 		supserDao.update(curIssue);
 		
 		List<OrderInfo> winLists = orderDao.queryOrdersByIssue(curIssue.getId());
-		processCalcelOrderWinAmtAndAccRecord(winLists,true,true,true);
+		processCalcelOrderWinAmtAndAccRecord(winLists,true,true,true,OrderState.SYS_CANCEL);
 		supserDao.updateList(winLists);
 		
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
@@ -311,43 +312,40 @@ public class IssueServiceImpl implements IssueService
 		String userName = Utils.toString(params.get("userName"));
 		String orderNum = Utils.toString(params.get("orderNum"));
 		
-		List<OrderInfo> orders = orderDao.getOrderInfoByPrams(curIssue.getId(), userName, orderNum,OrderDelayState.DEPLAY.getCode());
-		
-		Map<String,LotteryTypeService> curSer = new HashMap<>();
-		String[] impls = lotteryTypeImpl.split(",");
-		for(String impl : impls) {
-			LotteryTypeService lotteryTypeServ = LotteryTypeFactory
-					.getInstance().createLotteryType(impl);
-			if(lotteryTypeServ != null){
-				curSer.put(lotteryTypeServ.getLotteryType(), lotteryTypeServ);
-			}
+		List<OrderInfo> orders = orderDao.getOrderInfoByPrams(curIssue.getId(), userName, orderNum,0);
+		for (OrderInfo orderInfo : orders) {
+			orderInfo.setDelayPayoutFlag(OrderDelayState.DEPLAY.getCode());
 		}
 		
-		for (OrderInfo order : orders) {
-			PlayType play = playTypeDao.queryById(order.getPlayType());
-			LotteryTypeService runSer = curSer.get(play.getLotteryType());
-			if(runSer != null){
-				runSer.payout(order, null, false);
-			}
-		}
+		supserDao.updateList(orders);
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		return ret;
+	}
+	
+	private boolean isOKAdminCancelOrder(OrderInfo order){
+		if(OrderState.WINNING.getCode() == order.getState().intValue()
+				|| OrderState.LOSTING.getCode() == order.getState().intValue()
+				|| OrderState.WAITTING_PAYOUT.getCode() == order.getState().intValue()){
+			return true;
+		}
+		return false;
 	}
 
 	@Override
 	public Map<String, Object> processOrderCancel(String orderNum) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		OrderInfo order = orderDao.getOrderInfo(orderNum);
-		if(null == order){
+		if(null == order
+				|| !isOKAdminCancelOrder(order)){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_ISSUE_INVALID_STATUS.getCode());
-			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_ISSUE_INVALID_STATUS.getErrorMes());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_PAYMENT_TLCLOUD_FAILED_CANCEL_ORDER.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_PAYMENT_TLCLOUD_FAILED_CANCEL_ORDER.getErrorMes());
 			return ret;
 		}
 		
 		List<OrderInfo> winLists = new ArrayList<>();
 		winLists.add(order);
-		processCalcelOrderWinAmtAndAccRecord(winLists,true,true,true);
+		processCalcelOrderWinAmtAndAccRecord(winLists,true,true,true,OrderState.SYS_CANCEL);
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		return ret;
 	}

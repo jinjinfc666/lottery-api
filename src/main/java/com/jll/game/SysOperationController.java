@@ -98,12 +98,16 @@ public class SysOperationController{
 		  return issueService.updateIssueDisbale("",issueNum,params);
 	  }
 	  
+	  
+	  
+	 
 	  /**
 	   * 
 	   * @param issueNum
 	   * @param params {lottoType}
 	   * @return
 	   */
+	  //标记订单为延迟派奖
 	  @ApiComment("issue delay payout")
 	  @RequestMapping(value={"/issue/{issueNum}/delay-payout"}, method={org.springframework.web.bind.annotation.RequestMethod.POST}, produces={"application/json"})
 	  public Map<String, Object> issueDelayePayout(@PathVariable("issueNum") String issueNum,

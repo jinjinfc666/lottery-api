@@ -1080,6 +1080,9 @@ public class UserInfoServiceImpl implements UserInfoService
 			UserAccountDetails addDtail2 = userAccountDetailsService.initCreidrRecord(dbWtd.getUserId(),mainAcc, mainAcc.getBalance().doubleValue(), dbWtd.getAmount().doubleValue(), AccOperationType.WD_UNFREEZE.getCode(),dbWtd.getId());
 			supserDao.save(addDtail2);
 			mainAcc.setBalance(new BigDecimal(addDtail2.getPostAmount()));
+		}else{
+			UserAccountDetails addDtail2 = userAccountDetailsService.initCreidrRecord(dbWtd.getUserId(),mainAcc, mainAcc.getBalance().doubleValue(), dbWtd.getAmount().doubleValue(), AccOperationType.WITHDRAW.getCode(),dbWtd.getId());
+			supserDao.save(addDtail2);
 		}
 		supserDao.update(dbWtd);
 		supserDao.update(mainAcc);
