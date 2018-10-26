@@ -1659,8 +1659,8 @@ public class Constants {
 	 * 订单延迟状态
 	 */
 	public static enum OrderDelayState{
-		DEPLAY(0, "delay"),
-		NON_DEPLAY(1, "non_deplay");
+		DEPLAY(1, "delay"),
+		NON_DEPLAY(0, "non_deplay");
 		
 		private int code;
 		private String desc;

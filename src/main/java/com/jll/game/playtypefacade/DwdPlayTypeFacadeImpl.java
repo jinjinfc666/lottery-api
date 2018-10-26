@@ -48,7 +48,7 @@ public class DwdPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 				continue;
 			}
 			
-			String[] tempSet = temp.split(",");
+			String[] tempSet = splitBit(temp, 1);
 			for(int i = 0; i < tempSet.length; i++) {
 				String tempBit = tempSet[i];
 				String winNumBit = winNumSet[i];
@@ -170,12 +170,14 @@ public class DwdPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 		betNumMul = betNum.split(";");		
 		
 		for(String singleSel : betNumMul) {			
-			String[] singleSelSet = singleSel.split(",");
+			if(StringUtils.isBlank(singleSel)) {
+				continue;
+			}
+			String[] singleSelSet = splitBit(singleSel, 1);
 			for(int i = 0; i< singleSelSet.length; i++) {
-				if(StringUtils.isBlank(singleSel)) {
+				if(StringUtils.isBlank(singleSelSet[i])) {
 					continue;
 				}
-				
 				if(singleSelSet[i].contains(winNumSet[i])) {
 					winningBetAmount++;
 				}
@@ -227,66 +229,77 @@ public class DwdPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 				}
 			}
 			String[] betNumBits = buffer.toString().split(",");
-			String betNumBit = betNumBits[0];
-			if(!StringUtils.isBlank(betNumBit)) {
-				for(int i = 0; i < betNumBit.length(); i++) {
-					String a = betNumBit.substring(i, i + 1);
-					Map<String, String> row = new HashMap<String, String>();
-					row.put(Constants.KEY_FACADE_BET_NUM, a);
-					row.put(Constants.KEY_FACADE_PATTERN, a + "[0-9]{4}");
-					row.put(Constants.KEY_FACADE_BET_NUM_SAMPLE, a + "0000");				
-					betNumList.add(row);
+			String betNumBit = null;
+			
+			if(betNumBits.length > 0) {
+				betNumBit = betNumBits[0];
+				if(!StringUtils.isBlank(betNumBit)) {
+					for(int i = 0; i < betNumBit.length(); i++) {
+						String a = betNumBit.substring(i, i + 1);
+						Map<String, String> row = new HashMap<String, String>();
+						row.put(Constants.KEY_FACADE_BET_NUM, a);
+						row.put(Constants.KEY_FACADE_PATTERN, a + "[0-9]{4}");
+						row.put(Constants.KEY_FACADE_BET_NUM_SAMPLE, a + "0000");				
+						betNumList.add(row);
+					}
 				}
 			}
 			
-			betNumBit = betNumBits[1];
-			if(!StringUtils.isBlank(betNumBit)) {
-				for(int i = 0; i < betNumBit.length(); i++) {
-					String a = betNumBit.substring(i, i + 1);
-					Map<String, String> row = new HashMap<String, String>();
-					row.put(Constants.KEY_FACADE_BET_NUM, a);
-					row.put(Constants.KEY_FACADE_PATTERN, "[0-9]{1}" + a + "[0-9]{3}");
-					row.put(Constants.KEY_FACADE_BET_NUM_SAMPLE, "0" + a + "000");				
-					betNumList.add(row);
-				}
+			if(betNumBits.length > 1) {
+				betNumBit = betNumBits[1];
+				if(!StringUtils.isBlank(betNumBit)) {
+					for(int i = 0; i < betNumBit.length(); i++) {
+						String a = betNumBit.substring(i, i + 1);
+						Map<String, String> row = new HashMap<String, String>();
+						row.put(Constants.KEY_FACADE_BET_NUM, a);
+						row.put(Constants.KEY_FACADE_PATTERN, "[0-9]{1}" + a + "[0-9]{3}");
+						row.put(Constants.KEY_FACADE_BET_NUM_SAMPLE, "0" + a + "000");				
+						betNumList.add(row);
+					}
+				}				
 			}
 			
-			betNumBit = betNumBits[2];
-			if(!StringUtils.isBlank(betNumBit)) {
-				for(int i = 0; i < betNumBit.length(); i++) {
-					String a = betNumBit.substring(i, i + 1);
-					Map<String, String> row = new HashMap<String, String>();
-					row.put(Constants.KEY_FACADE_BET_NUM, a);
-					row.put(Constants.KEY_FACADE_PATTERN, "[0-9]{2}" + a + "[0-9]{2}");
-					row.put(Constants.KEY_FACADE_BET_NUM_SAMPLE, "00" + a + "00");				
-					betNumList.add(row);
-				}
+			if(betNumBits.length > 2) {
+				betNumBit = betNumBits[2];
+				if(!StringUtils.isBlank(betNumBit)) {
+					for(int i = 0; i < betNumBit.length(); i++) {
+						String a = betNumBit.substring(i, i + 1);
+						Map<String, String> row = new HashMap<String, String>();
+						row.put(Constants.KEY_FACADE_BET_NUM, a);
+						row.put(Constants.KEY_FACADE_PATTERN, "[0-9]{2}" + a + "[0-9]{2}");
+						row.put(Constants.KEY_FACADE_BET_NUM_SAMPLE, "00" + a + "00");				
+						betNumList.add(row);
+					}
+				}				
 			}
 			
-			
-			betNumBit = betNumBits[3];
-			if(!StringUtils.isBlank(betNumBit)) {
-				for(int i = 0; i < betNumBit.length(); i++) {
-					String a = betNumBit.substring(i, i + 1);
-					Map<String, String> row = new HashMap<String, String>();
-					row.put(Constants.KEY_FACADE_BET_NUM, a);
-					row.put(Constants.KEY_FACADE_PATTERN, "[0-9]{3}" + a + "[0-9]{1}");
-					row.put(Constants.KEY_FACADE_BET_NUM_SAMPLE, "000" + a + "0");
-					betNumList.add(row);
-				}
+			if(betNumBits.length > 3) {
+				betNumBit = betNumBits[3];
+				if(!StringUtils.isBlank(betNumBit)) {
+					for(int i = 0; i < betNumBit.length(); i++) {
+						String a = betNumBit.substring(i, i + 1);
+						Map<String, String> row = new HashMap<String, String>();
+						row.put(Constants.KEY_FACADE_BET_NUM, a);
+						row.put(Constants.KEY_FACADE_PATTERN, "[0-9]{3}" + a + "[0-9]{1}");
+						row.put(Constants.KEY_FACADE_BET_NUM_SAMPLE, "000" + a + "0");
+						betNumList.add(row);
+					}
+				}				
 			}
 			
-			betNumBit = betNumBits[4];
-			if(!StringUtils.isBlank(betNumBit)) {
-				for(int i = 0; i < betNumBit.length(); i++) {
-					String a = betNumBit.substring(i, i + 1);
-					Map<String, String> row = new HashMap<String, String>();
-					row.put(Constants.KEY_FACADE_BET_NUM, a);
-					row.put(Constants.KEY_FACADE_PATTERN, "[0-9]{4}" + a);
-					row.put(Constants.KEY_FACADE_BET_NUM_SAMPLE, "0000" + a);				
-					betNumList.add(row);
+			if(betNumBits.length > 4) {
+				betNumBit = betNumBits[4];
+				if(!StringUtils.isBlank(betNumBit)) {
+					for(int i = 0; i < betNumBit.length(); i++) {
+						String a = betNumBit.substring(i, i + 1);
+						Map<String, String> row = new HashMap<String, String>();
+						row.put(Constants.KEY_FACADE_BET_NUM, a);
+						row.put(Constants.KEY_FACADE_PATTERN, "[0-9]{4}" + a);
+						row.put(Constants.KEY_FACADE_BET_NUM_SAMPLE, "0000" + a);				
+						betNumList.add(row);
+					}
 				}
-			}			
+			}
 		}
 		
 		
@@ -311,5 +324,30 @@ public class DwdPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 		betNum.append(Integer.toString(bit5));
 				
 		return betNum.toString();
+	}
+	
+	
+	private String[] splitBit(String singleSel, int step) {
+		List<String> retList = new ArrayList<>();
+		StringBuffer buffer = new StringBuffer();
+		
+		for(int i = 0; i < singleSel.length();) {
+			String temp = singleSel.substring(i, i + step);
+			if(",".equals(temp)) {
+				retList.add(buffer.toString());
+				buffer.delete(0, buffer.length());
+			}else {
+				buffer.append(temp);
+			}
+			
+			i += step;
+			
+			if(i >= singleSel.length()) {
+				retList.add(buffer.toString());
+				buffer.delete(0, buffer.length());
+			}
+		}
+		
+		return retList.toArray(new String[0]);
 	}
 }

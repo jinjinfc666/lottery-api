@@ -1,5 +1,6 @@
 package com.jll.dao;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PageBean<T> {
@@ -26,6 +27,8 @@ public class PageBean<T> {
 	
 	private List<T> content;
 
+	private List<Object> params;
+	
 	public Integer getPageIndex() {
 		return pageIndex;
 	}
@@ -64,6 +67,14 @@ public class PageBean<T> {
 
 	public void setTotalNumber(Long totalNumber) {
 		this.totalNumber = totalNumber;
+	}
+
+	public List<Object> getParams() {
+		return params;
+	}
+
+	public void setParams(List<Object> params) {
+		this.params = params;
 	}
 	
 	

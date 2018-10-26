@@ -18,10 +18,12 @@ import org.springframework.transaction.annotation.Transactional;
 import com.jll.common.cache.CacheRedisService;
 import com.jll.common.constants.Constants;
 import com.jll.common.constants.Message;
+import com.jll.common.constants.Constants.OrderDelayState;
 import com.jll.common.threadpool.ThreadPoolManager;
 import com.jll.common.utils.MathUtil;
 import com.jll.common.utils.Utils;
 import com.jll.common.utils.sequence.GenSequenceService;
+import com.jll.dao.PageBean;
 import com.jll.entity.GenSequence;
 import com.jll.entity.Issue;
 import com.jll.entity.OrderInfo;
@@ -142,6 +144,7 @@ public class OrderServiceImpl implements OrderService
 			order.setUserId(user.getId());
 			order.setCreateTime(currTime);
 			order.setState(Constants.OrderState.WAITTING_PAYOUT.getCode());
+			order.setDelayPayoutFlag(OrderDelayState.NON_DEPLAY.getCode());
 			orderDao.saveOrders(order);
 			
 			UserAccountDetails userDetails = new UserAccountDetails();
@@ -163,7 +166,7 @@ public class OrderServiceImpl implements OrderService
 			userDetails.setDataItemType(Constants.DataItemType.BALANCE.getCode());
 			accDetailsServ.saveAccDetails(userDetails);
 			
-			wallet.setBalance(new BigDecimal(postAmount));
+			wallet.setBalance(postAmount);
 			
 			
 			//update the statistic in cache
@@ -232,7 +235,11 @@ public class OrderServiceImpl implements OrderService
 		UserAccount wallet = walletServ.queryById(walletId);
 		String userName = SecurityContextHolder.getContext().getAuthentication().getName();
 		UserInfo user = userServ.getUserByUserName(userName);
-		
+		logger.debug(String.format("user_id   %s  wallet_user_id  %s  wallet_id %s  wallet state %s", 
+				user.getId(),
+				wallet.getUserId(),
+				walletId,				
+				wallet.getState()));
 		if(wallet != null 
 				&& wallet.getUserId() == user.getId() 
 				&& wallet.getState().intValue() == Constants.WalletState.NORMAL.getCode()) {
@@ -243,7 +250,7 @@ public class OrderServiceImpl implements OrderService
 	}
 
 	private String verifyBal(List<OrderInfo> orders, UserAccount wallet, String lotteryType, UserInfo user) {
-		BigDecimal bal = wallet.getBalance();
+		BigDecimal bal = new BigDecimal(wallet.getBalance());
 		BigDecimal totalAmount = new BigDecimal(0);
 		PlayTypeFacade playTypeFacade = null;
 		Integer playTypeId = null;
@@ -360,5 +367,10 @@ public class OrderServiceImpl implements OrderService
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		ret.put("data",orderDao.getOrderInfo(orderNum));
 		return ret;
+	}
+
+	@Override
+	public PageBean<OrderInfo> queryOrdersByPage(PageBean<OrderInfo> page) {
+		return orderDao.queryOrdersByPage(page);
 	}
 }

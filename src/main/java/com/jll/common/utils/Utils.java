@@ -244,6 +244,11 @@ public class Utils {
 		return Pattern.matches(regex, betNumTemp);
 	}
 
+	public static boolean validateEleIn5Num(String betNumTemp) {
+		String regex = "((0[1-9])|(10)|(11)){1,11}";
+		return Pattern.matches(regex, betNumTemp);
+	}
+	
 	public static List<Map<String,String>> parseQszuxZsBetNumber(String betNum){
 		List<Map<String,String>> betNumList = new ArrayList<>();
 		String[] betNumArray = betNum.split(";");

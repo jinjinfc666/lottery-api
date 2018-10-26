@@ -37,7 +37,7 @@ public class Wxq2PlayTypeFacadeImplTest extends ServiceJunitBase{
 		//super.tearDown();
 	}
 	
-	public void testParseBetNumber(){
+	public void ItestParseBetNumber(){
 		String betNum = "12,23";
 		
 		List<Map<String, String>> ret = playTypeFacade.parseBetNumber(betNum);
@@ -66,7 +66,7 @@ public class Wxq2PlayTypeFacadeImplTest extends ServiceJunitBase{
 		
 	}
 	
-	public void testIsMatchWinningNum_winning(){
+	public void testIsMatchWinningNum_winning_4_0(){
 		Date startTime = new Date();
 		String betNum = "4,0";
 		Issue issue = new Issue();
@@ -83,6 +83,26 @@ public class Wxq2PlayTypeFacadeImplTest extends ServiceJunitBase{
 		
 		boolean ret = playTypeFacade.isMatchWinningNum(issue, order);
 		Assert.assertFalse(ret);
+		
+	}
+	
+	public void testIsMatchWinningNum_winning_0_0(){
+		Date startTime = new Date();
+		String betNum = "0,0";
+		Issue issue = new Issue();
+		issue.setIssueNum("");
+		issue.setLotteryType(Constants.LottoType.CQSSC.getCode());
+		issue.setRetNum("0,0,4,9,6");
+		issue.setStartTime(startTime);
+		issue.setState(Constants.IssueState.LOTTO_DARW.getCode());
+		issue.setEndTime(DateUtil.addMinutes(startTime, 10));
+		
+		OrderInfo order = new OrderInfo();
+		//order.setIssueId(issueId);
+		order.setBetNum(betNum);
+		
+		boolean ret = playTypeFacade.isMatchWinningNum(issue, order);
+		Assert.assertTrue(ret);
 		
 	}
 }

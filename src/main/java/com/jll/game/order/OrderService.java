@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.jll.dao.PageBean;
 import com.jll.entity.OrderInfo;
 
 public interface OrderService
@@ -26,5 +27,7 @@ public interface OrderService
 	double getUserBetTotalByDate(int walletId,int userId,Date start,Date end);
 
 	Map<String, Object> getOrderInfo(String orderNum);
+
+	PageBean<OrderInfo> queryOrdersByPage(PageBean<OrderInfo> page);
 	
 }

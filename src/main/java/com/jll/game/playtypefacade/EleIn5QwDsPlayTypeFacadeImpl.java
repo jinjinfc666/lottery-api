@@ -1,12 +1,16 @@
 package com.jll.game.playtypefacade;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.apache.log4j.Logger;
 
+import com.jll.common.constants.Constants;
 import com.jll.common.utils.MathUtil;
 import com.jll.common.utils.StringUtils;
 import com.jll.common.utils.Utils;
@@ -19,6 +23,12 @@ public class EleIn5QwDsPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 	private Logger logger = Logger.getLogger(QszxPlayTypeFacadeImpl.class);
 	
 	protected String playTypeDesc = "qwx|趣味型/qwdds|趣味定单双/fs-ds";
+	
+	private String[] oddsArray = {"01","03","05","07","09","11"};
+	
+	private String[] evenArray = {"02","04","06","08","10"};
+	
+	private String betNumOptions = "01,02,03,04,05,06";
 	
 	@Override
 	public boolean isMatchWinningNum(Issue issue, OrderInfo order) {
@@ -46,13 +56,13 @@ public class EleIn5QwDsPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 			}
 		}
 		
-		logger.debug("proced bet number is :: " + Arrays.asList(betNumSet));
+		//logger.debug("proced bet number is :: " + Arrays.asList(betNumSet));
 		for(String temp : betNumMul) {
 			if(StringUtils.isBlank(temp)) {
 				continue;
 			}
 			
-			if(temp.contains(String.valueOf(oddCounter))) {
+			if(temp.contains(String.valueOf("0" + (oddCounter + 1)))) {
 				return true;
 			}
 		}
@@ -119,9 +129,20 @@ public class EleIn5QwDsPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 				return false;
 			}
 			
-			if(betNumTemp.length() > 6
-					|| !Utils.validateNum(betNumTemp)) {
+			Map<String, String> tempBits = splitBetNum(betNumTemp);
+			if(tempBits.size() == 0
+					|| tempBits.size() > 6
+					|| !Utils.validateEleIn5Num(betNumTemp)
+					|| tempBits.size() != (betNumTemp.length() / 2)) {
 				return false;
+			}
+			
+			Iterator<String> ite = tempBits.keySet().iterator();
+			while(ite.hasNext()) {
+				String key = ite.next();
+				if(!betNumOptions.contains(key)) {
+					return false;
+				}
 			}
 		}
 				
@@ -166,7 +187,7 @@ public class EleIn5QwDsPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 		
 		
 		for(String singleSel : betNumMul) {
-			if(singleSel.contains(String.valueOf(oddCounter))) {
+			if(singleSel.contains(String.valueOf("0" + (oddCounter + 1)))) {
 				winningBetAmount++;
 			}
 		}
@@ -291,5 +312,146 @@ public class EleIn5QwDsPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 	@Override
 	public BigDecimal calWinningRate() {
 		return null;
+	}
+	
+	@Override
+	public List<Map<String, String>> parseBetNumber(String betNum){
+		List<Map<String, String>> betNumList = new ArrayList<>();
+		String[] betNumArray = betNum.split(";");
+		Map<String, String> bitBetNum = null;
+		Map<String, String> combineBitBetNum = new HashMap<String, String>();
+		List<String[]> oddsResults = null;
+		List<String[]> eventResults = null;
+		
+		for(String singleBetNumArray : betNumArray) {
+			bitBetNum = splitBetNum(singleBetNumArray);
+			Iterator<String> ite = bitBetNum.keySet().iterator();
+			while(ite.hasNext()) {
+				String key = ite.next();
+				try {
+					int oddsCounter = Integer.parseInt(key) - 1;
+					int eventCounter = 5 - oddsCounter;
+					oddsResults = new ArrayList<String[]>();
+					eventResults = new ArrayList<String[]>();
+					MathUtil.combinationSelect(oddsArray, oddsCounter, oddsResults);
+					MathUtil.combinationSelect(evenArray, eventCounter, eventResults);
+					
+					for(String[] oddsResult : oddsResults) {
+						StringBuffer buffer = new StringBuffer();
+						for(String temp : oddsResult) {
+							buffer.append(temp);
+						}
+						
+						for(String[] eventResult : eventResults) {
+							StringBuffer buffer2 = new StringBuffer();
+							buffer2.append(buffer.toString());
+							for(String temp : eventResult) {
+								buffer2.append(temp);
+							}
+							
+							List<String> arrangementSel = arrangementSelect(buffer2.toString());
+							for(String sel : arrangementSel) {
+								combineBitBetNum.put(sel, sel);
+							}
+						}
+						
+					}
+				}catch(Exception ex) {
+					return betNumList;
+				}
+			}
+			
+			ite = combineBitBetNum.keySet().iterator();
+			while(ite.hasNext()) {
+				String key = ite.next();
+				if(!isExisting(betNumList, key)) {
+					Map<String, String> row = new HashMap<String, String>();
+					row.put(Constants.KEY_FACADE_BET_NUM, key);
+					row.put(Constants.KEY_FACADE_PATTERN, key);
+					row.put(Constants.KEY_FACADE_BET_NUM_SAMPLE, key);
+					betNumList.add(row);
+				}
+			}
+		}
+		
+		return betNumList;
+	}
+	
+	private List<String> arrangementSelect(String betNum) {
+		List<String> ret = new ArrayList<>();
+		List<String[]> results = new ArrayList<>();
+		String[] selArray = new String[betNum.length() / 2];
+		for(int i = 0, j = 0; i< betNum.length();j++) {
+			String result = betNum.substring(i, i + 2);
+			selArray[j] = result;
+			
+			i += 2;
+		}
+		MathUtil.arrangementSelect(selArray, selArray.length, results);
+		
+		for(String[] result : results) {
+			StringBuffer buffer = new StringBuffer();
+			for(String bit : result) {
+				buffer.append(bit);
+			}
+			
+			ret.add(buffer.toString());
+		}
+		return ret;
+	}
+
+	@Override
+	public String obtainSampleBetNumber(){
+		Random random = new Random();
+		StringBuffer betNum = new StringBuffer();
+		String[] betNumOptions = {"06","05","04","03","02","01"};
+		int bitLen = random.nextInt(4) + 1;
+		
+		for(int i = 0 ; i < bitLen; i++) {
+			int bitIndx = random.nextInt(6);
+			
+			while(true) {
+				if(betNum.toString().contains(betNumOptions[bitIndx])) {
+					bitIndx = random.nextInt(6);
+					continue;
+				}
+				betNum.append(betNumOptions[bitIndx]);
+				break;
+			}
+		}
+		
+		return betNum.toString();
+	}
+	
+	private Map<String, String> splitBetNum(String temp) {
+		Map<String, String> bits = new HashMap<String, String>();
+		int len = temp.length();
+		
+		if(len % 2 != 0) {
+			return bits;
+		}
+		
+		for(int i = 0; i < temp.length();) {
+			String bit = temp.substring(i, i + 2);
+			bits.put(bit, bit);
+			i += 2;
+		}
+		
+		return bits;
+	}
+	
+	private static boolean isExisting(List<Map<String, String>> betNumList, String tempStr) {
+		for(Map<String, String> temp : betNumList) {
+			String betNum = temp.get(Constants.KEY_FACADE_BET_NUM);
+			if(StringUtils.isBlank(betNum)) {
+				return false;
+			}
+			
+			if(betNum.equals(tempStr)) {
+				return true;
+			}
+		}
+		
+		return false;
 	}
 }

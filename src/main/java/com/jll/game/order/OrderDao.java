@@ -3,6 +3,7 @@ package com.jll.game.order;
 import java.util.Date;
 import java.util.List;
 
+import com.jll.dao.PageBean;
 import com.jll.entity.OrderInfo;
 
 public interface OrderDao
@@ -19,4 +20,6 @@ public interface OrderDao
 	List<OrderInfo> getOrderInfoByPrams(Integer issueId, String userName, String orderNum,Integer delayPayoutFlag);
 	
 	List<OrderInfo> queryWinOrdersByIssue(Integer issueId);
+
+	PageBean<OrderInfo> queryOrdersByPage(PageBean<OrderInfo> page);
 }

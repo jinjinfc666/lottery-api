@@ -16,9 +16,9 @@ public class UserAccount implements java.io.Serializable {
 	private Integer id;
 	private Integer userId;
 	private String accName;
-	private BigDecimal balance;
-	private BigDecimal freeze;
-	private BigDecimal prize;
+	private Float balance;
+	private Float freeze;
+	private Float prize;
 	private Long rewardPoints;
 	private Integer accType;
 	private Integer state;
@@ -27,7 +27,7 @@ public class UserAccount implements java.io.Serializable {
 	public UserAccount() {
 	}
 
-	public UserAccount(Integer userId, String accName, BigDecimal balance, BigDecimal freeze, BigDecimal prize,
+	public UserAccount(Integer userId, String accName, Float balance, Float freeze, Float prize,
 			Long rewardPoints, Integer accType,Integer state, String remark) {
 		this.userId = userId;
 		this.accName = accName;
@@ -64,27 +64,27 @@ public class UserAccount implements java.io.Serializable {
 		this.accName = accName;
 	}
 
-	public BigDecimal getBalance() {
+	public Float getBalance() {
 		return this.balance;
 	}
 
-	public void setBalance(BigDecimal balance) {
+	public void setBalance(Float balance) {
 		this.balance = balance;
 	}
 
-	public BigDecimal getFreeze() {
+	public Float getFreeze() {
 		return this.freeze;
 	}
 
-	public void setFreeze(BigDecimal freeze) {
+	public void setFreeze(Float freeze) {
 		this.freeze = freeze;
 	}
 
-	public BigDecimal getPrize() {
+	public Float getPrize() {
 		return this.prize;
 	}
 
-	public void setPrize(BigDecimal prize) {
+	public void setPrize(Float prize) {
 		this.prize = prize;
 	}
 

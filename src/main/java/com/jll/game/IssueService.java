@@ -70,4 +70,8 @@ public interface IssueService
 	Map<String,Object> queryAllByIssue(String lotteryType, Integer state,String startTime, String endTime, Integer pageIndex,Integer pageSize, String issueNum);
 	//追号需要的期号信息
 	Map<String,Object> queryIsZhIssue(String lotteryType);
+	
+	void payOutIssue(Issue issue);
+	
+	void payoutOrder(OrderInfo order, Issue issue, boolean isAuto);
 }
