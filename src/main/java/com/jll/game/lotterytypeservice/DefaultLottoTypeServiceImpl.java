@@ -65,6 +65,7 @@ public abstract class DefaultLottoTypeServiceImpl implements LotteryTypeService
 		String[] lottoTypeAndIssueNum = null;
 		String lottoType = null;
 		String issueNum = null;
+		
 		//UserInfo user = null;
 		
 		lottoTypeAndIssueNum = ((String)message).split("\\|");
@@ -72,7 +73,6 @@ public abstract class DefaultLottoTypeServiceImpl implements LotteryTypeService
 		issueNum = lottoTypeAndIssueNum[1];
 		
 		Issue issue = issueServ.getIssueByIssueNum(lottoType, issueNum);
-		List<OrderInfo> orders = null;
 		//boolean isMatch = false;
 				
 		if(issue == null) {
@@ -87,25 +87,12 @@ public abstract class DefaultLottoTypeServiceImpl implements LotteryTypeService
 			return ;
 		}
 		
-		orders = orderInfoServ.queryOrdersByIssue(issue.getId());
-		
-		if(orders == null || orders.size() == 0) {
-			modifyIssueState(issue);
-			return ;
-		}
-		for(OrderInfo order : orders) {
-			payout(order, issue, true);
-		}
-		
-		modifyIssueState(issue);
+		issueServ.payOutIssue(issue);
 	}
 
-	private void modifyIssueState(Issue issue) {
-		issue.setState(Constants.IssueState.PAYOUT.getCode());
-		issueServ.saveIssue(issue);
-	}
+	
 
-	private void rebate(Issue issue, UserInfo user, OrderInfo order) {
+	/*private void rebate(Issue issue, UserInfo user, OrderInfo order) {
 		String superior = user.getSuperior();
 		BigDecimal prize = null;
 		
@@ -140,15 +127,15 @@ public abstract class DefaultLottoTypeServiceImpl implements LotteryTypeService
 		
 		rebate = betAmount.multiply(rebateRate);
 		return rebate;
-	}
+	}*/
 
-	private void modifyOrderState(OrderInfo order, OrderState orderState) {
+	/*private void modifyOrderState(OrderInfo order, OrderState orderState) {
 		order.setState(orderState.getCode());
 		
 		orderInfoServ.saveOrder(order);
-	}
+	}*/
 
-	private void modifyBal(OrderInfo order, UserInfo user, BigDecimal prize) {
+	/*private void modifyBal(OrderInfo order, UserInfo user, BigDecimal prize) {
 		BigDecimal bal = null;
 		Integer walletType = null;
 		UserAccount wallet = walletServ.queryById(order.getWalletId());
@@ -183,9 +170,9 @@ public abstract class DefaultLottoTypeServiceImpl implements LotteryTypeService
 		accDetails.setUserId(user.getId());
 		accDetails.setWalletId(wallet.getId());
 		accDetailsServ.saveAccDetails(accDetails);
-	}
+	}*/
 
-	private BigDecimal calPrize(Issue issue, OrderInfo order, UserInfo user) {
+	/*private BigDecimal calPrize(Issue issue, OrderInfo order, UserInfo user) {
 		String playTypeName = null;
 		PlayTypeFacade playTypeFacade = null;
 		PlayType playType = null;
@@ -207,9 +194,9 @@ public abstract class DefaultLottoTypeServiceImpl implements LotteryTypeService
 		}
 		
 		return playTypeFacade.calPrize(issue, order, user);
-	}
+	}*/
 
-	private boolean isMatchWinningNum(Issue issue, OrderInfo order) {
+	/*private boolean isMatchWinningNum(Issue issue, OrderInfo order) {
 		PlayType playType = null;
 		String playTypeName = null;
 		PlayTypeFacade playTypeFacade = null;
@@ -232,11 +219,13 @@ public abstract class DefaultLottoTypeServiceImpl implements LotteryTypeService
 		}
 		
 		return playTypeFacade.isMatchWinningNum(issue, order);
-	}
+	}*/
 	
 	@Override
 	public void payout(OrderInfo order, Issue issue, boolean isAuto) {
-		if(issue == null){
+		
+		issueServ.payoutOrder(order, issue, isAuto);
+		/*if(issue == null){
 			issue = issueServ.getIssueById(order.getIssueId());
 		}
 		 
@@ -278,7 +267,7 @@ public abstract class DefaultLottoTypeServiceImpl implements LotteryTypeService
 		if(UserType.DEMO_PLAYER.getCode() != user.getUserType().intValue()
 				&& order.getState().intValue() != Constants.OrderState.RE_PAYOUT.getCode()){
 			rebate(issue, user, order);
-		}
+		}*/
 		
 	}
 	

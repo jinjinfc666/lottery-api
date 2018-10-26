@@ -18,10 +18,12 @@ import org.springframework.transaction.annotation.Transactional;
 import com.jll.common.cache.CacheRedisService;
 import com.jll.common.constants.Constants;
 import com.jll.common.constants.Message;
+import com.jll.common.constants.Constants.OrderDelayState;
 import com.jll.common.threadpool.ThreadPoolManager;
 import com.jll.common.utils.MathUtil;
 import com.jll.common.utils.Utils;
 import com.jll.common.utils.sequence.GenSequenceService;
+import com.jll.dao.PageBean;
 import com.jll.entity.GenSequence;
 import com.jll.entity.Issue;
 import com.jll.entity.OrderInfo;
@@ -142,7 +144,7 @@ public class OrderServiceImpl implements OrderService
 			order.setUserId(user.getId());
 			order.setCreateTime(currTime);
 			order.setState(Constants.OrderState.WAITTING_PAYOUT.getCode());
-			order.setDelayPayoutFlag(0);
+			order.setDelayPayoutFlag(OrderDelayState.NON_DEPLAY.getCode());
 			orderDao.saveOrders(order);
 			
 			UserAccountDetails userDetails = new UserAccountDetails();
@@ -365,5 +367,10 @@ public class OrderServiceImpl implements OrderService
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		ret.put("data",orderDao.getOrderInfo(orderNum));
 		return ret;
+	}
+
+	@Override
+	public PageBean<OrderInfo> queryOrdersByPage(PageBean<OrderInfo> page) {
+		return orderDao.queryOrdersByPage(page);
 	}
 }

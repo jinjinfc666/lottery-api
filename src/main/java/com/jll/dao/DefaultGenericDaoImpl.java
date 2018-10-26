@@ -94,7 +94,7 @@ public class DefaultGenericDaoImpl<T> extends HibernateDaoSupport implements Gen
 
 	@Override
 	public PageBean<T> queryByPagination(PageBean<T> page, String HQL, List<Object> params, Class<T> clazz) {
-		PageBean<T> ret = new PageBean<>();
+		//PageBean<T> ret = new PageBean<>();
 		List<T> content = null;
 		int entityNameStartInd = 0;
 		String sql = HQL;
@@ -119,7 +119,7 @@ public class DefaultGenericDaoImpl<T> extends HibernateDaoSupport implements Gen
 	    	totalPages = totalPages / pageSize + 1; 
 	    }
 	    if(pageIndex.intValue() > (totalPages.intValue() - 1)) {
-			return null;
+			return page;
 		}
 	    
 	    if(params != null) {
@@ -135,12 +135,12 @@ public class DefaultGenericDaoImpl<T> extends HibernateDaoSupport implements Gen
 	    query.setMaxResults(pageSize);
 	    content = query.list();
 	    
-	    ret.setContent(content);
-	    ret.setPageIndex(pageIndex);
-	    ret.setPageSize(pageSize);
-	    ret.setTotalPages(totalPages);
+	    page.setContent(content);
+	    //ret.setPageIndex(pageIndex);
+	    page.setPageSize(pageSize);
+	    page.setTotalPages(totalPages);
 	    
-		return ret;
+		return page;
 	}
 
 	@Override

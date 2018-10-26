@@ -13,6 +13,7 @@ import com.alibaba.druid.util.StringUtils;
 import com.jll.common.constants.Constants.OrderState;
 import com.jll.common.utils.Utils;
 import com.jll.dao.DefaultGenericDaoImpl;
+import com.jll.dao.PageBean;
 import com.jll.entity.OrderInfo;
 
 @Repository
@@ -105,6 +106,14 @@ public class OrderDaoImpl extends DefaultGenericDaoImpl<OrderInfo> implements Or
 			params.add(userName);
 		}
 		return this.query(sql, params, OrderInfo.class);
+	}
+
+	@Override
+	public PageBean<OrderInfo> queryOrdersByPage(PageBean<OrderInfo> page) {
+		String sql = "from OrderInfo where issueId=?";
+		List<Object> params = page.getParams();
+		
+		return this.queryByPagination(page, sql, params, OrderInfo.class);
 	}
 	
 }
