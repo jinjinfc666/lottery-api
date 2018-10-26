@@ -146,7 +146,7 @@ public class IssueDaoImpl extends DefaultGenericDaoImpl<Issue> implements IssueD
 		}
 		
 		if(state!=null) {
-			stateSql=" and state>=:state ";
+			stateSql=" and state=:state ";
 			map.put("state", state);
 		}
 		String sql="From Issue "+timeSql+lotteryTypeSql+issueNumSql+stateSql+"ORDER BY id DESC";
