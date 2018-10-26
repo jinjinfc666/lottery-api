@@ -141,8 +141,8 @@ public abstract class DefaultLottoTypeServiceImpl implements LotteryTypeService
 		UserAccount wallet = walletServ.queryById(order.getWalletId());
 		walletType = wallet.getAccType();
 		wallet = walletServ.queryUserAccount(user.getId(), walletType);
-		bal = wallet.getBalance().add(prize);
-		wallet.setBalance(bal);
+		bal = new BigDecimal(wallet.getBalance()).add(prize);
+		wallet.setBalance(bal.floatValue());
 		
 		walletServ.updateWallet(wallet);
 	}
@@ -155,7 +155,7 @@ public abstract class DefaultLottoTypeServiceImpl implements LotteryTypeService
 		UserAccountDetails accDetails = new UserAccountDetails();
 		BigDecimal preAmount = null;
 		BigDecimal postAmount = null;
-		preAmount = wallet.getBalance();
+		preAmount = new BigDecimal(wallet.getBalance());
 		logger.debug(String.format("prize %s,  preAmount   %s", 
 				(prize == null?"":prize.floatValue()), 
 				(preAmount == null?"":preAmount.floatValue())));

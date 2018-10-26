@@ -208,7 +208,7 @@ public class IssueServiceImpl implements IssueService
 						//收回返点
 						UserAccountDetails addDtail = userAccountDetailsService.initCreidrRecord(qAcc.getUserId(),qAcc, qAcc.getBalance().doubleValue(), -qDtl.getAmount().doubleValue(), AccOperationType.CANCEL_REBATE.getCode(),order.getId());
 						dtlLists.add(addDtail);
-						qAcc.setBalance(new BigDecimal(addDtail.getPostAmount()));
+						qAcc.setBalance(new BigDecimal(addDtail.getPostAmount()).floatValue());
 					}
 				}
 				
@@ -224,7 +224,7 @@ public class IssueServiceImpl implements IssueService
 					double prize = Utils.toDouble(ret.get(0).getAmount());
 					UserAccountDetails addDtail = userAccountDetailsService.initCreidrRecord(curAcc.getUserId(),curAcc, curAcc.getBalance().doubleValue(), prize, AccOperationType.REFUND.getCode(),order.getId());
 					dtlLists.add(addDtail);
-					curAcc.setBalance(new BigDecimal(addDtail.getPostAmount()));
+					curAcc.setBalance(new BigDecimal(addDtail.getPostAmount()).floatValue());
 				}
 				
 				//回收盈利金额
@@ -239,7 +239,7 @@ public class IssueServiceImpl implements IssueService
 					double prize = Utils.toDouble(ret.get(0).getAmount());
 					UserAccountDetails addDtail = userAccountDetailsService.initCreidrRecord(curAcc.getUserId(),curAcc, curAcc.getBalance().doubleValue(), -prize, AccOperationType.REFUND.getCode(),order.getId());
 					dtlLists.add(addDtail);
-					curAcc.setBalance(new BigDecimal(addDtail.getPostAmount()));
+					curAcc.setBalance(new BigDecimal(addDtail.getPostAmount()).floatValue());
 				}
 				order.setState(state.getCode());
 			}

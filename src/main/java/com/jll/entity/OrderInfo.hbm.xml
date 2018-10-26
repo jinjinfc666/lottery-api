@@ -27,7 +27,7 @@
             </column>
         </property>
         <property generated="never" lazy="false" name="betNum" optimistic-lock="true" type="string" unique="false">
-            <column length="30" name="bet_num">
+            <column length="100" name="bet_num">
                 <comment>Ͷע����</comment>
             </column>
         </property>
