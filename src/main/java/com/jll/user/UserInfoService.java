@@ -27,6 +27,8 @@ public interface UserInfoService
 	Map<String, Object> getUserInfo();
 	Map<String, Object> updateUserInfo(UserInfo userInfo);
 	
+	Map<String, Object> processCancelBetOrder(String orderNum);
+	
 	void updateUser(UserInfo userInfo);
 	 
 	/**

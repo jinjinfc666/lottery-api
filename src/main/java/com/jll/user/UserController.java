@@ -1278,4 +1278,16 @@ public class UserController {
 		}
 		return ret;
 	}
+	
+	
+	/**
+	 * orderNum 订单号
+	 * @param params
+	 * @return
+	 */
+	//用户撤单  
+	@RequestMapping(value={"/cancel/bet-order"}, method={RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> cancelBetOrder(@RequestBody Map<String, String> params) {
+		return userInfoService.processCancelBetOrder(Utils.toString(params.get("orderNum")));
+	}
 }

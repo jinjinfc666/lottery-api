@@ -150,8 +150,9 @@ public class IssueServiceImpl implements IssueService
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		return ret;
 	}
-
-	private void processCalcelOrderWinAmtAndAccRecord(List<OrderInfo> winLists,boolean backBetAmt,boolean backWinAmt,boolean backPoint,OrderState state){
+	
+	@Override
+	public void processCalcelOrderWinAmtAndAccRecord(List<OrderInfo> winLists,boolean backBetAmt,boolean backWinAmt,boolean backPoint,OrderState state){
 		if(!winLists.isEmpty()){
 			
 			Map<Integer,UserAccount> accMaps = new HashMap<>();

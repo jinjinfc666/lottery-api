@@ -36,6 +36,7 @@ import com.jll.common.constants.Constants.AccOperationType;
 import com.jll.common.constants.Constants.DepositOrderState;
 import com.jll.common.constants.Constants.EmailValidState;
 import com.jll.common.constants.Constants.MainWallet;
+import com.jll.common.constants.Constants.OrderState;
 import com.jll.common.constants.Constants.PhoneValidState;
 import com.jll.common.constants.Constants.RedWallet;
 import com.jll.common.constants.Constants.SiteMessageReadType;
@@ -74,6 +75,8 @@ import com.jll.entity.UserAccountDetails;
 import com.jll.entity.UserBankCard;
 import com.jll.entity.UserInfo;
 import com.jll.entity.WithdrawApplication;
+import com.jll.game.IssueService;
+import com.jll.game.order.OrderDao;
 import com.jll.game.order.OrderService;
 import com.jll.report.WithdrawApplicationService;
 import com.jll.sysSettings.syscode.SysCodeService;
@@ -99,7 +102,13 @@ public class UserInfoServiceImpl implements UserInfoService
 	WalletService walletServ;
 	
 	@Resource
+	IssueService issueService;
+	
+	@Resource
 	OrderService orderService;
+	
+	@Resource
+	OrderDao orderDao;
 	
 	@Resource
 	UserAccountDetailsService userAccountDetailsService;
@@ -905,8 +914,8 @@ public class UserInfoServiceImpl implements UserInfoService
 		if(auth == null) {
 			return null;
 		}
-		//return getUserByUserName("kongwei");
-		return getUserByUserName(auth.getName());
+		return getUserByUserName("zhaowei");
+//		return getUserByUserName(auth.getName());
 	}
 
 	@Override
@@ -1598,6 +1607,28 @@ public class UserInfoServiceImpl implements UserInfoService
 			dbInfo.setState(UserState.REVOKED.getCode());
 			supserDao.update(dbInfo);
 		}
+		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		return ret;
+	}
+
+	@Override
+	public Map<String, Object> processCancelBetOrder(String orderNum) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+		OrderInfo queryOder = orderDao.getOrderInfo(orderNum);
+		if(null == queryOder
+				|| null == getCurLoginInfo()
+				|| !getCurLoginInfo().getId().equals(queryOder.getUserId())
+				|| OrderState.WAITTING_PAYOUT.getCode() != queryOder.getState().intValue()){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_PAYMENT_TLCLOUD_FAILED_CANCEL_ORDER.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_PAYMENT_TLCLOUD_FAILED_CANCEL_ORDER.getErrorMes());
+			return ret;
+		}
+		List<OrderInfo> winLists = new ArrayList<>();
+		winLists.add(queryOder);
+		issueService.processCalcelOrderWinAmtAndAccRecord(winLists,true,false,false,OrderState.USER_CANCEL);
+		supserDao.updateList(winLists);
+		
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		return ret;
 	}

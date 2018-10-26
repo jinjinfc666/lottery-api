@@ -3,7 +3,9 @@ package com.jll.game;
 import java.util.List;
 import java.util.Map;
 
+import com.jll.common.constants.Constants.OrderState;
 import com.jll.entity.Issue;
+import com.jll.entity.OrderInfo;
 
 public interface IssueService
 {
@@ -41,6 +43,8 @@ public interface IssueService
 	Map<String, Object> processOrderCancel(String orderNum);
 
 	Map<String, Object> manualPayoutOrder(String orderNum);
+	
+	void processCalcelOrderWinAmtAndAccRecord(List<OrderInfo> winLists,boolean backBetAmt,boolean backWinAmt,boolean backPoint,OrderState state);
 
 	/**
 	 * 手动开奖
