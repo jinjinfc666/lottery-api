@@ -157,7 +157,7 @@ public class IssueServiceImpl implements IssueService
 			Map<Integer,UserAccount> accMaps = new HashMap<>();
 			List<UserAccountDetails> dtlLists = new ArrayList<>();
 			for (OrderInfo order : winLists) {
-				order.setState(state.getCode());
+				
 				UserAccount curAcc = accMaps.get(order.getWalletId());
 				if(null == curAcc){
 					UserAccount acc = (UserAccount) supserDao.get(UserAccount.class, order.getWalletId());
@@ -202,7 +202,7 @@ public class IssueServiceImpl implements IssueService
 				}
 				
 				//回收盈利金额
-				if(backWinAmt && order.getState() ==  OrderState.WINNING.getCode()){
+				if(backWinAmt && order.getState().intValue() ==  OrderState.WINNING.getCode()){
 					DetachedCriteria criteria = DetachedCriteria.forClass(UserAccountDetails.class);
 					criteria.add(Restrictions.eq("userId",order.getUserId()));
 					criteria.add(Restrictions.eq("orderId",order.getId()));
@@ -215,6 +215,7 @@ public class IssueServiceImpl implements IssueService
 					dtlLists.add(addDtail);
 					curAcc.setBalance(new BigDecimal(addDtail.getPostAmount()));
 				}
+				order.setState(state.getCode());
 			}
 			supserDao.saveList(dtlLists);
 			List<UserAccount> accList =  new ArrayList<>(accMaps.values());
