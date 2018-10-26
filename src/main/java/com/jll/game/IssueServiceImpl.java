@@ -640,8 +640,8 @@ public class IssueServiceImpl implements IssueService
 		UserAccount wallet = walletServ.queryById(order.getWalletId());
 		walletType = wallet.getAccType();
 		wallet = walletServ.queryUserAccount(user.getId(), walletType);
-		bal = wallet.getBalance().add(prize);
-		wallet.setBalance(bal);
+		bal = new BigDecimal(wallet.getBalance()).add(prize);
+		wallet.setBalance(bal.floatValue());
 		
 		walletServ.updateWallet(wallet);
 	}
@@ -654,7 +654,7 @@ public class IssueServiceImpl implements IssueService
 		UserAccountDetails accDetails = new UserAccountDetails();
 		BigDecimal preAmount = null;
 		BigDecimal postAmount = null;
-		preAmount = wallet.getBalance();
+		preAmount = new BigDecimal(wallet.getBalance());
 		logger.debug(String.format("prize %s,  preAmount   %s", 
 				(prize == null?"":prize.floatValue()), 
 				(preAmount == null?"":preAmount.floatValue())));
