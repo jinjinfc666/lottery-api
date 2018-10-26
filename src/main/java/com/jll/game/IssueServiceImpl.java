@@ -251,7 +251,7 @@ public class IssueServiceImpl implements IssueService
 			return ret;
 		}
 		List<OrderInfo> winLists = orderDao.queryOrdersByIssue(curIssue.getId());
-		processCalcelOrderWinAmtAndAccRecord(winLists,false,true,false,OrderState.WAITTING_PAYOUT);
+		processCalcelOrderWinAmtAndAccRecord(winLists,false,true,false,OrderState.RE_PAYOUT);
 		supserDao.updateList(winLists);
 		curIssue.setState(IssueState.LOTTO_DARW.getCode());
 		
