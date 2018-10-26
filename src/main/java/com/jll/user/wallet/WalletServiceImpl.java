@@ -79,12 +79,13 @@ public class WalletServiceImpl implements WalletService
 			if(!isNull) {
 				map.clear();
 				map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-				map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
-				map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+				map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_NO_VALID_USER.getCode());
+				map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_NO_VALID_USER.getErrorMes());
 				return map;
 			}
 		}
 		Map<String,Object> userAccountLists=walletDao.queryUserAccount(userName, startTime, endTime,pageIndex,pageSize);
+		userAccountLists.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		return userAccountLists;
 	}
 	//修改用户的状态
@@ -95,8 +96,8 @@ public class WalletServiceImpl implements WalletService
 		if(!isNo) {
 			map.clear();
 			map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
-			map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_NO_VALID_USER.getCode());
+			map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_NO_VALID_USER.getErrorMes());
 			return map;
 		}
 		walletDao.updateState(userId, state);
@@ -122,11 +123,12 @@ public class WalletServiceImpl implements WalletService
 		if(!isNull) {
 			map.clear();
 			map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
-			map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
 			return map;
 		}
 		Map<String,Object> userAccountLists=walletDao.queryByIdUserAccount(id);
+		userAccountLists.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		return userAccountLists;
 	}
 

@@ -12,7 +12,6 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
-import org.apache.commons.lang3.time.DateUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
@@ -129,8 +128,8 @@ public class IssueServiceImpl implements IssueService
 		Issue curIssue = issueService.getIssueByIssueNum(Utils.toString(params.get("lottoType")),issueNum);
 		if(null == curIssue){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_GAME_EXPIRED_ISSUE.getCode());
-			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_GAME_EXPIRED_ISSUE.getErrorMes());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_ISSUE_INVALID_STATUS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_ISSUE_INVALID_STATUS.getErrorMes());
 			return ret;
 		}
 		if(openNum.equals(curIssue.getRetNum())){
@@ -143,7 +142,7 @@ public class IssueServiceImpl implements IssueService
 		supserDao.update(curIssue);
 		
 		List<OrderInfo> winLists = orderDao.queryWinOrdersByIssue(curIssue.getId());
-		calcelOrderWinAmtAndAccRecord(winLists,false);
+		//processCalcelOrderWinAmtAndAccRecord(winLists,false,true,false);
 		supserDao.updateList(winLists);
 		
 		cacheServ.publishMessage(Constants.TOPIC_PAY_OUT, issueNum);
@@ -151,55 +150,27 @@ public class IssueServiceImpl implements IssueService
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		return ret;
 	}
-
-	private void calcelOrderWinAmtAndAccRecord(List<OrderInfo> winLists,boolean backPoint){
+	
+	@Override
+	public void processCalcelOrderWinAmtAndAccRecord(List<OrderInfo> winLists,boolean backBetAmt,boolean backWinAmt,boolean backPoint,OrderState state){
 		if(!winLists.isEmpty()){
 			
 			Map<Integer,UserAccount> accMaps = new HashMap<>();
 			List<UserAccountDetails> dtlLists = new ArrayList<>();
 			for (OrderInfo order : winLists) {
+				
 				UserAccount curAcc = accMaps.get(order.getWalletId());
 				if(null == curAcc){
 					UserAccount acc = (UserAccount) supserDao.get(UserAccount.class, order.getWalletId());
 					accMaps.put(order.getWalletId(), acc);
 					curAcc = accMaps.get(order.getWalletId());
 				}
-		
-				DetachedCriteria criteria = DetachedCriteria.forClass(UserAccountDetails.class);
-				criteria.add(Restrictions.eq("userId",order.getUserId()));
-				criteria.add(Restrictions.eq("orderId",order.getId()));
-				criteria.add(Restrictions.eq("walletId",order.getWalletId()));
-				boolean isOk = true;
-				if(!backPoint){
-					if(order.getState() != OrderState.WINNING.getCode()){
-						isOk = false;
-					}
-//					criteria.add(Restrictions.eq("dataItemType",Constants.DataItemType.BALANCE.getCode()));
-					criteria.add(Restrictions.eq("operationType",Constants.AccOperationType.PAYOUT.getCode()));
-				}else{
-					criteria.add(Restrictions.eq("operationType",Constants.AccOperationType.BETTING.getCode()));
-				}
-				//收回盈利金额 或本金
-				if(isOk){
-					List<UserAccountDetails> ret = supserDao.findByCriteria(criteria);
-					double prize = Utils.toDouble(ret.get(0).getAmount());
-					UserAccountDetails addDtail1 = userAccountDetailsService.initCreidrRecord(curAcc.getUserId(),curAcc, curAcc.getBalance().doubleValue(), -prize, AccOperationType.RECOVERY_PAYOUT.getCode());
-					if(addDtail1.getPostAmount() < 0){
-						break;
-					}else{
-						order.setState(backPoint?OrderState.SYS_CANCEL.getCode():OrderState.RE_PAYOUT.getCode());
-						dtlLists.add(addDtail1);
-						curAcc.setBalance(new BigDecimal(addDtail1.getPostAmount()));
-					}
-				}
 				
 				//查找出返点
-				if(backPoint){
+				if(backPoint && OrderState.SYS_CANCEL.getCode() != order.getState().intValue()){
 					DetachedCriteria criteria2 = DetachedCriteria.forClass(UserAccountDetails.class);
 					criteria2.add(Restrictions.eq("orderId",order.getId()));
-//					criteria2.add(Restrictions.eq("dataItemType",Constants.DataItemType.BALANCE.getCode()));
-					criteria2.add(Restrictions.eq("operationType",Constants.AccOperationType.REBATE.getDesc()));
-					criteria2.add(Restrictions.eq("walletId",order.getWalletId()));
+					criteria2.add(Restrictions.eq("operationType",Constants.AccOperationType.REBATE.getCode()));
 					
 					List<UserAccountDetails> qryAccDtl = supserDao.findByCriteria(criteria2);
 					for (UserAccountDetails qDtl : qryAccDtl) {
@@ -210,15 +181,42 @@ public class IssueServiceImpl implements IssueService
 							qAcc = accMaps.get(qDtl.getWalletId());
 						}
 						//收回返点
-						UserAccountDetails addDtail2 = userAccountDetailsService.initCreidrRecord(qAcc.getUserId(),qAcc, qAcc.getBalance().doubleValue(), -qDtl.getAmount().doubleValue(), AccOperationType.CANCEL_REBATE.getCode());
-						if(addDtail2.getPostAmount() < 0){
-							break;
-						}else{
-							dtlLists.add(addDtail2);
-							qAcc.setBalance(new BigDecimal(addDtail2.getPostAmount()));
-						}
+						UserAccountDetails addDtail = userAccountDetailsService.initCreidrRecord(qAcc.getUserId(),qAcc, qAcc.getBalance().doubleValue(), -qDtl.getAmount().doubleValue(), AccOperationType.CANCEL_REBATE.getCode(),order.getId());
+						dtlLists.add(addDtail);
+						qAcc.setBalance(new BigDecimal(addDtail.getPostAmount()));
 					}
 				}
+				
+				//回收本金
+				if(backBetAmt){
+					DetachedCriteria criteria = DetachedCriteria.forClass(UserAccountDetails.class);
+					criteria.add(Restrictions.eq("userId",order.getUserId()));
+					criteria.add(Restrictions.eq("orderId",order.getId()));
+					criteria.add(Restrictions.eq("walletId",order.getWalletId()));
+					criteria.add(Restrictions.eq("operationType",Constants.AccOperationType.BETTING.getCode()));
+					
+					List<UserAccountDetails> ret = supserDao.findByCriteria(criteria);
+					double prize = Utils.toDouble(ret.get(0).getAmount());
+					UserAccountDetails addDtail = userAccountDetailsService.initCreidrRecord(curAcc.getUserId(),curAcc, curAcc.getBalance().doubleValue(), prize, AccOperationType.REFUND.getCode(),order.getId());
+					dtlLists.add(addDtail);
+					curAcc.setBalance(new BigDecimal(addDtail.getPostAmount()));
+				}
+				
+				//回收盈利金额
+				if(backWinAmt && order.getState().intValue() ==  OrderState.WINNING.getCode()){
+					DetachedCriteria criteria = DetachedCriteria.forClass(UserAccountDetails.class);
+					criteria.add(Restrictions.eq("userId",order.getUserId()));
+					criteria.add(Restrictions.eq("orderId",order.getId()));
+					criteria.add(Restrictions.eq("walletId",order.getWalletId()));
+					criteria.add(Restrictions.eq("operationType",Constants.AccOperationType.PAYOUT.getCode()));
+					
+					List<UserAccountDetails> ret = supserDao.findByCriteria(criteria);
+					double prize = Utils.toDouble(ret.get(0).getAmount());
+					UserAccountDetails addDtail = userAccountDetailsService.initCreidrRecord(curAcc.getUserId(),curAcc, curAcc.getBalance().doubleValue(), -prize, AccOperationType.REFUND.getCode(),order.getId());
+					dtlLists.add(addDtail);
+					curAcc.setBalance(new BigDecimal(addDtail.getPostAmount()));
+				}
+				order.setState(state.getCode());
 			}
 			supserDao.saveList(dtlLists);
 			List<UserAccount> accList =  new ArrayList<>(accMaps.values());
@@ -226,53 +224,55 @@ public class IssueServiceImpl implements IssueService
 		}
 	}
 	@Override
-	public Map<String, Object> betOrderPayout(String lottoType, String issueNum, Map<String, String> params) {
+	public Map<String, Object> processBetOrderPayout(String lottoType, String issueNum, Map<String, String> params) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		Issue curIssue = issueService.getIssueByIssueNum(Utils.toString(params.get("lottoType")),issueNum);
 		if(null == curIssue){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_GAME_EXPIRED_ISSUE.getCode());
-			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_GAME_EXPIRED_ISSUE.getErrorMes());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_ISSUE_INVALID_STATUS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_ISSUE_INVALID_STATUS.getErrorMes());
 			return ret;
 		}
-		cacheServ.publishMessage(Constants.TOPIC_PAY_OUT, issueNum);
+		final String message = Utils.toString(params.get("lottoType")) + "|" + issueNum + "|" + curIssue.getRetNum();
+		cacheServ.publishMessage(Constants.TOPIC_PAY_OUT, message);
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		return ret;
 	}
 
 	@Override
-	public Map<String, Object> calcelIssuePayout(String lottoType, String issueNum, Map<String, String> params) {
+	public Map<String, Object> processCalcelIssuePayout(String lottoType, String issueNum, Map<String, String> params) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		Issue curIssue = issueService.getIssueByIssueNum(Utils.toString(params.get("lottoType")),issueNum);
-		if(null == curIssue){
+		if(null == curIssue
+				|| (IssueState.PAYOUT.getCode() != curIssue.getState() 
+				&& IssueState.RE_PAYOUT.getCode() != curIssue.getState())){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_GAME_EXPIRED_ISSUE.getCode());
-			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_GAME_EXPIRED_ISSUE.getErrorMes());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_ISSUE_INVALID_STATUS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_ISSUE_INVALID_STATUS.getErrorMes());
 			return ret;
 		}
-		List<OrderInfo> winLists = orderDao.queryWinOrdersByIssue(curIssue.getId());
-		calcelOrderWinAmtAndAccRecord(winLists,false);
+		List<OrderInfo> winLists = orderDao.queryOrdersByIssue(curIssue.getId());
+		processCalcelOrderWinAmtAndAccRecord(winLists,false,true,false,OrderState.RE_PAYOUT);
 		supserDao.updateList(winLists);
+		curIssue.setState(IssueState.LOTTO_DARW.getCode());
 		
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		return ret;
 	}
 
 	@Override
-	public Map<String, Object> betOrderRePayout(String lottoType, String issueNum, Map<String, String> params) {
+	public Map<String, Object> processBetOrderRePayout(String lottoType, String issueNum, Map<String, String> params) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		Issue curIssue = issueService.getIssueByIssueNum(Utils.toString(params.get("lottoType")),issueNum);
-		if(null == curIssue){
-			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_GAME_EXPIRED_ISSUE.getCode());
-			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_GAME_EXPIRED_ISSUE.getErrorMes());
-			return ret;
+		Map<String, Object> retCancel = processCalcelIssuePayout(lottoType, issueNum, params);
+		if(!retCancel.get(Message.KEY_STATUS).equals( Message.status.SUCCESS.getCode())){
+			return retCancel;
 		}
-		
+		Issue curIssue = issueService.getIssueByIssueNum(Utils.toString(params.get("lottoType")),issueNum);
 		curIssue.setState(IssueState.RE_PAYOUT.getCode());
 		supserDao.update(curIssue);
 		
-		cacheServ.publishMessage(Constants.TOPIC_PAY_OUT, issueNum);
+		final String message = Utils.toString(params.get("lottoType")) + "|" + issueNum + "|" + curIssue.getRetNum();
+		cacheServ.publishMessage(Constants.TOPIC_PAY_OUT, message);
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		return ret;
 	}
@@ -281,10 +281,11 @@ public class IssueServiceImpl implements IssueService
 	public Map<String, Object> updateIssueDisbale(String lottoType, String issueNum, Map<String, String> params) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		Issue curIssue = issueService.getIssueByIssueNum(Utils.toString(params.get("lottoType")),issueNum);
-		if(null == curIssue){
+		if(null == curIssue
+				|| IssueState.DISABLE.getCode() == curIssue.getState()){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_GAME_EXPIRED_ISSUE.getCode());
-			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_GAME_EXPIRED_ISSUE.getErrorMes());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_ISSUE_INVALID_STATUS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_ISSUE_INVALID_STATUS.getErrorMes());
 			return ret;
 		}
 		
@@ -292,7 +293,7 @@ public class IssueServiceImpl implements IssueService
 		supserDao.update(curIssue);
 		
 		List<OrderInfo> winLists = orderDao.queryOrdersByIssue(curIssue.getId());
-		calcelOrderWinAmtAndAccRecord(winLists,true);
+		processCalcelOrderWinAmtAndAccRecord(winLists,true,true,true,OrderState.SYS_CANCEL);
 		supserDao.updateList(winLists);
 		
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
@@ -300,58 +301,53 @@ public class IssueServiceImpl implements IssueService
 	}
 
 	@Override
-	public Map<String, Object> issueDelayePayout(String issueNum, Map<String, String> params) {
+	public Map<String, Object> processIssueDelayePayout(String issueNum, Map<String, String> params) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 
 		Issue curIssue = issueService.getIssueByIssueNum(Utils.toString(params.get("lottoType")),issueNum);
 		if(null == curIssue){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_GAME_EXPIRED_ISSUE.getCode());
-			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_GAME_EXPIRED_ISSUE.getErrorMes());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_ISSUE_INVALID_STATUS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_ISSUE_INVALID_STATUS.getErrorMes());
 			return ret;
 		}
 		String userName = Utils.toString(params.get("userName"));
 		String orderNum = Utils.toString(params.get("orderNum"));
 		
-		List<OrderInfo> orders = orderDao.getOrderInfoByPrams(curIssue.getId(), userName, orderNum,OrderDelayState.DEPLAY.getCode());
-		
-		Map<String,LotteryTypeService> curSer = new HashMap<>();
-		String[] impls = lotteryTypeImpl.split(",");
-		for(String impl : impls) {
-			LotteryTypeService lotteryTypeServ = LotteryTypeFactory
-					.getInstance().createLotteryType(impl);
-			if(lotteryTypeServ != null){
-				curSer.put(lotteryTypeServ.getLotteryType(), lotteryTypeServ);
-			}
+		List<OrderInfo> orders = orderDao.getOrderInfoByPrams(curIssue.getId(), userName, orderNum,0);
+		for (OrderInfo orderInfo : orders) {
+			orderInfo.setDelayPayoutFlag(OrderDelayState.DEPLAY.getCode());
 		}
 		
-		for (OrderInfo order : orders) {
-			PlayType play = playTypeDao.queryById(order.getPlayType());
-			LotteryTypeService runSer = curSer.get(play.getLotteryType());
-			if(runSer != null){
-				runSer.payout(order, null, false);
-			}
-		}
+		supserDao.updateList(orders);
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		return ret;
 	}
+	
+	private boolean isOKAdminCancelOrder(OrderInfo order){
+		if(OrderState.WINNING.getCode() == order.getState().intValue()
+				|| OrderState.LOSTING.getCode() == order.getState().intValue()
+				|| OrderState.WAITTING_PAYOUT.getCode() == order.getState().intValue()){
+			return true;
+		}
+		return false;
+	}
 
 	@Override
-	public Map<String, Object> orderCancel(String orderNum) {
+	public Map<String, Object> processOrderCancel(String orderNum) {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		OrderInfo order = orderDao.getOrderInfo(orderNum);
-		if(null == order){
+		if(null == order
+				|| !isOKAdminCancelOrder(order)){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_GAME_EXPIRED_ISSUE.getCode());
-			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_GAME_EXPIRED_ISSUE.getErrorMes());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_PAYMENT_TLCLOUD_FAILED_CANCEL_ORDER.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_PAYMENT_TLCLOUD_FAILED_CANCEL_ORDER.getErrorMes());
 			return ret;
 		}
 		
 		List<OrderInfo> winLists = new ArrayList<>();
 		winLists.add(order);
-		calcelOrderWinAmtAndAccRecord(winLists,false);
-		calcelOrderWinAmtAndAccRecord(winLists,true);
-		
+		processCalcelOrderWinAmtAndAccRecord(winLists,true,true,true,OrderState.SYS_CANCEL);
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		return ret;
 	}

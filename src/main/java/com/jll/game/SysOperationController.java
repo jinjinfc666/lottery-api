@@ -51,7 +51,7 @@ public class SysOperationController{
 	  public Map<String, Object> betOrderPayout(@PathVariable("issueNum") String issueNum,
 			 // @PathVariable("lottoType") String lottoType,
 			  @RequestBody Map<String, String> params){
-		  return issueService.betOrderPayout("", issueNum,params);
+		  return issueService.processBetOrderPayout("", issueNum,params);
 	  }
 	  
 	  /**
@@ -65,7 +65,7 @@ public class SysOperationController{
 	  public Map<String, Object> calcelIssuePayout(@PathVariable("issueNum") String issueNum,
 			  //@PathVariable("lottoType") String lottoType,
 			  @RequestBody Map<String, String> params){
-		  return issueService.calcelIssuePayout("",issueNum,params);
+		  return issueService.processCalcelIssuePayout("",issueNum,params);
 	  }
 	  
 	  /**
@@ -78,7 +78,7 @@ public class SysOperationController{
 	  @RequestMapping(value={"/issue/{issueNum}/re-payout"}, method={org.springframework.web.bind.annotation.RequestMethod.POST}, produces={"application/json"})
 	  public Map<String, Object> betOrderRePayout(@PathVariable("issueNum") String issueNum,
 			  @RequestBody Map<String, String> params){
-		  return issueService.betOrderRePayout("",issueNum,params);
+		  return issueService.processBetOrderRePayout("",issueNum,params);
 	  }
 	  
 	  
@@ -98,17 +98,21 @@ public class SysOperationController{
 		  return issueService.updateIssueDisbale("",issueNum,params);
 	  }
 	  
+	  
+	  
+	 
 	  /**
 	   * 
 	   * @param issueNum
 	   * @param params {lottoType}
 	   * @return
 	   */
+	  //标记订单为延迟派奖
 	  @ApiComment("issue delay payout")
 	  @RequestMapping(value={"/issue/{issueNum}/delay-payout"}, method={org.springframework.web.bind.annotation.RequestMethod.POST}, produces={"application/json"})
 	  public Map<String, Object> issueDelayePayout(@PathVariable("issueNum") String issueNum,
 			  @RequestBody Map<String, String> params){
-		  return issueService.issueDelayePayout(issueNum,params);
+		  return issueService.processIssueDelayePayout(issueNum,params);
 	  }
 	  
 	  @ApiComment("order manual payout")
@@ -122,11 +126,11 @@ public class SysOperationController{
 	  @ApiComment("order cancel")
 	  @RequestMapping(value={"/order/{orderNum}/cancel"}, method={org.springframework.web.bind.annotation.RequestMethod.POST}, produces={"application/json"})
 	  public Map<String, Object> orderCancel(@PathVariable("orderNum") String orderNum){
-		  return issueService.orderCancel(orderNum);
+		  return issueService.processOrderCancel(orderNum);
 	  }
 	  
 	  @ApiComment("manual draw result")
-	  @RequestMapping(value={"{lottery-type}/issue/{issueNum}/manual-draw-result"}, method={RequestMethod.PUT}, produces={"application/json"})
+	  @RequestMapping(value={"/{lottery-type}/issue/{issueNum}/manual-draw-result"}, method={RequestMethod.PUT}, produces={"application/json"})
 	  public Map<String, Object> manualDrawResult(@PathVariable(name="issueNum", required=true) String issueNum,
 			  @PathVariable("lottery-type") String lottoType,
 			  @RequestBody Map<String, String> params){

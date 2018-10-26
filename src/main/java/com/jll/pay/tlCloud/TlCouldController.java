@@ -15,8 +15,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.druid.util.StringUtils;
+import com.jll.common.cache.CacheRedisService;
+import com.jll.common.constants.Constants;
+import com.jll.common.constants.Constants.PayType;
 import com.jll.common.constants.Message;
 import com.jll.entity.DepositApplication;
+import com.jll.entity.IpBlackList;
 import com.jll.entity.display.TlCloudNotices;
 import com.jll.pay.order.DepositOrderService;
 
@@ -32,6 +36,9 @@ public class TlCouldController
 
 	@Resource
 	DepositOrderService depositOrderService;
+	
+	@Resource
+	CacheRedisService cacheServ;
 
 	private final String KEY_RESPONSE_STATUS = "success";
 
@@ -87,13 +94,26 @@ public class TlCouldController
 			ret.put(KEY_RESPONSE_STATUS, false);
 			return ret;
 		}
-
-		boolean isNotified = depositOrderService.isOrderNotified(notices.getOrder_id());
+		
+		
+		boolean isOkIp = false;
+		String codeTypeName=Constants.IpBlackList.IP_BLACK_LIST.getCode();
+		Map<Integer, IpBlackList> ipMpas= cacheServ.getIpBlackList(codeTypeName);
+		for (IpBlackList ipLists : ipMpas.values()) {
+			if(ipLists.getIp().indexOf( request.getRemoteHost()) > -1){
+				isOkIp = true;
+			}
+		}
+		if(!isOkIp) {    	
+			ret.put(KEY_RESPONSE_STATUS, false);
+			return ret;
+		}
+		boolean isNotified = depositOrderService.isOrderNotified(notices.getOrder_id(),PayType.TLY_PAY);
 		if(isNotified) {
 			ret.put(KEY_RESPONSE_STATUS, false);
 			return ret;
 		}
-		depositOrderService.receiveDepositOrder(notices.getOrder_id(),"");
+		depositOrderService.processReceiveDepositOrder(notices.getOrder_id(),"");
 		ret.put(KEY_RESPONSE_STATUS, true);
 		return ret;
 	}

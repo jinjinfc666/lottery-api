@@ -36,6 +36,7 @@ import com.jll.common.constants.Constants.AccOperationType;
 import com.jll.common.constants.Constants.DepositOrderState;
 import com.jll.common.constants.Constants.EmailValidState;
 import com.jll.common.constants.Constants.MainWallet;
+import com.jll.common.constants.Constants.OrderState;
 import com.jll.common.constants.Constants.PhoneValidState;
 import com.jll.common.constants.Constants.RedWallet;
 import com.jll.common.constants.Constants.SiteMessageReadType;
@@ -74,6 +75,8 @@ import com.jll.entity.UserAccountDetails;
 import com.jll.entity.UserBankCard;
 import com.jll.entity.UserInfo;
 import com.jll.entity.WithdrawApplication;
+import com.jll.game.IssueService;
+import com.jll.game.order.OrderDao;
 import com.jll.game.order.OrderService;
 import com.jll.report.WithdrawApplicationService;
 import com.jll.sysSettings.syscode.SysCodeService;
@@ -99,7 +102,13 @@ public class UserInfoServiceImpl implements UserInfoService
 	WalletService walletServ;
 	
 	@Resource
+	IssueService issueService;
+	
+	@Resource
 	OrderService orderService;
+	
+	@Resource
+	OrderDao orderDao;
 	
 	@Resource
 	UserAccountDetailsService userAccountDetailsService;
@@ -905,8 +914,8 @@ public class UserInfoServiceImpl implements UserInfoService
 		if(auth == null) {
 			return null;
 		}
-//		return getUserByUserName("zhaowei");
-		return getUserByUserName(auth.getName());
+		return getUserByUserName("zhaowei");
+//		return getUserByUserName(auth.getName());
 	}
 
 	@Override
@@ -1011,15 +1020,6 @@ public class UserInfoServiceImpl implements UserInfoService
 			return ret;
 		}
 		
-		UserAccountDetails accDtal1 = userAccountDetailsService.initCreidrRecord(dbInfo.getId(), mainAcc, mainAcc.getBalance().doubleValue(), -amount, AccOperationType.WD_FREEZE.getCode());
-		mainAcc.setBalance(new BigDecimal(accDtal1.getPostAmount()));
-		supserDao.save(accDtal1);
-		
-		UserAccountDetails accDtal2 = userAccountDetailsService.initCreidrRecord(dbInfo.getId(), mainAcc, mainAcc.getFreeze().doubleValue(), amount, AccOperationType.WD_FREEZE.getCode());
-		mainAcc.setFreeze(new BigDecimal(accDtal2.getPostAmount()));
-		
-		supserDao.save(accDtal2);
-		supserDao.update(mainAcc);
 		
 		WithdrawApplication wtd = new WithdrawApplication();
 		wtd.setAmount(Double.valueOf(amount).floatValue());
@@ -1032,6 +1032,18 @@ public class UserInfoServiceImpl implements UserInfoService
 		wtd.setOperator(dbInfo.getId());
 		
 		supserDao.save(wtd);
+		
+		UserAccountDetails accDtal1 = userAccountDetailsService.initCreidrRecord(dbInfo.getId(), mainAcc, mainAcc.getBalance().doubleValue(), -amount, AccOperationType.WD_FREEZE.getCode(),wtd.getId());
+		mainAcc.setBalance(new BigDecimal(accDtal1.getPostAmount()));
+		accDtal1.setOrderId(wtd.getId());
+		supserDao.save(accDtal1);
+		
+		UserAccountDetails accDtal2 = userAccountDetailsService.initCreidrRecord(dbInfo.getId(), mainAcc, mainAcc.getFreeze().doubleValue(), amount, AccOperationType.WD_FREEZE.getCode(),wtd.getId());
+		accDtal2.setOrderId(wtd.getId());
+		mainAcc.setFreeze(new BigDecimal(accDtal2.getPostAmount()));
+		supserDao.save(accDtal2);
+		
+		supserDao.update(mainAcc);
 		
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		return ret;
@@ -1053,7 +1065,8 @@ public class UserInfoServiceImpl implements UserInfoService
 		if(!finds.isEmpty()){
 			dbWtd = (WithdrawApplication) finds.get(0);
 		}
-		if(null == dbWtd){
+		if(null == dbWtd
+				|| WithdrawOrderState.ORDER_INIT.getCode() != dbWtd.getState()){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_ORDER_ERROR.getCode());
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_ORDER_ERROR.getErrorMes());
@@ -1061,7 +1074,7 @@ public class UserInfoServiceImpl implements UserInfoService
 		}
 		
 		UserAccount mainAcc = (UserAccount) supserDao.get(UserAccount.class, dbWtd.getWalletId());
-		UserAccountDetails addDtail1 = userAccountDetailsService.initCreidrRecord(dbWtd.getUserId(),mainAcc, mainAcc.getFreeze().doubleValue(), -mainAcc.getFreeze().doubleValue(), AccOperationType.WD_UNFREEZE.getCode());
+		UserAccountDetails addDtail1 = userAccountDetailsService.initCreidrRecord(dbWtd.getUserId(),mainAcc, mainAcc.getFreeze().doubleValue(), -dbWtd.getAmount().doubleValue(), AccOperationType.WD_UNFREEZE.getCode(),dbWtd.getId());
 		supserDao.save(addDtail1);
 		mainAcc.setFreeze(new BigDecimal(addDtail1.getPostAmount()));
 		
@@ -1073,9 +1086,12 @@ public class UserInfoServiceImpl implements UserInfoService
 		
 		//审核不通过，退还金额，
 		if(WithdrawOrderState.ORDER_END.getCode() != wtd.getState()){
-			UserAccountDetails addDtail2 = userAccountDetailsService.initCreidrRecord(dbWtd.getUserId(),mainAcc, mainAcc.getBalance().doubleValue(), dbWtd.getAmount().doubleValue(), AccOperationType.WD_UNFREEZE.getCode());
+			UserAccountDetails addDtail2 = userAccountDetailsService.initCreidrRecord(dbWtd.getUserId(),mainAcc, mainAcc.getBalance().doubleValue(), dbWtd.getAmount().doubleValue(), AccOperationType.WD_UNFREEZE.getCode(),dbWtd.getId());
 			supserDao.save(addDtail2);
 			mainAcc.setBalance(new BigDecimal(addDtail2.getPostAmount()));
+		}else{
+			UserAccountDetails addDtail2 = userAccountDetailsService.initCreidrRecord(dbWtd.getUserId(),mainAcc, mainAcc.getBalance().doubleValue(), dbWtd.getAmount().doubleValue(), AccOperationType.WITHDRAW.getCode(),dbWtd.getId());
+			supserDao.save(addDtail2);
 		}
 		supserDao.update(dbWtd);
 		supserDao.update(mainAcc);
@@ -1113,10 +1129,10 @@ public class UserInfoServiceImpl implements UserInfoService
 		
 		UserAccount subAcc = (UserAccount) supserDao.findByName(UserAccount.class, "userId", toUserInfo.getId(), "accType", WalletType.MAIN_WALLET.getCode()).get(0);
 		
-		UserAccountDetails mainDtl = userAccountDetailsService.initCreidrRecord(fromUserInfo.getId(), mainAcc, mainAcc.getBalance().doubleValue(), -amount, AccOperationType.TRANSFER.getCode());
+		UserAccountDetails mainDtl = userAccountDetailsService.initCreidrRecord(fromUserInfo.getId(), mainAcc, mainAcc.getBalance().doubleValue(), -amount, AccOperationType.TRANSFER.getCode(),0);
 		mainAcc.setBalance(new BigDecimal(mainDtl.getPostAmount()));
 		
-		UserAccountDetails subDtl = userAccountDetailsService.initCreidrRecord(toUserInfo.getId(), subAcc, subAcc.getBalance().doubleValue(), amount, AccOperationType.TRANSFER.getCode());
+		UserAccountDetails subDtl = userAccountDetailsService.initCreidrRecord(toUserInfo.getId(), subAcc, subAcc.getBalance().doubleValue(), amount, AccOperationType.TRANSFER.getCode(),0);
 		subAcc.setBalance(new BigDecimal(subDtl.getPostAmount()));
 		
 		supserDao.save(mainDtl);
@@ -1154,8 +1170,8 @@ public class UserInfoServiceImpl implements UserInfoService
 		}else {
 			map.clear();
 			map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
-			map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_NO_VALID_USER.getCode());
+			map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_NO_VALID_USER.getErrorMes());
 			return map;
 		}
 	}
@@ -1297,16 +1313,6 @@ public class UserInfoServiceImpl implements UserInfoService
 			return ret;
 		}
 		
-		UserAccountDetails accDtal1 = userAccountDetailsService.initCreidrRecord(dbInfo.getId(), mainAcc, mainAcc.getBalance().doubleValue(), -amount, AccOperationType.WD_FREEZE.getCode());
-		mainAcc.setBalance(new BigDecimal(accDtal1.getPostAmount()));
-		supserDao.save(accDtal1);
-		
-		UserAccountDetails accDtal2 = userAccountDetailsService.initCreidrRecord(dbInfo.getId(), mainAcc, mainAcc.getFreeze().doubleValue(), amount, AccOperationType.WD_FREEZE.getCode());
-		mainAcc.setFreeze(new BigDecimal(accDtal2.getPostAmount()));
-		
-		supserDao.save(accDtal2);
-		supserDao.update(mainAcc);
-		
 		WithdrawApplication wtd = new WithdrawApplication();
 		wtd.setAmount(Double.valueOf(amount).floatValue());
 		wtd.setState(WithdrawOrderState.ORDER_INIT.getCode());
@@ -1316,6 +1322,17 @@ public class UserInfoServiceImpl implements UserInfoService
 		wtd.setBankCardId(userCard.getId());
 		wtd.setCreateTime(new Date());
 		wtd.setOperator(dbInfo.getId());
+		supserDao.save(wtd);
+		
+		UserAccountDetails accDtal1 = userAccountDetailsService.initCreidrRecord(dbInfo.getId(), mainAcc, mainAcc.getBalance().doubleValue(), -amount, AccOperationType.WD_FREEZE.getCode(),wtd.getId());
+		mainAcc.setBalance(new BigDecimal(accDtal1.getPostAmount()));
+		supserDao.save(accDtal1);
+		
+		UserAccountDetails accDtal2 = userAccountDetailsService.initCreidrRecord(dbInfo.getId(), mainAcc, mainAcc.getFreeze().doubleValue(), amount, AccOperationType.WD_FREEZE.getCode(),wtd.getId());
+		mainAcc.setFreeze(new BigDecimal(accDtal2.getPostAmount()));
+		
+		supserDao.save(accDtal2);
+		supserDao.update(mainAcc);
 		
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		return ret;
@@ -1360,24 +1377,24 @@ public class UserInfoServiceImpl implements UserInfoService
 				|| AccOperationType.PROMO_CASH.getCode().equals(dtl.getOperationType())
 				|| AccOperationType.SYS_DEDUCTION.getCode().equals(dtl.getOperationType())
 				|| AccOperationType.SYS_ADD.getCode().equals(dtl.getOperationType())){
-			UserAccountDetails accDtal1 = userAccountDetailsService.initCreidrRecord(userId,userAcc,userAcc.getBalance().doubleValue(),addAmt,dtl.getOperationType());
+			UserAccountDetails accDtal1 = userAccountDetailsService.initCreidrRecord(userId,userAcc,userAcc.getBalance().doubleValue(),addAmt,dtl.getOperationType(),0);
 			supserDao.save(accDtal1);
 			userAcc.setBalance(new BigDecimal(accDtal1.getPostAmount()));
 		}else if(AccOperationType.PLAT_REWARD.getCode().equals(dtl.getOperationType())
 				|| AccOperationType.PROMO_POINTS.getCode().equals(dtl.getOperationType())){
 			//只对积分进行操作
-			UserAccountDetails accDtal1 = userAccountDetailsService.initCreidrRecord(userId,userAcc,userAcc.getRewardPoints().doubleValue(),addAmt,dtl.getOperationType());
+			UserAccountDetails accDtal1 = userAccountDetailsService.initCreidrRecord(userId,userAcc,userAcc.getRewardPoints().doubleValue(),addAmt,dtl.getOperationType(),0);
 			supserDao.save(accDtal1);
 			userAcc.setRewardPoints(accDtal1.getPostAmount().longValue());
 		
 		}else if(AccOperationType.ACC_FREEZE.getCode().equals(dtl.getOperationType())
 				|| AccOperationType.ACC_UNFREEZE.getCode().equals(dtl.getOperationType())){
 			//对余额和冻结金额进行操作
-			UserAccountDetails accDtal1 = userAccountDetailsService.initCreidrRecord(userId,userAcc,userAcc.getBalance().doubleValue(),addAmt,dtl.getOperationType());
+			UserAccountDetails accDtal1 = userAccountDetailsService.initCreidrRecord(userId,userAcc,userAcc.getBalance().doubleValue(),addAmt,dtl.getOperationType(),0);
 			supserDao.save(accDtal1);
 			userAcc.setBalance(new BigDecimal(accDtal1.getPostAmount()));
 			
-			UserAccountDetails accDtal2 = userAccountDetailsService.initCreidrRecord(userId,userAcc,userAcc.getFreeze().doubleValue(),-addAmt,dtl.getOperationType());
+			UserAccountDetails accDtal2 = userAccountDetailsService.initCreidrRecord(userId,userAcc,userAcc.getFreeze().doubleValue(),-addAmt,dtl.getOperationType(),0);
 			supserDao.save(accDtal2);
 			userAcc.setFreeze(new BigDecimal(accDtal2.getPostAmount()));
 		}
@@ -1479,8 +1496,8 @@ public class UserInfoServiceImpl implements UserInfoService
 		boolean haveOrNot=userBankCardService.haveOrNot(id);
 		if(!haveOrNot) {
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
-			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_NO_BANKCARD.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_NO_BANKCARD.getErrorMes());
 			return ret;
 		}
 		String codeName=Constants.SysCodeTypes.BANK_CODE_LIST.getCode();
@@ -1497,8 +1514,8 @@ public class UserInfoServiceImpl implements UserInfoService
 		UserInfo userInfo=userDao.getUserById(userId);
 		if(userInfo==null) {
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
-			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_NO_VALID_USER.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_NO_VALID_USER.getErrorMes());
 			return ret;
 		}
 		String superior=userInfo.getSuperior();
@@ -1590,6 +1607,28 @@ public class UserInfoServiceImpl implements UserInfoService
 			dbInfo.setState(UserState.REVOKED.getCode());
 			supserDao.update(dbInfo);
 		}
+		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		return ret;
+	}
+
+	@Override
+	public Map<String, Object> processCancelBetOrder(String orderNum) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+		OrderInfo queryOder = orderDao.getOrderInfo(orderNum);
+		if(null == queryOder
+				|| null == getCurLoginInfo()
+				|| !getCurLoginInfo().getId().equals(queryOder.getUserId())
+				|| OrderState.WAITTING_PAYOUT.getCode() != queryOder.getState().intValue()){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_PAYMENT_TLCLOUD_FAILED_CANCEL_ORDER.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_PAYMENT_TLCLOUD_FAILED_CANCEL_ORDER.getErrorMes());
+			return ret;
+		}
+		List<OrderInfo> winLists = new ArrayList<>();
+		winLists.add(queryOder);
+		issueService.processCalcelOrderWinAmtAndAccRecord(winLists,true,false,false,OrderState.USER_CANCEL);
+		supserDao.updateList(winLists);
+		
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		return ret;
 	}

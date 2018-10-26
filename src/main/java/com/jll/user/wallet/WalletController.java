@@ -43,7 +43,6 @@ public class WalletController {
 		ret.put("endTime", endTime);
 		try {
 			Map<String,Object> map=walletService.queryUserAccount(ret);
-			map.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 			return map;
 		}catch(Exception e){
 			ret.clear();
@@ -80,7 +79,6 @@ public class WalletController {
 		ret.put("id", id);
 		try {
 			Map<String,Object> map=walletService.queryByIdUserAccount(ret);
-			map.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 			return map;
 		}catch(Exception e){
 			ret.clear();

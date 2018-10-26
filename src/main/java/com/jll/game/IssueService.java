@@ -3,7 +3,9 @@ package com.jll.game;
 import java.util.List;
 import java.util.Map;
 
+import com.jll.common.constants.Constants.OrderState;
 import com.jll.entity.Issue;
+import com.jll.entity.OrderInfo;
 
 public interface IssueService
 {
@@ -28,19 +30,21 @@ public interface IssueService
 
 	Map<String, Object> updateIssueOpenNum(String issueNum, Map<String, String> params);
 
-	Map<String, Object> betOrderPayout(String lottoType, String issueNum, Map<String, String> params);
+	Map<String, Object> processBetOrderPayout(String lottoType, String issueNum, Map<String, String> params);
 
-	Map<String, Object> calcelIssuePayout(String lottoType, String issueNum, Map<String, String> params);
+	Map<String, Object> processCalcelIssuePayout(String lottoType, String issueNum, Map<String, String> params);
 
-	Map<String, Object> betOrderRePayout(String lottoType, String issueNum, Map<String, String> params);
+	Map<String, Object> processBetOrderRePayout(String lottoType, String issueNum, Map<String, String> params);
 
 	Map<String, Object> updateIssueDisbale(String lottoType, String issueNum, Map<String, String> params);
 
-	Map<String, Object> issueDelayePayout(String issueNum, Map<String, String> params);
+	Map<String, Object> processIssueDelayePayout(String issueNum, Map<String, String> params);
 
-	Map<String, Object> orderCancel(String orderNum);
+	Map<String, Object> processOrderCancel(String orderNum);
 
 	Map<String, Object> manualPayoutOrder(String orderNum);
+	
+	void processCalcelOrderWinAmtAndAccRecord(List<OrderInfo> winLists,boolean backBetAmt,boolean backWinAmt,boolean backPoint,OrderState state);
 
 	/**
 	 * 手动开奖

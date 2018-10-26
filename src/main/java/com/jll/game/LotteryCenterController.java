@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 import org.eclipse.jetty.util.StringUtil;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jll.common.cache.CacheRedisService;
@@ -79,7 +81,15 @@ public class LotteryCenterController {
 		Map<String, Object> data = new HashMap<String, Object>();
 		String betNum = (String)params.get("betNum");
 		Integer times = (Integer)params.get("times");
-		Float monUnit = ((Double)params.get("monUnit")).floatValue();
+		Float monUnit =null;
+		try {
+			monUnit = Float.parseFloat((String)params.get("monUnit"));
+		}catch(Exception e) {
+			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+			return resp;
+		}
 		Integer playType = (Integer)params.get("playType");
 		String retCode = null;
 		
@@ -335,7 +345,9 @@ public class LotteryCenterController {
 	}
 	
 	@RequestMapping(value="/{lottery-type}/prize-rates", method = { RequestMethod.GET }, consumes=MediaType.APPLICATION_JSON_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> queryPrizeRate(@PathVariable(name = "lottery-type", required = true) String lotteryType){
+	public Map<String, Object> queryPrizeRate(@PathVariable(name = "lottery-type", required = true) String lotteryType,
+			  @RequestBody Map<String, Object> params,
+			  HttpServletRequest request){
 		Map<String, Object> resp = new HashMap<String, Object>();
 		String userName = null;
 		boolean isExisting = false;

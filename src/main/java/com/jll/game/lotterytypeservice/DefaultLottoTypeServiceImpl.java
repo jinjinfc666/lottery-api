@@ -275,8 +275,8 @@ public abstract class DefaultLottoTypeServiceImpl implements LotteryTypeService
 		}
 		
 		//试玩用户跳过返点
-		if(UserType.DEMO_PLAYER.getCode() != user.getUserType()
-				&& order.getState() != Constants.OrderState.RE_PAYOUT.getCode()){
+		if(UserType.DEMO_PLAYER.getCode() != user.getUserType().intValue()
+				&& order.getState().intValue() != Constants.OrderState.RE_PAYOUT.getCode()){
 			rebate(issue, user, order);
 		}
 		

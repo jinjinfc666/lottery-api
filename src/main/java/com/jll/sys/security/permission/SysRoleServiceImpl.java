@@ -46,8 +46,8 @@ public class SysRoleServiceImpl implements SysRoleService
 		if(isOrNo) {
 			map.clear();
 			map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
-			map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_SYSROLE_ALREADY_EXISTS.getCode());
+			map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_SYSROLE_ALREADY_EXISTS.getErrorMes());
 			return map;
 		}else {
 			sysRoleDao.saveOrUpdateSysRole(sysRole);
@@ -68,8 +68,8 @@ public class SysRoleServiceImpl implements SysRoleService
 		if(sysRoleNew==null) {
 			map.clear();
 			map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
-			map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_SYSROLE_DOES_NOT_EXIST.getCode());
+			map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_SYSROLE_DOES_NOT_EXIST.getErrorMes());
 			return map;
 		}
 		if(!StringUtils.isBlank(roleName)) {

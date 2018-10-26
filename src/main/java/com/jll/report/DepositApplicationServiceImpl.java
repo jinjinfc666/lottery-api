@@ -15,6 +15,7 @@ import com.jll.common.constants.Constants;
 import com.jll.common.constants.Constants.DepositOrderState;
 import com.jll.common.constants.Constants.WalletType;
 import com.jll.common.constants.Message;
+import com.jll.common.utils.StringUtils;
 import com.jll.common.utils.Utils;
 import com.jll.dao.SupserDao;
 import com.jll.entity.DepositApplication;
@@ -57,8 +58,8 @@ public class DepositApplicationServiceImpl implements DepositApplicationService 
 		}else {
 			map.clear();
 			map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
-			map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_DEPOSITAPPLICATION_DOES_NOT_EXIST.getCode());
+			map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_DEPOSITAPPLICATION_DOES_NOT_EXIST.getErrorMes());
 		}
 		return map;
 	}
@@ -93,12 +94,16 @@ public class DepositApplicationServiceImpl implements DepositApplicationService 
 		
 		dbDep.setUpdateTime(new Date());
 		dbDep.setState(DepositOrderState.END_ORDER.getCode());
-		dbDep.setRemark(Utils.toString(dbDep.getRemark())+","+Utils.toString(dep.getRemark()));
+		if(StringUtils.isNotEmpty(Utils.toString(dep.getRemark()))){
+			dbDep.setRemark(Utils.toString(dbDep.getRemark())+","+Utils.toString(dep.getRemark()));
+			
+		}
+		
 		supserDao.update(dbDep);
 		
 		UserAccount mainAcc = (UserAccount) supserDao.findByName(UserAccount.class, "userId",dbDep.getUserId(), "accType", WalletType.MAIN_WALLET.getCode()).get(0);
 		
-		UserAccountDetails accDtal1 = userAccountDetailsService.initCreidrRecord(dbDep.getUserId(), mainAcc, mainAcc.getBalance().doubleValue(), dep.getAmount(), Constants.AccOperationType.DEPOSIT.getCode());
+		UserAccountDetails accDtal1 = userAccountDetailsService.initCreidrRecord(dbDep.getUserId(), mainAcc, mainAcc.getBalance().doubleValue(), dep.getAmount(), Constants.AccOperationType.DEPOSIT.getCode(),dbDep.getId());
 		mainAcc.setBalance(new BigDecimal(accDtal1.getPostAmount()));
 		supserDao.save(accDtal1);
 		supserDao.update(mainAcc);
