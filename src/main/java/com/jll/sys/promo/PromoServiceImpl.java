@@ -163,12 +163,12 @@ public class PromoServiceImpl implements PromoService
 			addDtl.setPreAmount(dbAcc.getBalance().floatValue());
 			addDtl.setWalletId(dbAcc.getId());
 			addDtl.setOperationType(AccOperationType.PROMO_CASH.getCode());
-			dbAcc.setBalance(new BigDecimal(addDtl.getPostAmount()));
+			dbAcc.setBalance(addDtl.getPostAmount());
 		}else{
 			addDtl.setPreAmount(dbAcc.getRewardPoints().floatValue());
 			addDtl.setWalletId(dbAcc.getId());
 			addDtl.setOperationType(AccOperationType.PROMO_POINTS.getCode());
-			dbAcc.setBalance(new BigDecimal(addDtl.getPostAmount()));
+			dbAcc.setBalance(addDtl.getPostAmount());
 		}
 		addDtl.setPostAmount(Double.valueOf(BigDecimalUtil.add(addDtl.getAmount(),addDtl.getPreAmount())).floatValue());
 		supserDao.save(addDtl);
@@ -236,7 +236,7 @@ public class PromoServiceImpl implements PromoService
 			addDtl.setWalletId(dbAcc.getId());
 			addDtl.setOperationType(AccOperationType.ACTIVITY_GIFT_RED.getCode());
 			supserDao.save(addDtl);
-			dbAcc.setBalance(new BigDecimal(addDtl.getPostAmount()));
+			dbAcc.setBalance(addDtl.getPostAmount());
 			supserDao.update(dbAcc);
 		}
 		PromoClaim addCla= new PromoClaim();

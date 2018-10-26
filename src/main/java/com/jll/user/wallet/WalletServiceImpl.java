@@ -47,9 +47,9 @@ public class WalletServiceImpl implements WalletService
 		UserAccount wallet = new UserAccount();
 		wallet.setAccName(wt.getDesc());
 		wallet.setAccType(wt.getCode());
-		wallet.setBalance(new BigDecimal(0.0F));
-		wallet.setFreeze(new BigDecimal(0.0F));
-		wallet.setPrize(new BigDecimal(0.0F));
+		wallet.setBalance(0.0F);
+		wallet.setFreeze(0.0F);
+		wallet.setPrize(0.0F);
 		wallet.setRewardPoints(0L);
 		wallet.setUserId(user.getId());
 		wallet.setState(Constants.WalletState.NORMAL.getCode());

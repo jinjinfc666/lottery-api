@@ -164,7 +164,7 @@ public class OrderServiceImpl implements OrderService
 			userDetails.setDataItemType(Constants.DataItemType.BALANCE.getCode());
 			accDetailsServ.saveAccDetails(userDetails);
 			
-			wallet.setBalance(new BigDecimal(postAmount));
+			wallet.setBalance(postAmount);
 			
 			
 			//update the statistic in cache
@@ -248,7 +248,7 @@ public class OrderServiceImpl implements OrderService
 	}
 
 	private String verifyBal(List<OrderInfo> orders, UserAccount wallet, String lotteryType, UserInfo user) {
-		BigDecimal bal = wallet.getBalance();
+		BigDecimal bal = new BigDecimal(wallet.getBalance());
 		BigDecimal totalAmount = new BigDecimal(0);
 		PlayTypeFacade playTypeFacade = null;
 		Integer playTypeId = null;

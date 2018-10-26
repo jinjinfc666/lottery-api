@@ -1034,13 +1034,13 @@ public class UserInfoServiceImpl implements UserInfoService
 		supserDao.save(wtd);
 		
 		UserAccountDetails accDtal1 = userAccountDetailsService.initCreidrRecord(dbInfo.getId(), mainAcc, mainAcc.getBalance().doubleValue(), -amount, AccOperationType.WD_FREEZE.getCode(),wtd.getId());
-		mainAcc.setBalance(new BigDecimal(accDtal1.getPostAmount()));
+		mainAcc.setBalance(accDtal1.getPostAmount());
 		accDtal1.setOrderId(wtd.getId());
 		supserDao.save(accDtal1);
 		
 		UserAccountDetails accDtal2 = userAccountDetailsService.initCreidrRecord(dbInfo.getId(), mainAcc, mainAcc.getFreeze().doubleValue(), amount, AccOperationType.WD_FREEZE.getCode(),wtd.getId());
 		accDtal2.setOrderId(wtd.getId());
-		mainAcc.setFreeze(new BigDecimal(accDtal2.getPostAmount()));
+		mainAcc.setFreeze(accDtal2.getPostAmount());
 		supserDao.save(accDtal2);
 		
 		supserDao.update(mainAcc);
@@ -1076,7 +1076,7 @@ public class UserInfoServiceImpl implements UserInfoService
 		UserAccount mainAcc = (UserAccount) supserDao.get(UserAccount.class, dbWtd.getWalletId());
 		UserAccountDetails addDtail1 = userAccountDetailsService.initCreidrRecord(dbWtd.getUserId(),mainAcc, mainAcc.getFreeze().doubleValue(), -dbWtd.getAmount().doubleValue(), AccOperationType.WD_UNFREEZE.getCode(),dbWtd.getId());
 		supserDao.save(addDtail1);
-		mainAcc.setFreeze(new BigDecimal(addDtail1.getPostAmount()));
+		mainAcc.setFreeze(addDtail1.getPostAmount());
 		
 		//修改订单状态
 		dbWtd.setState(wtd.getState());
@@ -1088,7 +1088,7 @@ public class UserInfoServiceImpl implements UserInfoService
 		if(WithdrawOrderState.ORDER_END.getCode() != wtd.getState()){
 			UserAccountDetails addDtail2 = userAccountDetailsService.initCreidrRecord(dbWtd.getUserId(),mainAcc, mainAcc.getBalance().doubleValue(), dbWtd.getAmount().doubleValue(), AccOperationType.WD_UNFREEZE.getCode(),dbWtd.getId());
 			supserDao.save(addDtail2);
-			mainAcc.setBalance(new BigDecimal(addDtail2.getPostAmount()));
+			mainAcc.setBalance(addDtail2.getPostAmount());
 		}else{
 			UserAccountDetails addDtail2 = userAccountDetailsService.initCreidrRecord(dbWtd.getUserId(),mainAcc, mainAcc.getBalance().doubleValue(), dbWtd.getAmount().doubleValue(), AccOperationType.WITHDRAW.getCode(),dbWtd.getId());
 			supserDao.save(addDtail2);
@@ -1130,10 +1130,10 @@ public class UserInfoServiceImpl implements UserInfoService
 		UserAccount subAcc = (UserAccount) supserDao.findByName(UserAccount.class, "userId", toUserInfo.getId(), "accType", WalletType.MAIN_WALLET.getCode()).get(0);
 		
 		UserAccountDetails mainDtl = userAccountDetailsService.initCreidrRecord(fromUserInfo.getId(), mainAcc, mainAcc.getBalance().doubleValue(), -amount, AccOperationType.TRANSFER.getCode(),0);
-		mainAcc.setBalance(new BigDecimal(mainDtl.getPostAmount()));
+		mainAcc.setBalance(mainDtl.getPostAmount());
 		
 		UserAccountDetails subDtl = userAccountDetailsService.initCreidrRecord(toUserInfo.getId(), subAcc, subAcc.getBalance().doubleValue(), amount, AccOperationType.TRANSFER.getCode(),0);
-		subAcc.setBalance(new BigDecimal(subDtl.getPostAmount()));
+		subAcc.setBalance(subDtl.getPostAmount());
 		
 		supserDao.save(mainDtl);
 		supserDao.save(subDtl);
@@ -1325,11 +1325,11 @@ public class UserInfoServiceImpl implements UserInfoService
 		supserDao.save(wtd);
 		
 		UserAccountDetails accDtal1 = userAccountDetailsService.initCreidrRecord(dbInfo.getId(), mainAcc, mainAcc.getBalance().doubleValue(), -amount, AccOperationType.WD_FREEZE.getCode(),wtd.getId());
-		mainAcc.setBalance(new BigDecimal(accDtal1.getPostAmount()));
+		mainAcc.setBalance(accDtal1.getPostAmount());
 		supserDao.save(accDtal1);
 		
 		UserAccountDetails accDtal2 = userAccountDetailsService.initCreidrRecord(dbInfo.getId(), mainAcc, mainAcc.getFreeze().doubleValue(), amount, AccOperationType.WD_FREEZE.getCode(),wtd.getId());
-		mainAcc.setFreeze(new BigDecimal(accDtal2.getPostAmount()));
+		mainAcc.setFreeze(accDtal2.getPostAmount());
 		
 		supserDao.save(accDtal2);
 		supserDao.update(mainAcc);
@@ -1379,7 +1379,7 @@ public class UserInfoServiceImpl implements UserInfoService
 				|| AccOperationType.SYS_ADD.getCode().equals(dtl.getOperationType())){
 			UserAccountDetails accDtal1 = userAccountDetailsService.initCreidrRecord(userId,userAcc,userAcc.getBalance().doubleValue(),addAmt,dtl.getOperationType(),0);
 			supserDao.save(accDtal1);
-			userAcc.setBalance(new BigDecimal(accDtal1.getPostAmount()));
+			userAcc.setBalance(accDtal1.getPostAmount());
 		}else if(AccOperationType.PLAT_REWARD.getCode().equals(dtl.getOperationType())
 				|| AccOperationType.PROMO_POINTS.getCode().equals(dtl.getOperationType())){
 			//只对积分进行操作
@@ -1392,11 +1392,11 @@ public class UserInfoServiceImpl implements UserInfoService
 			//对余额和冻结金额进行操作
 			UserAccountDetails accDtal1 = userAccountDetailsService.initCreidrRecord(userId,userAcc,userAcc.getBalance().doubleValue(),addAmt,dtl.getOperationType(),0);
 			supserDao.save(accDtal1);
-			userAcc.setBalance(new BigDecimal(accDtal1.getPostAmount()));
+			userAcc.setBalance(accDtal1.getPostAmount());
 			
 			UserAccountDetails accDtal2 = userAccountDetailsService.initCreidrRecord(userId,userAcc,userAcc.getFreeze().doubleValue(),-addAmt,dtl.getOperationType(),0);
 			supserDao.save(accDtal2);
-			userAcc.setFreeze(new BigDecimal(accDtal2.getPostAmount()));
+			userAcc.setFreeze(accDtal2.getPostAmount());
 		}
 		supserDao.update(userAcc);
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
@@ -1583,7 +1583,7 @@ public class UserInfoServiceImpl implements UserInfoService
 		regUser(user,request);
 		
 		UserAccount dbAcc = (UserAccount) supserDao.findByName(UserAccount.class, "userId", user.getId(), "accType", WalletType.MAIN_WALLET.getCode()).get(0);
-		dbAcc.setBalance(new BigDecimal(demoBal));
+		dbAcc.setBalance(new Double(demoBal).floatValue());
 		supserDao.update(dbAcc);
 		
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
