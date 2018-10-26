@@ -400,6 +400,8 @@ public class IssueServiceImpl implements IssueService
 		SysCodeTypes lottoAttri = Constants.SysCodeTypes.getLottoAttriFromLottoTye(lottoType);
 		SysCode sysCodePrizeMode = null;
 		Constants.LottoType type = null;
+		Issue issue = null;
+		Date currDate = new Date();
 		
 		if(lottoAttri == null) {
 			return false;
@@ -413,10 +415,23 @@ public class IssueServiceImpl implements IssueService
 			return false;
 		}
 		
+		issue = issueDao.getIssueByIssueNum(lottoType, issueNum);
+		
 		if(Constants.LottoType.CQSSC.getCode().equals(lottoType)
 				|| Constants.LottoType.GD11X5.getCode().equals(lottoType)
 				|| Constants.LottoType.BJPK10.getCode().equals(lottoType)) {
+			long inernerl = (currDate.getTime() - issue.getEndTime().getTime())/1000;
+			//×××××××××××××××××××××××××××××××××/
+			//TODO 需要取消，这里为了测试
+			//抓取数据会持续30分钟，所以等待30分钟之后才可以人工开奖
+			/*if(inernerl > 1800) {
+				return true;				
+			}*/
+			
+			//TODO 需要取消，这里为了测试
 			return true;
+			
+			//×××××××××××××××××××××××××××××××××/
 		}
 		
 		//对于私彩需要验证开奖模式
