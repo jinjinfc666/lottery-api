@@ -197,7 +197,7 @@ public class IssueServiceImpl implements IssueService
 					
 					List<UserAccountDetails> ret = supserDao.findByCriteria(criteria);
 					double prize = Utils.toDouble(ret.get(0).getAmount());
-					UserAccountDetails addDtail = userAccountDetailsService.initCreidrRecord(curAcc.getUserId(),curAcc, curAcc.getBalance().doubleValue(), prize, AccOperationType.REFUND.getCode(),order.getId());
+					UserAccountDetails addDtail = userAccountDetailsService.initCreidrRecord(curAcc.getUserId(),curAcc, curAcc.getBalance().doubleValue(), prize, AccOperationType.RECOVERY_PAYOUT.getCode(),order.getId());
 					dtlLists.add(addDtail);
 					curAcc.setBalance(new BigDecimal(addDtail.getPostAmount()));
 				}
