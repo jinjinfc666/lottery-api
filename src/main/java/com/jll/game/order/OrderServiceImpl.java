@@ -142,6 +142,7 @@ public class OrderServiceImpl implements OrderService
 			order.setUserId(user.getId());
 			order.setCreateTime(currTime);
 			order.setState(Constants.OrderState.WAITTING_PAYOUT.getCode());
+			order.setDelayPayoutFlag(0);
 			orderDao.saveOrders(order);
 			
 			UserAccountDetails userDetails = new UserAccountDetails();
@@ -232,7 +233,11 @@ public class OrderServiceImpl implements OrderService
 		UserAccount wallet = walletServ.queryById(walletId);
 		String userName = SecurityContextHolder.getContext().getAuthentication().getName();
 		UserInfo user = userServ.getUserByUserName(userName);
-		
+		logger.debug(String.format("user_id   %s  wallet_user_id  %s  wallet_id %s  wallet state %s", 
+				user.getId(),
+				wallet.getUserId(),
+				walletId,				
+				wallet.getState()));
 		if(wallet != null 
 				&& wallet.getUserId() == user.getId() 
 				&& wallet.getState().intValue() == Constants.WalletState.NORMAL.getCode()) {
