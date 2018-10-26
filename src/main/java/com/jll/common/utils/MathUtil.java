@@ -213,8 +213,8 @@ public class MathUtil {
      * @param n 选择个数
      */
     public static void combinationSelect(String[] dataList, int n, List<String[]> results) {
-        System.out.println(String.format("C(%d, %d) = %d", 
-                dataList.length, n, combination(n, dataList.length)));
+        /*System.out.println(String.format("C(%d, %d) = %d", 
+                dataList.length, n, combination(n, dataList.length)));*/
         
         combinationSelect(dataList, 0, new String[n], 0, results);
     }
@@ -250,8 +250,8 @@ public class MathUtil {
      * @param n 选择个数 
      */
     public static void arrangementSelect(String[] dataList, int n, List<String[]> results) {
-        System.out.println(String.format("A(%d, %d) = %d", dataList.length, n, 
-                arrangement(n, dataList.length)));
+        /*System.out.println(String.format("A(%d, %d) = %d", dataList.length, n, 
+                arrangement(n, dataList.length)));*/
         arrangementSelect(dataList, new String[n], 0, results);
     }
 

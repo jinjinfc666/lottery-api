@@ -35,8 +35,8 @@ public class PlayTypeFactory {
 		DwdPlayTypeFacadeImpl dwdPlayTypeFacadeImpl = new DwdPlayTypeFacadeImpl();
 		EleIn5QszxPlayTypeFacadeImpl eleIn5PlayTypeFacadeImpl = new EleIn5QszxPlayTypeFacadeImpl();
 		EleIn5QszuxZlPlayTypeFacadeImpl eleIn5QszuxPlayTypeFacadeImpl = new EleIn5QszuxZlPlayTypeFacadeImpl();
-		EleIn5Wxq2PlayTypeFacadeImpl eleIn5Wxq2PlayTypeFacadeImpl = new EleIn5Wxq2PlayTypeFacadeImpl();
-		EleIn5Wxh2ZxPlayTypeFacadeImpl eleIn5Wxh2ZxPlayTypeFacadeImpl = new EleIn5Wxh2ZxPlayTypeFacadeImpl();
+		EleIn5Q2zxPlayTypeFacadeImpl eleIn5Wxq2PlayTypeFacadeImpl = new EleIn5Q2zxPlayTypeFacadeImpl();
+		EleIn5Q2ZuxPlayTypeFacadeImpl eleIn5Wxh2ZxPlayTypeFacadeImpl = new EleIn5Q2ZuxPlayTypeFacadeImpl();
 		EleIn5BdwQsPlayTypeFacadeImpl eleIn5BdwQsPlayTypeFacadeImpl = new EleIn5BdwQsPlayTypeFacadeImpl();
 		EleIn5DwdPlayTypeFacadeImpl eleIn5DwdPlayTypeFacadeImpl = new EleIn5DwdPlayTypeFacadeImpl();
 		EleIn5QwDsPlayTypeFacadeImpl eleIn5QwDsPlayTypeFacadeImpl = new EleIn5QwDsPlayTypeFacadeImpl();

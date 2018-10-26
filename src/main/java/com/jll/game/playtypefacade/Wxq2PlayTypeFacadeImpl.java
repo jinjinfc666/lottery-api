@@ -55,7 +55,7 @@ public class Wxq2PlayTypeFacadeImpl  extends DefaultPlayTypeFacadeImpl {
 			}
 		}
 		
-		logger.debug("proced bet number is :: " + Arrays.asList(betNumSet));
+		//logger.debug("proced bet number is :: " + Arrays.asList(betNumSet));
 		
 		for(int i = 0; i< winNumSet.length; i++) {
 			String betNumDigit = betNumSet[i];

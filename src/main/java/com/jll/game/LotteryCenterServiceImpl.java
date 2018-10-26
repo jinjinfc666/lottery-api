@@ -238,7 +238,8 @@ public class LotteryCenterServiceImpl implements LotteryCenterService
 		endTime = DateUtils.addSeconds(endTime, -5);
 		
 		state = currIssue.getState();
-		logger.debug(String.format("lotto Type  %s   issue number %s   Issue Id %s", 
+		//TODO 
+		/*logger.debug(String.format("lotto Type  %s   issue number %s   Issue Id %s", 
 				lottoType, 
 				currIssue.getIssueNum(), 
 				currIssue.getId()));
@@ -247,7 +248,7 @@ public class LotteryCenterServiceImpl implements LotteryCenterService
 		logger.debug(startTime.getTime()+"------------startTime---------------");
 		
 		logger.debug(endBettingTime.getTime()+"------------endBettingTime---------------");
-		logger.debug(currTime.getTime()+"------------currTime---------------");
+		logger.debug(currTime.getTime()+"------------currTime---------------");*/
 		
 		if(state == Constants.IssueState.BETTING.getCode()
 				&& endBettingTime.getTime() <= currTime.getTime()) {
@@ -265,7 +266,8 @@ public class LotteryCenterServiceImpl implements LotteryCenterService
 		}
 		
 		state = currIssue.getState();
-		logger.debug(state + "-----------current state------------");
+		//TODO 
+		//logger.debug(state + "-----------current state------------");
 		
 		if(hasChanged) {
 			if(state == Constants.IssueState.END_ISSUE.getCode()) {

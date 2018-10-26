@@ -34,7 +34,7 @@ public class Wxq2ZxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl  {
 		//开奖号码的每一位
 		String[] winNumSet = null;
 		//投注号码的每个位的号码，可能多个号码
-		String[] betNumSet = new String[2];
+		//String[] betNumSet = new String[2];
 		//每次点击选号按钮所选号码，多个所选号码以;分割
 		String[] betNumMul = null;
 		String betNum = null;
@@ -46,7 +46,7 @@ public class Wxq2ZxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl  {
 		winNumSet = winNum.split(",");
 		betNumMul = betNum.split(";");
 		
-		logger.debug("proceed bet number is :: " + Arrays.asList(betNumSet));
+		//logger.debug("proceed bet number is :: " + Arrays.asList(betNumSet));
 		
 		for(String temp : betNumMul) {
 			if(temp.contains(winNumSet[0]) 
