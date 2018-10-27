@@ -222,7 +222,7 @@ public class IssueServiceImpl implements IssueService
 					
 					List<UserAccountDetails> ret = supserDao.findByCriteria(criteria);
 					double prize = Utils.toDouble(ret.get(0).getAmount());
-					UserAccountDetails addDtail = userAccountDetailsService.initCreidrRecord(curAcc.getUserId(),curAcc, curAcc.getBalance().doubleValue(), prize, AccOperationType.RECOVERY_PAYOUT.getCode(),order.getId());
+					UserAccountDetails addDtail = userAccountDetailsService.initCreidrRecord(curAcc.getUserId(),curAcc, curAcc.getBalance().doubleValue(), prize, AccOperationType.REFUND.getCode(),order.getId());
 					dtlLists.add(addDtail);
 					curAcc.setBalance(new BigDecimal(addDtail.getPostAmount()).floatValue());
 				}
@@ -237,7 +237,7 @@ public class IssueServiceImpl implements IssueService
 					
 					List<UserAccountDetails> ret = supserDao.findByCriteria(criteria);
 					double prize = Utils.toDouble(ret.get(0).getAmount());
-					UserAccountDetails addDtail = userAccountDetailsService.initCreidrRecord(curAcc.getUserId(),curAcc, curAcc.getBalance().doubleValue(), -prize, AccOperationType.REFUND.getCode(),order.getId());
+					UserAccountDetails addDtail = userAccountDetailsService.initCreidrRecord(curAcc.getUserId(),curAcc, curAcc.getBalance().doubleValue(), -prize, AccOperationType.RECOVERY_PAYOUT.getCode(),order.getId());
 					dtlLists.add(addDtail);
 					curAcc.setBalance(new BigDecimal(addDtail.getPostAmount()).floatValue());
 				}
@@ -556,6 +556,12 @@ public class IssueServiceImpl implements IssueService
 			return;
 		}
 		
+		//试玩用户或者重新派奖的状态下跳过返点 
+		if(UserType.DEMO_PLAYER.getCode() != user.getUserType().intValue()
+				&& order.getState().intValue() != Constants.OrderState.RE_PAYOUT.getCode()){
+			rebate(issue, user, order);
+		}
+		
 		boolean isMatch = isMatchWinningNum(issue, order);
 		
 		if(isMatch) {//赢
@@ -575,12 +581,6 @@ public class IssueServiceImpl implements IssueService
 		}else {
 			//TODO 修改订单状态
 			modifyOrderState(order, Constants.OrderState.LOSTING);
-		}
-		
-		//试玩用户跳过返点
-		if(UserType.DEMO_PLAYER.getCode() != user.getUserType().intValue()
-				&& order.getState().intValue() != Constants.OrderState.RE_PAYOUT.getCode()){
-			rebate(issue, user, order);
 		}
 		
 	}

@@ -79,7 +79,8 @@ public abstract class DefaultLottoTypeServiceImpl implements LotteryTypeService
 			return ;
 		}
 		
-		if(issue.getState() != Constants.IssueState.LOTTO_DARW.getCode()) {
+		if(issue.getState().intValue() != Constants.IssueState.LOTTO_DARW.getCode()
+				&& issue.getState().intValue() != Constants.IssueState.RE_PAYOUT.getCode()) {
 			return ;
 		}
 		
