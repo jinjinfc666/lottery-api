@@ -713,7 +713,8 @@ public class Constants {
 		HAS_WON("1", "已中奖"),
 		NOT_WON("2", "未中奖"),
 		USER_CANCEL_ORDER("3", "用户取消订单"),
-		SYSTEM_CANCEL_ORDER("4", "系统取消订单");
+		SYSTEM_CANCEL_ORDER("4", "系统取消订单"),
+		WAITING_TO_RE_SEND_PRIZE("5", "等待重新派奖");
 		private String code;
 		
 		private String names;

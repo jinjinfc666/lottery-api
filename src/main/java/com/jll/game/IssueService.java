@@ -74,4 +74,10 @@ public interface IssueService
 	void payOutIssue(Issue issue);
 	
 	void payoutOrder(OrderInfo order, Issue issue, boolean isAuto);
+	
+	//近期注单--------------会查询出近30个订单
+	Map<String,Object> queryNear(String lotteryType,String userName);
+	
+	//未结算的注单 --------------会查询出近30个订单
+	Map<String,Object> queryUnsettlement(String lotteryType,String userName);
 }

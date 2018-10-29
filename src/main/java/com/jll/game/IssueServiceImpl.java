@@ -713,6 +713,42 @@ public class IssueServiceImpl implements IssueService
 		rebate = betAmount.multiply(rebateRate);
 		return rebate;
 	}
+	//近期注单--------------会查询出近30个订单
+	@Override
+	public Map<String, Object> queryNear(String lotteryType, String userName) {
+		Map<String,Object> map=new HashMap();
+		UserInfo userInfo=userServ.getUserByUserName(userName);
+		if(userInfo==null) {
+			map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_NO_VALID_USER.getCode());
+			map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_NO_VALID_USER.getErrorMes());
+		}else {
+			String codeTypeName=Constants.SysCodeTypes.LOTTERY_TYPES.getCode();
+			SysCode sysCode=cacheServ.getSysCode(codeTypeName,codeTypeName);
+			Integer codeTypeNameId=sysCode.getId();
+			Integer userId=userInfo.getId();
+			map=issueDao.queryNear(lotteryType,codeTypeNameId,userId);
+		}
+		return map;
+	}
+	//未结算的注单 --------------会查询出近30个订单
+	@Override
+	public Map<String, Object> queryUnsettlement(String lotteryType, String userName) {
+		Map<String,Object> map=new HashMap();
+		UserInfo userInfo=userServ.getUserByUserName(userName);
+		if(userInfo==null) {
+			map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_NO_VALID_USER.getCode());
+			map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_NO_VALID_USER.getErrorMes());
+		}else {
+			String codeTypeName=Constants.SysCodeTypes.LOTTERY_TYPES.getCode();
+			SysCode sysCode=cacheServ.getSysCode(codeTypeName,codeTypeName);
+			Integer codeTypeNameId=sysCode.getId();
+			Integer userId=userInfo.getId();
+			map=issueDao.queryUnsettlement(lotteryType,codeTypeNameId,userId);
+		}
+		return map;
+	}
 	
 	/*protected void changeBulletinBoard(String lottoType, String issueNum, Issue issue) {
 		BulletinBoard bulletinBoard;

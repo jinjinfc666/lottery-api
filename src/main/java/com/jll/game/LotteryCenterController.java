@@ -370,56 +370,35 @@ public class LotteryCenterController {
 		resp.put("singleBettingPrize", prizeRate);
 		return resp;
 	}
-	//未结算的注单  前端只传彩种，默认查询state为0的数据显示给前端
+	//未结算的注单  (只给30期)前端只传彩种，默认查询state为0的数据显示给前端
 	@RequestMapping(value="/{lottery-type}/unsettled-bet", method = { RequestMethod.GET }, consumes=MediaType.APPLICATION_JSON_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> queryUnsettledBet(@PathVariable(name = "lottery-type", required = true) String lotteryType){
-		Map<String,Object> map=new HashMap<String,Object>();
-		List<OrderInfo> orderInfoList=new ArrayList<OrderInfo>();
-		OrderInfo orderInfo=new OrderInfo();
-		orderInfo.setId(1);
-		orderInfo.setOrderNum("180911-0041");
-		orderInfo.setUserId(2);
-		orderInfo.setIssueId(4107);
-		orderInfo.setWalletId(19);
-		orderInfo.setPlayType(1);
-		orderInfo.setBetNum("0,2,3,5,1");
-		orderInfo.setBetTotal(60);
-		orderInfo.setBetAmount((float)6084.44);
-		orderInfo.setTimes(20);
-		orderInfo.setState(0);
-		orderInfo.setDelayPayoutFlag(0);
-		orderInfo.setIsZh(1);
-		orderInfo.setIsZhBlock(1);
-		orderInfo.setTerminalType(1);
-		orderInfoList.add(orderInfo);
-		map.put("data", orderInfoList);
-		map.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		Map<String,Object> map=new HashMap();
+		String userName = null;
+		userName = SecurityContextHolder.getContext().getAuthentication().getName();
+		if(StringUtils.isBlank(userName)) {
+			map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_NO_VALID_USER.getCode());
+			map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_NO_VALID_USER.getErrorMes());
+		}else {
+			map=issueServ.queryUnsettlement(lotteryType, userName);
+		}
 		return map;
+		
 	}
 	//近期注单   前端只传过来彩种，后台默认只查询30条记录给前端
 	@RequestMapping(value="/{lottery-type}/recent-bet", method = { RequestMethod.GET }, consumes=MediaType.APPLICATION_JSON_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> queryRecentBet(@PathVariable(name = "lottery-type", required = true) String lotteryType){
-		Map<String,Object> map=new HashMap<String,Object>();
-		List<OrderInfo> orderInfoList=new ArrayList<OrderInfo>();
-		OrderInfo orderInfo=new OrderInfo();
-		orderInfo.setId(1);
-		orderInfo.setOrderNum("180911-0041");
-		orderInfo.setUserId(2);
-		orderInfo.setIssueId(4107);
-		orderInfo.setWalletId(19);
-		orderInfo.setPlayType(1);
-		orderInfo.setBetNum("0,2,3,5,1");
-		orderInfo.setBetTotal(60);
-		orderInfo.setBetAmount((float)6084.44);
-		orderInfo.setTimes(20);
-		orderInfo.setState(0);
-		orderInfo.setDelayPayoutFlag(0);
-		orderInfo.setIsZh(1);
-		orderInfo.setIsZhBlock(1);
-		orderInfo.setTerminalType(1);
-		orderInfoList.add(orderInfo);
-		map.put("data", orderInfoList);
-		map.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		Map<String,Object> map=new HashMap();
+		String userName = null;
+		userName = SecurityContextHolder.getContext().getAuthentication().getName();
+		if(StringUtils.isBlank(userName)) {
+			map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_NO_VALID_USER.getCode());
+			map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_NO_VALID_USER.getErrorMes());
+		}else {
+			map=issueServ.queryNear(lotteryType, userName);
+		}
 		return map;
 	}
 }
