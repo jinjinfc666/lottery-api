@@ -535,7 +535,9 @@ public class IssueServiceImpl implements IssueService
 	}
 	
 	private void modifyIssueState(Issue issue) {
-		issue.setState(Constants.IssueState.PAYOUT.getCode());
+		if(issue.getState().intValue() != Constants.IssueState.RE_PAYOUT.getCode()){
+			issue.setState(Constants.IssueState.PAYOUT.getCode());
+		}
 		saveIssue(issue);
 	}
 	
