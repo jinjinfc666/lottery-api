@@ -190,9 +190,11 @@ public class IssueServiceImpl implements IssueService
 					accMaps.put(order.getWalletId(), acc);
 					curAcc = accMaps.get(order.getWalletId());
 				}
-				
+				if(OrderState.SYS_CANCEL.getCode() == order.getState().intValue()){
+					continue;
+				}
 				//查找出返点
-				if(backPoint && OrderState.SYS_CANCEL.getCode() != order.getState().intValue()){
+				if(backPoint){
 					DetachedCriteria criteria2 = DetachedCriteria.forClass(UserAccountDetails.class);
 					criteria2.add(Restrictions.eq("orderId",order.getId()));
 					criteria2.add(Restrictions.eq("operationType",Constants.AccOperationType.REBATE.getCode()));
