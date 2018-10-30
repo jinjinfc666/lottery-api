@@ -2,6 +2,7 @@ package com.jll.common.utils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -177,11 +178,17 @@ public class MathUtil {
 	 * @param n
 	 * @return
 	 */
-	public static long factorial(int n) {
-        long sum = 1;
+	public static BigInteger factorial(int n) {
+        /*long sum = 1;
         while( n > 0 ) {
             sum = sum * n--;
         }
+        return sum;*/
+		BigInteger sum = BigInteger.valueOf(1L);
+		while( n > 0 ) {
+			sum = sum.multiply(BigInteger.valueOf(n--));
+		}
+		
         return sum;
     }
 	
@@ -193,7 +200,9 @@ public class MathUtil {
 	 * @return
 	 */
 	public static long arrangement(int m, int n) {
-        return m <= n ? factorial(n) / factorial(n - m) : 0;
+        //return m <= n ? factorial(n) / factorial(n - m) : 0;
+        
+        return m <= n ? factorial(n).divide(factorial(n - m)).longValue() : 0;
     }
 	
 	/**
@@ -204,7 +213,9 @@ public class MathUtil {
 	 * @return
 	 */
 	public static long combination(int m, int n) {
-        return m <= n ? factorial(n) / (factorial(m) * factorial((n - m))) : 0;
+        //return m <= n ? factorial(n) / (factorial(m) * factorial((n - m))) : 0;
+		
+		return m <= n ? factorial(n).divide(factorial(m).multiply(factorial((n - m)))).longValue() : 0;
     }
 	
 	/**
