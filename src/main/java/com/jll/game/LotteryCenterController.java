@@ -344,9 +344,9 @@ public class LotteryCenterController {
 		return resp;
 	}
 	
-	@RequestMapping(value="/{lottery-type}/prize-rates", method = { RequestMethod.GET }, consumes=MediaType.APPLICATION_JSON_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value="/{lottery-type}/play-type/{play-type}/prize-rates", method = { RequestMethod.GET }, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> queryPrizeRate(@PathVariable(name = "lottery-type", required = true) String lotteryType,
-			  @RequestBody Map<String, Object> params,
+			@PathVariable(name = "play-type", required = true) String playType,
 			  HttpServletRequest request){
 		Map<String, Object> resp = new HashMap<String, Object>();
 		String userName = null;
