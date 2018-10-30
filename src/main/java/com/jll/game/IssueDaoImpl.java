@@ -19,6 +19,7 @@ import org.hibernate.type.TimestampType;
 import org.springframework.stereotype.Repository;
 
 import com.jll.common.constants.Constants;
+import com.jll.common.constants.Message;
 import com.jll.dao.DefaultGenericDaoImpl;
 import com.jll.dao.PageBean;
 import com.jll.entity.IpBlackList;
@@ -146,7 +147,7 @@ public class IssueDaoImpl extends DefaultGenericDaoImpl<Issue> implements IssueD
 		}
 		
 		if(state!=null) {
-			stateSql=" and state>=:state ";
+			stateSql=" and state=:state ";
 			map.put("state", state);
 		}
 		String sql="From Issue "+timeSql+lotteryTypeSql+issueNumSql+stateSql+"ORDER BY id DESC";
@@ -178,6 +179,42 @@ public class IssueDaoImpl extends DefaultGenericDaoImpl<Issue> implements IssueD
 	    	return list;
 	    }
 		return null;
+	}
+	//近期注单--------------会查询出近30个订单
+	@Override
+	public Map<String, Object> queryNear(String lotteryType, Integer codeTypeNameId,Integer userId) {
+		Map<String,Object> map=new HashMap();
+		String sql="From OrderInfo a,PlayType b,Issue c,SysCode d where a.issueId=c.id and a.playType=b.id and d.codeType=:codeTypeNameId and d.codeName=:lotteryType and a.userId=:userId group by a.id order by a.id desc";
+		Query<?> query = getSessionFactory().getCurrentSession().createQuery(sql);
+		query.setFirstResult(0);
+		query.setMaxResults(30);
+		query.setParameter("codeTypeNameId", codeTypeNameId);
+		query.setParameter("lotteryType", lotteryType);
+		query.setParameter("userId", userId);
+		List<?> list=new ArrayList();
+		list=query.list();
+		map.put(Message.KEY_DATA, list);
+		map.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		return map;
+	}
+	//未结算的注单 --------------会查询出近30个订单
+	@Override
+	public Map<String, Object> queryUnsettlement(String lotteryType,Integer codeTypeNameId, Integer userId) {
+		Map<String,Object> map=new HashMap();
+		String sql="From OrderInfo a,PlayType b,Issue c,SysCode d where a.issueId=c.id and a.playType=b.id and d.codeType=:codeTypeNameId and d.codeName=:lotteryType and a.userId=:userId and (a.state=:state1 or a.state=:state2) group by a.id order by a.id desc";
+		Query<?> query = getSessionFactory().getCurrentSession().createQuery(sql);
+		query.setFirstResult(0);
+		query.setMaxResults(30);
+		query.setParameter("codeTypeNameId", codeTypeNameId);
+		query.setParameter("lotteryType", lotteryType);
+		query.setParameter("userId", userId);
+		query.setParameter("state1", Integer.parseInt(Constants.State.WAITING_FOR_PRIZE.getCode()));
+		query.setParameter("state2", Integer.parseInt(Constants.State.WAITING_TO_RE_SEND_PRIZE.getCode()));
+		List<?> list=new ArrayList();
+		list=query.list();
+		map.put(Message.KEY_DATA, list);
+		map.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		return map;
 	}
 	
 }

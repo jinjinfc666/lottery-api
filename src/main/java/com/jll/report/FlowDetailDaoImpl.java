@@ -57,8 +57,8 @@ public class FlowDetailDaoImpl extends DefaultGenericDaoImpl<UserAccountDetails>
 			map.put("startTime", beginDate);
 			map.put("endTime", endDate);
 		}
-		String sql="from UserAccountDetails a,UserInfo b,SysCode c where a.userId=b.id and a.operationType=c.codeName and c.codeType=:codeTypeNameId "+userNameSql+amountStartSql+amountEndSql+operationTypeSql+timeSql+" order by a.id";
-		String sql1="select coalesce(SUM(a.amount),0) from UserAccountDetails a,UserInfo b,SysCode c where a.userId=b.id and a.operationType=c.codeName and c.codeType=:codeTypeNameId "+userNameSql+amountStartSql+amountEndSql+operationTypeSql+timeSql+" order by a.id";
+		String sql="from UserAccountDetails a,UserInfo b,SysCode c where a.userId=b.id and a.operationType=c.codeName and c.codeType=:codeTypeNameId "+userNameSql+amountStartSql+amountEndSql+operationTypeSql+timeSql+" order by a.id desc";
+		String sql1="select coalesce(SUM(a.amount),0) from UserAccountDetails a,UserInfo b,SysCode c where a.userId=b.id and a.operationType=c.codeName and c.codeType=:codeTypeNameId "+userNameSql+amountStartSql+amountEndSql+operationTypeSql+timeSql+" order by a.id desc";
 		
 		Query<?> query1 = getSessionFactory().getCurrentSession().createQuery(sql1);
 		map.put("codeTypeNameId", codeTypeNameId);

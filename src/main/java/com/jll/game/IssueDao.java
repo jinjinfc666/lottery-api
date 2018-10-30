@@ -26,4 +26,8 @@ public interface IssueDao
 	Map<String,Object> queryAllByIssue(String lotteryType,Integer state,String startTime,String endTime,Integer pageIndex,Integer pageSize,String issueNum,Map<String, SysCode> sysCodes);
 	//追号需要的期号信息
 	List<Issue> queryIsZhIssue(String lotteryType,Date startTime,Date endTime);
+	//近期注单--------------会查询出近30个订单
+	Map<String,Object> queryNear(String lotteryType,Integer codeTypeNameId,Integer userId);
+	//未结算的注单 --------------会查询出近30个订单
+	Map<String,Object> queryUnsettlement(String lotteryType,Integer codeTypeNameId,Integer userId);	
 }

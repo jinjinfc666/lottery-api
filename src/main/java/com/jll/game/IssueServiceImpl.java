@@ -190,9 +190,11 @@ public class IssueServiceImpl implements IssueService
 					accMaps.put(order.getWalletId(), acc);
 					curAcc = accMaps.get(order.getWalletId());
 				}
-				
+				if(OrderState.SYS_CANCEL.getCode() == order.getState().intValue()){
+					continue;
+				}
 				//查找出返点
-				if(backPoint && OrderState.SYS_CANCEL.getCode() != order.getState().intValue()){
+				if(backPoint){
 					DetachedCriteria criteria2 = DetachedCriteria.forClass(UserAccountDetails.class);
 					criteria2.add(Restrictions.eq("orderId",order.getId()));
 					criteria2.add(Restrictions.eq("operationType",Constants.AccOperationType.REBATE.getCode()));
@@ -237,7 +239,7 @@ public class IssueServiceImpl implements IssueService
 					
 					List<UserAccountDetails> ret = supserDao.findByCriteria(criteria);
 					double prize = Utils.toDouble(ret.get(0).getAmount());
-					UserAccountDetails addDtail = userAccountDetailsService.initCreidrRecord(curAcc.getUserId(),curAcc, curAcc.getBalance().doubleValue(), -prize, AccOperationType.REFUND.getCode(),order.getId());
+					UserAccountDetails addDtail = userAccountDetailsService.initCreidrRecord(curAcc.getUserId(),curAcc, curAcc.getBalance().doubleValue(), -prize, AccOperationType.RECOVERY_PAYOUT.getCode(),order.getId());
 					dtlLists.add(addDtail);
 					curAcc.setBalance(new BigDecimal(addDtail.getPostAmount()).floatValue());
 				}
@@ -533,7 +535,9 @@ public class IssueServiceImpl implements IssueService
 	}
 	
 	private void modifyIssueState(Issue issue) {
-		issue.setState(Constants.IssueState.PAYOUT.getCode());
+		if(issue.getState().intValue() != Constants.IssueState.RE_PAYOUT.getCode()){
+			issue.setState(Constants.IssueState.PAYOUT.getCode());
+		}
 		saveIssue(issue);
 	}
 	
@@ -556,6 +560,12 @@ public class IssueServiceImpl implements IssueService
 			return;
 		}
 		
+		//试玩用户或者重新派奖的状态下跳过返点 
+		if(UserType.DEMO_PLAYER.getCode() != user.getUserType().intValue()
+				&& order.getState().intValue() != Constants.OrderState.RE_PAYOUT.getCode()){
+			rebate(issue, user, order);
+		}
+		
 		boolean isMatch = isMatchWinningNum(issue, order);
 		
 		if(isMatch) {//赢
@@ -575,12 +585,6 @@ public class IssueServiceImpl implements IssueService
 		}else {
 			//TODO 修改订单状态
 			modifyOrderState(order, Constants.OrderState.LOSTING);
-		}
-		
-		//试玩用户跳过返点
-		if(UserType.DEMO_PLAYER.getCode() != user.getUserType().intValue()
-				&& order.getState().intValue() != Constants.OrderState.RE_PAYOUT.getCode()){
-			rebate(issue, user, order);
 		}
 		
 	}
@@ -712,6 +716,42 @@ public class IssueServiceImpl implements IssueService
 		
 		rebate = betAmount.multiply(rebateRate);
 		return rebate;
+	}
+	//近期注单--------------会查询出近30个订单
+	@Override
+	public Map<String, Object> queryNear(String lotteryType, String userName) {
+		Map<String,Object> map=new HashMap();
+		UserInfo userInfo=userServ.getUserByUserName(userName);
+		if(userInfo==null) {
+			map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_NO_VALID_USER.getCode());
+			map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_NO_VALID_USER.getErrorMes());
+		}else {
+			String codeTypeName=Constants.SysCodeTypes.LOTTERY_TYPES.getCode();
+			SysCode sysCode=cacheServ.getSysCode(codeTypeName,codeTypeName);
+			Integer codeTypeNameId=sysCode.getId();
+			Integer userId=userInfo.getId();
+			map=issueDao.queryNear(lotteryType,codeTypeNameId,userId);
+		}
+		return map;
+	}
+	//未结算的注单 --------------会查询出近30个订单
+	@Override
+	public Map<String, Object> queryUnsettlement(String lotteryType, String userName) {
+		Map<String,Object> map=new HashMap();
+		UserInfo userInfo=userServ.getUserByUserName(userName);
+		if(userInfo==null) {
+			map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_NO_VALID_USER.getCode());
+			map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_NO_VALID_USER.getErrorMes());
+		}else {
+			String codeTypeName=Constants.SysCodeTypes.LOTTERY_TYPES.getCode();
+			SysCode sysCode=cacheServ.getSysCode(codeTypeName,codeTypeName);
+			Integer codeTypeNameId=sysCode.getId();
+			Integer userId=userInfo.getId();
+			map=issueDao.queryUnsettlement(lotteryType,codeTypeNameId,userId);
+		}
+		return map;
 	}
 	
 }
