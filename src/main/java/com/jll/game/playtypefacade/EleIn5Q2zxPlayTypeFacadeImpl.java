@@ -186,8 +186,8 @@ public class EleIn5Q2zxPlayTypeFacadeImpl  extends DefaultPlayTypeFacadeImpl {
 		}
 		
 		betAmount = MathUtil.multiply(winningBetAmount, times, Float.class);
-		betAmount = MathUtil.multiply(betAmount, monUnit, Float.class);
-		maxWinAmount = MathUtil.multiply(betAmount, singleBettingPrize, Float.class);
+		betAmount = MathUtil.multiply(betAmount, monUnit.floatValue(), Float.class);
+		maxWinAmount = MathUtil.multiply(betAmount, singleBettingPrize.floatValue(), Float.class);
 		
 		return new BigDecimal(maxWinAmount);
 	}
@@ -245,6 +245,11 @@ public class EleIn5Q2zxPlayTypeFacadeImpl  extends DefaultPlayTypeFacadeImpl {
 				for(int ii = 0; ii < betNumBits[1].length();) {
 					String aa = betNumBits[1].substring(ii, ii + 2);
 					
+					ii += 2;
+					if(aa.equals(a)) {
+						continue;
+					}
+					
 					String[] excludingArray = obtainExcludingArray(new String[] {a,aa});
 					excludingResults = new ArrayList<String[]>();
 					MathUtil.combinationSelect(excludingArray, excludingCounter, excludingResults);
@@ -275,8 +280,6 @@ public class EleIn5Q2zxPlayTypeFacadeImpl  extends DefaultPlayTypeFacadeImpl {
 							betNumList.add(row);
 						}
 					}
-					
-					ii += 2;
 				}
 				
 				i += 2;

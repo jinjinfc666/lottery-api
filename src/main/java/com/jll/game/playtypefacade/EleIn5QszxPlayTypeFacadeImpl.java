@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -28,7 +29,9 @@ public class EleIn5QszxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 	private Logger logger = Logger.getLogger(EleIn5QszxPlayTypeFacadeImpl.class);
 	
 	protected String playTypeDesc = "sm|三码/qszx|前三直选/fs-ds";
-		
+	
+	String[] optionsArray = {"01","02","03","04","05","06","07","08","09","10","11"};
+	
 	@Override
 	public boolean isMatchWinningNum(Issue issue, OrderInfo order) {
 		//开奖号码的每一位
@@ -69,17 +72,20 @@ public class EleIn5QszxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 		Float prizePattern = userServ.calPrizePattern(user, lottoType);
 		BigDecimal winningRate = calWinningRate();
 		BigDecimal singleBettingPrize = calSingleBettingPrize(prizePattern, winningRate);
-		String[] betNumSet = null;
+		//String[] betNumSet = null;
 		int betTotal = 1;
 		Float betAmount = 0F;
 		Float maxWinAmount = 0F;
 		
-		betNumSet = betNum.split(",");
-		for(String subBetNum : betNumSet) {
+		/*betNumSet = betNum.split(",");*/
+		/*for(String subBetNum : betNumSet) {
 			int len = subBetNum.length() / 2;
-			betTotal *= MathUtil.combination(1, len);
-		}
+			betTotal *= MathUtil.combination(1, len);  
+			
+			List<Map<String, String>> totalNum = parseBetNumber(subBetNum);
+		}*/
 		
+		betTotal = calBetTotal(betNum);
 		betAmount = MathUtil.multiply(betTotal, times, Float.class);
 		betAmount = MathUtil.multiply(betAmount, monUnit, Float.class);
 		maxWinAmount = MathUtil.multiply(betAmount, singleBettingPrize.floatValue(), Float.class);
@@ -103,9 +109,7 @@ public class EleIn5QszxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 	public boolean validBetNum(OrderInfo order) {
 		String betNum = null;
 		String[] betNumMul= null;
-		/*//将所有位连接
-		String combineBetNum = null;
-		Map<String, String> combineBetNumBits = null;*/
+		int betTotal = 0;
 		
 		betNum = order.getBetNum();
 		if(StringUtils.isBlank(betNum)) {
@@ -124,12 +128,6 @@ public class EleIn5QszxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 				return false;
 			}
 			
-			/*combineBetNum = betNumMulTemp.replace(",", "");
-			combineBetNumBits = splitBetNum(combineBetNum);
-			if(combineBetNumBits.size() != (combineBetNum.length() / 2)) {
-				return false;
-			}*/
-			
 			for(String betNumMulTempBit : betNumMulTempSet) {
 				if(StringUtils.isBlank(betNumMulTempBit)) {
 					return false;
@@ -142,7 +140,12 @@ public class EleIn5QszxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 					return false;
 				}
 			}
-		}		
+			
+			betTotal = calBetTotal(betNum);
+			if(betTotal == 0) {
+				return false;
+			}
+		}
 				
 		return true;
 	}
@@ -218,6 +221,13 @@ public class EleIn5QszxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 	public List<Map<String, String>> parseBetNumber(String betNum){
 		List<Map<String, String>> betNumList = new ArrayList<>();
 		String[] betNumArray = betNum.split(";");
+		List<String[]> excludingResults = null;
+		int excludingCounter = 2;
+		List<Map<String, String>> betNumCombinations = new ArrayList<>();
+		Map<String, String> betNumCombination = new HashMap<>();
+		Map<String, String> first3Bits = null;
+		StringBuffer buffer = null;
+		
 		for(String singleBetNumArray : betNumArray) {
 			String[] betNumBits = singleBetNumArray.split(",");
 			
@@ -225,21 +235,63 @@ public class EleIn5QszxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 				String a = betNumBits[0].substring(i, i + 2);
 				for(int ii = 0; ii < betNumBits[1].length();) {
 					String aa = betNumBits[1].substring(ii, ii + 2);
+					
+					ii += 2;
+					if(aa.equals(a)) {
+						continue;
+					}
 					for(int iii = 0; iii < betNumBits[2].length();) {
 						String aaa = betNumBits[2].substring(iii, iii + 2);
-						StringBuffer buffer = new StringBuffer();
-						buffer.append(a).append(aa).append(aaa);
+						//StringBuffer buffer = new StringBuffer();
 						
-						Map<String, String> row = new HashMap<String, String>();
-						row.put(Constants.KEY_FACADE_BET_NUM, buffer.toString());
-						row.put(Constants.KEY_FACADE_PATTERN, buffer.toString() + "((0[1-9])|(10)|(11)){2}");
-						row.put(Constants.KEY_FACADE_BET_NUM_SAMPLE, buffer.toString() + "0101");
-						betNumList.add(row);
+						first3Bits = new HashMap<>();
+						first3Bits.put(a, a);
+						first3Bits.put(aaa, aaa);
+						first3Bits.put(aa, aa);
 						
 						iii += 2;
+						//忽略包含相同数字的号码
+						if(first3Bits.size() != 3) {
+							continue;
+						}
+						
+						String[] excludingArray = obtainExcludingArray(new String[] {a,aa,aaa});
+						excludingResults = new ArrayList<String[]>();
+						try {					
+							MathUtil.combinationSelect(excludingArray, excludingCounter, excludingResults);
+							
+							
+							for(String[] excludingResult : excludingResults) {
+								buffer = new StringBuffer();
+								buffer.append(a).append(aa).append(aaa);
+								
+								betNumCombination = new HashMap<>();
+								betNumCombination.put(a, a);
+								betNumCombination.put(aaa, aaa);
+								betNumCombination.put(aa, aa);
+								for(String bit : excludingResult) {
+									buffer.append(bit);
+									betNumCombination.put(bit, bit);
+								}
+								
+								if(isBetNumCombinationExisting(betNumCombinations, betNumCombination)) {
+									continue;
+								}
+								
+								betNumCombinations.add(betNumCombination);
+								List<String> arrangementSel = arrangementSelect(buffer.toString());
+								for(String sel : arrangementSel) {
+									Map<String, String> row = new HashMap<String, String>();
+									row.put(Constants.KEY_FACADE_BET_NUM, sel);
+									row.put(Constants.KEY_FACADE_PATTERN, sel);
+									row.put(Constants.KEY_FACADE_BET_NUM_SAMPLE, sel);
+									betNumList.add(row);
+								}
+							}
+						}catch(Exception ex) {
+							return betNumList;
+						}
 					}
-					
-					 ii += 2;
 				}
 				
 				i += 2;
@@ -248,6 +300,60 @@ public class EleIn5QszxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 		
 		return betNumList;
 	}
+	
+	
+	private int calBetTotal(String betNum){
+		/*List<Map<String, String>> betNumList = new ArrayList<>();*/
+		String[] betNumArray = betNum.split(";");
+		/*List<String[]> excludingResults = null;
+		int excludingCounter = 2;*/
+		/*List<Map<String, String>> betNumCombinations = new ArrayList<>();
+		Map<String, String> betNumCombination = new HashMap<>();*/
+		Map<String, String> first3Bits = null;
+		int result = 0;
+		for(String singleBetNumArray : betNumArray) {
+			String[] betNumBits = singleBetNumArray.split(",");
+			
+			for(int i = 0 ; i < betNumBits[0].length();) {
+				String a = betNumBits[0].substring(i, i + 2);
+				for(int ii = 0; ii < betNumBits[1].length();) {
+					String aa = betNumBits[1].substring(ii, ii + 2);
+					
+					ii += 2;
+					
+					if(aa.equals(a)) {
+						continue;
+					}
+					
+					for(int iii = 0; iii < betNumBits[2].length();) {
+						String aaa = betNumBits[2].substring(iii, iii + 2);
+						StringBuffer buffer = new StringBuffer();
+						buffer.append(a).append(aa).append(aaa);
+						
+						first3Bits = new HashMap<>();
+						first3Bits.put(a, a);
+						first3Bits.put(aaa, aaa);
+						first3Bits.put(aa, aa);
+						//忽略包含相同数字的号码
+						iii += 2;
+						if(first3Bits.size() != 3) {
+							continue;
+						}
+						
+						result++;
+											
+					}
+					
+					 
+				}
+				
+				i += 2;
+			}
+		}
+		
+		return result;
+	}
+	
 	
 	@Override
 	public String obtainSampleBetNumber(){
@@ -305,5 +411,68 @@ public class EleIn5QszxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 		}
 		
 		return bits;
+	}
+	
+	
+	private List<String> arrangementSelect(String betNum) {
+		List<String> ret = new ArrayList<>();
+		List<String[]> results = new ArrayList<>();
+		String[] selArray = new String[betNum.length() / 2];
+		for(int i = 0, j = 0; i< betNum.length();j++) {
+			String result = betNum.substring(i, i + 2);
+			selArray[j] = result;
+			
+			i += 2;
+		}
+		MathUtil.arrangementSelect(selArray, selArray.length, results);
+		
+		for(String[] result : results) {
+			StringBuffer buffer = new StringBuffer();
+			for(String bit : result) {
+				buffer.append(bit).append(",");
+			}
+			
+			buffer.delete(buffer.length() - 1, buffer.length());
+			ret.add(buffer.toString());
+		}
+		return ret;
+	}
+	
+	private boolean isBetNumCombinationExisting(List<Map<String, String>> betNumCombinations,
+			Map<String, String> betNumCombination) {
+		for(Map<String, String> temp : betNumCombinations) {
+			int existingCounter = 0;
+			Iterator<String> ite = temp.keySet().iterator();
+			while(ite.hasNext()) {
+				String key = ite.next();
+				if(betNumCombination.get(key) != null) {
+					existingCounter++;
+				}
+			}
+			
+			if(existingCounter == temp.size()) {
+				return true;
+			}
+		}
+		return false;
+	}
+		
+	private String[] obtainExcludingArray(String[] key) {
+		String[] ret = new String[11 - key.length];
+		int indx = 0 ;
+		for(String temp : optionsArray) {
+			boolean isSame = false;
+			for(String keyTemp : key) {
+				if(temp.equals(keyTemp)) {
+					isSame = true;
+					break;
+				}
+			}
+			
+			if(!isSame) {
+				ret[indx++] = temp;
+			}
+		}
+		return ret;
 	}
 }

@@ -49,7 +49,7 @@ public class EleIn5Rx8PlayTypeFacadeImpl  extends DefaultPlayTypeFacadeImpl {
 			if(StringUtils.isBlank(temp)) {
 				continue;
 			}
-			
+			matchCount = 0;
 			betNums = splitBetNum(temp);
 			Iterator<String> ite = betNums.keySet().iterator();
 			while(ite.hasNext()) {
@@ -124,7 +124,7 @@ public class EleIn5Rx8PlayTypeFacadeImpl  extends DefaultPlayTypeFacadeImpl {
 			}
 			
 			Map<String, String> tempBits = splitBetNum(betNumTemp);
-			if(tempBits.size() < 6
+			if(tempBits.size() < 8
 					|| tempBits.size() > 11
 					|| !Utils.validateEleIn5Num(betNumTemp)
 					|| tempBits.size() != (betNumTemp.length() / 2)) {
@@ -154,6 +154,7 @@ public class EleIn5Rx8PlayTypeFacadeImpl  extends DefaultPlayTypeFacadeImpl {
 		String betNum = null;
 		String winNum = null;
 		int winningBetAmount = 0;
+		int totalWinningBetAmount = 0;
 		Float betAmount = 0F;
 		Float maxWinAmount = 0F;
 		Integer times = order.getTimes();
@@ -172,7 +173,11 @@ public class EleIn5Rx8PlayTypeFacadeImpl  extends DefaultPlayTypeFacadeImpl {
 		betNumMul = betNum.split(";");		
 		//int betNumBitCount = 0;
 		
-		for(String singleSel : betNumMul) {			
+		for(String singleSel : betNumMul) {		
+			if(StringUtils.isBlank(singleSel)) {
+				continue;
+			}
+			winningBetAmount = 0;
 			for(int i = 0; i < singleSel.length();) {
 				String singleSelBit = singleSel.substring(i, i + 2);
 				if(winNum.contains(singleSelBit)) {
@@ -184,12 +189,13 @@ public class EleIn5Rx8PlayTypeFacadeImpl  extends DefaultPlayTypeFacadeImpl {
 			}
 			
 			if(winningBetAmount >= 5) {
-				winningBetAmount += ((Long)MathUtil.combination(5, winningBetAmount)).intValue();
+				totalWinningBetAmount += ((Long)MathUtil.combination(3, 
+						(singleSel.length() / 2) - winningBetAmount)).intValue();
 			}
 		}
 		
 		
-		betAmount = MathUtil.multiply(winningBetAmount, times, Float.class);
+		betAmount = MathUtil.multiply(totalWinningBetAmount, times, Float.class);
 		betAmount = MathUtil.multiply(betAmount, monUnit.floatValue(), Float.class);
 		maxWinAmount = MathUtil.multiply(betAmount, singleBettingPrize.floatValue(), Float.class);
 		

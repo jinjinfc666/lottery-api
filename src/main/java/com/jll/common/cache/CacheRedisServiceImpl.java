@@ -280,7 +280,68 @@ public class CacheRedisServiceImpl implements CacheRedisService
 		betNumMapping = playTypeFacade.parseBetNumber(betNums);
 		statInfo = cacheObj.getContent();
 		
+		Date startDate = new Date();
+		//TODO
 		for(Map<String, String> temp : betNumMapping) {
+			String betNumTemp = temp.get(Constants.KEY_FACADE_BET_NUM);
+			String pattern = temp.get(Constants.KEY_FACADE_PATTERN);
+			String sample = temp.get(Constants.KEY_FACADE_BET_NUM_SAMPLE);
+			boolean isExisting = false;			
+			
+			/*Iterator<String> ite = statInfo.keySet().iterator();
+			while(ite.hasNext()) {
+				String key = ite.next();
+				boolean isMatch = Pattern.matches(key, sample);
+				if(isMatch) {
+					isExisting = true;
+					pattern = key;
+					logger.debug(String.format("key  %s    pattern   %s     sample  %s", key, pattern, sample));
+					break;
+				}
+			}*/
+			
+			params.put("betNum", betNumTemp);
+			params.put("times", order.getTimes());
+			params.put("monUnit", order.getPattern().floatValue());
+			params.put("lottoType", lotteryType);
+			preBetResult = playTypeFacade.preProcessNumber(params, user);
+			
+			if(preBetResult.get(pattern) != null) {
+				isExisting = true;
+			}
+			
+			if(isExisting) {
+				isExisting = false;				
+				statInfo.put(pattern, 
+						MathUtil.add((Float)statInfo.get(pattern), 
+								(Float)preBetResult.get("maxWinAmount"), 
+								Float.class));
+			}else {
+				statInfo.put(pattern, preBetResult.get("maxWinAmount"));
+			}
+			
+			if(statInfo.get(Constants.KEY_ISSUE_TOTAL_BETTING_AMOUNT) == null) {
+				statInfo.put(Constants.KEY_ISSUE_TOTAL_BETTING_AMOUNT, 
+						preBetResult.get("betAmount"));
+			}else {
+				Float total = (Float)statInfo.get(Constants.KEY_ISSUE_TOTAL_BETTING_AMOUNT);
+				total = MathUtil.add(total, 
+						(Float)preBetResult.get("betAmount"), 
+						Float.class);
+				statInfo.put(Constants.KEY_ISSUE_TOTAL_BETTING_AMOUNT, 
+						total);
+			}		
+			
+		}
+		
+		Date endDate = new Date();
+		
+		logger.debug(String.format("totaly take over  %s,   try to add %s  records  ,  existing %s records", 
+				endDate.getTime() - startDate.getTime(),
+				betNumMapping.size(),
+				statInfo.size()));
+		
+		/*for(Map<String, String> temp : betNumMapping) {
 			String betNumTemp = temp.get(Constants.KEY_FACADE_BET_NUM);
 			String pattern = temp.get(Constants.KEY_FACADE_PATTERN);
 			String sample = temp.get(Constants.KEY_FACADE_BET_NUM_SAMPLE);
@@ -326,7 +387,7 @@ public class CacheRedisServiceImpl implements CacheRedisService
 						total);
 			}		
 			
-		}
+		}*/
 		
 		cacheObj.setContent(statInfo);
 		

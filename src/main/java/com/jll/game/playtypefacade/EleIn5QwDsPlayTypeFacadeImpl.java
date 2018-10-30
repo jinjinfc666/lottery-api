@@ -88,7 +88,7 @@ public class EleIn5QwDsPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 		
 		betNumSet = betNum.split(";");
 		for(String subBetNum : betNumSet) {
-			int len = subBetNum.length();
+			int len = subBetNum.length() / 2;
 			betTotal *= MathUtil.combination(1, len);
 		}
 		

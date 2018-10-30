@@ -49,7 +49,7 @@ public class EleIn5Rx4PlayTypeFacadeImpl  extends DefaultPlayTypeFacadeImpl {
 			if(StringUtils.isBlank(temp)) {
 				continue;
 			}
-			
+			matchCount = 0;
 			betNums = splitBetNum(temp);
 			Iterator<String> ite = betNums.keySet().iterator();
 			while(ite.hasNext()) {
@@ -155,6 +155,7 @@ public class EleIn5Rx4PlayTypeFacadeImpl  extends DefaultPlayTypeFacadeImpl {
 		String betNum = null;
 		String winNum = null;
 		int winningBetAmount = 0;
+		int totalWinningBetAmount = 0;
 		Float betAmount = 0F;
 		Float maxWinAmount = 0F;
 		Integer times = order.getTimes();
@@ -178,6 +179,8 @@ public class EleIn5Rx4PlayTypeFacadeImpl  extends DefaultPlayTypeFacadeImpl {
 				continue;
 			}
 			
+			winningBetAmount = 0;
+			
 			for(int i = 0; i < singleSel.length();) {
 				String singleSelBit = singleSel.substring(i, i + 2);
 				if(winNum.contains(singleSelBit)) {
@@ -189,11 +192,11 @@ public class EleIn5Rx4PlayTypeFacadeImpl  extends DefaultPlayTypeFacadeImpl {
 			}
 			
 			if(winningBetAmount >= 4) {
-				winningBetAmount += ((Long)MathUtil.combination(4, winningBetAmount)).intValue();
+				totalWinningBetAmount += ((Long)MathUtil.combination(4, winningBetAmount)).intValue();
 			}
 		}
 		
-		betAmount = MathUtil.multiply(winningBetAmount, times, Float.class);
+		betAmount = MathUtil.multiply(totalWinningBetAmount, times, Float.class);
 		betAmount = MathUtil.multiply(betAmount, monUnit.floatValue(), Float.class);
 		maxWinAmount = MathUtil.multiply(betAmount, singleBettingPrize.floatValue(), Float.class);
 		

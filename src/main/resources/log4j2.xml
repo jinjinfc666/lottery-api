@@ -46,7 +46,7 @@
 			<AppenderRef ref="ROOT"/>
 		</logger>
 		
-		<logger name="org.springframework" level="debug" additivity="false">
+		<logger name="org.springframework" level="error" additivity="false">
 			<AppenderRef ref="Console"/>
 			<AppenderRef ref="ROOT"/>
 		</logger>

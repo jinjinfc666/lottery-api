@@ -191,8 +191,8 @@ public class EleIn5Rx1PlayTypeFacadeImpl  extends DefaultPlayTypeFacadeImpl {
 		}
 		
 		betAmount = MathUtil.multiply(winningBetAmount, times, Float.class);
-		betAmount = MathUtil.multiply(betAmount, monUnit, Float.class);
-		maxWinAmount = MathUtil.multiply(betAmount, singleBettingPrize, Float.class);
+		betAmount = MathUtil.multiply(betAmount, monUnit.floatValue(), Float.class);
+		maxWinAmount = MathUtil.multiply(betAmount, singleBettingPrize.floatValue(), Float.class);
 		
 		return new BigDecimal(maxWinAmount);
 	}
@@ -315,31 +315,6 @@ public class EleIn5Rx1PlayTypeFacadeImpl  extends DefaultPlayTypeFacadeImpl {
 		return betNumList;
 	}
 
-	private String[] obtainExcludingArray(String key) {
-		String[] ret = new String[10];
-		int indx = 0 ;
-		for(String temp : optionsArray) {
-			if(!temp.equals(key)) {
-				ret[indx++] = temp;
-			}
-		}
-		return ret;
-	}
-	
-	private static boolean isExisting(List<Map<String, String>> betNumList, String tempStr) {
-		for(Map<String, String> temp : betNumList) {
-			String betNum = temp.get(Constants.KEY_FACADE_BET_NUM);
-			if(StringUtils.isBlank(betNum)) {
-				return false;
-			}
-			
-			if(betNum.equals(tempStr)) {
-				return true;
-			}
-		}
-		
-		return false;
-	}
 	
 	private List<String> arrangementSelect(String betNum) {
 		List<String> ret = new ArrayList<>();

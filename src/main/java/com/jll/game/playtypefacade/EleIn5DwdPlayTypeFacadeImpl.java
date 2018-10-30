@@ -55,12 +55,9 @@ public class EleIn5DwdPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 					continue;
 				}
 				Map<String, String> tempBits = splitBetNum(tempSet[i]);
-				Iterator<String> ite = tempBits.keySet().iterator();
-				while(ite.hasNext()) {
-					String key = ite.next();
-					if(winNumSet[i].contains(key)) {
-						return true;
-					}
+				
+				if(tempBits.get(winNumSet[i]) != null) {
+					return true;
 				}
 			}
 		}
@@ -187,12 +184,9 @@ public class EleIn5DwdPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 				}
 				
 				Map<String, String> tempBits = splitBetNum(singleSelSet[i]);
-				Iterator<String> ite = tempBits.keySet().iterator();
-				while(ite.hasNext()) {
-					String key = ite.next();
-					if(winNumSet[i].contains(key)) {
-						winningBetAmount++;
-					}
+				
+				if(tempBits.get(winNumSet[i]) != null) {
+					winningBetAmount++;
 				}
 			}			
 		}

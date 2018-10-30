@@ -714,28 +714,4 @@ public class IssueServiceImpl implements IssueService
 		return rebate;
 	}
 	
-	/*protected void changeBulletinBoard(String lottoType, String issueNum, Issue issue) {
-		BulletinBoard bulletinBoard;
-		//防止多线程情况下，获取旧的信息
-		bulletinBoard = cacheServ.getBulletinBoard(lottoType);
-		if(bulletinBoard.getCurrIssue() == null) {
-			try {
-				Thread.sleep(30000);
-				
-				bulletinBoard = cacheServ.getBulletinBoard(lottoType);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-		if(bulletinBoard != null) {
-			if(bulletinBoard.getLastIssue() != null) {
-				Issue lastIssue = bulletinBoard.getLastIssue();
-				if(lastIssue.getIssueNum().equals(issueNum)) {
-					lastIssue.setRetNum(issue.getRetNum());									
-					bulletinBoard.setLastIssue(lastIssue);
-					cacheServ.setBulletinBoard(lottoType, bulletinBoard);												
-				}
-			}
-		}
-	}*/
 }
