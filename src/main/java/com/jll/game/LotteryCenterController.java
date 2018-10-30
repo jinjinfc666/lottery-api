@@ -371,7 +371,7 @@ public class LotteryCenterController {
 		return resp;
 	}
 	//未结算的注单  (只给30期)前端只传彩种，默认查询state为0的数据显示给前端
-	@RequestMapping(value="/{lottery-type}/unsettled-bet", method = { RequestMethod.GET }, consumes=MediaType.APPLICATION_JSON_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value="/{lottery-type}/unsettled-bet", method = { RequestMethod.GET }, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> queryUnsettledBet(@PathVariable(name = "lottery-type", required = true) String lotteryType){
 		Map<String,Object> map=new HashMap();
 		String userName = null;
@@ -387,7 +387,7 @@ public class LotteryCenterController {
 		
 	}
 	//近期注单   前端只传过来彩种，后台默认只查询30条记录给前端
-	@RequestMapping(value="/{lottery-type}/recent-bet", method = { RequestMethod.GET }, consumes=MediaType.APPLICATION_JSON_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value="/{lottery-type}/recent-bet", method = { RequestMethod.GET }, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> queryRecentBet(@PathVariable(name = "lottery-type", required = true) String lotteryType){
 		Map<String,Object> map=new HashMap();
 		String userName = null;
