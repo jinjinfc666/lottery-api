@@ -41,6 +41,18 @@
                 <comment>Ͷע���</comment>
             </column>
         </property>
+        
+        <property generated="never" lazy="false" name="winBetTotal" optimistic-lock="true" type="java.lang.Float" unique="false">
+            <column name="win_bet_total" precision="8">
+                <comment>Ͷע���</comment>
+            </column>
+        </property>
+        
+        <property generated="never" lazy="false" name="winAmount" optimistic-lock="true" type="java.lang.Float" unique="false">
+            <column name="win_amount" precision="8">
+                <comment>Ͷע���</comment>
+            </column>
+        </property>
         <property generated="never" lazy="false" name="times" optimistic-lock="true" type="java.lang.Integer" unique="false">
             <column name="times">
                 <comment>����</comment>

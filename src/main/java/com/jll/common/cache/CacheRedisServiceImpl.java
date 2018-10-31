@@ -578,12 +578,11 @@ public class CacheRedisServiceImpl implements CacheRedisService
 		timesStr = sysCode.getCodeVal();
 		timesArray = timesStr.split(",");
 		
-		for(String temp : timesArray) {
-			if(temp.equals(Integer.toString(times))) {
-				return true;
-			}
+		Integer startNum=Integer.valueOf(timesArray[0]);
+		Integer endNum=Integer.valueOf(timesArray[1]);
+		if(startNum<=times&&endNum>=times) {
+			return true;
 		}
-		
 		return false;
 	}
 

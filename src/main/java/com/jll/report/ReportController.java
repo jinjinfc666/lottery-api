@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -178,6 +179,52 @@ public class ReportController {
 		ret.put("issueNum", issueNum);   
 		ret.put("userName", userName);
 		ret.put("orderNum", orderNum);
+		logger.debug(ret+"------------------------------queryLoyTst--------------------------------------");
+		try {
+			PageBean list = loyTstService.queryLoyTst(ret);
+			logger.debug(list+"------------------------------queryLoyTst--------------------------------------");
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+			ret.put("data", list);
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+		}
+		return ret;
+	}
+	//前端投注记录查询
+	@RequestMapping(value={"/betRecord"}, method={RequestMethod.GET}, produces={"application/json"})
+	public Map<String, Object> querybetRecord(@RequestParam(name = "lotteryType", required = false) String lotteryType,//彩种 String
+			  @RequestParam(name = "state", required = false) Integer state,//0,等待派奖;1,赢;2,输;3,用户取消订单;4,系统取消订单
+			  @RequestParam(name = "startTime", required = true) String startTime,//时间 String
+			  @RequestParam(name = "endTime", required = true) String endTime,//时间 String
+			  @RequestParam(name = "pageIndex", required = true) Integer pageIndex,//当前请求页
+			  HttpServletRequest request) {
+		Map<String, Object> ret = new HashMap<>();
+		if(StringUtils.isBlank(startTime)||StringUtils.isBlank(endTime)) {
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+	    	return ret;
+		}
+		String userName=SecurityContextHolder.getContext().getAuthentication().getName();
+		UserInfo userInfo=userInfoService.getUserByUserName(userName);
+		if(userInfo==null) {
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_INVALID_USER_NAME.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_INVALID_USER_NAME.getErrorMes());
+	    	return ret;
+		}
+		Integer pageSize=Constants.Pagination.SUM_NUMBER.getCode();
+		ret.put("pageSize", pageSize);
+		ret.put("pageIndex", pageIndex);
+		ret.put("lotteryType", lotteryType);
+		ret.put("state", state);
+		ret.put("startTime", startTime);
+		ret.put("endTime", endTime); 
+		ret.put("userName", userName);
 		logger.debug(ret+"------------------------------queryLoyTst--------------------------------------");
 		try {
 			PageBean list = loyTstService.queryLoyTst(ret);
