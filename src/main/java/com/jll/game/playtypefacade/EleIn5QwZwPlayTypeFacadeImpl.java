@@ -1,6 +1,7 @@
 package com.jll.game.playtypefacade;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -184,6 +185,7 @@ public class EleIn5QwZwPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 		BigDecimal singleBettingPrize = null;
 		Integer[] betNumSetList = new Integer[5];
 		String midBit = null;
+		BigDecimal ret = null;
 		
 		winNum = issue.getRetNum();
 		betNum = order.getBetNum();
@@ -211,7 +213,7 @@ public class EleIn5QwZwPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 		
 		//1700 --- 1960
 		Float prizePattern = userServ.calPrizePattern(user, issue.getLotteryType());
-		BigDecimal winningRate = calWinningRate(3);
+		BigDecimal winningRate = calWinningRate(betNumSetList[2]);
 		singleBettingPrize =  calSingleBettingPrize(prizePattern, winningRate);
 		
 		
@@ -225,11 +227,13 @@ public class EleIn5QwZwPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 		betAmount = MathUtil.multiply(betAmount, monUnit.floatValue(), Float.class);
 		maxWinAmount = MathUtil.multiply(betAmount, singleBettingPrize.floatValue(), Float.class);
 		
-		return new BigDecimal(maxWinAmount);
+		ret = new BigDecimal(maxWinAmount);
+		ret.setScale(4, BigDecimal.ROUND_HALF_UP);
+		return ret;
 	}
 
-	private BigDecimal calWinningRate(int oddCounter) {
-		switch(oddCounter) {
+	private BigDecimal calWinningRate(int midBit) {
+		switch(midBit) {
 			case 3:{
 				BigDecimal winningRate = null;
 				Double tempVal = Double.parseDouble(Long.toString(MathUtil.combination(2, 8)));
