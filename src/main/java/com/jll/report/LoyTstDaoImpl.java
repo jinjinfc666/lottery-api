@@ -47,7 +47,7 @@ public class LoyTstDaoImpl extends DefaultGenericDaoImpl<OrderInfo> implements L
 		String orderNumSql="";
 		Map<String,Object> map=new HashMap();
 		if(!StringUtils.isBlank(lotteryType)) {
-			lotteryTypeSql=" and e.codeName=:lotteryType"; 
+			lotteryTypeSql=" and d.codeName=:lotteryType"; 
 			map.put("lotteryType", lotteryType);
 		}
 		if(isZh!=null) {
