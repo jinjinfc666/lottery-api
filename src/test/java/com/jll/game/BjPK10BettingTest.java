@@ -33,16 +33,16 @@ import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
 
 
-public class CqsscBettingTest extends ControllerJunitBase{
+public class BjPK10BettingTest extends ControllerJunitBase{
 		
-	public CqsscBettingTest(String name) {
+	public BjPK10BettingTest(String name) {
 		super(name);
 	}
 	
 	public void ItestBetting_qcssc_qszx() throws Exception{
 		int maxTimes = 6000;
 		int counter = 0;
-		String lottoType = "cqssc";
+		String lottoType = "bjpk10";
 		long maxWaittingTime = 30000;
 		
 		try {
@@ -152,7 +152,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 	public void ItestBetting_qcssc_zszx() throws Exception{
 		int maxTimes = 10000;
 		int counter = 0;
-		String lottoType = "cqssc";
+		String lottoType = "bjpk10";
 		
 		while(counter < maxTimes) {
 			Thread.sleep(1000);
@@ -208,7 +208,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 							node.putPOJO("terminalType", "0");
 							
 							bis = new ByteArrayInputStream(mapper.writeValueAsBytes(array));
-							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/cqssc/bet/zh/1/wallet/15",
+							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/bjpk10/bet/zh/1/wallet/15",
 									bis,
 									MediaType.APPLICATION_JSON_VALUE);
 							WebConversation wc = new WebConversation();
@@ -258,7 +258,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 	public void ItestBetting_qcssc_hszx() throws Exception{
 		int maxTimes = 10000;
 		int counter = 0;
-		String lottoType = "cqssc";
+		String lottoType = "bjpk10";
 		
 		while(counter < maxTimes) {
 			Thread.sleep(1000);
@@ -314,7 +314,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 							node.putPOJO("terminalType", "0");
 							
 							bis = new ByteArrayInputStream(mapper.writeValueAsBytes(array));
-							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/cqssc/bet/zh/1/wallet/15",
+							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/bjpk10/bet/zh/1/wallet/15",
 									bis,
 									MediaType.APPLICATION_JSON_VALUE);
 							WebConversation wc = new WebConversation();
@@ -364,7 +364,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 	public void ItestBetting_qcssc_qszuxzs() throws Exception{
 		int maxTimes = 10000;
 		int counter = 0;
-		String lottoType = "cqssc";
+		String lottoType = "bjpk10";
 		while(counter < maxTimes) {
 			Thread.sleep(1000);
 			
@@ -419,7 +419,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 							node.putPOJO("terminalType", "0");
 							
 							bis = new ByteArrayInputStream(mapper.writeValueAsBytes(array));
-							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/cqssc/bet/zh/1/wallet/15",
+							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/bjpk10/bet/zh/1/wallet/15",
 									bis,
 									MediaType.APPLICATION_JSON_VALUE);
 							WebConversation wc = new WebConversation();
@@ -468,7 +468,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 	public void ItestBetting_qcssc_qszuxzl() throws Exception{
 		int maxTimes = 10000;
 		int counter = 0;
-		String lottoType = "cqssc";
+		String lottoType = "bjpk10";
 		
 		while(counter < maxTimes) {
 			Thread.sleep(1000);
@@ -524,7 +524,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 							node.putPOJO("terminalType", "0");
 							
 							bis = new ByteArrayInputStream(mapper.writeValueAsBytes(array));
-							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/cqssc/bet/zh/1/wallet/15",
+							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/bjpk10/bet/zh/1/wallet/15",
 									bis,
 									MediaType.APPLICATION_JSON_VALUE);
 							WebConversation wc = new WebConversation();
@@ -574,7 +574,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 	public void ItestBetting_qcssc_qszuxMix() throws Exception{
 		int maxTimes = 10000;
 		int counter = 0;
-		String lottoType = "cqssc";
+		String lottoType = "bjpk10";
 		while(counter < maxTimes) {
 			Thread.sleep(1000);
 			
@@ -629,7 +629,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 							node.putPOJO("terminalType", "0");
 							
 							bis = new ByteArrayInputStream(mapper.writeValueAsBytes(array));
-							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/cqssc/bet/zh/1/wallet/15",
+							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/bjpk10/bet/zh/1/wallet/15",
 									bis,
 									MediaType.APPLICATION_JSON_VALUE);
 							WebConversation wc = new WebConversation();
@@ -678,7 +678,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 	public void ItestBetting_qcssc_zszuxZs() throws Exception{
 		int maxTimes = 10000;
 		int counter = 0;
-		String lottoType = "cqssc";
+		String lottoType = "bjpk10";
 		while(counter < maxTimes) {
 			Thread.sleep(1000);
 			
@@ -733,7 +733,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 							node.putPOJO("terminalType", "0");
 							
 							bis = new ByteArrayInputStream(mapper.writeValueAsBytes(array));
-							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/cqssc/bet/zh/1/wallet/15",
+							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/bjpk10/bet/zh/1/wallet/15",
 									bis,
 									MediaType.APPLICATION_JSON_VALUE);
 							WebConversation wc = new WebConversation();
@@ -782,7 +782,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 	public void ItestBetting_qcssc_zszuxZl() throws Exception{
 		int maxTimes = 10000;
 		int counter = 0;
-		String lottoType = "cqssc";
+		String lottoType = "bjpk10";
 		while(counter < maxTimes) {
 			Thread.sleep(1000);
 			
@@ -837,7 +837,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 							node.putPOJO("terminalType", "0");
 							
 							bis = new ByteArrayInputStream(mapper.writeValueAsBytes(array));
-							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/cqssc/bet/zh/1/wallet/15",
+							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/bjpk10/bet/zh/1/wallet/15",
 									bis,
 									MediaType.APPLICATION_JSON_VALUE);
 							WebConversation wc = new WebConversation();
@@ -887,7 +887,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 	public void ItestBetting_qcssc_zszuxMix() throws Exception{
 		int maxTimes = 10000;
 		int counter = 0;
-		String lottoType = "cqssc";
+		String lottoType = "bjpk10";
 		
 		while(counter < maxTimes) {
 			Thread.sleep(1000);
@@ -943,7 +943,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 							node.putPOJO("terminalType", "0");
 							
 							bis = new ByteArrayInputStream(mapper.writeValueAsBytes(array));
-							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/cqssc/bet/zh/1/wallet/15",
+							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/bjpk10/bet/zh/1/wallet/15",
 									bis,
 									MediaType.APPLICATION_JSON_VALUE);
 							WebConversation wc = new WebConversation();
@@ -992,7 +992,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 	public void ItestBetting_qcssc_hszuxZs() throws Exception{
 		int maxTimes = 10000;
 		int counter = 0;
-		String lottoType = "cqssc";
+		String lottoType = "bjpk10";
 		while(counter < maxTimes) {
 			Thread.sleep(1000);
 			
@@ -1047,7 +1047,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 							node.putPOJO("terminalType", "0");
 							
 							bis = new ByteArrayInputStream(mapper.writeValueAsBytes(array));
-							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/cqssc/bet/zh/1/wallet/15",
+							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/bjpk10/bet/zh/1/wallet/15",
 									bis,
 									MediaType.APPLICATION_JSON_VALUE);
 							WebConversation wc = new WebConversation();
@@ -1097,7 +1097,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 	public void ItestBetting_qcssc_hszuxZl() throws Exception{
 		int maxTimes = 10000;
 		int counter = 0;
-		String lottoType = "cqssc";
+		String lottoType = "bjpk10";
 		while(counter < maxTimes) {
 			Thread.sleep(1000);
 			
@@ -1152,7 +1152,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 							node.putPOJO("terminalType", "0");
 							
 							bis = new ByteArrayInputStream(mapper.writeValueAsBytes(array));
-							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/cqssc/bet/zh/1/wallet/15",
+							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/bjpk10/bet/zh/1/wallet/15",
 									bis,
 									MediaType.APPLICATION_JSON_VALUE);
 							WebConversation wc = new WebConversation();
@@ -1201,7 +1201,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 	public void ItestBetting_qcssc_hszuxMix() throws Exception{
 		int maxTimes = 10000;
 		int counter = 0;
-		String lottoType = "cqssc";
+		String lottoType = "bjpk10";
 		while(counter < maxTimes) {
 			Thread.sleep(1000);
 			
@@ -1256,7 +1256,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 							node.putPOJO("terminalType", "0");
 							
 							bis = new ByteArrayInputStream(mapper.writeValueAsBytes(array));
-							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/cqssc/bet/zh/1/wallet/15",
+							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/bjpk10/bet/zh/1/wallet/15",
 									bis,
 									MediaType.APPLICATION_JSON_VALUE);
 							WebConversation wc = new WebConversation();
@@ -1306,7 +1306,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 	public void ItestBetting_qcssc_wxq2() throws Exception{
 		int maxTimes = 10000;
 		int counter = 0;
-		String lottoType = "cqssc";
+		String lottoType = "bjpk10";
 		while(counter < maxTimes) {
 			Thread.sleep(1000);
 			
@@ -1361,7 +1361,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 							node.putPOJO("terminalType", "0");
 							
 							bis = new ByteArrayInputStream(mapper.writeValueAsBytes(array));
-							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/cqssc/bet/zh/1/wallet/15",
+							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/bjpk10/bet/zh/1/wallet/15",
 									bis,
 									MediaType.APPLICATION_JSON_VALUE);
 							WebConversation wc = new WebConversation();
@@ -1412,7 +1412,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 	public void ItestBetting_qcssc_wxq2Zx() throws Exception{
 		int maxTimes = 10000;
 		int counter = 0;
-		String lottoType = "cqssc";
+		String lottoType = "bjpk10";
 		while(counter < maxTimes) {
 			Thread.sleep(1000);
 			
@@ -1461,7 +1461,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 							node.putPOJO("terminalType", "0");
 							
 							bis = new ByteArrayInputStream(mapper.writeValueAsBytes(array));
-							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/cqssc/bet/zh/1/wallet/15",
+							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/bjpk10/bet/zh/1/wallet/15",
 									bis,
 									MediaType.APPLICATION_JSON_VALUE);
 							WebConversation wc = new WebConversation();
@@ -1511,7 +1511,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 	public void ItestBetting_qcssc_wxh2() throws Exception{
 		int maxTimes = 10000;
 		int counter = 0;
-		String lottoType = "cqssc";
+		String lottoType = "bjpk10";
 		while(counter < maxTimes) {
 			Thread.sleep(1000);
 			
@@ -1564,7 +1564,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 							node.putPOJO("terminalType", "0");
 							
 							bis = new ByteArrayInputStream(mapper.writeValueAsBytes(array));
-							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/cqssc/bet/zh/1/wallet/15",
+							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/bjpk10/bet/zh/1/wallet/15",
 									bis,
 									MediaType.APPLICATION_JSON_VALUE);
 							WebConversation wc = new WebConversation();
@@ -1614,7 +1614,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 	public void ItestBetting_qcssc_wxh2Zx() throws Exception{
 		int maxTimes = 10000;
 		int counter = 0;
-		String lottoType = "cqssc";
+		String lottoType = "bjpk10";
 		while(counter < maxTimes) {
 			Thread.sleep(1000);
 			
@@ -1663,7 +1663,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 							node.putPOJO("terminalType", "0");
 							
 							bis = new ByteArrayInputStream(mapper.writeValueAsBytes(array));
-							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/cqssc/bet/zh/1/wallet/15",
+							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/bjpk10/bet/zh/1/wallet/15",
 									bis,
 									MediaType.APPLICATION_JSON_VALUE);
 							WebConversation wc = new WebConversation();
@@ -1712,7 +1712,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 	public void ItestBetting_qcssc_bdw_qs() throws Exception{
 		int maxTimes = 10000;
 		int counter = 0;
-		String lottoType = "cqssc";
+		String lottoType = "bjpk10";
 		while(counter < maxTimes) {
 			Thread.sleep(1000);
 			
@@ -1761,7 +1761,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 							node.putPOJO("terminalType", "0");
 							
 							bis = new ByteArrayInputStream(mapper.writeValueAsBytes(array));
-							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/cqssc/bet/zh/1/wallet/15",
+							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/bjpk10/bet/zh/1/wallet/15",
 									bis,
 									MediaType.APPLICATION_JSON_VALUE);
 							WebConversation wc = new WebConversation();
@@ -1811,7 +1811,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 	public void ItestBetting_qcssc_bdw_zs() throws Exception{
 		int maxTimes = 10000;
 		int counter = 0;
-		String lottoType = "cqssc";
+		String lottoType = "bjpk10";
 		while(counter < maxTimes) {
 			Thread.sleep(1000);
 			
@@ -1860,7 +1860,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 							node.putPOJO("terminalType", "0");
 							
 							bis = new ByteArrayInputStream(mapper.writeValueAsBytes(array));
-							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/cqssc/bet/zh/1/wallet/15",
+							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/bjpk10/bet/zh/1/wallet/15",
 									bis,
 									MediaType.APPLICATION_JSON_VALUE);
 							WebConversation wc = new WebConversation();
@@ -1910,7 +1910,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 	public void ItestBetting_qcssc_bdw_hs() throws Exception{
 		int maxTimes = 10000;
 		int counter = 0;
-		String lottoType = "cqssc";
+		String lottoType = "bjpk10";
 		while(counter < maxTimes) {
 			Thread.sleep(1000);
 			
@@ -1959,7 +1959,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 							node.putPOJO("terminalType", "0");
 							
 							bis = new ByteArrayInputStream(mapper.writeValueAsBytes(array));
-							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/cqssc/bet/zh/1/wallet/15",
+							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/bjpk10/bet/zh/1/wallet/15",
 									bis,
 									MediaType.APPLICATION_JSON_VALUE);
 							WebConversation wc = new WebConversation();
@@ -2009,7 +2009,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 	public void ItestBetting_qcssc_dwd() throws Exception{
 		int maxTimes = 10000;
 		int counter = 0;
-		String lottoType = "cqssc";
+		String lottoType = "bjpk10";
 		while(counter < maxTimes) {
 			Thread.sleep(1000);
 			
@@ -2058,7 +2058,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 							node.putPOJO("terminalType", "0");
 							
 							bis = new ByteArrayInputStream(mapper.writeValueAsBytes(array));
-							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/cqssc/bet/zh/1/wallet/15",
+							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/bjpk10/bet/zh/1/wallet/15",
 									bis,
 									MediaType.APPLICATION_JSON_VALUE);
 							WebConversation wc = new WebConversation();
@@ -2108,7 +2108,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 	public void ItestBetting_guanDong11In5_qszx() throws Exception{
 		int maxTimes = 10000;
 		int counter = 0;
-		String lottoType = "cqssc";
+		String lottoType = "bjpk10";
 		while(counter < maxTimes) {
 			Thread.sleep(1000);
 			
@@ -2157,7 +2157,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 							node.putPOJO("terminalType", "0");
 							
 							bis = new ByteArrayInputStream(mapper.writeValueAsBytes(array));
-							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/cqssc/bet/zh/1/wallet/15",
+							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/bjpk10/bet/zh/1/wallet/15",
 									bis,
 									MediaType.APPLICATION_JSON_VALUE);
 							WebConversation wc = new WebConversation();
@@ -2207,7 +2207,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 	public void ItestBetting_guanDong11In5_qszux() throws Exception{
 		int maxTimes = 10000;
 		int counter = 0;
-		String lottoType = "cqssc";
+		String lottoType = "bjpk10";
 		while(counter < maxTimes) {
 			Thread.sleep(1000);
 			
@@ -2256,7 +2256,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 							node.putPOJO("terminalType", "0");
 							
 							bis = new ByteArrayInputStream(mapper.writeValueAsBytes(array));
-							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/cqssc/bet/zh/1/wallet/15",
+							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/bjpk10/bet/zh/1/wallet/15",
 									bis,
 									MediaType.APPLICATION_JSON_VALUE);
 							WebConversation wc = new WebConversation();
@@ -2306,7 +2306,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 	public void ItestBetting_guanDong11In5_wxq2() throws Exception{
 		int maxTimes = 10000;
 		int counter = 0;
-		String lottoType = "cqssc";
+		String lottoType = "bjpk10";
 		while(counter < maxTimes) {
 			Thread.sleep(1000);
 			
@@ -2355,7 +2355,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 							node.putPOJO("terminalType", "0");
 							
 							bis = new ByteArrayInputStream(mapper.writeValueAsBytes(array));
-							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/cqssc/bet/zh/1/wallet/15",
+							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/bjpk10/bet/zh/1/wallet/15",
 									bis,
 									MediaType.APPLICATION_JSON_VALUE);
 							WebConversation wc = new WebConversation();
@@ -2405,7 +2405,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 	public void ItestBetting_guanDong11In5_wxq2Zx() throws Exception{
 		int maxTimes = 10000;
 		int counter = 0;
-		String lottoType = "cqssc";
+		String lottoType = "bjpk10";
 		while(counter < maxTimes) {
 			Thread.sleep(1000);
 			
@@ -2454,7 +2454,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 							node.putPOJO("terminalType", "0");
 							
 							bis = new ByteArrayInputStream(mapper.writeValueAsBytes(array));
-							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/cqssc/bet/zh/1/wallet/15",
+							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/bjpk10/bet/zh/1/wallet/15",
 									bis,
 									MediaType.APPLICATION_JSON_VALUE);
 							WebConversation wc = new WebConversation();
@@ -2504,7 +2504,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 	public void ItestBetting_guanDong11In5_bdw() throws Exception{
 		int maxTimes = 10000;
 		int counter = 0;
-		String lottoType = "cqssc";
+		String lottoType = "bjpk10";
 		while(counter < maxTimes) {
 			Thread.sleep(1000);
 			
@@ -2553,7 +2553,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 							node.putPOJO("terminalType", "0");
 							
 							bis = new ByteArrayInputStream(mapper.writeValueAsBytes(array));
-							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/cqssc/bet/zh/1/wallet/15",
+							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/bjpk10/bet/zh/1/wallet/15",
 									bis,
 									MediaType.APPLICATION_JSON_VALUE);
 							WebConversation wc = new WebConversation();
@@ -2603,7 +2603,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 	public void ItestBetting_guanDong11In5_dwd() throws Exception{
 		int maxTimes = 10000;
 		int counter = 0;
-		String lottoType = "cqssc";
+		String lottoType = "bjpk10";
 		while(counter < maxTimes) {
 			Thread.sleep(1000);
 			
@@ -2652,7 +2652,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 							node.putPOJO("terminalType", "0");
 							
 							bis = new ByteArrayInputStream(mapper.writeValueAsBytes(array));
-							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/cqssc/bet/zh/1/wallet/15",
+							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/bjpk10/bet/zh/1/wallet/15",
 									bis,
 									MediaType.APPLICATION_JSON_VALUE);
 							WebConversation wc = new WebConversation();
@@ -2702,7 +2702,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 	public void ItestBetting_guanDong11In5_qwDs() throws Exception{
 		int maxTimes = 10000;
 		int counter = 0;
-		String lottoType = "cqssc";
+		String lottoType = "bjpk10";
 		
 		while(counter < maxTimes) {
 			Thread.sleep(1000);
@@ -2752,7 +2752,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 							node.putPOJO("terminalType", "0");
 							
 							bis = new ByteArrayInputStream(mapper.writeValueAsBytes(array));
-							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/cqssc/bet/zh/1/wallet/15",
+							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/bjpk10/bet/zh/1/wallet/15",
 									bis,
 									MediaType.APPLICATION_JSON_VALUE);
 							WebConversation wc = new WebConversation();
@@ -2803,7 +2803,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 	public void ItestBetting_guanDong11In5_qwZw() throws Exception{
 		int maxTimes = 10000;
 		int counter = 0;
-		String lottoType = "cqssc";
+		String lottoType = "bjpk10";
 		while(counter < maxTimes) {
 			Thread.sleep(1000);
 			
@@ -2852,7 +2852,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 							node.putPOJO("terminalType", "0");
 							
 							bis = new ByteArrayInputStream(mapper.writeValueAsBytes(array));
-							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/cqssc/bet/zh/1/wallet/15",
+							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/bjpk10/bet/zh/1/wallet/15",
 									bis,
 									MediaType.APPLICATION_JSON_VALUE);
 							WebConversation wc = new WebConversation();
@@ -2903,7 +2903,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 	public void ItestBetting_guanDong11In5_Rx1() throws Exception{
 		int maxTimes = 10000;
 		int counter = 0;
-		String lottoType = "cqssc";
+		String lottoType = "bjpk10";
 		while(counter < maxTimes) {
 			Thread.sleep(1000);
 			
@@ -2952,7 +2952,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 							node.putPOJO("terminalType", "0");
 							
 							bis = new ByteArrayInputStream(mapper.writeValueAsBytes(array));
-							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/cqssc/bet/zh/1/wallet/15",
+							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/bjpk10/bet/zh/1/wallet/15",
 									bis,
 									MediaType.APPLICATION_JSON_VALUE);
 							WebConversation wc = new WebConversation();
@@ -3002,7 +3002,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 	public void ItestBetting_guanDong11In5_Rx2() throws Exception{
 		int maxTimes = 10000;
 		int counter = 0;
-		String lottoType = "cqssc";
+		String lottoType = "bjpk10";
 		
 		while(counter < maxTimes) {
 			Thread.sleep(1000);
@@ -3052,7 +3052,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 							node.putPOJO("terminalType", "0");
 							
 							bis = new ByteArrayInputStream(mapper.writeValueAsBytes(array));
-							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/cqssc/bet/zh/1/wallet/15",
+							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/bjpk10/bet/zh/1/wallet/15",
 									bis,
 									MediaType.APPLICATION_JSON_VALUE);
 							WebConversation wc = new WebConversation();
@@ -3102,7 +3102,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 	public void ItestBetting_guanDong11In5_Rx3() throws Exception{
 		int maxTimes = 10000;
 		int counter = 0;
-		String lottoType = "cqssc";
+		String lottoType = "bjpk10";
 		
 		while(counter < maxTimes) {
 			Thread.sleep(1000);
@@ -3153,7 +3153,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 							node.putPOJO("terminalType", "0");
 							
 							bis = new ByteArrayInputStream(mapper.writeValueAsBytes(array));
-							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/cqssc/bet/zh/1/wallet/15",
+							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/bjpk10/bet/zh/1/wallet/15",
 									bis,
 									MediaType.APPLICATION_JSON_VALUE);
 							WebConversation wc = new WebConversation();
@@ -3203,7 +3203,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 	public void ItestBetting_guanDong11In5_Rx4() throws Exception{
 		int maxTimes = 10000;
 		int counter = 0;
-		String lottoType = "cqssc";
+		String lottoType = "bjpk10";
 		
 		while(counter < maxTimes) {
 			Thread.sleep(1000);
@@ -3253,7 +3253,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 							node.putPOJO("terminalType", "0");
 							
 							bis = new ByteArrayInputStream(mapper.writeValueAsBytes(array));
-							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/cqssc/bet/zh/1/wallet/15",
+							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/bjpk10/bet/zh/1/wallet/15",
 									bis,
 									MediaType.APPLICATION_JSON_VALUE);
 							WebConversation wc = new WebConversation();
@@ -3303,7 +3303,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 	public void ItestBetting_guanDong11In5_Rx5() throws Exception{
 		int maxTimes = 10000;
 		int counter = 0;
-		String lottoType = "cqssc";
+		String lottoType = "bjpk10";
 		
 		
 		while(counter < maxTimes) {
@@ -3354,7 +3354,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 							node.putPOJO("terminalType", "0");
 							
 							bis = new ByteArrayInputStream(mapper.writeValueAsBytes(array));
-							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/cqssc/bet/zh/1/wallet/15",
+							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/bjpk10/bet/zh/1/wallet/15",
 									bis,
 									MediaType.APPLICATION_JSON_VALUE);
 							WebConversation wc = new WebConversation();
@@ -3404,7 +3404,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 	public void ItestBetting_guanDong11In5_Rx6() throws Exception{
 		int maxTimes = 10000;
 		int counter = 0;
-		String lottoType = "cqssc";
+		String lottoType = "bjpk10";
 		
 		while(counter < maxTimes) {
 			Thread.sleep(1000);
@@ -3454,7 +3454,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 							node.putPOJO("terminalType", "0");
 							
 							bis = new ByteArrayInputStream(mapper.writeValueAsBytes(array));
-							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/cqssc/bet/zh/1/wallet/15",
+							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/bjpk10/bet/zh/1/wallet/15",
 									bis,
 									MediaType.APPLICATION_JSON_VALUE);
 							WebConversation wc = new WebConversation();
@@ -3504,7 +3504,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 	public void ItestBetting_guanDong11In5_Rx7() throws Exception{
 		int maxTimes = 10000;
 		int counter = 0;
-		String lottoType = "cqssc";
+		String lottoType = "bjpk10";
 		
 		while(counter < maxTimes) {
 			Thread.sleep(1000);
@@ -3554,7 +3554,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 							node.putPOJO("terminalType", "0");
 							
 							bis = new ByteArrayInputStream(mapper.writeValueAsBytes(array));
-							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/cqssc/bet/zh/1/wallet/15",
+							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/bjpk10/bet/zh/1/wallet/15",
 									bis,
 									MediaType.APPLICATION_JSON_VALUE);
 							WebConversation wc = new WebConversation();
@@ -3604,7 +3604,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 	public void ItestBetting_guanDong11In5_Rx8() throws Exception{
 		int maxTimes = 10000;
 		int counter = 0;
-		String lottoType = "cqssc";
+		String lottoType = "bjpk10";
 		
 		while(counter < maxTimes) {
 			Thread.sleep(1000);
@@ -3655,7 +3655,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 							node.putPOJO("terminalType", "0");
 							
 							bis = new ByteArrayInputStream(mapper.writeValueAsBytes(array));
-							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/cqssc/bet/zh/1/wallet/15",
+							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/bjpk10/bet/zh/1/wallet/15",
 									bis,
 									MediaType.APPLICATION_JSON_VALUE);
 							WebConversation wc = new WebConversation();
@@ -3704,7 +3704,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 	public void ItestBetting_pk10_qy() throws Exception{
 		int maxTimes = 10000;
 		int counter = 0;
-		String lottoType = "cqssc";
+		String lottoType = "bjpk10";
 		
 		while(counter < maxTimes) {
 			Thread.sleep(1000);
@@ -3754,7 +3754,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 							node.putPOJO("terminalType", "0");
 							
 							bis = new ByteArrayInputStream(mapper.writeValueAsBytes(array));
-							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/cqssc/bet/zh/1/wallet/15",
+							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/bjpk10/bet/zh/1/wallet/15",
 									bis,
 									MediaType.APPLICATION_JSON_VALUE);
 							WebConversation wc = new WebConversation();
@@ -3804,7 +3804,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 	public void ItestBetting_pk10_qe() throws Exception{
 		int maxTimes = 10000;
 		int counter = 0;
-		String lottoType = "cqssc";
+		String lottoType = "bjpk10";
 		
 		while(counter < maxTimes) {
 			Thread.sleep(1000);
@@ -3854,7 +3854,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 							node.putPOJO("terminalType", "0");
 							
 							bis = new ByteArrayInputStream(mapper.writeValueAsBytes(array));
-							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/cqssc/bet/zh/1/wallet/15",
+							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/bjpk10/bet/zh/1/wallet/15",
 									bis,
 									MediaType.APPLICATION_JSON_VALUE);
 							WebConversation wc = new WebConversation();
@@ -3903,7 +3903,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 	public void ItestBetting_pk10_qs() throws Exception{
 		int maxTimes = 10000;
 		int counter = 0;
-		String lottoType = "cqssc";
+		String lottoType = "bjpk10";
 		
 		while(counter < maxTimes) {
 			Thread.sleep(1000);
@@ -3953,7 +3953,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 							node.putPOJO("terminalType", "0");
 							
 							bis = new ByteArrayInputStream(mapper.writeValueAsBytes(array));
-							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/cqssc/bet/zh/1/wallet/15",
+							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/bjpk10/bet/zh/1/wallet/15",
 									bis,
 									MediaType.APPLICATION_JSON_VALUE);
 							WebConversation wc = new WebConversation();
@@ -4004,7 +4004,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 	public void ItestBetting_pk10_Lh_1v10() throws Exception{
 		int maxTimes = 10000;
 		int counter = 0;
-		String lottoType = "cqssc";
+		String lottoType = "bjpk10";
 		
 		while(counter < maxTimes) {
 			Thread.sleep(1000);
@@ -4054,7 +4054,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 							node.putPOJO("terminalType", "0");
 							
 							bis = new ByteArrayInputStream(mapper.writeValueAsBytes(array));
-							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/cqssc/bet/zh/1/wallet/15",
+							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/bjpk10/bet/zh/1/wallet/15",
 									bis,
 									MediaType.APPLICATION_JSON_VALUE);
 							WebConversation wc = new WebConversation();
@@ -4103,7 +4103,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 	public void ItestBetting_pk10_Lh_2v9() throws Exception{
 		int maxTimes = 10000;
 		int counter = 0;
-		String lottoType = "cqssc";
+		String lottoType = "bjpk10";
 		
 		while(counter < maxTimes) {
 			Thread.sleep(1000);
@@ -4153,7 +4153,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 							node.putPOJO("terminalType", "0");
 							
 							bis = new ByteArrayInputStream(mapper.writeValueAsBytes(array));
-							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/cqssc/bet/zh/1/wallet/15",
+							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/bjpk10/bet/zh/1/wallet/15",
 									bis,
 									MediaType.APPLICATION_JSON_VALUE);
 							WebConversation wc = new WebConversation();
@@ -4203,7 +4203,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 	public void ItestBetting_pk10_Lh_3v8() throws Exception{
 		int maxTimes = 10000;
 		int counter = 0;
-		String lottoType = "cqssc";
+		String lottoType = "bjpk10";
 		
 		while(counter < maxTimes) {
 			Thread.sleep(1000);
@@ -4253,7 +4253,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 							node.putPOJO("terminalType", "0");
 							
 							bis = new ByteArrayInputStream(mapper.writeValueAsBytes(array));
-							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/cqssc/bet/zh/1/wallet/15",
+							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/bjpk10/bet/zh/1/wallet/15",
 									bis,
 									MediaType.APPLICATION_JSON_VALUE);
 							WebConversation wc = new WebConversation();
@@ -4302,7 +4302,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 	public void ItestBetting_pk10_Lh_4v7() throws Exception{
 		int maxTimes = 10000;
 		int counter = 0;
-		String lottoType = "cqssc";
+		String lottoType = "bjpk10";
 		while(counter < maxTimes) {
 			Thread.sleep(1000);
 			
@@ -4351,7 +4351,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 							node.putPOJO("terminalType", "0");
 							
 							bis = new ByteArrayInputStream(mapper.writeValueAsBytes(array));
-							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/cqssc/bet/zh/1/wallet/15",
+							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/bjpk10/bet/zh/1/wallet/15",
 									bis,
 									MediaType.APPLICATION_JSON_VALUE);
 							WebConversation wc = new WebConversation();
@@ -4401,7 +4401,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 	public void ItestBetting_pk10_Lh_5v6() throws Exception{
 		int maxTimes = 10000;
 		int counter = 0;
-		String lottoType = "cqssc";
+		String lottoType = "bjpk10";
 		
 		while(counter < maxTimes) {
 			Thread.sleep(1000);
@@ -4451,7 +4451,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 							node.putPOJO("terminalType", "0");
 							
 							bis = new ByteArrayInputStream(mapper.writeValueAsBytes(array));
-							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/cqssc/bet/zh/1/wallet/15",
+							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/bjpk10/bet/zh/1/wallet/15",
 									bis,
 									MediaType.APPLICATION_JSON_VALUE);
 							WebConversation wc = new WebConversation();
@@ -4500,7 +4500,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 	public void ItestBetting_pk10_Dx_1() throws Exception{
 		int maxTimes = 10000;
 		int counter = 0;
-		String lottoType = "cqssc";
+		String lottoType = "bjpk10";
 		
 		while(counter < maxTimes) {
 			Thread.sleep(1000);
@@ -4550,7 +4550,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 							node.putPOJO("terminalType", "0");
 							
 							bis = new ByteArrayInputStream(mapper.writeValueAsBytes(array));
-							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/cqssc/bet/zh/1/wallet/15",
+							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/bjpk10/bet/zh/1/wallet/15",
 									bis,
 									MediaType.APPLICATION_JSON_VALUE);
 							WebConversation wc = new WebConversation();
@@ -4599,7 +4599,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 	public void ItestBetting_pk10_Dx_2() throws Exception{
 		int maxTimes = 10000;
 		int counter = 0;
-		String lottoType = "cqssc";
+		String lottoType = "bjpk10";
 		
 		while(counter < maxTimes) {
 			Thread.sleep(1000);
@@ -4649,7 +4649,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 							node.putPOJO("terminalType", "0");
 							
 							bis = new ByteArrayInputStream(mapper.writeValueAsBytes(array));
-							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/cqssc/bet/zh/1/wallet/15",
+							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/bjpk10/bet/zh/1/wallet/15",
 									bis,
 									MediaType.APPLICATION_JSON_VALUE);
 							WebConversation wc = new WebConversation();
@@ -4699,7 +4699,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 	public void ItestBetting_pk10_Dx_3() throws Exception{
 		int maxTimes = 10000;
 		int counter = 0;
-		String lottoType = "cqssc";
+		String lottoType = "bjpk10";
 		
 		while(counter < maxTimes) {
 			Thread.sleep(1000);
@@ -4749,7 +4749,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 							node.putPOJO("terminalType", "0");
 							
 							bis = new ByteArrayInputStream(mapper.writeValueAsBytes(array));
-							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/cqssc/bet/zh/1/wallet/15",
+							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/bjpk10/bet/zh/1/wallet/15",
 									bis,
 									MediaType.APPLICATION_JSON_VALUE);
 							WebConversation wc = new WebConversation();
@@ -4798,7 +4798,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 	public void ItestBetting_pk10_Ds_1() throws Exception{
 		int maxTimes = 10000;
 		int counter = 0;
-		String lottoType = "cqssc";
+		String lottoType = "bjpk10";
 		
 		while(counter < maxTimes) {
 			Thread.sleep(1000);
@@ -4848,7 +4848,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 							node.putPOJO("terminalType", "0");
 							
 							bis = new ByteArrayInputStream(mapper.writeValueAsBytes(array));
-							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/cqssc/bet/zh/1/wallet/15",
+							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/bjpk10/bet/zh/1/wallet/15",
 									bis,
 									MediaType.APPLICATION_JSON_VALUE);
 							WebConversation wc = new WebConversation();
@@ -4897,7 +4897,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 	public void ItestBetting_pk10_Ds_2() throws Exception{
 		int maxTimes = 10000;
 		int counter = 0;
-		String lottoType = "cqssc";
+		String lottoType = "bjpk10";
 		
 		while(counter < maxTimes) {
 			Thread.sleep(1000);
@@ -4947,7 +4947,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 							node.putPOJO("terminalType", "0");
 							
 							bis = new ByteArrayInputStream(mapper.writeValueAsBytes(array));
-							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/cqssc/bet/zh/1/wallet/15",
+							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/bjpk10/bet/zh/1/wallet/15",
 									bis,
 									MediaType.APPLICATION_JSON_VALUE);
 							WebConversation wc = new WebConversation();
@@ -4996,7 +4996,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 	public void ItestBetting_pk10_Ds_3() throws Exception{
 		int maxTimes = 10000;
 		int counter = 0;
-		String lottoType = "cqssc";
+		String lottoType = "bjpk10";
 		
 		while(counter < maxTimes) {
 			Thread.sleep(1000);
@@ -5047,7 +5047,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 							node.putPOJO("terminalType", "0");
 							
 							bis = new ByteArrayInputStream(mapper.writeValueAsBytes(array));
-							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/cqssc/bet/zh/1/wallet/15",
+							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/bjpk10/bet/zh/1/wallet/15",
 									bis,
 									MediaType.APPLICATION_JSON_VALUE);
 							WebConversation wc = new WebConversation();
@@ -5096,7 +5096,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 	public void ItestBetting_pk10_dwd() throws Exception{
 		int maxTimes = 10000;
 		int counter = 0;
-		String lottoType = "cqssc";
+		String lottoType = "bjpk10";
 		
 		while(counter < maxTimes) {
 			Thread.sleep(1000);
@@ -5146,7 +5146,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 							node.putPOJO("terminalType", "0");
 							
 							bis = new ByteArrayInputStream(mapper.writeValueAsBytes(array));
-							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/cqssc/bet/zh/1/wallet/15",
+							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/bjpk10/bet/zh/1/wallet/15",
 									bis,
 									MediaType.APPLICATION_JSON_VALUE);
 							WebConversation wc = new WebConversation();
@@ -5197,7 +5197,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 	public void ItestPreBetting() throws Exception{
 		int maxTimes = 10000;
 		int counter = 0;
-		String lottoType = "cqssc";
+		String lottoType = "bjpk10";
 		
 		while(counter < maxTimes) {
 			Thread.sleep(1000);
@@ -5243,7 +5243,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 							
 							
 							bis = new ByteArrayInputStream(mapper.writeValueAsBytes(node));
-							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/cqssc/pre-bet",
+							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/bjpk10/pre-bet",
 									bis,
 									MediaType.APPLICATION_JSON_VALUE);
 							WebConversation wc = new WebConversation();
@@ -5294,7 +5294,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 	public void ItestBetting_5fc_zs() throws Exception{
 		int maxTimes = 10000;
 		int counter = 0;
-		String lottoType = "cqssc";
+		String lottoType = "bjpk10";
 		
 		while(counter < maxTimes) {
 			Thread.sleep(10000);
@@ -5742,7 +5742,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 			
 			
 			for(Map<String, Object> temp : playTypesMap) {
-				//id=1, lotteryType=cqssc, classification=qszx|前三直选, ptName=fs, ptDesc=复式, state=1, mulSinFlag=1, isHidden=1, seq=1, createTime=1533895746000
+				//id=1, lotteryType=bjpk10, classification=qszx|前三直选, ptName=fs, ptDesc=复式, state=1, mulSinFlag=1, isHidden=1, seq=1, createTime=1533895746000
 				Integer id = (Integer)temp.get("id");
 				String lotteryType = (String)temp.get("lotteryType");
 				String classification = (String)temp.get("classification");
@@ -5776,11 +5776,11 @@ public class CqsscBettingTest extends ControllerJunitBase{
 	
 	
 	
-	public void testBetting_qcssc() throws Exception{
+	public void testBetting_bjpk10() throws Exception{
 		int maxTimes = 600000;
 		int counter = 0;
-		String lottoType = "cqssc";
-		long maxWaittingTime = 10000;
+		String lottoType = "bjpk10";
+		long maxWaittingTime = 17000;
 		
 		String userName = "test001";
 		String pwd = "test001";
@@ -5805,11 +5805,14 @@ public class CqsscBettingTest extends ControllerJunitBase{
 			tokens.put("token", token);
 			
 			Map<String, Object> ret = queryCurrIssue(token, lottoType);
-			while((ret == null || ret.size() == 0) 
-					&& counter <= 200) {
-				counter++;
+			int queryIssueCounter = 0;
+			while((ret == null || ret.size() == 0
+					|| ret.get("currIssue") == null) 
+					&& queryIssueCounter <= 1000) {
+				queryIssueCounter++;
 				
 				ret = queryCurrIssue(token, lottoType);
+				Thread.sleep(500);
 			}
 			
 			if(ret == null || ret.size() == 0) {
@@ -5817,9 +5820,10 @@ public class CqsscBettingTest extends ControllerJunitBase{
 			}
 			
 			Issue currIssue = (Issue)ret.get("currIssue");
+			Assert.assertNotNull(currIssue);
 			List<PlayType> playTypes = (List<PlayType>)ret.get("playTypes");
 			if(currIssue.getDownCounter() <= 0) {
-				Thread.sleep(60000);
+				//Thread.sleep(60000);
 				Thread exe = new Thread(new Runnable(){
 					@Override
 					public void run() {
@@ -5847,16 +5851,20 @@ public class CqsscBettingTest extends ControllerJunitBase{
 							if(maps != null && maps.size() > 0) {
 								Map<String, String> row = maps.get(0);
 								String winningNum = row.get(Constants.KEY_FACADE_BET_NUM_SAMPLE);
-								for(int i = 0; i< winningNum.length(); i++) {
-									String bit = winningNum.substring(i, i + 1);
+								for(int i = 0; i< winningNum.length();) {
+									String bit = winningNum.substring(i, i + 2);
 									if(!",".equals(bit)) {
 										winningNumBuffer.append(bit).append(",");
 									}
+									
+									 i += 2;
 								}
 								winningNumBuffer.delete(winningNumBuffer.length() - 1, winningNumBuffer.length());
 							}							
 						}
 						try {
+							System.out.println(String.format("current issue status   %s", currIssue.getState()));
+							Thread.sleep(60000);
 							manualDrawResult(lottoType,
 									currIssue.getIssueNum(),
 									winningNumBuffer.toString(),
@@ -5900,6 +5908,10 @@ public class CqsscBettingTest extends ControllerJunitBase{
 						}
 						
 						PlayType playType = playTypes.get(indx);
+						
+						System.out.println(String.format("current Indx  %s,   size   %s", 
+								currIndx,
+								playTypes.size()));
 						
 						if(playType.getPtName().equals("fs") || playType.getPtName().equals("ds")) {
 							playTypeName = playType.getClassification() + "/fs-ds";
@@ -5951,7 +5963,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 						Assert.assertEquals(Message.status.SUCCESS.getCode(), retItems.get(Message.KEY_STATUS));
 						
 						
-						Thread.sleep(20000);
+						Thread.sleep(10000);
 						
 						
 					} catch (Exception e) {

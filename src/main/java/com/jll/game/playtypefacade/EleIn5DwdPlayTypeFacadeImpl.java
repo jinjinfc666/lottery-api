@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Random;
 
 import org.apache.log4j.Logger;
+import org.junit.Assert;
 
 import com.jll.common.constants.Constants;
 import com.jll.common.utils.MathUtil;
@@ -381,4 +382,7 @@ public class EleIn5DwdPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 		
 		return betNumList;
 	}
+	
+	
+	
 }

@@ -1,12 +1,18 @@
 package com.jll.game.playtypefacade;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.apache.log4j.Logger;
 
+import com.jll.common.constants.Constants;
 import com.jll.common.utils.MathUtil;
 import com.jll.common.utils.StringUtils;
 import com.jll.common.utils.Utils;
@@ -19,6 +25,8 @@ public class Pk10DwdPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 	private Logger logger = Logger.getLogger(QszxPlayTypeFacadeImpl.class);
 	
 	protected String playTypeDesc = "dwd|定位胆/qs|前十/fs-ds";
+	
+	private String betNumOptions = "01,02,03,04,05,06,07,08,09,10";
 	
 	@Override
 	public boolean isMatchWinningNum(Issue issue, OrderInfo order) {
@@ -38,21 +46,21 @@ public class Pk10DwdPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 		//betNumSet = betNum.split(",");
 		betNumMul = betNum.split(";");
 		
-		logger.debug("proced bet number is :: " + Arrays.asList(betNumSet));
+		//logger.debug("proced bet number is :: " + Arrays.asList(betNumSet));
 		for(String temp : betNumMul) {
 			if(StringUtils.isBlank(temp)) {
 				continue;
 			}
 			
-			String[] tempSet = temp.split(",");
+			
+			String[] tempSet = splitBit(temp, 1);
 			for(int i = 0; i < tempSet.length; i++) {
-				String tempBit = tempSet[i];
-				String winNumBit = winNumSet[i];
-				if(StringUtils.isBlank(tempBit)) {
+				if(StringUtils.isBlank(tempSet[i])) {
 					continue;
 				}
+				Map<String, String> tempBits = splitBetNum(tempSet[i]);
 				
-				if(tempBit.contains(winNumBit)) {
+				if(tempBits.get(winNumSet[i]) != null) {
 					return true;
 				}
 			}
@@ -126,7 +134,7 @@ public class Pk10DwdPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 				return false;
 			}
 			
-			String[] betNumTempSet = betNumTemp.split(",");
+			String[] betNumTempSet = splitBit(betNumTemp, 1);
 			
 			if(betNumTempSet.length > 10) {
 				return false;
@@ -137,9 +145,21 @@ public class Pk10DwdPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 					continue;
 				}
 				
-				if(betNumTempBit.length() > 10) {
+				Map<String, String> tempBits = splitBetNum(betNumTempBit);
+				if(tempBits.size() == 0
+						|| tempBits.size() > 10
+						|| tempBits.size() != (betNumTempBit.length() / 2)) {
 					return false;
 				}
+				
+				Iterator<String> ite = tempBits.keySet().iterator();
+				while(ite.hasNext()) {
+					String key = ite.next();
+					if(!betNumOptions.contains(key)) {
+						return false;
+					}
+				}
+				
 			}
 		}
 				
@@ -175,15 +195,18 @@ public class Pk10DwdPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 		betNumMul = betNum.split(";");		
 		
 		for(String singleSel : betNumMul) {			
-			String[] singleSelSet = singleSel.split(",");
+			String[] singleSelSet = splitBit(singleSel, 1);
 			for(int i = 0; i< singleSelSet.length; i++) {
 				if(StringUtils.isBlank(singleSel)) {
 					continue;
 				}
 				
-				if(singleSelSet[i].contains(winNumSet[i])) {
+				Map<String, String> tempBits = splitBetNum(singleSelSet[i]);
+				
+				if(tempBits.get(winNumSet[i]) != null) {
 					winningBetAmount++;
 				}
+				
 			}
 		}
 		
@@ -210,5 +233,229 @@ public class Pk10DwdPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 		totalCount = new BigDecimal(tempVal);
 		winningRate = winCount.divide(totalCount, 5, BigDecimal.ROUND_HALF_UP);
 		return winningRate;
+	}
+	
+	
+	@Override
+	public String obtainSampleBetNumber(){
+		Random random = new Random();
+		StringBuffer betNumBuffer = new StringBuffer();
+		StringBuffer finalBetNumBuffer = new StringBuffer();
+		int len = random.nextInt(10) + 1;
+		int bitLen = random.nextInt(10) + 1;
+		Map<String, String> betNums = new HashMap<>();
+		Iterator<String> ite = null;
+		
+		for(int j = 0;j < bitLen; j++) {
+			for(int i = 0; i < len; i++) {			
+				while(true) {
+					betNumBuffer.delete(0, betNumBuffer.length());
+					int bit = random.nextInt(10) + 1;
+					//String betNum = null;
+					if(bit < 10) {
+						betNumBuffer.append("0").append(bit);
+					}else {
+						betNumBuffer.append(bit);
+					}
+					
+					if(betNums.containsKey(betNumBuffer.toString())) {
+						continue;
+					}else {
+						betNums.put(betNumBuffer.toString(), betNumBuffer.toString());
+						break;
+					}
+				}
+			}
+			
+			betNumBuffer.delete(0, betNumBuffer.length());
+			ite = betNums.keySet().iterator();
+			while(ite.hasNext()) {
+				String key = ite.next();
+				
+				betNumBuffer.append(key);
+			}
+			
+			finalBetNumBuffer.append(betNumBuffer.toString()).append(",");
+			betNums.clear();
+		}
+		finalBetNumBuffer.delete(finalBetNumBuffer.length() - 1 , finalBetNumBuffer.length());
+		
+		for(int i = 0; i < (10 - bitLen); i++) {
+			finalBetNumBuffer.append(",");
+		}
+		return finalBetNumBuffer.toString();
+	}
+	
+	@Override
+	public List<Map<String, String>> parseBetNumber(String betNum){
+		Date currDate = new Date();
+		List<Map<String, String>> betNumList = new ArrayList<>();
+		String[] betNumArray = betNum.split(";");
+		List<String[]> excludingResults = null;
+		List<String[]> bitBetNum = null;
+		int excludingCounter = 9;
+		List<Map<String, String>> betNumCombinations = new ArrayList<>();
+		Map<String, String> betNumCombination = new HashMap<>();
+		
+		for(String singleBetNumArray : betNumArray) {
+			String[] tempSet = splitBit(singleBetNumArray, 1);
+			for(int i = 0;i < tempSet.length; i++) {
+				String bitBetNumBit = tempSet[i];
+				if(StringUtils.isBlank(bitBetNumBit)) {
+					continue;
+				}
+				
+				bitBetNum = combinationBetNum(bitBetNumBit, 1);
+				for(String[] tempBitBetBum : bitBetNum) {
+					String[] excludingArray = obtainExcludingArray(tempBitBetBum);
+					excludingResults = new ArrayList<String[]>();
+					try {					
+						MathUtil.combinationSelect(excludingArray, excludingCounter, excludingResults);
+						
+						for(String[] excludingResult : excludingResults) {
+							betNumCombination = new HashMap<>();
+							StringBuffer buffer = new StringBuffer();														
+							int indx  = 0;
+							
+							for(String bit : excludingResult) {
+								if(indx == i) {
+									for(String bitI : tempBitBetBum) {
+										buffer.append(bitI);
+										betNumCombination.put(bitI, bitI);
+									}
+								}
+								
+								buffer.append(bit);
+								betNumCombination.put(bit, bit);
+								
+								indx++;
+							}
+							
+							if(isBetNumCombinationExisting(betNumCombinations, betNumCombination)) {
+								continue;
+							}
+							
+							betNumCombinations.add(betNumCombination);
+							Map<String, String> row = new HashMap<String, String>();
+							row.put(Constants.KEY_FACADE_BET_NUM, buffer.toString());
+							row.put(Constants.KEY_FACADE_PATTERN, buffer.toString());
+							row.put(Constants.KEY_FACADE_BET_NUM_SAMPLE, buffer.toString());
+							betNumList.add(row);
+						}
+					}catch(Exception ex) {
+						return betNumList;
+					}
+				}
+			}
+		}
+		
+		Date lastDate = new Date();
+		logger.debug(String.format("totally take over  %s  MS, total records %s", 
+				(lastDate.getTime() - currDate.getTime()),betNumList.size()));
+		return betNumList;
+	}
+	
+	
+	private String[] splitBit(String singleSel, int step) {
+		List<String> retList = new ArrayList<>();
+		StringBuffer buffer = new StringBuffer();
+		
+		for(int i = 0; i < singleSel.length();) {
+			String temp = singleSel.substring(i, i + step);
+			if(",".equals(temp)) {
+				retList.add(buffer.toString());
+				buffer.delete(0, buffer.length());
+			}else {
+				buffer.append(temp);
+			}
+			
+			i += step;
+			
+			if(i >= singleSel.length()) {
+				retList.add(buffer.toString());
+				buffer.delete(0, buffer.length());
+			}
+		}
+		
+		return retList.toArray(new String[0]);
+	}
+	
+	private Map<String, String> splitBetNum(String temp) {
+		Map<String, String> bits = new HashMap<String, String>();
+		int len = temp.length();
+		
+		if(len % 2 != 0) {
+			return bits;
+		}
+		
+		for(int i = 0; i < temp.length();) {
+			String bit = temp.substring(i, i + 2);
+			bits.put(bit, bit);
+			i += 2;
+		}
+		
+		return bits;
+	}
+	
+	private boolean isBetNumCombinationExisting(List<Map<String, String>> betNumCombinations,
+			Map<String, String> betNumCombination) {
+		for(Map<String, String> temp : betNumCombinations) {
+			int existingCounter = 0;
+			Iterator<String> ite = temp.keySet().iterator();
+			while(ite.hasNext()) {
+				String key = ite.next();
+				if(betNumCombination.get(key) != null) {
+					existingCounter++;
+				}
+			}
+			
+			if(existingCounter == temp.size()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private List<String[]> combinationBetNum(String betNum, int selCount) {
+		String[] betNumArray = new String[betNum.length() / 2];
+		List<String[]> ret = new ArrayList<>();
+		
+		if(StringUtils.isBlank(betNum)) {
+			return ret;
+		}
+		
+		for(int i = 0,j = 0; i < betNum.length();j++) {
+			betNumArray[j] = betNum.substring(i, i + 2);
+			
+			i += 2;
+		}
+		
+		MathUtil.combinationSelect(betNumArray, selCount, ret);
+		
+		return ret;
+	}
+	
+	private String[] obtainExcludingArray(String[] key) {
+		String[] optionsArray = {"01","02","03","04","05","06","07","08","09","10"};
+		String[] ret = new String[10 - key.length];
+		int indx = 0 ;
+		for(String temp : optionsArray) {
+			boolean isSame = false;
+			for(String keyTemp : key) {
+				if(temp.equals(keyTemp)) {
+					isSame = true;
+					break;
+				}
+			}
+			
+			if(!isSame) {
+				try {
+				ret[indx++] = temp;
+				}catch(Exception ex) {
+					ex.printStackTrace();
+				}
+			}
+		}
+		return ret;
 	}
 }

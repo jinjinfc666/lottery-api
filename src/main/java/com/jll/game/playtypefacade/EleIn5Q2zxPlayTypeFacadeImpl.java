@@ -76,11 +76,13 @@ public class EleIn5Q2zxPlayTypeFacadeImpl  extends DefaultPlayTypeFacadeImpl {
 		Float betAmount = 0F;
 		Float maxWinAmount = 0F;
 		
-		betNumSet = betNum.split(",");
+		/*betNumSet = betNum.split(",");
 		for(String subBetNum : betNumSet) {
 			int len = subBetNum.length() / 2;
 			betTotal *= MathUtil.combination(1, len);
-		}
+		}*/
+		
+		betTotal = calBetTotal(betNum);
 		
 		betAmount = MathUtil.multiply(betTotal, times, Float.class);
 		betAmount = MathUtil.multiply(betAmount, monUnit.floatValue(), Float.class);
@@ -107,6 +109,8 @@ public class EleIn5Q2zxPlayTypeFacadeImpl  extends DefaultPlayTypeFacadeImpl {
 		String[] betNumSet = null;
 		String[] betNumMul = null;
 		Map<String, String> allBetNumBit = new HashMap<>();
+		int betTotal = 0;
+		
 		betNum = order.getBetNum();
 		if(StringUtils.isBlank(betNum)) {
 			return false;
@@ -121,6 +125,8 @@ public class EleIn5Q2zxPlayTypeFacadeImpl  extends DefaultPlayTypeFacadeImpl {
 			
 			for(String betNumBit : betNumSet) {
 				Map<String, String> tempBits = splitBetNum(betNumBit);
+				allBetNumBit.clear();
+				
 				if(tempBits.size() < 1
 						|| tempBits.size() > 11
 						|| !Utils.validateEleIn5Num(betNumBit)
@@ -144,6 +150,10 @@ public class EleIn5Q2zxPlayTypeFacadeImpl  extends DefaultPlayTypeFacadeImpl {
 			}
 		}
 		
+		betTotal = calBetTotal(betNum);
+		if(betTotal == 0) {
+			return false;
+		}
 		
 		return true;
 	}
@@ -391,5 +401,32 @@ public class EleIn5Q2zxPlayTypeFacadeImpl  extends DefaultPlayTypeFacadeImpl {
 			ret.add(buffer.toString());
 		}
 		return ret;
+	}
+	
+	private int calBetTotal(String betNum){
+		String[] betNumArray = betNum.split(";");
+		int result = 0;
+		for(String singleBetNumArray : betNumArray) {
+			String[] betNumBits = singleBetNumArray.split(",");			
+			
+			for(int i = 0 ; i < betNumBits[0].length();) {
+				String a = betNumBits[0].substring(i, i + 2);
+				for(int ii = 0; ii < betNumBits[1].length();) {
+					String aa = betNumBits[1].substring(ii, ii + 2);
+					
+					ii += 2;
+					
+					if(aa.equals(a)) {
+						continue;
+					}
+					
+					result++;
+				}
+				
+				i += 2;
+			}
+		}
+		
+		return result;
 	}
 }

@@ -306,7 +306,7 @@ public class CacheRedisServiceImpl implements CacheRedisService
 			params.put("lottoType", lotteryType);
 			preBetResult = playTypeFacade.preProcessNumber(params, user);
 			
-			if(preBetResult.get(pattern) != null) {
+			if(statInfo.get(pattern) != null) {
 				isExisting = true;
 			}
 			

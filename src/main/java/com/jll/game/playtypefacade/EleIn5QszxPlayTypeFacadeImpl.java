@@ -30,6 +30,8 @@ public class EleIn5QszxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 	
 	protected String playTypeDesc = "sm|三码/qszx|前三直选/fs-ds";
 	
+	private String betNumOptions = "01,02,03,04,05,06,07,08,09,10,11";
+	
 	String[] optionsArray = {"01","02","03","04","05","06","07","08","09","10","11"};
 	
 	@Override
@@ -109,6 +111,7 @@ public class EleIn5QszxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 	public boolean validBetNum(OrderInfo order) {
 		String betNum = null;
 		String[] betNumMul= null;
+		Map<String, String> allBetNumBit = new HashMap<>();
 		int betTotal = 0;
 		
 		betNum = order.getBetNum();
@@ -138,6 +141,20 @@ public class EleIn5QszxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 						|| !Utils.validateEleIn5Num(betNumMulTempBit)
 						|| tempBits.size() != (betNumMulTempBit.length() / 2)) {
 					return false;
+				}
+				
+				Iterator<String> ite = tempBits.keySet().iterator();
+				while(ite.hasNext()) {
+					String key = ite.next();
+					if(!betNumOptions.contains(key)) {
+						return false;
+					}
+					
+					if(allBetNumBit.containsKey(key)) {
+						return false;
+					}
+					
+					allBetNumBit.put(key, key);
 				}
 			}
 			

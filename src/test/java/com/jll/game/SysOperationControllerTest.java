@@ -386,7 +386,7 @@ public class SysOperationControllerTest extends ControllerJunitBase{
 	 * 测试私彩在人工开奖的情况下
 	 * @throws Exception
 	 */
-	public void test_5fc_manual_draw_result_manual_prizeModel() throws Exception{
+	public void Itest_5fc_manual_draw_result_manual_prizeModel() throws Exception{
 		String lottoType = "5fc";
 		String winningNum = "7,9,4,8,8";
 		String issueNum = "181013-224";
@@ -425,6 +425,54 @@ public class SysOperationControllerTest extends ControllerJunitBase{
 					retItems.get(Message.KEY_STATUS));
 			
 			Thread.sleep(10000);
+		}catch(Exception ex) {
+			throw ex;
+		}
+	}
+	
+	/**
+	 * 测试私彩在人工开奖的情况下
+	 * @throws Exception
+	 */
+	public void test_gd11x5_manual_draw_result_manual_prizeModel() throws Exception{
+		String lottoType = "gd11x5";
+		String winningNum = "03,01,07,08,11";
+		String issueNum = "181027-62";
+		String userName = "admin";
+		String pwd = "test001";
+		
+		String token = queryToken(userName, pwd);
+		ObjectMapper mapper = new ObjectMapper();
+		ByteArrayInputStream bis = null;
+		try {			
+			ObjectNode node = mapper.createObjectNode();
+			node.putPOJO("winningNum", winningNum);
+			
+			bis = new ByteArrayInputStream(mapper.writeValueAsBytes(node));
+			WebRequest request = new PutMethodWebRequest("http://localhost:8080/sys/oper/" + lottoType + "/issue/" + issueNum + "/manual-draw-result",
+					bis,
+					MediaType.APPLICATION_JSON_VALUE);
+			WebConversation wc = new WebConversation();
+			
+			request.setHeaderField("Authorization", "bearer " + token);
+			
+			WebResponse response = wc.sendRequest(request);
+			
+			int  status = response.getResponseCode();
+			
+			Assert.assertEquals(HttpServletResponse.SC_OK, status);
+			String result = response.getText();
+			
+			Map<String, Object> retItems = null;
+			
+			retItems = mapper.readValue(result, HashMap.class);
+			
+			Assert.assertNotNull(retItems);
+			
+			Assert.assertEquals(Message.status.SUCCESS.getCode(), 
+					retItems.get(Message.KEY_STATUS));
+			
+			Thread.sleep(200000);
 		}catch(Exception ex) {
 			throw ex;
 		}

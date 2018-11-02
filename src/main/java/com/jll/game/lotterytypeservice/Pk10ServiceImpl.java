@@ -151,7 +151,7 @@ public class Pk10ServiceImpl extends DefaultLottoTypeServiceImpl
 				return;
 			}
 			
-			if(winningNum.split(",").length != 5) {
+			if(winningNum.split(",").length != 10) {
 				return;
 			}
 			
