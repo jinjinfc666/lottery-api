@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.jll.dao.PageBean;
-import com.jll.entity.MemberPlReport;
 import com.jll.user.UserInfoDao;
 
 
@@ -32,44 +31,26 @@ public class MReportServiceImpl implements MReportService {
 		Integer pageSize=(Integer) ret.get("pageSize");
 		return mReportDao.queryAll(startTime, endTime, userName,pageIndex,pageSize);
 	}
-	@Override
-	public Map<String, Object> querySum(Map<String, Object> ret) {
-		String startTime=(String) ret.get("startTime");
-		String endTime=(String) ret.get("endTime");
-		String userName=(String) ret.get("userName");
-		return mReportDao.querySum(startTime, endTime, userName);
-	}
-	//团队盈亏报表
-	@Override
-	public PageBean queryTeamAll(Map<String, Object> ret) {
-		String startTime=(String) ret.get("startTime");
-		String endTime=(String) ret.get("endTime");
-		String userName=(String) ret.get("userName");
-		Integer pageIndex=(Integer) ret.get("pageIndex");
-		Integer pageSize=(Integer) ret.get("pageSize");
-		List<?> userNameList=null;
-		if(StringUtils.isBlank(userName)) {
-			userNameList=userInfoDao.queryByAll();
-		}
-		return mReportDao.queryTeamAll(startTime, endTime, userName,pageIndex,pageSize,userNameList);
-	}
-	@Override
-	public Map<String, Object> querySumTeam(Map<String, Object> ret) {
-		String startTime=(String) ret.get("startTime");
-		String endTime=(String) ret.get("endTime");
-		String userName=(String) ret.get("userName");
-		List<?> userNameList=null;
-		if(StringUtils.isBlank(userName)) {
-			userNameList=userInfoDao.queryByAll();
-		}
-		return mReportDao.queryTeamSum(startTime, endTime, userName,userNameList);
-	}
-	//查找下级
-	@Override
-	public Map<String,Object> queryNextTeamAll(Map<String, Object> ret) {
-		String startTime=(String) ret.get("startTime");
-		String endTime=(String) ret.get("endTime");
-		String userName=(String) ret.get("userName");
-		return mReportDao.queryNextTeamAll(startTime, endTime, userName);
-	}
+//	//团队盈亏报表
+//	@Override
+//	public PageBean queryTeamAll(Map<String, Object> ret) {
+//		String startTime=(String) ret.get("startTime");
+//		String endTime=(String) ret.get("endTime");
+//		String userName=(String) ret.get("userName");
+//		Integer pageIndex=(Integer) ret.get("pageIndex");
+//		Integer pageSize=(Integer) ret.get("pageSize");
+//		List<?> userNameList=null;
+//		if(StringUtils.isBlank(userName)) {
+//			userNameList=userInfoDao.queryByAll();
+//		}
+//		return mReportDao.queryTeamAll(startTime, endTime, userName,pageIndex,pageSize,userNameList);
+//	}
+//	//查找下级
+//	@Override
+//	public Map<String,Object> queryNextTeamAll(Map<String, Object> ret) {
+//		String startTime=(String) ret.get("startTime");
+//		String endTime=(String) ret.get("endTime");
+//		String userName=(String) ret.get("userName");
+//		return mReportDao.queryNextTeamAll(startTime, endTime, userName);
+//	}
 }

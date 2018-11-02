@@ -55,6 +55,16 @@
                 <comment>����</comment>
             </column>
         </property>
+        <property generated="never" lazy="false" name="rechargeMember" optimistic-lock="true" type="java.lang.Integer" unique="false">
+            <column name="recharge_member">
+                <comment>��ֵ��Ա����</comment>
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="newMembers" optimistic-lock="true" type="java.lang.Integer" unique="false">
+            <column name="new_members">
+                <comment>������Ա����</comment>
+            </column>
+        </property>
         <property generated="never" lazy="false" name="profit" optimistic-lock="true" type="big_decimal" unique="false">
             <column name="profit">
                 <comment>ӯ��</comment>

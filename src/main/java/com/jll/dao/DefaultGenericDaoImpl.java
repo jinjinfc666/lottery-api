@@ -334,6 +334,7 @@ public class DefaultGenericDaoImpl<T> extends HibernateDaoSupport implements Gen
             }
 	    }
 	    List<?> list=query.list();
+	    
 	    return list.size();
 	}
 	//时分秒的时间查询

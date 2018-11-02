@@ -34,15 +34,22 @@ public class PPLDaoImpl extends HibernateDaoSupport implements PPLDao {
 	public List<?> queryPPL(String startTime, String endTime, String codeName, String issueNum, String playTypeid) {
 		Calendar ca = Calendar.getInstance();// 得到一个Calendar的实例  
 	    ca.setTime(new Date()); // 设置时间为当前时间  
-	    ca.add(Calendar.DATE, -1);// 日期减1  
 	    Date resultDate = ca.getTime(); // 结果  
 	    SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd");  
 	    String startTime1=sdf2.format(resultDate); 
-	    Date beginDate1 = java.sql.Date.valueOf(startTime1);
-		String sql = "select freezing_funds,freezing_red_funds,all_balances,all_red_balances,recharge,withdraw from platform_fund_summary where create_time=:createTime";
+	    Date today = java.sql.Date.valueOf(startTime1);
+	    Date endDate1 = java.sql.Date.valueOf(endTime);
+	    int compareToBefore=endDate1.compareTo(today);
+	    Date queryTime=today;
+	    if(compareToBefore>0||compareToBefore==0) {
+	    	queryTime=today;
+	    }else if(compareToBefore<0) {
+	    	queryTime=endDate1;
+	    }
+		String sql = "select freezing_funds,freezing_red_funds,all_balances,all_red_balances from platform_fund_summary where create_time=:createTime";
 		logger.debug(sql+"-----------------------------queryLoyTst----SQL--------------------------------");
 		Query<?> query = getSessionFactory().getCurrentSession().createNativeQuery(sql);
-		query.setParameter("createTime", beginDate1,DateType.INSTANCE); 
+		query.setParameter("createTime", queryTime,DateType.INSTANCE); 
 		List<?> list = new ArrayList();
 		list = query.list();
 		List<PlatformSummary> list1=new ArrayList<PlatformSummary>();
@@ -85,40 +92,49 @@ public class PPLDaoImpl extends HibernateDaoSupport implements PPLDao {
 				sbd3=bd3.toString();
 			}
 			p.setAllRedBalances(sbd3);
-			
-			BigDecimal bd4 = (BigDecimal)obj[4];
-			String sbd4=null;
-			if(bd4==null) {
-				sbd4="0";
-			}else {
-				sbd4=bd4.toString();
-			}
-			p.setRecharge(sbd4);
-			
-			BigDecimal bd5 = (BigDecimal)obj[5];
-			String sbd5=null;
-			if(bd5==null) {
-				sbd5="0";
-			}else {
-				sbd5=bd5.toString();
-			}
-			p.setWithdraw(sbd5);
 		}
-
+	
 		
 		
 		
 		
 		
-		String timeSql="";
+		
 		Map<String,Object> map=new HashMap<String,Object>();
-		if(!StringUtils.isBlank(startTime)&&!StringUtils.isBlank(endTime)) {
-			timeSql=" where create_time >=:startTime and create_time <:endTime";
-			Date beginDate = java.sql.Date.valueOf(startTime);
-		    Date endDate = java.sql.Date.valueOf(endTime);
-			map.put("startTime", beginDate);
-			map.put("endTime", endDate);
+		String timeSql=" where create_time >=:startTime and create_time <:endTime";
+		Date beginDate = java.sql.Date.valueOf(startTime);
+	    Date endDate = java.sql.Date.valueOf(endTime);
+		map.put("startTime", beginDate);
+		map.put("endTime", endDate);
+		
+		String sqlRecharge="select sum(recharge) as recharge,sum(withdraw) as withdraw from platform_fund_summary where create_time >=:startTime and create_time <:endTime";
+		Query<?> queryRecharge = getSessionFactory().getCurrentSession().createNativeQuery(sqlRecharge);
+		queryRecharge.setParameter("startTime", beginDate,DateType.INSTANCE);
+		queryRecharge.setParameter("endTime", endDate,DateType.INSTANCE);
+		List<?> listRecharge = new ArrayList();
+		listRecharge = queryRecharge.list();
+		Iterator itRecharge=listRecharge.iterator();
+		while(itRecharge.hasNext()) {
+			Object[] obj=(Object[]) itRecharge.next();
+			BigDecimal bd0 = (BigDecimal)obj[0];
+			String sbd0=null;
+			if(bd0==null) {
+				sbd0="0";
+			}else {
+				sbd0=bd0.toString();
+			}
+			p.setRecharge(sbd0);
+			
+			BigDecimal bd1 = (BigDecimal)obj[1];
+			String sbd1=null;
+			if(bd1==null) {
+				sbd1="0";
+			}else {
+				sbd1=bd1.toString();
+			}
+			p.setWithdraw(sbd1);
 		}
+		
 		String codeNameSql="";
 		String issueNumSql="";
 		String playTypeidSql="";
@@ -136,7 +152,7 @@ public class PPLDaoImpl extends HibernateDaoSupport implements PPLDao {
 		}
 		String sql1 = "select sum(betting) as betting,SUM(cancel_amount) as cancel_amount,SUM(winning) as winning,SUM(rebate) as rebate,SUM(platform_profit) as platform_profit from lottery_platform_profit "+timeSql+codeNameSql+issueNumSql+playTypeidSql;
 		logger.debug(sql1+"-----------------------------queryLoyTst----SQL--------------------------------");
-		Query<?> query1 = getSessionFactory().getCurrentSession().createSQLQuery(sql1);
+		Query<?> query1 = getSessionFactory().getCurrentSession().createNativeQuery(sql1);
 		if (map != null) {  
             Set<String> keySet = map.keySet();  
             for (String string : keySet) {  
@@ -151,11 +167,7 @@ public class PPLDaoImpl extends HibernateDaoSupport implements PPLDao {
             }  
         }
 		List<?> list2 = new ArrayList();
-		try {
-			list2 = query1.list();
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
+		list2 = query1.list();
 		Iterator it1=list2.iterator();
 		while(it1.hasNext()) {
 			Object[] obj=(Object[]) it1.next();
