@@ -18,6 +18,8 @@ public class OrderInfo implements java.io.Serializable {
 	private String betNum;
 	private Integer betTotal;
 	private Float betAmount;
+	private Float winBetTotal;
+	private Float winAmount;
 	private Integer times;
 	private BigDecimal pattern;
 	private BigDecimal prizeRate;
@@ -32,7 +34,7 @@ public class OrderInfo implements java.io.Serializable {
 	}
 
 	public OrderInfo(String orderNum, Integer userId, Integer issueId, Integer walletId, Integer playType, String betNum,
-			Integer betTotal, Float betAmount, Integer times, BigDecimal pattern, BigDecimal prizeRate, Integer state,
+			Integer betTotal, Float betAmount, Float winBetTotal,Float winAmount,Integer times, BigDecimal pattern, BigDecimal prizeRate, Integer state,
 			Integer delayPayoutFlag, Integer isZh, Integer isZhBlock, Integer terminalType, Date createTime) {
 		this.orderNum = orderNum;
 		this.userId = userId;
@@ -42,6 +44,8 @@ public class OrderInfo implements java.io.Serializable {
 		this.betNum = betNum;
 		this.betTotal = betTotal;
 		this.betAmount = betAmount;
+		this.winBetTotal = winBetTotal;
+		this.winAmount = winAmount;
 		this.times = times;
 		this.pattern = pattern;
 		this.prizeRate = prizeRate;
@@ -124,6 +128,22 @@ public class OrderInfo implements java.io.Serializable {
 
 	public void setBetAmount(Float betAmount) {
 		this.betAmount = betAmount;
+	}
+	
+	public Float getWinBetTotal() {
+		return winBetTotal;
+	}
+
+	public void setWinBetTotal(Float winBetTotal) {
+		this.winBetTotal = winBetTotal;
+	}
+
+	public Float getWinAmount() {
+		return winAmount;
+	}
+
+	public void setWinAmount(Float winAmount) {
+		this.winAmount = winAmount;
 	}
 
 	public Integer getTimes() {
