@@ -21,7 +21,7 @@ public class Wxq2PlayTypeFacadeImpl  extends DefaultPlayTypeFacadeImpl {
 	
 	private Logger logger = Logger.getLogger(Wxq2PlayTypeFacadeImpl.class);
 	
-	protected String playTypeDesc = "wxq2|五星前二/fs-ds";
+	protected String playTypeDesc = "wxq2|五星前二/fs";
 	
 	@Override
 	public boolean isMatchWinningNum(Issue issue, OrderInfo order) {
@@ -42,29 +42,13 @@ public class Wxq2PlayTypeFacadeImpl  extends DefaultPlayTypeFacadeImpl {
 		
 		for(String temp : betNumMul) {
 			String[] tempSet = temp.split(",");
-			if(StringUtils.isBlank(betNumSet[0])) {
-				betNumSet[0] = tempSet[0];
-			}else {
-				betNumSet[0] = betNumSet[0] + tempSet[0];
-			}
-			
-			if(StringUtils.isBlank(betNumSet[1])) {
-				betNumSet[1] = tempSet[1];
-			}else {
-				betNumSet[1] = betNumSet[1] + tempSet[1];
+			if(tempSet[0].contains(winNumSet[0])
+					&& tempSet[1].contains(winNumSet[1])) {
+				return true;
 			}
 		}
-		
-		//logger.debug("proced bet number is :: " + Arrays.asList(betNumSet));
-		
-		for(int i = 0; i< winNumSet.length; i++) {
-			String betNumDigit = betNumSet[i];
-			if(!betNumDigit.contains(winNumSet[i])) {
-				return false;
-			}
-		}
-		
-		return true;
+				
+		return false;
 	}
 
 	@Override
@@ -82,16 +66,32 @@ public class Wxq2PlayTypeFacadeImpl  extends DefaultPlayTypeFacadeImpl {
 		int betTotal = 1;
 		Float betAmount = 0F;
 		Float maxWinAmount = 0F;
+		int winBetTotal = 0;
 		
-		betNumSet = betNum.split(",");
-		for(String subBetNum : betNumSet) {
-			int len = subBetNum.length();
-			betTotal *= MathUtil.combination(1, len);
+		betNumSet = betNum.split(";");
+		for(String singleBetNum : betNumSet) {
+			String[] betNumBits = singleBetNum.split(",");
+			for(String betNumBit : betNumBits) {
+				int len = betNumBit.length();
+				betTotal *= MathUtil.combination(1, len);
+			}
+			
+			winBetTotal++;
 		}
 		
+		
 		betAmount = MathUtil.multiply(betTotal, times, Float.class);
-		betAmount = MathUtil.multiply(betAmount, monUnit.floatValue(), Float.class);
-		maxWinAmount = MathUtil.multiply(betAmount, singleBettingPrize.floatValue(), Float.class);
+		betAmount = MathUtil.multiply(betAmount, monUnit, Float.class);
+		
+		maxWinAmount = MathUtil.multiply(winBetTotal, 
+				times, 
+				Float.class);
+		maxWinAmount = MathUtil.multiply(maxWinAmount, 
+				monUnit, 
+				Float.class);
+		maxWinAmount = MathUtil.multiply(maxWinAmount, 
+				singleBettingPrize.floatValue(), 
+				Float.class);
 		
 		ret.put("playType", playType);
 		ret.put("betAmount", betAmount);
@@ -124,12 +124,7 @@ public class Wxq2PlayTypeFacadeImpl  extends DefaultPlayTypeFacadeImpl {
 			if(betNumSet == null || betNumSet.length != 2) {
 				return false;
 			}
-			
-			for(String temp : betNumSet) {
-				if(StringUtils.isBlank(temp)) {
-					return false;
-				}
-			}			
+					
 		}
 		
 		
@@ -137,7 +132,8 @@ public class Wxq2PlayTypeFacadeImpl  extends DefaultPlayTypeFacadeImpl {
 	}
 
 	@Override
-	public BigDecimal calPrize(Issue issue, OrderInfo order, UserInfo user) {
+	public Map<String, Object> calPrize(Issue issue, OrderInfo order, UserInfo user) {
+		Map<String, Object> ret = new HashMap<String, Object>();
 		// 开奖号码的每一位
 		String[] winNumSet = null;
 		// 投注号码的每个位的号码，可能多个号码
@@ -177,7 +173,11 @@ public class Wxq2PlayTypeFacadeImpl  extends DefaultPlayTypeFacadeImpl {
 		betAmount = MathUtil.multiply(betAmount, monUnit, Float.class);
 		maxWinAmount = MathUtil.multiply(betAmount, singleBettingPrize, Float.class);
 		
-		return new BigDecimal(maxWinAmount);
+		ret.put(Constants.KEY_WINNING_BET_TOTAL, winningBetAmount);
+		ret.put(Constants.KEY_WIN_AMOUNT, maxWinAmount);
+		ret.put(Constants.KEY_SINGLE_BETTING_PRIZE, singleBettingPrize);
+		
+		return ret;
 	}
 
 	/* (non-Javadoc)
@@ -218,13 +218,18 @@ public class Wxq2PlayTypeFacadeImpl  extends DefaultPlayTypeFacadeImpl {
 					isMatch1 = true;
 				}
 				
+				if(!isMatch1) {
+					isMatch1 = false;
+					continue;
+				}
+				
 				for(int ii = 0; ii < 10;ii++){
 					if(betNumBits[1].contains(String.valueOf(ii))) {
 						isMatch2 = true;
 					}
 					
-					if(!isMatch1
-							|| !isMatch2) {
+					if(!isMatch2) {
+						isMatch2 = false;
 						continue;
 					}
 					
@@ -276,21 +281,48 @@ public class Wxq2PlayTypeFacadeImpl  extends DefaultPlayTypeFacadeImpl {
 	public String obtainSampleBetNumber(){
 		Random random = new Random();
 		StringBuffer betNum = new StringBuffer();
+		StringBuffer betNums = new StringBuffer();
+		StringBuffer bitNum = new StringBuffer();
 		
-		int bit = random.nextInt(10);
-		int bit2 = -1;
-		betNum.append(Integer.toString(bit)).append(",");
-		while(true) {
-			bit2 = random.nextInt(10);
-			if(bit != bit2) {
-				betNum.append(Integer.toString(bit2)).append(",");
-				break;
+		int betNumLen = random.nextInt(5) + 1;
+		
+		for(int i = 0; i< betNumLen; i++) {
+			int bitLen = random.nextInt(7) + 1;
+			for(int ii = 0;ii < bitLen; ii++) {
+				while(true) {
+					int bit = random.nextInt(10);
+					if(!bitNum.toString().contains(String.valueOf(bit))) {
+						bitNum.append(bit);
+						break;
+					}
+				}
 			}
+			
+			betNum.append(bitNum.toString()).append(",");
+			bitNum.delete(0, bitNum.length());
+			
+			bitLen = random.nextInt(7) + 1;
+			for(int ii = 0;ii < bitLen; ii++) {
+				while(true) {
+					int bit = random.nextInt(10);
+					if(!bitNum.toString().contains(String.valueOf(bit))) {
+						bitNum.append(bit);
+						break;
+					}
+				}
+			}
+			
+			betNum.append(bitNum.toString());
+			
+			betNums.append(betNum.toString()).append(";");
+			
+			betNum.delete(0, betNum.length());
+			bitNum.delete(0, bitNum.length());
 		}
 		
-		betNum.delete(betNum.length()-1, betNum.length());
+		betNums.delete(betNums.length()-1, betNums.length());
 		
-		return betNum.toString();
+		return betNums.toString();
 	}
 	
 	private String[] splitBit(String singleSel, int step) {

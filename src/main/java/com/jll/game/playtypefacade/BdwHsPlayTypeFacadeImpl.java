@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -128,7 +127,9 @@ public class BdwHsPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 	}
 
 	@Override
-	public BigDecimal calPrize(Issue issue, OrderInfo order, UserInfo user) {		
+	public Map<String, Object> calPrize(Issue issue, OrderInfo order, UserInfo user) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+		
 		// 每次点击选号按钮所选号码，多个所选号码以;分割
 		String[] betNumMul = null;
 		String betNum = null;
@@ -164,7 +165,11 @@ public class BdwHsPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 		betAmount = MathUtil.multiply(betAmount, monUnit.floatValue(), Float.class);
 		maxWinAmount = MathUtil.multiply(betAmount, singleBettingPrize.floatValue(), Float.class);
 		
-		return new BigDecimal(maxWinAmount);
+		ret.put(Constants.KEY_WINNING_BET_TOTAL, winningBetAmount);
+		ret.put(Constants.KEY_WIN_AMOUNT, maxWinAmount);
+		ret.put(Constants.KEY_SINGLE_BETTING_PRIZE, singleBettingPrize);
+		
+		return ret;
 	}
 
 	/* (non-Javadoc)

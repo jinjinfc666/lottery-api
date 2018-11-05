@@ -50,7 +50,7 @@ public abstract class DefaultPlayTypeFacadeImpl implements PlayTypeFacade {
 	public abstract boolean validBetNum(OrderInfo order) ;
 
 	@Override
-	public abstract BigDecimal calPrize(Issue issue, OrderInfo order, UserInfo user);
+	public abstract Map<String, Object> calPrize(Issue issue, OrderInfo order, UserInfo user);
 
 	/* (non-Javadoc)
 	 * @see com.jll.game.playtype.PlayTypeFacade#calWinningRate()

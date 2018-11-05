@@ -27,7 +27,7 @@ public class QszxPlayTypeFacadeImplTest extends ServiceJunitBase{
 	@Resource
 	PlayTypeFacade playTypeFacade;
 	
-	final String facadeName = "qszx|前三直选/fs-ds";
+	final String facadeName = "qszx|前三直选/fs";
 	
 	@Override
 	protected void setUp() throws Exception {

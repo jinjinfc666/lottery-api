@@ -17,11 +17,10 @@ import com.jll.entity.Issue;
 import com.jll.entity.OrderInfo;
 import com.jll.entity.UserInfo;
 
-public class HszxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
-
-private Logger logger = Logger.getLogger(QszxPlayTypeFacadeImpl.class);
+public class ZszxDsPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
+	private Logger logger = Logger.getLogger(QszxPlayTypeFacadeImpl.class);
 	
-	protected String playTypeDesc = "hszx|后三直选/fs";
+	protected String playTypeDesc = "zszx|中三直选/ds";
 	
 	@Override
 	public String getPlayTypeDesc() {
@@ -30,10 +29,6 @@ private Logger logger = Logger.getLogger(QszxPlayTypeFacadeImpl.class);
 	
 	@Override
 	public boolean isMatchWinningNum(Issue issue, OrderInfo order) {
-		//开奖号码的每一位
-		String[] winNumSet = null;
-		//投注号码的每个位的号码，可能多个号码
-		String[] betNumSet = new String[3];
 		//每次点击选号按钮所选号码，多个所选号码以;分割
 		String[] betNumMul= null;
 		String betNum = null;
@@ -41,16 +36,11 @@ private Logger logger = Logger.getLogger(QszxPlayTypeFacadeImpl.class);
 		
 		winNum = issue.getRetNum();
 		betNum = order.getBetNum();
-		winNum = winNum.substring(4, 9);
-		winNumSet = winNum.split(",");
-		//betNumSet = betNum.split(",");
+		winNum = winNum.substring(2,7);
 		betNumMul = betNum.split(";");
 		
 		for(String temp : betNumMul) {
-			String[] tempSet = temp.split(",");
-			if(tempSet[0].contains(winNumSet[0])
-					&& tempSet[1].contains(winNumSet[1])
-					&& tempSet[2].contains(winNumSet[2])) {
+			if(temp.equals(winNum.replace(",", ""))) {
 				return true;
 			}
 		}
@@ -73,16 +63,28 @@ private Logger logger = Logger.getLogger(QszxPlayTypeFacadeImpl.class);
 		int betTotal = 1;
 		Float betAmount = 0F;
 		Float maxWinAmount = 0F;
+		int winBetTotal = 0;
 		
-		betNumSet = betNum.split(",");
-		for(String subBetNum : betNumSet) {
+		betNumSet = betNum.split(";");
+		/*for(String subBetNum : betNumSet) {
 			int len = subBetNum.length();
 			betTotal *= MathUtil.combination(1, len);
-		}
+		}*/
+		winBetTotal = betNumSet.length;
+		betTotal = betNumSet.length;
 		
 		betAmount = MathUtil.multiply(betTotal, times, Float.class);
-		betAmount = MathUtil.multiply(betAmount, monUnit.floatValue(), Float.class);
-		maxWinAmount = MathUtil.multiply(betAmount, singleBettingPrize.floatValue(), Float.class);
+		betAmount = MathUtil.multiply(betAmount, monUnit, Float.class);
+		
+		maxWinAmount = MathUtil.multiply(winBetTotal, 
+				times, 
+				Float.class);
+		maxWinAmount = MathUtil.multiply(maxWinAmount, 
+				monUnit, 
+				Float.class);
+		maxWinAmount = MathUtil.multiply(maxWinAmount, 
+				singleBettingPrize.floatValue(), 
+				Float.class);
 		
 		ret.put("playType", playType);
 		ret.put("betAmount", betAmount);
@@ -91,7 +93,7 @@ private Logger logger = Logger.getLogger(QszxPlayTypeFacadeImpl.class);
 		ret.put("singleBettingPrize", singleBettingPrize);
 		return ret;
 	}
-	
+
 	@Override
 	public boolean validBetNum(OrderInfo order) {
 		String betNum = null;
@@ -107,16 +109,13 @@ private Logger logger = Logger.getLogger(QszxPlayTypeFacadeImpl.class);
 			return false;
 		}
 		
+		
 		return true;
 	}
 
 	@Override
 	public Map<String, Object> calPrize(Issue issue, OrderInfo order, UserInfo user) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		// 开奖号码的每一位
-		String[] winNumSet = null;
-		// 投注号码的每个位的号码，可能多个号码
-		String[] betNumSet = new String[3];
 		// 每次点击选号按钮所选号码，多个所选号码以;分割
 		String[] betNumMul = null;
 		String betNum = null;
@@ -135,23 +134,19 @@ private Logger logger = Logger.getLogger(QszxPlayTypeFacadeImpl.class);
 		
 		winNum = issue.getRetNum();
 		betNum = order.getBetNum();
-		winNum = winNum.substring(4, 9);
-		winNumSet = winNum.split(",");
+		winNum = winNum.substring(2, 7);
 		betNumMul = betNum.split(";");
 		
 		
 		for(String singleSel : betNumMul) {
-			betNumSet = singleSel.split(",");
-			if(betNumSet[0].contains(winNumSet[0])
-					&& betNumSet[1].contains(winNumSet[1])
-					&& betNumSet[2].contains(winNumSet[2])) {
+			if(singleSel.equals(winNum.replace(",", ""))) {
 				winningBetAmount++;
 			}
 		}
 		
 		betAmount = MathUtil.multiply(winningBetAmount, times, Float.class);
-		betAmount = MathUtil.multiply(betAmount, monUnit, Float.class);
-		maxWinAmount = MathUtil.multiply(betAmount, singleBettingPrize, Float.class);
+		betAmount = MathUtil.multiply(betAmount, monUnit.floatValue(), Float.class);
+		maxWinAmount = MathUtil.multiply(betAmount, singleBettingPrize.floatValue(), Float.class);
 		
 		ret.put(Constants.KEY_WINNING_BET_TOTAL, winningBetAmount);
 		ret.put(Constants.KEY_WIN_AMOUNT, maxWinAmount);
@@ -184,10 +179,10 @@ private Logger logger = Logger.getLogger(QszxPlayTypeFacadeImpl.class);
 		String[] betNumArray = betNum.split(";");
 		StringBuffer buffer = new StringBuffer();
 		//boolean isMatch1 = false;
-		//boolean isMatch2 = false;
+		boolean isMatch2 = false;
 		boolean isMatch3 = false;
 		boolean isMatch4 = false;
-		boolean isMatch5 = false;
+		/*boolean isMatch5 = false;*/
 		
 		for(String singleBetNumArray : betNumArray) {
 			String[] betNumBits = splitBit(singleBetNumArray, 1);
@@ -198,12 +193,17 @@ private Logger logger = Logger.getLogger(QszxPlayTypeFacadeImpl.class);
 				}*/
 				
 				for(int ii = 0; ii < 10;ii++){
-					/*if(betNumBits[0].contains(String.valueOf(ii))) {
+					if(betNumBits[0].contains(String.valueOf(ii))) {
 						isMatch2 = true;
-					}*/
+					}
+					
+					if(!isMatch2) {
+						isMatch2 = false;
+						continue;
+					}
 					
 					for(int iii = 0; iii < 10;iii++){
-						if(betNumBits[0].contains(String.valueOf(iii))) {
+						if(betNumBits[1].contains(String.valueOf(iii))) {
 							isMatch3 = true;
 						}
 						
@@ -213,7 +213,7 @@ private Logger logger = Logger.getLogger(QszxPlayTypeFacadeImpl.class);
 						}
 						
 						for(int iiii = 0; iiii < 10;iiii++){
-							if(betNumBits[1].contains(String.valueOf(iiii))) {
+							if(betNumBits[2].contains(String.valueOf(iiii))) {
 								isMatch4 = true;
 							}
 							
@@ -222,15 +222,11 @@ private Logger logger = Logger.getLogger(QszxPlayTypeFacadeImpl.class);
 								continue;
 							}
 							
+							
 							for(int iiiii = 0; iiiii < 10;iiiii++){
-								if(betNumBits[2].contains(String.valueOf(iiiii))) {
+								/*if(betNumBits[4].contains(String.valueOf(iiiii))) {
 									isMatch5 = true;
-								}
-								
-								if(!isMatch5) {
-									isMatch5 = false;
-									continue;
-								}
+								}*/
 								
 								buffer.delete(0, buffer.length());
 								
@@ -244,7 +240,7 @@ private Logger logger = Logger.getLogger(QszxPlayTypeFacadeImpl.class);
 								row.put(Constants.KEY_FACADE_BET_NUM_SAMPLE, buffer.toString());
 								betNumList.add(row);
 								
-								isMatch5 = false;
+								//isMatch5 = false;
 							}
 							
 							isMatch4 = false;
@@ -252,7 +248,7 @@ private Logger logger = Logger.getLogger(QszxPlayTypeFacadeImpl.class);
 						
 						isMatch3 = false;
 					}
-					//isMatch2 = false;
+					isMatch2 = false;
 				}
 				//isMatch1 = false;
 			}
@@ -277,23 +273,23 @@ private Logger logger = Logger.getLogger(QszxPlayTypeFacadeImpl.class);
 	
 	private String[] splitBit(String singleSel, int step) {
 		List<String> retList = new ArrayList<>();
-		StringBuffer buffer = new StringBuffer();
+		//StringBuffer buffer = new StringBuffer();
 		
 		for(int i = 0; i < singleSel.length();) {
 			String temp = singleSel.substring(i, i + step);
-			if(",".equals(temp)) {
+			/*if(",".equals(temp)) {
 				retList.add(buffer.toString());
 				buffer.delete(0, buffer.length());
 			}else {
 				buffer.append(temp);
-			}
-			
+			}*/
+			retList.add(temp);
 			i += step;
 			
-			if(i >= singleSel.length()) {
+			/*if(i >= singleSel.length()) {
 				retList.add(buffer.toString());
 				buffer.delete(0, buffer.length());
-			}
+			}*/
 		}
 		
 		return retList.toArray(new String[0]);

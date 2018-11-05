@@ -20,7 +20,8 @@ public class QszxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 	
 	private Logger logger = Logger.getLogger(QszxPlayTypeFacadeImpl.class);
 	
-	protected String playTypeDesc = "qszx|前三直选/fs-ds";
+	//protected String playTypeDesc = "qszx|前三直选/fs-ds";
+	protected String playTypeDesc = "qszx|前三直选/fs";
 	
 	@Override
 	public boolean isMatchWinningNum(Issue issue, OrderInfo order) {
@@ -132,7 +133,8 @@ public class QszxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 	}
 
 	@Override
-	public BigDecimal calPrize(Issue issue, OrderInfo order, UserInfo user) {
+	public Map<String, Object> calPrize(Issue issue, OrderInfo order, UserInfo user) {
+		Map<String, Object> ret = new HashMap<String, Object>();
 		// 开奖号码的每一位
 		String[] winNumSet = null;
 		// 投注号码的每个位的号码，可能多个号码
@@ -173,7 +175,11 @@ public class QszxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 		betAmount = MathUtil.multiply(betAmount, monUnit.floatValue(), Float.class);
 		maxWinAmount = MathUtil.multiply(betAmount, singleBettingPrize.floatValue(), Float.class);
 		
-		return new BigDecimal(maxWinAmount);
+		ret.put(Constants.KEY_WINNING_BET_TOTAL, winningBetAmount);
+		ret.put(Constants.KEY_WIN_AMOUNT, maxWinAmount);
+		ret.put(Constants.KEY_SINGLE_BETTING_PRIZE, singleBettingPrize);
+		
+		return ret;
 	}
 
 	/* (non-Javadoc)
@@ -257,9 +263,19 @@ public class QszxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 					isMatch1 = true;
 				}
 				
+				if(!isMatch1) {
+					isMatch1 = false;
+					continue;
+				}
+				
 				for(int ii = 0; ii < 10;ii++){
 					if(betNumBits[1].contains(String.valueOf(ii))) {
 						isMatch2 = true;
+					}
+					
+					if(!isMatch2) {
+						isMatch2 = false;
+						continue;
 					}
 					
 					for(int iii = 0; iii < 10;iii++){
@@ -267,9 +283,8 @@ public class QszxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 							isMatch3 = true;
 						}
 						
-						if(!isMatch1
-								|| !isMatch2
-								|| !isMatch3) {
+						if(!isMatch3) {
+							isMatch3 = false;
 							continue;
 						}
 						

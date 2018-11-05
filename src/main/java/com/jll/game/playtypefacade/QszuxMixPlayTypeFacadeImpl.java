@@ -156,15 +156,23 @@ public class QszuxMixPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl  {
 	}
 
 	@Override
-	public BigDecimal calPrize(Issue issue, OrderInfo order, UserInfo user) {
+	public Map<String, Object> calPrize(Issue issue, OrderInfo order, UserInfo user) {
+		Map<String, Object> ret = new HashMap<String, Object>();
 		// 开奖号码的每一位
 		String[] winNumSet = null;
 		// 每次点击选号按钮所选号码，多个所选号码以;分割
 		String[] betNumMul = null;
 		String betNum = null;
 		String winNum = null;
+		Float singleBetAmountZs = 0F;
+		Float singleBetAmountZl = 0F;
 		Float singleBetAmount = 0F;
 		Float maxWinAmount = 0F;
+		Float maxWinAmountZs = 0F;
+		Float maxWinAmountZl = 0F;
+		int winningBetAmount = 0;
+		int winningBetAmountZs = 0;
+		int winningBetAmountZl = 0;
 		Integer times = order.getTimes();
 		BigDecimal monUnit = order.getPattern();
 		//组三单注奖金
@@ -192,23 +200,32 @@ public class QszuxMixPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl  {
 			if(temp.contains(winNumSet[0]) 
 					&& temp.contains(winNumSet[1])
 					&& temp.contains(winNumSet[2])) {
-				Float singleWinAmount = 0F;
 				if(isZxZs(temp)) {
 					if(isPatternMath(temp, winNum.replace(",", ""))) {						
-						singleWinAmount = MathUtil.multiply(singleBetAmount, singleBettingPrizeZs.floatValue(), Float.class);
+						winningBetAmountZs++;
 					}
 					
 				}else if(isZxZl(temp)){
 					if(isPatternMath(temp, winNum.replace(",", ""))) {						
-						singleWinAmount = MathUtil.multiply(singleBetAmount, singleBettingPrizeZl.floatValue(), Float.class);	
+						winningBetAmountZl++;
 					}
-				}				
-				
-				maxWinAmount = MathUtil.add(maxWinAmount, singleWinAmount, Float.class);		
+				}	
 			}
 		}		
 		
-		return new BigDecimal(maxWinAmount);
+		winningBetAmount = winningBetAmountZl + winningBetAmountZs;
+		maxWinAmountZs = MathUtil.multiply(singleBetAmountZs, winningBetAmountZs, Float.class);
+		maxWinAmountZl = MathUtil.multiply(singleBetAmountZl, winningBetAmountZl, Float.class);
+		
+		maxWinAmount = MathUtil.add(maxWinAmountZs, maxWinAmountZl, Float.class);
+		
+		ret.put(Constants.KEY_WINNING_BET_TOTAL, winningBetAmount);
+		ret.put(Constants.KEY_WIN_AMOUNT, maxWinAmount);
+		ret.put(Constants.KEY_SINGLE_BETTING_PRIZE, 
+				winningBetAmountZs > 0?
+						singleBettingPrizeZs : singleBettingPrizeZl);
+		
+		return ret;
 	}
 
 	/* (non-Javadoc)

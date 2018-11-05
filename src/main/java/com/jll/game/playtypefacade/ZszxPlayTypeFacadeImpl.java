@@ -20,7 +20,7 @@ import com.jll.entity.UserInfo;
 public class ZszxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 	private Logger logger = Logger.getLogger(QszxPlayTypeFacadeImpl.class);
 	
-	protected String playTypeDesc = "zszx|中三直选/fs-ds";
+	protected String playTypeDesc = "zszx|中三直选/fs";
 	
 	@Override
 	public String getPlayTypeDesc() {
@@ -31,8 +31,6 @@ public class ZszxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 	public boolean isMatchWinningNum(Issue issue, OrderInfo order) {
 		//开奖号码的每一位
 		String[] winNumSet = null;
-		//投注号码的每个位的号码，可能多个号码
-		String[] betNumSet = new String[3];
 		//每次点击选号按钮所选号码，多个所选号码以;分割
 		String[] betNumMul= null;
 		String betNum = null;
@@ -47,36 +45,14 @@ public class ZszxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 		
 		for(String temp : betNumMul) {
 			String[] tempSet = temp.split(",");
-			if(StringUtils.isBlank(betNumSet[0])) {
-				betNumSet[0] = tempSet[0];
-			}else {
-				betNumSet[0] = betNumSet[0] + tempSet[0];
-			}
-			
-			if(StringUtils.isBlank(betNumSet[1])) {
-				betNumSet[1] = tempSet[1];
-			}else {
-				betNumSet[1] = betNumSet[1] + tempSet[1];
-			}
-			
-			if(StringUtils.isBlank(betNumSet[2])) {
-				betNumSet[2] = tempSet[2];
-			}else {
-				betNumSet[2] = betNumSet[2] + tempSet[2];
-			}
-			
-		}
-		
-		logger.debug("proced bet number is :: " + Arrays.asList(betNumSet));
-		
-		for(int i = 0; i< winNumSet.length; i++) {
-			String betNumDigit = betNumSet[i];
-			if(!betNumDigit.contains(winNumSet[i])) {
-				return false;
+			if(tempSet[0].contains(winNumSet[0])
+					&& tempSet[1].contains(winNumSet[1])
+					&& tempSet[2].contains(winNumSet[2])) {
+				return true;
 			}
 		}
 		
-		return true;
+		return false;
 	}
 
 	@Override
@@ -128,16 +104,12 @@ public class ZszxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 			return false;
 		}
 		
-		for(String temp : betNumSet) {
-			if(StringUtils.isBlank(temp)) {
-				return false;
-			}
-		}
 		return true;
 	}
 
 	@Override
-	public BigDecimal calPrize(Issue issue, OrderInfo order, UserInfo user) {
+	public Map<String, Object> calPrize(Issue issue, OrderInfo order, UserInfo user) {
+		Map<String, Object> ret = new HashMap<String, Object>();
 		// 开奖号码的每一位
 		String[] winNumSet = null;
 		// 投注号码的每个位的号码，可能多个号码
@@ -178,7 +150,11 @@ public class ZszxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 		betAmount = MathUtil.multiply(betAmount, monUnit.floatValue(), Float.class);
 		maxWinAmount = MathUtil.multiply(betAmount, singleBettingPrize.floatValue(), Float.class);
 		
-		return new BigDecimal(maxWinAmount);
+		ret.put(Constants.KEY_WINNING_BET_TOTAL, winningBetAmount);
+		ret.put(Constants.KEY_WIN_AMOUNT, maxWinAmount);
+		ret.put(Constants.KEY_SINGLE_BETTING_PRIZE, singleBettingPrize);
+		
+		return ret;
 	}
 
 	/* (non-Javadoc)
@@ -223,9 +199,19 @@ public class ZszxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 						isMatch2 = true;
 					}
 					
+					if(!isMatch2) {
+						isMatch2 = false;
+						continue;
+					}
+					
 					for(int iii = 0; iii < 10;iii++){
 						if(betNumBits[1].contains(String.valueOf(iii))) {
 							isMatch3 = true;
+						}
+						
+						if(!isMatch3) {
+							isMatch3 = false;
+							continue;
 						}
 						
 						for(int iiii = 0; iiii < 10;iiii++){
@@ -233,9 +219,8 @@ public class ZszxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 								isMatch4 = true;
 							}
 							
-							if(!isMatch4
-									|| !isMatch2
-									|| !isMatch3) {
+							if(!isMatch4) {
+								isMatch4 = false;
 								continue;
 							}
 							

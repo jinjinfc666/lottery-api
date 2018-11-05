@@ -53,7 +53,7 @@ public interface PlayTypeFacade
 	 * @param order
 	 * @return
 	 */
-	BigDecimal calPrize(Issue issue, OrderInfo order, UserInfo user);
+	Map<String,Object> calPrize(Issue issue, OrderInfo order, UserInfo user);
 	
 	
 	/**

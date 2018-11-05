@@ -112,6 +112,7 @@ public class HszuxZsPlayTypeFacadeImplTest extends ServiceJunitBase{
 	public void ItestCalPrize_zszux_zs(){
 		String winningNum = "0,0,1,1,9";
 		String betNum = "19";
+		Map<String, Object> ret;
 		String lottoType = "cqssc";
 		BigDecimal prize = null;
 		
@@ -137,7 +138,8 @@ public class HszuxZsPlayTypeFacadeImplTest extends ServiceJunitBase{
 		user.setUserName("test001");
 		user.setUserType(Constants.UserType.PLAYER.getCode());
 		user.setPlatRebate(new BigDecimal(5.0F));
-		prize = playTypeFacade.calPrize(issue, order, user);
+		ret = playTypeFacade.calPrize(issue, order, user);
+		prize = new BigDecimal((Float)ret.get(Constants.KEY_WIN_AMOUNT));
 		Assert.assertNotNull(prize);
 				
 		Assert.assertTrue(prize.compareTo(new BigDecimal(311.18F)) == 0);
