@@ -38,12 +38,83 @@ public class DwdPlayTypeFacadeImplTest extends ServiceJunitBase{
 	}
 	
 	public void testParseBetNumber(){
-		String betNum = "12,,,,,";
-		
+		String betNum = "0,,,,";
+		Date startDate = new Date();
 		List<Map<String, String>> ret = playTypeFacade.parseBetNumber(betNum);
-		Assert.assertNotNull(ret);
 		
-		Assert.assertTrue(ret.size() == 2);
+		Date endDate = new Date();
+		System.out.println(String.format("create Arragnge %s , take over %s ms", 
+				ret.size(),
+				endDate.getTime() - startDate.getTime()));
+		
+		Assert.assertNotNull(ret);
+		 
+		Assert.assertTrue(ret.size() == 10000);
+		
+		betNum = "0,0,,,";
+		startDate = new Date();
+		ret = playTypeFacade.parseBetNumber(betNum);
+		
+		endDate = new Date();
+		System.out.println(String.format("create Arragnge %s , take over %s ms", 
+				ret.size(),
+				endDate.getTime() - startDate.getTime()));
+		
+		Assert.assertNotNull(ret);
+		 
+		Assert.assertTrue(ret.size() == 19000);
+		
+		betNum = "0,0,0,,";
+		startDate = new Date();
+		ret = playTypeFacade.parseBetNumber(betNum);
+		
+		endDate = new Date();
+		System.out.println(String.format("create Arragnge %s , take over %s ms", 
+				ret.size(),
+				endDate.getTime() - startDate.getTime()));
+		
+		Assert.assertNotNull(ret);
+		 
+		Assert.assertTrue(ret.size() == 27100);
+		
+		betNum = "0,0,0,0,";
+		startDate = new Date();
+		ret = playTypeFacade.parseBetNumber(betNum);
+		
+		endDate = new Date();
+		System.out.println(String.format("create Arragnge %s , take over %s ms", 
+				ret.size(),
+				endDate.getTime() - startDate.getTime()));
+		
+		Assert.assertNotNull(ret);
+		 
+		Assert.assertTrue(ret.size() == 34390);
+		
+		betNum = "0,0,0,0,0";
+		startDate = new Date();
+		ret = playTypeFacade.parseBetNumber(betNum);
+		
+		endDate = new Date();
+		System.out.println(String.format("create Arragnge %s , take over %s ms", 
+				ret.size(),
+				endDate.getTime() - startDate.getTime()));
+		
+		Assert.assertNotNull(ret);
+		 
+		Assert.assertTrue(ret.size() == 40951);
+		
+		betNum = "0123456789,0123456789,0123456789,0123456789,0123456789";
+		startDate = new Date();
+		ret = playTypeFacade.parseBetNumber(betNum);
+		
+		endDate = new Date();
+		System.out.println(String.format("create Arragnge %s , take over %s ms", 
+				ret.size(),
+				endDate.getTime() - startDate.getTime()));
+		
+		Assert.assertNotNull(ret);
+		 
+		Assert.assertTrue(ret.size() == 100000);
 	}
 	
 	public void ItestIsMatchWinningNum_winning(){

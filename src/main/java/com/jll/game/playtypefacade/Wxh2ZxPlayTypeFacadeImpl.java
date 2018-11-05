@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -182,37 +183,47 @@ public class Wxh2ZxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl  {
 	public List<Map<String,String>> parseBetNumber(String betNum){
 		List<Map<String, String>> betNumList = new ArrayList<>();
 		String[] betNumArray = betNum.split(";");
-		List<String[]> arrangements = new ArrayList<>();
+		StringBuffer buffer = new StringBuffer();
+		Map<String, String> threeBits = new HashMap<>();
 		
 		for(String singleBetNumArray : betNumArray) {
-			String[] betNumBits = new String[singleBetNumArray.length()];
-			for(int i = 0; i < singleBetNumArray.length(); i++) {
-				betNumBits[i] = singleBetNumArray.substring(i, i + 1);
-			}
-			List<String[]> combinations = new ArrayList<>();
-			MathUtil.combinationSelect(betNumBits, 2, combinations);
-			
-			
-			for(String[] combination : combinations) {
-				MathUtil.arrangementSelect(combination, 2, arrangements);				
-			}
-			
-			
-			for(String[] temp : arrangements) {
-				StringBuffer buffer = new StringBuffer();
-				for(String tempBit : temp) {
-					buffer.append(tempBit);
-				}
-				
-				//buffer.append("**");
-				String tempStr = buffer.toString();
-				if(!isExisting(betNumList, tempStr)) {
-					Map<String, String> row = new HashMap<String, String>();
-					row.put(Constants.KEY_FACADE_BET_NUM, tempStr);
-					row.put(Constants.KEY_FACADE_PATTERN, "[0-9]{3}" + tempStr);
-					row.put(Constants.KEY_FACADE_BET_NUM_SAMPLE, "000" + tempStr);				
-					betNumList.add(row);
-					//betNumList.add(tempStr);
+			for(int i = 0; i < 10; i++) {
+				for(int ii = 0; ii < 10;ii++){
+					for(int iii = 0; iii < 10;iii++){
+						
+						for(int iiii = 0; iiii < 10;iiii++){
+							for(int iiiii = 0; iiiii < 10;iiiii++){
+								threeBits.clear();
+								
+								threeBits.put(String.valueOf(iiii), String.valueOf(iiii));
+								threeBits.put(String.valueOf(iiiii), String.valueOf(iiiii));
+								
+								if(threeBits.size() != 2) {
+									continue;
+								}
+								
+								Iterator<String> ite = threeBits.keySet().iterator();
+								
+								if(!singleBetNumArray.contains(ite.next())
+										|| !singleBetNumArray.contains(ite.next())) {
+									continue;
+								}
+								buffer.delete(0, buffer.length());
+								
+								
+								buffer.append(i).append(ii).append(iii).append(iiii).append(iiiii);
+								
+								
+								Map<String, String> row = new HashMap<String, String>();
+								row.put(Constants.KEY_FACADE_BET_NUM, buffer.toString());
+								row.put(Constants.KEY_FACADE_PATTERN, buffer.toString());
+								row.put(Constants.KEY_FACADE_BET_NUM_SAMPLE, buffer.toString());
+								betNumList.add(row);
+								
+							}
+							
+						}
+					}
 				}
 			}
 		}

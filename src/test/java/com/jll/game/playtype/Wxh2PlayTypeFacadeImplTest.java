@@ -37,13 +37,42 @@ public class Wxh2PlayTypeFacadeImplTest extends ServiceJunitBase{
 		//super.tearDown();
 	}
 	
-	public void ItestParseBetNumber(){
-		String betNum = "12,23";
-		
+	public void testParseBetNumber(){
+		String betNum = "0,0";
+		Date startDate = new Date();
 		List<Map<String, String>> ret = playTypeFacade.parseBetNumber(betNum);
+		Date endDate = new Date();
+		System.out.println(String.format("create Arragnge %s , take over %s ms", 
+				ret.size(),
+				endDate.getTime() - startDate.getTime()));
 		Assert.assertNotNull(ret);
 		
-		Assert.assertTrue(ret.size() == 4);
+		Assert.assertTrue(ret.size() == 1000);
+		
+		betNum = "01,0";
+		startDate = new Date();
+		ret = playTypeFacade.parseBetNumber(betNum);
+		
+		endDate = new Date();
+		System.out.println(String.format("create Arragnge %s , take over %s ms", 
+				ret.size(),
+				endDate.getTime() - startDate.getTime()));
+		
+		Assert.assertNotNull(ret);
+		
+		Assert.assertTrue(ret.size() == 2000);
+		
+		betNum = "0123456789,0123456789";
+		startDate = new Date();
+		ret = playTypeFacade.parseBetNumber(betNum);
+		endDate = new Date();
+		System.out.println(String.format("create Arragnge %s , take over %s ms", 
+				ret.size(),
+				endDate.getTime() - startDate.getTime()));
+		
+		Assert.assertNotNull(ret);
+		
+		Assert.assertTrue(ret.size() == 100000);
 	}
 	
 	public void ItestIsMatchWinningNum_winning(){
@@ -66,7 +95,7 @@ public class Wxh2PlayTypeFacadeImplTest extends ServiceJunitBase{
 		
 	}
 	
-	public void testObtainSampleBetNumber(){		
+	public void ItestObtainSampleBetNumber(){		
 		String ret = playTypeFacade.obtainSampleBetNumber();
 		Assert.assertNotNull(ret);
 		

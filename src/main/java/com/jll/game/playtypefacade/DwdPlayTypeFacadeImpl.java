@@ -214,94 +214,71 @@ public class DwdPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 	public List<Map<String, String>> parseBetNumber(String betNum){
 		List<Map<String, String>> betNumList = new ArrayList<>();
 		String[] betNumArray = betNum.split(";");
+		StringBuffer buffer = new StringBuffer();
+		boolean isMatch1 = false;
+		boolean isMatch2 = false;
+		boolean isMatch3 = false;
+		boolean isMatch4 = false;
+		boolean isMatch5 = false;
+		
 		for(String singleBetNumArray : betNumArray) {
-			StringBuffer buffer = new StringBuffer();
-			for(int i = 0; i < singleBetNumArray.length(); i++) {
-				String temp = singleBetNumArray.substring(i, i + 1);
-				String temp2 = null;
-				if(i + 1 < singleBetNumArray.length()) {
-					temp2 = singleBetNumArray.substring(i + 1, i + 2);
+			String[] betNumBits = splitBit(singleBetNumArray, 1);
+			
+			for(int i = 0; i < 10; i++) {				
+				if(betNumBits[0].contains(String.valueOf(i))) {
+					isMatch1 = true;
 				}
-				if(temp.equals(",") && ",".equals(temp2)) {
-					buffer.append(temp).append(" ");
-				}else {
-					buffer.append(temp);
+				
+				for(int ii = 0; ii < 10;ii++){
+					if(betNumBits[1].contains(String.valueOf(ii))) {
+						isMatch2 = true;
+					}
+					
+					for(int iii = 0; iii < 10;iii++){
+						if(betNumBits[2].contains(String.valueOf(iii))) {
+							isMatch3 = true;
+						}
+						
+						for(int iiii = 0; iiii < 10;iiii++){
+							if(betNumBits[3].contains(String.valueOf(iiii))) {
+								isMatch4 = true;
+							}
+							for(int iiiii = 0; iiiii < 10;iiiii++){
+								if(betNumBits[4].contains(String.valueOf(iiiii))) {
+									isMatch5 = true;
+								}
+								
+								buffer.delete(0, buffer.length());
+								
+								
+								buffer.append(i).append(ii).append(iii).append(iiii).append(iiiii);
+								
+								
+								if(isMatch1
+										|| isMatch2
+										|| isMatch3
+										|| isMatch4
+										|| isMatch5) {
+									Map<String, String> row = new HashMap<String, String>();
+									row.put(Constants.KEY_FACADE_BET_NUM, buffer.toString());
+									row.put(Constants.KEY_FACADE_PATTERN, buffer.toString());
+									row.put(Constants.KEY_FACADE_BET_NUM_SAMPLE, buffer.toString());
+									betNumList.add(row);
+								}
+								
+								isMatch5 = false;
+							}
+							
+							isMatch4 = false;
+						}
+						
+						isMatch3 = false;
+					}
+					isMatch2 = false;
 				}
-			}
-			String[] betNumBits = buffer.toString().split(",");
-			String betNumBit = null;
-			
-			if(betNumBits.length > 0) {
-				betNumBit = betNumBits[0];
-				if(!StringUtils.isBlank(betNumBit)) {
-					for(int i = 0; i < betNumBit.length(); i++) {
-						String a = betNumBit.substring(i, i + 1);
-						Map<String, String> row = new HashMap<String, String>();
-						row.put(Constants.KEY_FACADE_BET_NUM, a);
-						row.put(Constants.KEY_FACADE_PATTERN, a + "[0-9]{4}");
-						row.put(Constants.KEY_FACADE_BET_NUM_SAMPLE, a + "0000");				
-						betNumList.add(row);
-					}
-				}
-			}
-			
-			if(betNumBits.length > 1) {
-				betNumBit = betNumBits[1];
-				if(!StringUtils.isBlank(betNumBit)) {
-					for(int i = 0; i < betNumBit.length(); i++) {
-						String a = betNumBit.substring(i, i + 1);
-						Map<String, String> row = new HashMap<String, String>();
-						row.put(Constants.KEY_FACADE_BET_NUM, a);
-						row.put(Constants.KEY_FACADE_PATTERN, "[0-9]{1}" + a + "[0-9]{3}");
-						row.put(Constants.KEY_FACADE_BET_NUM_SAMPLE, "0" + a + "000");				
-						betNumList.add(row);
-					}
-				}				
-			}
-			
-			if(betNumBits.length > 2) {
-				betNumBit = betNumBits[2];
-				if(!StringUtils.isBlank(betNumBit)) {
-					for(int i = 0; i < betNumBit.length(); i++) {
-						String a = betNumBit.substring(i, i + 1);
-						Map<String, String> row = new HashMap<String, String>();
-						row.put(Constants.KEY_FACADE_BET_NUM, a);
-						row.put(Constants.KEY_FACADE_PATTERN, "[0-9]{2}" + a + "[0-9]{2}");
-						row.put(Constants.KEY_FACADE_BET_NUM_SAMPLE, "00" + a + "00");				
-						betNumList.add(row);
-					}
-				}				
-			}
-			
-			if(betNumBits.length > 3) {
-				betNumBit = betNumBits[3];
-				if(!StringUtils.isBlank(betNumBit)) {
-					for(int i = 0; i < betNumBit.length(); i++) {
-						String a = betNumBit.substring(i, i + 1);
-						Map<String, String> row = new HashMap<String, String>();
-						row.put(Constants.KEY_FACADE_BET_NUM, a);
-						row.put(Constants.KEY_FACADE_PATTERN, "[0-9]{3}" + a + "[0-9]{1}");
-						row.put(Constants.KEY_FACADE_BET_NUM_SAMPLE, "000" + a + "0");
-						betNumList.add(row);
-					}
-				}				
-			}
-			
-			if(betNumBits.length > 4) {
-				betNumBit = betNumBits[4];
-				if(!StringUtils.isBlank(betNumBit)) {
-					for(int i = 0; i < betNumBit.length(); i++) {
-						String a = betNumBit.substring(i, i + 1);
-						Map<String, String> row = new HashMap<String, String>();
-						row.put(Constants.KEY_FACADE_BET_NUM, a);
-						row.put(Constants.KEY_FACADE_PATTERN, "[0-9]{4}" + a);
-						row.put(Constants.KEY_FACADE_BET_NUM_SAMPLE, "0000" + a);				
-						betNumList.add(row);
-					}
-				}
+				isMatch1 = false;
 			}
 		}
-		
 		
 		return betNumList;
 	}

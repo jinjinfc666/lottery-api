@@ -168,7 +168,7 @@ public class EleIn5QszxPlayTypeFacadeImplTest extends ServiceJunitBase{
 	}
 	
 	
-	public void ItestValidBetNum_invalid_betnum_(){
+	public void testValidBetNum_invalid_betnum_(){
 		
 		String betNum = "00,01,02";
 		OrderInfo order = new OrderInfo();
@@ -249,7 +249,7 @@ public class EleIn5QszxPlayTypeFacadeImplTest extends ServiceJunitBase{
 		
 		ret = playTypeFacade.validBetNum(order);
 		Assert.assertFalse(ret);
-		
+				
 	}
 	
 	public void ItestValidBetNum_valid_betnum_(){

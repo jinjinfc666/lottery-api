@@ -5806,10 +5806,12 @@ public class CqsscBettingTest extends ControllerJunitBase{
 			
 			Map<String, Object> ret = queryCurrIssue(token, lottoType);
 			while((ret == null || ret.size() == 0) 
-					&& counter <= 200) {
+					&& counter <= 60000) {
 				counter++;
 				
 				ret = queryCurrIssue(token, lottoType);
+				
+				Thread.sleep(500);
 			}
 			
 			if(ret == null || ret.size() == 0) {

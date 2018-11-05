@@ -38,12 +38,42 @@ public class Wxq2ZuxPlayTypeFacadeImplTest extends ServiceJunitBase{
 	}
 	
 	public void testParseBetNumber(){
-		String betNum = "123";
+		String betNum = "0";
+		Date startDate = new Date();
+		List<Map<String, String>> ret = playTypeFacade.parseBetNumber(betNum);
+		Date endDate = new Date();
+		System.out.println(String.format("create Arragnge %s , take over %s ms", 
+				ret.size(),
+				endDate.getTime() - startDate.getTime()));
 		
-		List<Map<String,String>> ret = playTypeFacade.parseBetNumber(betNum);
 		Assert.assertNotNull(ret);
 		
-		Assert.assertTrue(ret.size() == 6);
+		Assert.assertTrue(ret.size() == 0);
+		
+		betNum = "01";
+		startDate = new Date();
+		ret = playTypeFacade.parseBetNumber(betNum);
+		endDate = new Date();
+		System.out.println(String.format("create Arragnge %s , take over %s ms", 
+				ret.size(),
+				endDate.getTime() - startDate.getTime()));
+		
+		Assert.assertNotNull(ret);
+		
+		Assert.assertTrue(ret.size() == 2000);
+		
+		
+		betNum = "0123456789";
+		startDate = new Date();
+		ret = playTypeFacade.parseBetNumber(betNum);
+		endDate = new Date();
+		System.out.println(String.format("create Arragnge %s , take over %s ms", 
+				ret.size(),
+				endDate.getTime() - startDate.getTime()));
+		
+		Assert.assertNotNull(ret);
+		
+		Assert.assertTrue(ret.size() == 90000);
 	}
 	
 	public void ItestIsMatchWinningNum_winning(){
@@ -69,7 +99,7 @@ public class Wxq2ZuxPlayTypeFacadeImplTest extends ServiceJunitBase{
 	/**
 	 * 前2位相同，只匹配投注号码的一位
 	 */
-	public void testIsMatchWinningNum_sameBits(){
+	public void ItestIsMatchWinningNum_sameBits(){
 		Date startTime = new Date();
 		String betNum = "60";
 		Issue issue = new Issue();

@@ -135,6 +135,9 @@ public class EleIn5QszxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 				if(StringUtils.isBlank(betNumMulTempBit)) {
 					return false;
 				}
+				
+				allBetNumBit.clear();
+				
 				Map<String, String> tempBits = splitBetNum(betNumMulTempBit);
 				if(tempBits.size() == 0
 						|| tempBits.size() > 11

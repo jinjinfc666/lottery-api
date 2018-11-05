@@ -203,27 +203,71 @@ public class Wxq2PlayTypeFacadeImpl  extends DefaultPlayTypeFacadeImpl {
 	public List<Map<String, String>> parseBetNumber(String betNum){
 		List<Map<String, String>> betNumList = new ArrayList<>();
 		String[] betNumArray = betNum.split(";");
+		StringBuffer buffer = new StringBuffer();
+		boolean isMatch1 = false;
+		boolean isMatch2 = false;
+		//boolean isMatch3 = false;
+		/*boolean isMatch4 = false;
+		boolean isMatch5 = false;*/
+		
 		for(String singleBetNumArray : betNumArray) {
-			String[] betNumBits = singleBetNumArray.split(",");
+			String[] betNumBits = splitBit(singleBetNumArray, 1);
 			
-			for(int i = 0 ; i < betNumBits[0].length(); i++) {
-				String a = betNumBits[0].substring(i, i + 1);
-				for(int ii = 0; ii < betNumBits[1].length(); ii++) {
-					String aa = betNumBits[1].substring(ii, ii + 1);
-					
-					StringBuffer buffer = new StringBuffer();
-					buffer.append(a).append(aa);
-					
-					Map<String, String> row = new HashMap<String, String>();
-					row.put(Constants.KEY_FACADE_BET_NUM, buffer.toString());
-					row.put(Constants.KEY_FACADE_PATTERN, buffer.toString() + "[0-9]{3}");
-					row.put(Constants.KEY_FACADE_BET_NUM_SAMPLE, buffer.toString() + "000");				
-					betNumList.add(row);
-					
+			for(int i = 0; i < 10; i++) {				
+				if(betNumBits[0].contains(String.valueOf(i))) {
+					isMatch1 = true;
 				}
+				
+				for(int ii = 0; ii < 10;ii++){
+					if(betNumBits[1].contains(String.valueOf(ii))) {
+						isMatch2 = true;
+					}
+					
+					if(!isMatch1
+							|| !isMatch2) {
+						continue;
+					}
+					
+					for(int iii = 0; iii < 10;iii++){
+						/*if(betNumBits[2].contains(String.valueOf(iii))) {
+							isMatch3 = true;
+						}*/
+						
+						
+						for(int iiii = 0; iiii < 10;iiii++){
+							/*if(betNumBits[3].contains(String.valueOf(iiii))) {
+								isMatch4 = true;
+							}*/
+							for(int iiiii = 0; iiiii < 10;iiiii++){
+								/*if(betNumBits[4].contains(String.valueOf(iiiii))) {
+									isMatch5 = true;
+								}*/
+								
+								buffer.delete(0, buffer.length());
+								
+								
+								buffer.append(i).append(ii).append(iii).append(iiii).append(iiiii);
+								
+								
+								Map<String, String> row = new HashMap<String, String>();
+								row.put(Constants.KEY_FACADE_BET_NUM, buffer.toString());
+								row.put(Constants.KEY_FACADE_PATTERN, buffer.toString());
+								row.put(Constants.KEY_FACADE_BET_NUM_SAMPLE, buffer.toString());
+								betNumList.add(row);
+								
+								//isMatch5 = false;
+							}
+							
+							//isMatch4 = false;
+						}
+						
+						//isMatch3 = false;
+					}
+					isMatch2 = false;
+				}
+				isMatch1 = false;
 			}
 		}
-		
 		
 		return betNumList;
 	}
@@ -247,5 +291,29 @@ public class Wxq2PlayTypeFacadeImpl  extends DefaultPlayTypeFacadeImpl {
 		betNum.delete(betNum.length()-1, betNum.length());
 		
 		return betNum.toString();
+	}
+	
+	private String[] splitBit(String singleSel, int step) {
+		List<String> retList = new ArrayList<>();
+		StringBuffer buffer = new StringBuffer();
+		
+		for(int i = 0; i < singleSel.length();) {
+			String temp = singleSel.substring(i, i + step);
+			if(",".equals(temp)) {
+				retList.add(buffer.toString());
+				buffer.delete(0, buffer.length());
+			}else {
+				buffer.append(temp);
+			}
+			
+			i += step;
+			
+			if(i >= singleSel.length()) {
+				retList.add(buffer.toString());
+				buffer.delete(0, buffer.length());
+			}
+		}
+		
+		return retList.toArray(new String[0]);
 	}
 }
