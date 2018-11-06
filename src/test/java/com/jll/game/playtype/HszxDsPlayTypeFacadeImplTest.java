@@ -11,23 +11,21 @@ import javax.annotation.Resource;
 import org.junit.Assert;
 
 import com.ehome.test.ServiceJunitBase;
-import com.jll.common.constants.Constants;
-import com.jll.common.utils.DateUtil;
 import com.jll.entity.Issue;
 import com.jll.entity.OrderInfo;
 import com.jll.entity.UserInfo;
 import com.jll.game.playtypefacade.PlayTypeFactory;
 
-public class Wxh2PlayTypeFacadeImplTest extends ServiceJunitBase{
+public class HszxDsPlayTypeFacadeImplTest extends ServiceJunitBase{
 		
-	public Wxh2PlayTypeFacadeImplTest(String name) {
+	public HszxDsPlayTypeFacadeImplTest(String name) {
 		super(name);
 	}	
 	
 	@Resource
 	PlayTypeFacade playTypeFacade;
 	
-	final String facadeName = "wxh2|五星后二/ds";
+	final String facadeName = "hszx|后三直选/ds";
 	
 	@Override
 	protected void setUp() throws Exception {
@@ -41,7 +39,7 @@ public class Wxh2PlayTypeFacadeImplTest extends ServiceJunitBase{
 	}
 	
 	public void testIsMatchWinningNum_winning(){
-		String betNum = "96";
+		String betNum = "096";
 		Issue issue = new Issue();
 		issue.setRetNum("0,0,0,9,6");
 		
@@ -52,7 +50,7 @@ public class Wxh2PlayTypeFacadeImplTest extends ServiceJunitBase{
 		Assert.assertTrue(ret);
 		
 		
-		betNum = "96;99";
+		betNum = "096;999";
 		issue = new Issue();
 		issue.setRetNum("0,0,0,9,6");
 		
@@ -67,12 +65,15 @@ public class Wxh2PlayTypeFacadeImplTest extends ServiceJunitBase{
 	public void testPreProcessNumber(){
 		Map<String, Object> params = new HashMap<>();
 		//Date startTime = new Date();
-		String betNum = "78";
+		String betNum = "000";
 		Integer times = 1;
 		Float monUnit = 1.0F;
 		Integer playType = 1;
-		String lottoType = "cqssc";
-				
+		//String lottoType = "cqssc";
+		Float betAmount = null;
+		Integer betTotal = null;
+		Float maxWinAmount = null;
+		
 		UserInfo user = new UserInfo();
 		user.setId(14);
 		user.setPlatRebate(new BigDecimal(5.0F));
@@ -82,15 +83,53 @@ public class Wxh2PlayTypeFacadeImplTest extends ServiceJunitBase{
 		params.put("times", times);
 		params.put("monUnit", monUnit);
 		params.put("playType", playType);
-		params.put("lottoType", lottoType);
+		//params.put("lottoType", lottoType);
 		
 		Map<String, Object> ret = playTypeFacade.preProcessNumber(params, user);
 		Assert.assertNotNull(ret);
+		betAmount = (Float)ret.get("betAmount");
+		betTotal = (Integer)ret.get("betTotal");
+		maxWinAmount = (Float)ret.get("maxWinAmount");
 		
+		Assert.assertTrue(new BigDecimal(betAmount).compareTo(new BigDecimal(1.0F)) == 0);
+		Assert.assertTrue(new BigDecimal(maxWinAmount).compareTo(new BigDecimal(933.55F)) == 0);
+		Assert.assertTrue(betTotal == 1);
+		
+		
+		params = new HashMap<>();
+		//Date startTime = new Date();
+		betNum = "000;001";
+		times = 1;
+		monUnit = 1.0F;
+		playType = 1;
+		//lottoType = "cqssc";
+		betAmount = null;
+		betTotal = null;
+		
+		user = new UserInfo();
+		user.setId(14);
+		user.setPlatRebate(new BigDecimal(5.0F));
+		
+		
+		params.put("betNum", betNum);
+		params.put("times", times);
+		params.put("monUnit", monUnit);
+		params.put("playType", playType);
+		//params.put("lottoType", lottoType);
+		
+		ret = playTypeFacade.preProcessNumber(params, user);
+		Assert.assertNotNull(ret);
+		betAmount = (Float)ret.get("betAmount");
+		betTotal = (Integer)ret.get("betTotal");
+		maxWinAmount = (Float)ret.get("maxWinAmount");
+		
+		Assert.assertTrue(new BigDecimal(betAmount).compareTo(new BigDecimal(2.0F)) == 0);
+		Assert.assertTrue(new BigDecimal(maxWinAmount).compareTo(new BigDecimal(1867.1F)) == 0);
+		Assert.assertTrue(betTotal == 2);
 	}
 	
 	public void testParseBetNumber(){
-		String betNum = "00";
+		String betNum = "000";
 		Date startDate = new Date();
 		List<Map<String, String>> ret = playTypeFacade.parseBetNumber(betNum);
 		
@@ -101,9 +140,9 @@ public class Wxh2PlayTypeFacadeImplTest extends ServiceJunitBase{
 		
 		Assert.assertNotNull(ret);
 		 
-		Assert.assertTrue(ret.size() == 1000);
+		Assert.assertTrue(ret.size() == 100);
 		
-		betNum = "00;99";
+		betNum = "000;999";
 		startDate = new Date();
 		ret = playTypeFacade.parseBetNumber(betNum);
 		
@@ -114,62 +153,6 @@ public class Wxh2PlayTypeFacadeImplTest extends ServiceJunitBase{
 		
 		Assert.assertNotNull(ret);
 		 
-		Assert.assertTrue(ret.size() == 2000);		
-	}
-	
-	public void testObtainSampleBetNumber(){
-		int counter = 0;
-		int maxCounter = 1000;
-		String betNum = null;
-		boolean isWinning = false;
-		boolean isValid = false;
-		while(counter < maxCounter) {
-			betNum = playTypeFacade.obtainSampleBetNumber();
-			
-			System.out.println(String.format("current bet number   %s", 
-					betNum));
-			
-			String winningNum = obtainWinningNum(betNum);
-			OrderInfo order = new OrderInfo();
-			order.setBetNum(betNum);
-			
-			Issue issue = new Issue();
-			issue.setRetNum(winningNum);
-			
-			isValid = playTypeFacade.validBetNum(order);
-			if(!isValid) {
-				continue;
-			}
-			isWinning = playTypeFacade.isMatchWinningNum(issue, order);
-			
-			System.out.println(String.format("winingNum  %s   current bet number   %s   isVliad  %s    isWnning  %s", 
-					winningNum,
-					betNum,
-					isValid,
-					isWinning));
-			
-			Assert.assertTrue(isValid);
-			counter++;
-		}
-	}
-	
-	private String obtainWinningNum(String betNum) {
-		StringBuffer winningNumBuffer = new StringBuffer();
-		List<Map<String, String>> maps = playTypeFacade.parseBetNumber(betNum);
-		if(maps != null && maps.size() > 0) {
-			Map<String, String> row = maps.get(0);
-			String winningNum = row.get(Constants.KEY_FACADE_BET_NUM_SAMPLE);
-			for(int i = 0; i< winningNum.length();) { 
-				String bit = winningNum.substring(i, i + 1);
-				if(!",".equals(bit)) {
-					winningNumBuffer.append(bit).append(",");
-				}
-				
-				i += 1;
-			}
-			winningNumBuffer.delete(winningNumBuffer.length() - 1, winningNumBuffer.length());
-		}
-		
-		return winningNumBuffer.toString();
+		Assert.assertTrue(ret.size() == 200);		
 	}
 }

@@ -52,6 +52,12 @@ public class Constants {
 	
 	public final static String KEY_IS_CHANGED = "is_changed";
 	
+	public final static String KEY_WINNING_BET_TOTAL = "win_bet_total";
+	
+	public final static String KEY_WIN_AMOUNT = "win_amount";
+	
+	public final static String KEY_SINGLE_BETTING_PRIZE = "single_betting_prize";
+	
 	public static enum DepositOrderState{
 		
 		INIT_OR_PUSHED(0),

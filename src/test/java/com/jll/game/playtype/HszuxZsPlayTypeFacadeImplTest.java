@@ -39,13 +39,54 @@ public class HszuxZsPlayTypeFacadeImplTest extends ServiceJunitBase{
 		//super.tearDown();
 	}
 	
-	public void ItestParseBetNumber(){
-		String betNum = "123";
-		
+	public void testParseBetNumber(){
+		String betNum = "0";
+		Date startDate = new Date();
 		List<Map<String, String>> ret = playTypeFacade.parseBetNumber(betNum);
+		Date endDate = new Date();
+		System.out.println(String.format("create Arragnge %s , take over %s ms", 
+				ret.size(),
+				endDate.getTime() - startDate.getTime()));
+		
 		Assert.assertNotNull(ret);
 		
-		Assert.assertTrue(ret.size() == 18);
+		Assert.assertTrue(ret.size() == 0);
+		
+		betNum = "01";
+		startDate = new Date();
+		ret = playTypeFacade.parseBetNumber(betNum);
+		endDate = new Date();
+		System.out.println(String.format("create Arragnge %s , take over %s ms", 
+				ret.size(),
+				endDate.getTime() - startDate.getTime()));
+		
+		Assert.assertNotNull(ret);
+		
+		Assert.assertTrue(ret.size() == 600);
+		
+		betNum = "012";
+		startDate = new Date();
+		ret = playTypeFacade.parseBetNumber(betNum);
+		endDate = new Date();
+		System.out.println(String.format("create Arragnge %s , take over %s ms", 
+				ret.size(),
+				endDate.getTime() - startDate.getTime()));
+		
+		Assert.assertNotNull(ret);
+		
+		Assert.assertTrue(ret.size() == 1800);
+		
+		betNum = "0123456789";
+		startDate = new Date();
+		ret = playTypeFacade.parseBetNumber(betNum);
+		endDate = new Date();
+		System.out.println(String.format("create Arragnge %s , take over %s ms", 
+				ret.size(),
+				endDate.getTime() - startDate.getTime()));
+		
+		Assert.assertNotNull(ret);
+		
+		Assert.assertTrue(ret.size() == 27000);
 	}
 	
 	public void ItestIsMatchWinningNum_winning(){
@@ -68,9 +109,10 @@ public class HszuxZsPlayTypeFacadeImplTest extends ServiceJunitBase{
 		
 	}
 	
-	public void testCalPrize_zszux_zs(){
+	public void ItestCalPrize_zszux_zs(){
 		String winningNum = "0,0,1,1,9";
 		String betNum = "19";
+		Map<String, Object> ret;
 		String lottoType = "cqssc";
 		BigDecimal prize = null;
 		
@@ -96,7 +138,8 @@ public class HszuxZsPlayTypeFacadeImplTest extends ServiceJunitBase{
 		user.setUserName("test001");
 		user.setUserType(Constants.UserType.PLAYER.getCode());
 		user.setPlatRebate(new BigDecimal(5.0F));
-		prize = playTypeFacade.calPrize(issue, order, user);
+		ret = playTypeFacade.calPrize(issue, order, user);
+		prize = new BigDecimal((Float)ret.get(Constants.KEY_WIN_AMOUNT));
 		Assert.assertNotNull(prize);
 				
 		Assert.assertTrue(prize.compareTo(new BigDecimal(311.18F)) == 0);

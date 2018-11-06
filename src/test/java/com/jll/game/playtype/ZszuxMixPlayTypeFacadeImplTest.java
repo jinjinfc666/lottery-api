@@ -40,30 +40,68 @@ public class ZszuxMixPlayTypeFacadeImplTest extends ServiceJunitBase{
 	}
 	
 	public void testParseBetNumber(){
-		String betNum = "122;123";
-		List<String> content = new ArrayList<>();
-		content.add("[0-9]{1}122[0-9]{1}");
-		
+		String betNum = "0";
+		Date startDate = new Date();
 		List<Map<String, String>> ret = playTypeFacade.parseBetNumber(betNum);
+		Date endDate = new Date();
+		System.out.println(String.format("create Arragnge %s , take over %s ms", 
+				ret.size(),
+				endDate.getTime() - startDate.getTime()));
+		
 		Assert.assertNotNull(ret);
 		
-		Assert.assertTrue(ret.size() == 9);
+		Assert.assertTrue(ret.size() == 0);
 		
-		for(Map<String, String> row : ret) {
-			String betNumTemp = row.get(Constants.KEY_FACADE_BET_NUM);
-			String pattern = row.get(Constants.KEY_FACADE_PATTERN);
-			String sample = row.get(Constants.KEY_FACADE_BET_NUM_SAMPLE);
-			
-			for(String existingPattern : content) {
-				boolean isMatch = Pattern.matches(existingPattern, sample);
-				if(!isMatch) {
-					content.add(pattern);
-					break;
-				}
-			}
-		}
+		betNum = "01";
+		startDate = new Date();
+		ret = playTypeFacade.parseBetNumber(betNum);
+		endDate = new Date();
+		System.out.println(String.format("create Arragnge %s , take over %s ms", 
+				ret.size(),
+				endDate.getTime() - startDate.getTime()));
 		
-		Assert.assertTrue(content.size() == 9);
+		Assert.assertNotNull(ret);
+		
+		Assert.assertTrue(ret.size() == 0);
+		
+		
+		betNum = "012";
+		startDate = new Date();
+		ret = playTypeFacade.parseBetNumber(betNum);
+		endDate = new Date();
+		System.out.println(String.format("create Arragnge %s , take over %s ms", 
+				ret.size(),
+				endDate.getTime() - startDate.getTime()));
+		
+		Assert.assertNotNull(ret);
+		
+		Assert.assertTrue(ret.size() == 600);
+		
+		
+		betNum = "011";
+		startDate = new Date();
+		ret = playTypeFacade.parseBetNumber(betNum);
+		endDate = new Date();
+		System.out.println(String.format("create Arragnge %s , take over %s ms", 
+				ret.size(),
+				endDate.getTime() - startDate.getTime()));
+		
+		Assert.assertNotNull(ret);
+		
+		Assert.assertTrue(ret.size() == 300);
+		
+		
+		betNum = "012;011";
+		startDate = new Date();
+		ret = playTypeFacade.parseBetNumber(betNum);
+		endDate = new Date();
+		System.out.println(String.format("create Arragnge %s , take over %s ms", 
+				ret.size(),
+				endDate.getTime() - startDate.getTime()));
+		
+		Assert.assertNotNull(ret);
+		
+		Assert.assertTrue(ret.size() == 900);
 	}
 	
 	public void ItestIsMatchWinningNum_winning(){
@@ -86,7 +124,7 @@ public class ZszuxMixPlayTypeFacadeImplTest extends ServiceJunitBase{
 		
 	}
 	
-	public void testValidBetNum_invalid_betNum(){
+	public void ItestValidBetNum_invalid_betNum(){
 		String betNum = "8,4,9";
 		/*Date startTime = new Date();
 		String betNum = "12,23,456";

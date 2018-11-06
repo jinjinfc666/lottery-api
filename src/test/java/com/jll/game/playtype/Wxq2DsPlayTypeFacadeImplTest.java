@@ -11,23 +11,21 @@ import javax.annotation.Resource;
 import org.junit.Assert;
 
 import com.ehome.test.ServiceJunitBase;
-import com.jll.common.constants.Constants;
-import com.jll.common.utils.DateUtil;
 import com.jll.entity.Issue;
 import com.jll.entity.OrderInfo;
 import com.jll.entity.UserInfo;
 import com.jll.game.playtypefacade.PlayTypeFactory;
 
-public class Wxh2PlayTypeFacadeImplTest extends ServiceJunitBase{
+public class Wxq2DsPlayTypeFacadeImplTest extends ServiceJunitBase{
 		
-	public Wxh2PlayTypeFacadeImplTest(String name) {
+	public Wxq2DsPlayTypeFacadeImplTest(String name) {
 		super(name);
 	}	
 	
 	@Resource
 	PlayTypeFacade playTypeFacade;
 	
-	final String facadeName = "wxh2|五星后二/ds";
+	final String facadeName = "wxq2|五星前二/ds";
 	
 	@Override
 	protected void setUp() throws Exception {
@@ -41,7 +39,7 @@ public class Wxh2PlayTypeFacadeImplTest extends ServiceJunitBase{
 	}
 	
 	public void testIsMatchWinningNum_winning(){
-		String betNum = "96";
+		String betNum = "00";
 		Issue issue = new Issue();
 		issue.setRetNum("0,0,0,9,6");
 		
@@ -52,7 +50,7 @@ public class Wxh2PlayTypeFacadeImplTest extends ServiceJunitBase{
 		Assert.assertTrue(ret);
 		
 		
-		betNum = "96;99";
+		betNum = "00;99";
 		issue = new Issue();
 		issue.setRetNum("0,0,0,9,6");
 		
@@ -115,61 +113,5 @@ public class Wxh2PlayTypeFacadeImplTest extends ServiceJunitBase{
 		Assert.assertNotNull(ret);
 		 
 		Assert.assertTrue(ret.size() == 2000);		
-	}
-	
-	public void testObtainSampleBetNumber(){
-		int counter = 0;
-		int maxCounter = 1000;
-		String betNum = null;
-		boolean isWinning = false;
-		boolean isValid = false;
-		while(counter < maxCounter) {
-			betNum = playTypeFacade.obtainSampleBetNumber();
-			
-			System.out.println(String.format("current bet number   %s", 
-					betNum));
-			
-			String winningNum = obtainWinningNum(betNum);
-			OrderInfo order = new OrderInfo();
-			order.setBetNum(betNum);
-			
-			Issue issue = new Issue();
-			issue.setRetNum(winningNum);
-			
-			isValid = playTypeFacade.validBetNum(order);
-			if(!isValid) {
-				continue;
-			}
-			isWinning = playTypeFacade.isMatchWinningNum(issue, order);
-			
-			System.out.println(String.format("winingNum  %s   current bet number   %s   isVliad  %s    isWnning  %s", 
-					winningNum,
-					betNum,
-					isValid,
-					isWinning));
-			
-			Assert.assertTrue(isValid);
-			counter++;
-		}
-	}
-	
-	private String obtainWinningNum(String betNum) {
-		StringBuffer winningNumBuffer = new StringBuffer();
-		List<Map<String, String>> maps = playTypeFacade.parseBetNumber(betNum);
-		if(maps != null && maps.size() > 0) {
-			Map<String, String> row = maps.get(0);
-			String winningNum = row.get(Constants.KEY_FACADE_BET_NUM_SAMPLE);
-			for(int i = 0; i< winningNum.length();) { 
-				String bit = winningNum.substring(i, i + 1);
-				if(!",".equals(bit)) {
-					winningNumBuffer.append(bit).append(",");
-				}
-				
-				i += 1;
-			}
-			winningNumBuffer.delete(winningNumBuffer.length() - 1, winningNumBuffer.length());
-		}
-		
-		return winningNumBuffer.toString();
 	}
 }

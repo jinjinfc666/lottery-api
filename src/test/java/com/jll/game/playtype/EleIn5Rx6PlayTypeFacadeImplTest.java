@@ -259,6 +259,7 @@ public class EleIn5Rx6PlayTypeFacadeImplTest extends ServiceJunitBase{
 	public void testCalPrize_10070603110209040105(){
 		String winningNum = "04,09,11,10,03";
 		String betNum = "10070603110209040105";
+		Map<String, Object> ret;
 		BigDecimal prize = null;
 		
 		Issue issue = new Issue();
@@ -280,7 +281,8 @@ public class EleIn5Rx6PlayTypeFacadeImplTest extends ServiceJunitBase{
 		user.setUserName("test001");
 		user.setUserType(Constants.UserType.PLAYER.getCode());
 		user.setPlatRebate(new BigDecimal(5.0F));
-		prize = playTypeFacade.calPrize(issue, order, user);
+		ret = playTypeFacade.calPrize(issue, order, user);
+		prize = new BigDecimal((Float)ret.get(Constants.KEY_WIN_AMOUNT));
 		Assert.assertNotNull(prize);
 				
 		Assert.assertTrue(prize.compareTo(new BigDecimal(359.334F)) == 0);

@@ -17,11 +17,11 @@ import com.jll.entity.Issue;
 import com.jll.entity.OrderInfo;
 import com.jll.entity.UserInfo;
 
-public class HszxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
+public class HszxDsPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 
 private Logger logger = Logger.getLogger(QszxPlayTypeFacadeImpl.class);
 	
-	protected String playTypeDesc = "hszx|后三直选/fs";
+	protected String playTypeDesc = "hszx|后三直选/ds";
 	
 	@Override
 	public String getPlayTypeDesc() {
@@ -30,10 +30,6 @@ private Logger logger = Logger.getLogger(QszxPlayTypeFacadeImpl.class);
 	
 	@Override
 	public boolean isMatchWinningNum(Issue issue, OrderInfo order) {
-		//开奖号码的每一位
-		String[] winNumSet = null;
-		//投注号码的每个位的号码，可能多个号码
-		String[] betNumSet = new String[3];
 		//每次点击选号按钮所选号码，多个所选号码以;分割
 		String[] betNumMul= null;
 		String betNum = null;
@@ -42,15 +38,11 @@ private Logger logger = Logger.getLogger(QszxPlayTypeFacadeImpl.class);
 		winNum = issue.getRetNum();
 		betNum = order.getBetNum();
 		winNum = winNum.substring(4, 9);
-		winNumSet = winNum.split(",");
 		//betNumSet = betNum.split(",");
 		betNumMul = betNum.split(";");
 		
 		for(String temp : betNumMul) {
-			String[] tempSet = temp.split(",");
-			if(tempSet[0].contains(winNumSet[0])
-					&& tempSet[1].contains(winNumSet[1])
-					&& tempSet[2].contains(winNumSet[2])) {
+			if(temp.equals(winNum.replace(",", ""))) {
 				return true;
 			}
 		}
@@ -73,16 +65,29 @@ private Logger logger = Logger.getLogger(QszxPlayTypeFacadeImpl.class);
 		int betTotal = 1;
 		Float betAmount = 0F;
 		Float maxWinAmount = 0F;
+		int winBetTotal = 0;
 		
-		betNumSet = betNum.split(",");
-		for(String subBetNum : betNumSet) {
+		betNumSet = betNum.split(";");
+		/*for(String subBetNum : betNumSet) {
 			int len = subBetNum.length();
 			betTotal *= MathUtil.combination(1, len);
-		}
+		}*/
+		
+		winBetTotal = betNumSet.length;
+		betTotal = betNumSet.length;
 		
 		betAmount = MathUtil.multiply(betTotal, times, Float.class);
-		betAmount = MathUtil.multiply(betAmount, monUnit.floatValue(), Float.class);
-		maxWinAmount = MathUtil.multiply(betAmount, singleBettingPrize.floatValue(), Float.class);
+		betAmount = MathUtil.multiply(betAmount, monUnit, Float.class);
+		
+		maxWinAmount = MathUtil.multiply(winBetTotal, 
+				times, 
+				Float.class);
+		maxWinAmount = MathUtil.multiply(maxWinAmount, 
+				monUnit, 
+				Float.class);
+		maxWinAmount = MathUtil.multiply(maxWinAmount, 
+				singleBettingPrize.floatValue(), 
+				Float.class);
 		
 		ret.put("playType", playType);
 		ret.put("betAmount", betAmount);
@@ -141,10 +146,7 @@ private Logger logger = Logger.getLogger(QszxPlayTypeFacadeImpl.class);
 		
 		
 		for(String singleSel : betNumMul) {
-			betNumSet = singleSel.split(",");
-			if(betNumSet[0].contains(winNumSet[0])
-					&& betNumSet[1].contains(winNumSet[1])
-					&& betNumSet[2].contains(winNumSet[2])) {
+			if(singleSel.equals(winNum.replace(",", ""))) {
 				winningBetAmount++;
 			}
 		}
@@ -265,35 +267,42 @@ private Logger logger = Logger.getLogger(QszxPlayTypeFacadeImpl.class);
 	public String obtainSampleBetNumber(){
 		Random random = new Random();
 		StringBuffer betNum = new StringBuffer();
-		for(int i = 0 ; i < 3; i++) {
-			int bit = random.nextInt(10);
-			betNum.append(Integer.toString(bit)).append(",");
+		StringBuffer betNums = new StringBuffer();
+		int betNumLen = random.nextInt(5) + 1;
+		
+		for(int a = 0; a < betNumLen; a++) {
+			for(int i = 0 ; i < 3; i++) {
+				int bit = random.nextInt(10);
+				betNum.append(Integer.toString(bit));
+			}
+			
+			betNums.append(betNum.toString()).append(";");
+			betNum.delete(0, betNum.length());
 		}
 		
-		betNum.delete(betNum.length()-1, betNum.length());
+		betNums.delete(betNums.length()-1, betNums.length());
 		
-		return betNum.toString();
+		return betNums.toString();
 	}
 	
 	private String[] splitBit(String singleSel, int step) {
 		List<String> retList = new ArrayList<>();
-		StringBuffer buffer = new StringBuffer();
 		
 		for(int i = 0; i < singleSel.length();) {
 			String temp = singleSel.substring(i, i + step);
-			if(",".equals(temp)) {
+			/*if(",".equals(temp)) {
 				retList.add(buffer.toString());
 				buffer.delete(0, buffer.length());
 			}else {
 				buffer.append(temp);
-			}
-			
+			}*/
+			retList.add(temp);
 			i += step;
 			
-			if(i >= singleSel.length()) {
+			/*if(i >= singleSel.length()) {
 				retList.add(buffer.toString());
 				buffer.delete(0, buffer.length());
-			}
+			}*/
 		}
 		
 		return retList.toArray(new String[0]);

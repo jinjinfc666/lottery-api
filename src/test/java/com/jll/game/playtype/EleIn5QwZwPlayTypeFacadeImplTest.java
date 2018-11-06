@@ -284,6 +284,7 @@ public class EleIn5QwZwPlayTypeFacadeImplTest extends ServiceJunitBase{
 	public void testCalPrize_03(){
 		String winningNum = "06,02,01,03,04";
 		String betNum = "07090308";
+		Map<String, Object> ret;
 		BigDecimal prize = null;
 		
 		Issue issue = new Issue();
@@ -305,7 +306,8 @@ public class EleIn5QwZwPlayTypeFacadeImplTest extends ServiceJunitBase{
 		user.setUserName("test001");
 		user.setUserType(Constants.UserType.PLAYER.getCode());
 		user.setPlatRebate(new BigDecimal(5.0F));
-		prize = playTypeFacade.calPrize(issue, order, user);
+		ret = playTypeFacade.calPrize(issue, order, user);
+		prize = new BigDecimal((Float)ret.get(Constants.KEY_WIN_AMOUNT));
 		Assert.assertNotNull(prize);
 				
 		Assert.assertTrue(prize.compareTo(new BigDecimal(15.4050998687744140625F)) == 0);
@@ -314,6 +316,7 @@ public class EleIn5QwZwPlayTypeFacadeImplTest extends ServiceJunitBase{
 	public void testCalPrize_04(){
 		String winningNum = "06,02,07,03,04";
 		String betNum = "07090304";
+		Map<String, Object> ret;
 		BigDecimal prize = null;
 		
 		Issue issue = new Issue();
@@ -335,7 +338,8 @@ public class EleIn5QwZwPlayTypeFacadeImplTest extends ServiceJunitBase{
 		user.setUserName("test001");
 		user.setUserType(Constants.UserType.PLAYER.getCode());
 		user.setPlatRebate(new BigDecimal(5.0F));
-		prize = playTypeFacade.calPrize(issue, order, user);
+		ret = playTypeFacade.calPrize(issue, order, user);
+		prize = new BigDecimal((Float)ret.get(Constants.KEY_WIN_AMOUNT));
 		Assert.assertNotNull(prize);
 				
 		Assert.assertTrue(prize.compareTo(new BigDecimal(6.84420013427734375F)) == 0);
@@ -344,6 +348,7 @@ public class EleIn5QwZwPlayTypeFacadeImplTest extends ServiceJunitBase{
 	public void testCalPrize_05(){
 		String winningNum = "06,02,07,03,05";
 		String betNum = "07090305";
+		Map<String, Object> ret;
 		BigDecimal prize = null;
 		
 		Issue issue = new Issue();
@@ -365,7 +370,8 @@ public class EleIn5QwZwPlayTypeFacadeImplTest extends ServiceJunitBase{
 		user.setUserName("test001");
 		user.setUserType(Constants.UserType.PLAYER.getCode());
 		user.setPlatRebate(new BigDecimal(5.0F));
-		prize = playTypeFacade.calPrize(issue, order, user);
+		ret = playTypeFacade.calPrize(issue, order, user);
+		prize = new BigDecimal((Float)ret.get(Constants.KEY_WIN_AMOUNT));
 		Assert.assertNotNull(prize);
 				
 		Assert.assertTrue(prize.compareTo(new BigDecimal(4.792399883270263671875F)) == 0);
@@ -374,6 +380,7 @@ public class EleIn5QwZwPlayTypeFacadeImplTest extends ServiceJunitBase{
 	public void testCalPrize_06(){
 		String winningNum = "06,02,07,03,08";
 		String betNum = "07090306";
+		Map<String, Object> ret;
 		BigDecimal prize = null;
 		
 		Issue issue = new Issue();
@@ -395,7 +402,8 @@ public class EleIn5QwZwPlayTypeFacadeImplTest extends ServiceJunitBase{
 		user.setUserName("test001");
 		user.setUserType(Constants.UserType.PLAYER.getCode());
 		user.setPlatRebate(new BigDecimal(5.0F));
-		prize = playTypeFacade.calPrize(issue, order, user);
+		ret = playTypeFacade.calPrize(issue, order, user);
+		prize = new BigDecimal((Float)ret.get(Constants.KEY_WIN_AMOUNT));
 		Assert.assertNotNull(prize);
 				
 		Assert.assertTrue(prize.compareTo(new BigDecimal(4.311999797821044921875F)) == 0);
@@ -405,6 +413,7 @@ public class EleIn5QwZwPlayTypeFacadeImplTest extends ServiceJunitBase{
 	public void testCalPrize_07(){
 		String winningNum = "08,02,07,03,09";
 		String betNum = "07090306";
+		Map<String, Object> ret;
 		BigDecimal prize = null;
 		
 		Issue issue = new Issue();
@@ -426,7 +435,8 @@ public class EleIn5QwZwPlayTypeFacadeImplTest extends ServiceJunitBase{
 		user.setUserName("test001");
 		user.setUserType(Constants.UserType.PLAYER.getCode());
 		user.setPlatRebate(new BigDecimal(5.0F));
-		prize = playTypeFacade.calPrize(issue, order, user);
+		ret = playTypeFacade.calPrize(issue, order, user);
+		prize = new BigDecimal((Float)ret.get(Constants.KEY_WIN_AMOUNT));
 		Assert.assertNotNull(prize);
 				
 		Assert.assertTrue(prize.compareTo(new BigDecimal(4.792399883270263671875F)) == 0);
@@ -434,6 +444,7 @@ public class EleIn5QwZwPlayTypeFacadeImplTest extends ServiceJunitBase{
 		
 		winningNum = "08,10,06,04,07";
 		betNum = "06040907";
+		
 		prize = null;
 		
 		issue = new Issue();
@@ -455,7 +466,8 @@ public class EleIn5QwZwPlayTypeFacadeImplTest extends ServiceJunitBase{
 		user.setUserName("test001");
 		user.setUserType(Constants.UserType.PLAYER.getCode());
 		user.setPlatRebate(new BigDecimal(5.0F));
-		prize = playTypeFacade.calPrize(issue, order, user);
+		ret = playTypeFacade.calPrize(issue, order, user);
+		prize = new BigDecimal((Float)ret.get(Constants.KEY_WIN_AMOUNT));
 		Assert.assertNotNull(prize);
 				
 		Assert.assertTrue(prize.compareTo(new BigDecimal(4.792399883270263671875F)) == 0);
@@ -465,6 +477,7 @@ public class EleIn5QwZwPlayTypeFacadeImplTest extends ServiceJunitBase{
 	public void testCalPrize_08(){
 		String winningNum = "08,02,07,10,09";
 		String betNum = "07090308";
+		Map<String, Object> ret;
 		BigDecimal prize = null;
 		
 		Issue issue = new Issue();
@@ -486,7 +499,8 @@ public class EleIn5QwZwPlayTypeFacadeImplTest extends ServiceJunitBase{
 		user.setUserName("test001");
 		user.setUserType(Constants.UserType.PLAYER.getCode());
 		user.setPlatRebate(new BigDecimal(5.0F));
-		prize = playTypeFacade.calPrize(issue, order, user);
+		ret = playTypeFacade.calPrize(issue, order, user);
+		prize = new BigDecimal((Float)ret.get(Constants.KEY_WIN_AMOUNT));
 		Assert.assertNotNull(prize);
 				
 		Assert.assertTrue(prize.compareTo(new BigDecimal(6.84420013427734375F)) == 0);
@@ -495,6 +509,7 @@ public class EleIn5QwZwPlayTypeFacadeImplTest extends ServiceJunitBase{
 	public void testCalPrize_09(){
 		String winningNum = "10,11,07,08,09";
 		String betNum = "07090308";
+		Map<String, Object> ret;
 		BigDecimal prize = null;
 		
 		Issue issue = new Issue();
@@ -516,7 +531,8 @@ public class EleIn5QwZwPlayTypeFacadeImplTest extends ServiceJunitBase{
 		user.setUserName("test001");
 		user.setUserType(Constants.UserType.PLAYER.getCode());
 		user.setPlatRebate(new BigDecimal(5.0F));
-		prize = playTypeFacade.calPrize(issue, order, user);
+		ret = playTypeFacade.calPrize(issue, order, user);
+		prize = new BigDecimal((Float)ret.get(Constants.KEY_WIN_AMOUNT));
 		Assert.assertNotNull(prize);
 				
 		Assert.assertTrue(prize.compareTo(new BigDecimal(15.4050998687744140625F)) == 0);

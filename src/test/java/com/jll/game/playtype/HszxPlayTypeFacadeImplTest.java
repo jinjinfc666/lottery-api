@@ -1,5 +1,6 @@
 package com.jll.game.playtype;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -19,7 +20,7 @@ public class HszxPlayTypeFacadeImplTest extends ServiceJunitBase{
 	@Resource
 	PlayTypeFacade playTypeFacade;
 	
-	final String facadeName = "hszx|后三直选/fs-ds";
+	final String facadeName = "hszx|后三直选/fs";
 	
 	@Override
 	protected void setUp() throws Exception {
@@ -33,11 +34,40 @@ public class HszxPlayTypeFacadeImplTest extends ServiceJunitBase{
 	}
 	
 	public void testParseBetNumber(){
-		String betNum = "12,23,456";
-		
+		String betNum = "0,0,0";
+		Date startDate = new Date();
 		List<Map<String, String>> ret = playTypeFacade.parseBetNumber(betNum);
+		Date endDate = new Date();
+		System.out.println(String.format("create Arragnge %s , take over %s ms", 
+				ret.size(),
+				endDate.getTime() - startDate.getTime()));
 		Assert.assertNotNull(ret);
 		
-		Assert.assertTrue(ret.size() == 12);
+		Assert.assertTrue(ret.size() == 100);
+		
+		betNum = "01,0,0";
+		startDate = new Date();
+		ret = playTypeFacade.parseBetNumber(betNum);
+		
+		endDate = new Date();
+		System.out.println(String.format("create Arragnge %s , take over %s ms", 
+				ret.size(),
+				endDate.getTime() - startDate.getTime()));
+		
+		Assert.assertNotNull(ret);
+		
+		Assert.assertTrue(ret.size() == 200);
+		
+		betNum = "0123456789,0123456789,0123456789";
+		startDate = new Date();
+		ret = playTypeFacade.parseBetNumber(betNum);
+		endDate = new Date();
+		System.out.println(String.format("create Arragnge %s , take over %s ms", 
+				ret.size(),
+				endDate.getTime() - startDate.getTime()));
+		
+		Assert.assertNotNull(ret);
+		
+		Assert.assertTrue(ret.size() == 100000);
 	}
 }
