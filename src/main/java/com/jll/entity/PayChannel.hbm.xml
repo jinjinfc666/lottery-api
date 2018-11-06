@@ -69,5 +69,10 @@
         <property generated="never" lazy="false" name="remark" optimistic-lock="true" type="string" unique="false">
             <column length="200" name="remark"/>
         </property>
+        <property generated="never" lazy="false" name="showType" optimistic-lock="true" type="java.lang.Integer" unique="false">
+            <column name="show_type">
+                <comment>调用支付成功，需展示的类型(PayChannelShowType)</comment>
+            </column>
+        </property>
     </class>
 </hibernate-mapping>

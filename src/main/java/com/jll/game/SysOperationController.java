@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.jll.common.annotation.LogsInfo;
 import com.jll.common.constants.Constants;
 import com.jll.common.constants.Message;
 import com.jll.common.utils.StringUtils;
@@ -23,7 +24,6 @@ import com.terran4j.commons.api2doc.annotations.ApiComment;
 @ApiComment(seeClass = Issue.class)
 @RestController
 @RequestMapping({"/sys/oper"})
-
 
 public class SysOperationController{
 	
@@ -48,6 +48,7 @@ public class SysOperationController{
 	  
 	  @ApiComment("issue payout")
 	  @RequestMapping(value={"/issue/{issueNum}/payout"}, method={org.springframework.web.bind.annotation.RequestMethod.POST}, produces={"application/json"})
+	  @LogsInfo(logType=StringUtils.OPE_LOG_ISSUE_MANUAL_PAYOUT)
 	  public Map<String, Object> betOrderPayout(@PathVariable("issueNum") String issueNum,
 			 // @PathVariable("lottoType") String lottoType,
 			  @RequestBody Map<String, String> params){
@@ -62,6 +63,7 @@ public class SysOperationController{
 	   */
 	  @ApiComment("cancel current issue all  payout")
 	  @RequestMapping(value={"/issue/{issueNum}/cancel-payout"}, method={org.springframework.web.bind.annotation.RequestMethod.POST}, produces={"application/json"})
+	  @LogsInfo(logType=StringUtils.OPE_LOG_REVOKE_PAYOUT)
 	  public Map<String, Object> calcelIssuePayout(@PathVariable("issueNum") String issueNum,
 			  //@PathVariable("lottoType") String lottoType,
 			  @RequestBody Map<String, String> params){
@@ -76,6 +78,7 @@ public class SysOperationController{
 	   */
 	  @ApiComment("issue re payout")
 	  @RequestMapping(value={"/issue/{issueNum}/re-payout"}, method={org.springframework.web.bind.annotation.RequestMethod.POST}, produces={"application/json"})
+	  @LogsInfo(logType=StringUtils.OPE_LOG_RE_PAYOUT)
 	  public Map<String, Object> betOrderRePayout(@PathVariable("issueNum") String issueNum,
 			  @RequestBody Map<String, String> params){
 		  return issueService.processBetOrderRePayout("",issueNum,params);
@@ -92,6 +95,7 @@ public class SysOperationController{
 	   */
 	  @ApiComment("issue disbale")
 	  @RequestMapping(value={"/issue/{issueNum}/disbale"}, method={org.springframework.web.bind.annotation.RequestMethod.POST}, produces={"application/json"})
+	  @LogsInfo(logType=StringUtils.OPE_LOG_CANCEL_ISSUE)
 	  public Map<String, Object> issueDisbale(@PathVariable("issueNum") String issueNum,
 			  //@PathVariable("lottoType") String lottoType,
 			  @RequestBody Map<String, String> params){
@@ -117,6 +121,7 @@ public class SysOperationController{
 	  
 	  @ApiComment("order manual payout")
 	  @RequestMapping(value={"/order/{orderNum}/manual-payout"}, method={org.springframework.web.bind.annotation.RequestMethod.POST}, produces={"application/json"})
+	  @LogsInfo(logType=StringUtils.OPE_LOG_ORDER_MANUAL_PAYOUT)
 	  public Map<String, Object> manualPayoutOrder(@PathVariable("orderNum") String orderNum){
 		  return issueService.manualPayoutOrder(orderNum);
 	  }
@@ -125,12 +130,14 @@ public class SysOperationController{
 	  //单笔订单撤单
 	  @ApiComment("order cancel")
 	  @RequestMapping(value={"/order/{orderNum}/cancel"}, method={org.springframework.web.bind.annotation.RequestMethod.POST}, produces={"application/json"})
+	  @LogsInfo(logType=StringUtils.OPE_LOG_CANCEL_ORDER)
 	  public Map<String, Object> orderCancel(@PathVariable("orderNum") String orderNum){
 		  return issueService.processOrderCancel(orderNum);
 	  }
 	  
 	  @ApiComment("manual draw result")
 	  @RequestMapping(value={"/{lottery-type}/issue/{issueNum}/manual-draw-result"}, method={RequestMethod.PUT}, produces={"application/json"})
+	  @LogsInfo(logType=StringUtils.OPE_LOG_SPEC_WINNING_NUM)
 	  public Map<String, Object> manualDrawResult(@PathVariable(name="issueNum", required=true) String issueNum,
 			  @PathVariable("lottery-type") String lottoType,
 			  @RequestBody Map<String, String> params){

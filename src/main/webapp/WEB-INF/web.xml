@@ -33,6 +33,21 @@
 		<dispatcher>ERROR</dispatcher>
 		<dispatcher>ASYNC</dispatcher>
 	</filter-mapping>
+	
+	 <filter>
+		<filter-name>operLogFilter</filter-name>
+		<filter-class>com.jll.interceptor.LogFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>operLogFilter</filter-name>
+		<url-pattern>/payment/*</url-pattern>
+		<url-pattern>/users/*</url-pattern>
+		<url-pattern>/sys/oper/*</url-pattern>
+		<url-pattern>/SysUser/*</url-pattern>
+		
+		<dispatcher>REQUEST</dispatcher>
+	</filter-mapping>
+	
 	<listener>
 		<listener-class>org.springframework.web.util.IntrospectorCleanupListener</listener-class>
 	</listener>

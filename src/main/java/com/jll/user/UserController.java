@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.jll.common.annotation.LogsInfo;
 import com.jll.common.cache.CacheRedisService;
 import com.jll.common.constants.Constants;
 import com.jll.common.constants.Constants.BankCardState;
@@ -85,6 +86,7 @@ public class UserController {
 	 * @param request   给前台代理注册用户或者下级代理
 	 */
 	@RequestMapping(value="/players", method = { RequestMethod.POST }, produces=MediaType.APPLICATION_JSON_VALUE)
+	@LogsInfo(logType=StringUtils.OPE_LOG_REG_USER)
 	public Map<String, Object> regUser(@RequestBody UserInfo user,HttpServletRequest request) {
 		Map<String, Object> resp = new HashMap<String, Object>();
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -180,6 +182,7 @@ public class UserController {
 	 * @param request   后台用来添加代理或者用户
 	 */
 	@RequestMapping(value="/agents/{agent-id}", method = { RequestMethod.POST }, produces=MediaType.APPLICATION_JSON_VALUE)
+	@LogsInfo(logType=StringUtils.OPE_LOG_REG_AGENT)
 	public Map<String, Object> regAgent(@PathVariable("agent-id") Integer agentId,
 			@RequestBody UserInfo user,
 			HttpServletRequest request) {
@@ -353,6 +356,7 @@ public class UserController {
 	 */
 	@ApiComment("update the basic information of user[real name,wechar,qq,phone,email]")
 	@RequestMapping(value="/update-info", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
+	@LogsInfo(logType=StringUtils.OPE_LOG_PERFECT_USER_INFO)
 	public Map<String, Object> updateUserBasic(
 			@RequestBody UserInfo user) {
 		return userInfoService.updateUserInfo(user);
@@ -367,7 +371,8 @@ public class UserController {
 	 */
     @ApiComment("Update User Login Password")
 	@RequestMapping(value="/attrs/login-pwd", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> updateLoginPwd(@RequestBody Map<String, String> params) {
+    @LogsInfo(logType=StringUtils.OPE_LOG_MOD_LOGIN_PWD)
+    public Map<String, Object> updateLoginPwd(@RequestBody Map<String, String> params) {
 		String oldPwd = Utils.toString(params.get("oldPwd"));
 		String newPwd = Utils.toString(params.get("newPwd"));
 		String confirmPwd = Utils.toString(params.get("confirmPwd"));
@@ -382,7 +387,8 @@ public class UserController {
 	 */
     @ApiComment("Update User Login Admin Password")
 	@RequestMapping(value="/attrs/login-pwdAdmin", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> updateLoginPwdAdmin(@RequestBody Map<String, String> params) {
+    @LogsInfo(logType=StringUtils.OPE_LOG_MOD_LOGIN_PWD)
+    public Map<String, Object> updateLoginPwdAdmin(@RequestBody Map<String, String> params) {
 		String oldPwd = Utils.toString(params.get("oldPwd"));
 		String newPwd = Utils.toString(params.get("newPwd"));
 		String confirmPwd = Utils.toString(params.get("confirmPwd"));
@@ -400,7 +406,8 @@ public class UserController {
 	 */
     @ApiComment("Update User Fun Password")
 	@RequestMapping(value="/attrs/fund-pwd", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> updateFundPwd(@RequestBody Map<String, String> params) {
+    @LogsInfo(logType=StringUtils.OPE_LOG_MOD_FUND_PWD)
+    public Map<String, Object> updateFundPwd(@RequestBody Map<String, String> params) {
 		String oldPwd = Utils.toString(params.get("oldPwd"));
 		String newPwd = Utils.toString(params.get("newPwd"));
 		String confirmPwd = Utils.toString(params.get("confirmPwd"));
@@ -469,6 +476,7 @@ public class UserController {
 	 * @return
 	 */
 	@RequestMapping(value="/{userName}/verify/phone", method = { RequestMethod.PUT}, produces=MediaType.APPLICATION_JSON_VALUE)
+	@LogsInfo(logType=StringUtils.OPE_LOG_VERIFY_PHONE)
 	public Map<String, Object> verifyPhone(@PathVariable(name="userName", required = true) String userName,
 			@RequestBody Map<String, String> params) {
 		Map<String, Object> resp = new HashMap<String, Object>();
@@ -555,6 +563,7 @@ public class UserController {
 	 * @return
 	 */
 	@RequestMapping(value="/{userName}/verify/email", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
+	@LogsInfo(logType=StringUtils.OPE_LOG_VERIFY_EMAIL)
 	public Map<String, Object> verifyEmail(@PathVariable(name = "userName", required = true) String userName,
 			@RequestParam(name = "verifyCode", required = true) String verifyCode) {
 		
@@ -645,6 +654,7 @@ public class UserController {
 	 * @return
 	 */
 	@RequestMapping(value="/{userName}/attrs/login-pwd/reset/sms", method = { RequestMethod.PUT}, produces=MediaType.APPLICATION_JSON_VALUE)
+	@LogsInfo(logType=StringUtils.OPE_LOG_RESET_PWD)
 	public Map<String, Object> resetLoginPwdBySMS(@PathVariable(name="userName", required = true) String userName,
 			@RequestBody Map<String, String> params) {
 		Map<String, Object> resp = new HashMap<String, Object>();
@@ -747,6 +757,7 @@ public class UserController {
 	 * @return
 	 */
 	@RequestMapping(value="/{userName}/attrs/login-pwd/reset/email", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
+	@LogsInfo(logType=StringUtils.OPE_LOG_RESET_PWD)
 	public Map<String, Object> resetLoginPwdByEmail(@PathVariable(name = "userName", required = true) String userName,
 			@RequestParam(name = "verifyCode", required = true) String verifyCode) {
 		Map<String, Object> resp = new HashMap<String, Object>();
@@ -1008,7 +1019,8 @@ public class UserController {
     
     @ApiComment(value="User Withdraw notices",seeClass=WithdrawApplication.class)
    	@RequestMapping(value="/withdraw/notices", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
-   	public Map<String, Object> userWithdrawNotices(@RequestBody Map<String, String> params) {
+    @LogsInfo(logType=StringUtils.OPE_LOG_PROCESS_WITHDRAW)
+    public Map<String, Object> userWithdrawNotices(@RequestBody Map<String, String> params) {
 		WithdrawApplication wtd = new WithdrawApplication();
 		wtd.setOrderNum(Utils.toString(params.get("orderNum")));
 		wtd.setRemark(Utils.toString(params.get("remark")));
@@ -1116,7 +1128,8 @@ public class UserController {
 	
 	@ApiComment(value="User Add Bank",seeClass=BankCardState.class)
    	@RequestMapping(value="/{userId}/bank/add", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
-   	public Map<String, Object> addUserBank(
+	@LogsInfo(logType=StringUtils.OPE_LOG_ADD_BANK_CARD)
+	public Map<String, Object> addUserBank(
    			@PathVariable("userId") int userId,
    			@RequestBody UserBankCard bank) {
    		return userInfoService.addUserBank(userId, bank);
@@ -1149,7 +1162,8 @@ public class UserController {
 	
 	@ApiComment(value="Direct Operation User Amount",seeClass=UserAccountDetails.class)
    	@RequestMapping(value="/operation/amount", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
-   	public Map<String, Object> directOperationUserAmount(
+	@LogsInfo(logType=StringUtils.OPE_LOG_OPER_USER_AMT)
+	public Map<String, Object> directOperationUserAmount(
    			@RequestBody UserAccountDetails dtl) {
    		return userInfoService.saveUpdateDirectOperationUserAmount(dtl);
    	}

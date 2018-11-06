@@ -1,7 +1,17 @@
 package com.jll.common.utils;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.Random;
 import java.util.regex.Pattern;
+
+import javax.servlet.ServletInputStream;
+import javax.servlet.http.HttpServletRequest;
 
 public class StringUtils extends org.apache.commons.lang3.StringUtils {
 	
@@ -11,6 +21,27 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
 	
 	public  final static String COMMA = ",";
 	public  final static String EMPTY = "";
+	
+	public  final static String OPE_LOG_PROCESS_DEPOSIT = "ope_log_process_deposit";
+	public  final static String OPE_LOG_RESET_PWD = "ope_log_reset_pwd";
+	public  final static String OPE_LOG_VERIFY_PHONE = "ope_log_verify_phone";
+	public  final static String OPE_LOG_VERIFY_EMAIL = "ope_log_verify_email";
+	public  final static String OPE_LOG_ADD_BANK_CARD = "ope_log_add_bank_card";
+	public  final static String OPE_LOG_PERFECT_USER_INFO = "ope_log_perfect_user_info";
+	public  final static String OPE_LOG_MOD_LOGIN_PWD = "ope_log_mod_login_pwd";
+	public  final static String OPE_LOG_MOD_FUND_PWD = "ope_log_mod_fund_pwd";
+	public  final static String OPE_LOG_REG_USER = "ope_log_reg_user";
+	public  final static String OPE_LOG_REG_AGENT = "ope_log_reg_agent";
+	public  final static String OPE_LOG_PROCESS_WITHDRAW = "ope_log_process_withdraw";
+	public  final static String OPE_LOG_MOD_PERMISSION = "ope_log_mod_permission";
+	public  final static String OPE_LOG_SPEC_WINNING_NUM = "ope_log_spec_winning_num";
+	public  final static String OPE_LOG_ISSUE_MANUAL_PAYOUT = "ope_log_issue_manual_payout";
+	public  final static String OPE_LOG_REVOKE_PAYOUT = "ope_log_revoke_payout";
+	public  final static String OPE_LOG_RE_PAYOUT = "ope_log_re_payout";
+	public  final static String OPE_LOG_CANCEL_ISSUE = "ope_log_cancel_issue";
+	public  final static String OPE_LOG_ORDER_MANUAL_PAYOUT = "ope_log_order_manual_payout";
+	public  final static String OPE_LOG_CANCEL_ORDER = "ope_log_cancel_order";
+	public  final static String OPE_LOG_OPER_USER_AMT = "ope_log_oper_user_amt";
 	
 	/**
      * 正则表达式：验证手机号
@@ -146,5 +177,60 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
 		System.out.println(generateStingByLength("A", 80,"B",20));
 		
 	}
+	
+	/**
+     * Description: 复制输入流</br>
+     *
+     * @param inputStream
+     * @return</br>
+     */
+    public static InputStream cloneInputStream(ServletInputStream inputStream) {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        byte[] buffer = new byte[1024];
+        int len=0;
+        try {
+            while ((len = inputStream.read(buffer)) > -1) {
+                byteArrayOutputStream.write(buffer, 0, len);
+            }
+            byteArrayOutputStream.flush();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        InputStream byteArrayInputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+        return byteArrayInputStream;
+    }
+
+	public static String getBodyString(HttpServletRequest request) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        InputStream inputStream = null;
+        BufferedReader reader = null;
+        try {
+            inputStream = cloneInputStream(request.getInputStream());
+            reader = new BufferedReader(new InputStreamReader(inputStream, Charset.forName("UTF-8")));
+            String line = "";
+            while ((line = reader.readLine()) != null) {
+                sb.append(line);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return sb.toString();
+    }
 	
 }

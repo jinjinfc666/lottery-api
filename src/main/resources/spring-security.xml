@@ -18,7 +18,8 @@
 	
     <!--处理访问拒绝-->
 	<beans:bean id="oauth2AccessDeniedHandler" class="org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler" />
-		
+	
+
 	<!--处理认证点-->
     <beans:bean id="oauth2UserApprovalHandler" class="org.springframework.security.oauth2.provider.approval.DefaultUserApprovalHandler" />
 

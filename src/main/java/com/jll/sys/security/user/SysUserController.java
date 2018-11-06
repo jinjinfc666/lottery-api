@@ -9,7 +9,6 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,8 +18,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.jll.common.annotation.LogsInfo;
 import com.jll.common.constants.Constants;
 import com.jll.common.constants.Message;
+import com.jll.common.utils.StringUtils;
 import com.jll.common.constants.Constants.UserType;
 import com.jll.entity.SysAuthority;
 import com.jll.entity.SysRole;
@@ -116,6 +117,7 @@ public class SysUserController {
 	}
 	//修改授权
 	@RequestMapping(value={"/updateSysAuthority"}, method={RequestMethod.PUT}, produces={"application/json"})
+	@LogsInfo(logType=StringUtils.OPE_LOG_MOD_PERMISSION)
 	public Map<String, Object> updateSysAuthority(@RequestParam(name = "userId", required = true) Integer userId,
 			@RequestParam(name = "roleIds", required = true) String roleIds,
 			HttpServletRequest request) {

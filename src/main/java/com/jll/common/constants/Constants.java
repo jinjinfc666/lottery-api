@@ -1534,6 +1534,32 @@ public class Constants {
 			return this.code;
 		}
 	}
+	
+	
+	public static enum PayChannelShowType{
+		REDIRECT(0),//重定向
+		IMG_PATH(1),//图片地址
+		JUMP_URL(2),//跳转地址
+		QR_CODE(3),//二维码地址
+		MESSAGE(4);//只显示消息
+		
+		private int code;
+
+		private PayChannelShowType(int code) {
+			this.code = code;
+		}
+
+		public int getCode() {
+			return code;
+		}
+
+		public void setCode(int code) {
+			this.code = code;
+		}
+
+		
+		
+	}
 	public static enum PayTypeState{
 		VALID_STATE(1,"有效"),
 		INVALID_STATE(0,"无效");
@@ -2142,49 +2168,60 @@ public class Constants {
 	 * 日志类型
 	 * */
 	public static enum LogType{
-		MEMBER_LOGIN(0,"member_login"),
-		SYS_ADMINISTRATOR_LOGIN(1,"sys_administrator_login");
+		MEMBER_LOGIN("member_login"),
+		SYS_ADMINISTRATOR_LOGIN("sys_administrator_login"),
+		OPE_LOG_PROCESS_DEPOSIT(StringUtils.OPE_LOG_PROCESS_DEPOSIT),
+		OPE_LOG_RESET_PWD(StringUtils.OPE_LOG_RESET_PWD),
+		OPE_LOG_VERIFY_PHONE(StringUtils.OPE_LOG_VERIFY_PHONE),
+		OPE_LOG_VERIFY_EMAIL(StringUtils.OPE_LOG_VERIFY_EMAIL),
+		OPE_LOG_ADD_BANK_CARD(StringUtils.OPE_LOG_ADD_BANK_CARD),
+		OPE_LOG_PERFECT_USER_INFO(StringUtils.OPE_LOG_PERFECT_USER_INFO),
+		OPE_LOG_MOD_LOGIN_PWD(StringUtils.OPE_LOG_MOD_LOGIN_PWD),
+		OPE_LOG_MOD_FUND_PWD(StringUtils.OPE_LOG_MOD_FUND_PWD),
+		OPE_LOG_REG_USER(StringUtils.OPE_LOG_REG_USER),
+		OPE_LOG_REG_AGENT(StringUtils.OPE_LOG_REG_AGENT),
+		OPE_LOG_PROCESS_WITHDRAW(StringUtils.OPE_LOG_PROCESS_WITHDRAW),
+		OPE_LOG_MOD_PERMISSION(StringUtils.OPE_LOG_MOD_PERMISSION),
+		OPE_LOG_SPEC_WINNING_NUM(StringUtils.OPE_LOG_SPEC_WINNING_NUM),
+		OPE_LOG_ISSUE_MANUAL_PAYOUT(StringUtils.OPE_LOG_ISSUE_MANUAL_PAYOUT),
+		OPE_LOG_REVOKE_PAYOUT(StringUtils.OPE_LOG_REVOKE_PAYOUT),
+		OPE_LOG_RE_PAYOUT(StringUtils.OPE_LOG_RE_PAYOUT),
+		OPE_LOG_CANCEL_ISSUE(StringUtils.OPE_LOG_CANCEL_ISSUE),
+		OPE_LOG_ORDER_MANUAL_PAYOUT(StringUtils.OPE_LOG_ORDER_MANUAL_PAYOUT),
+		OPE_LOG_CANCEL_ORDER(StringUtils.OPE_LOG_CANCEL_ORDER),
+		OPE_LOG_OPER_USER_AMT(StringUtils.OPE_LOG_OPER_USER_AMT);
 		
-		private Integer code;
-		private String name;
+		String code;
 		
-		private LogType(Integer code,String name) {
+		public String getCode() {
+			return code;
+		}
+		public void setCode(String code) {
 			this.code = code;
-			this.name = name;
 		}
 		
-		public Integer getCode() {
-			return this.code;
+		private LogType(String code) {
+			this.code = code;
 		}
-		public String getName() {
-			return this.name;
-		}
-					
-		public static List<Integer> getList() {
-			List<Integer> map=new ArrayList<Integer>();
+		public static List<String> getList() {
+			List<String> map=new ArrayList<String>();
 			LogType[] names = LogType.values();
 			for(LogType name: names) {
 				map.add(name.getCode());
 			}
 			return map;
 		}
-		public static Map<Integer,String> getMap() {
-			Map<Integer,String> map=new HashMap<Integer,String>();
-			LogType[] names = LogType.values();
-			for(LogType name: names) {
-				map.put(name.getCode(), name.getName());
-			}
-			return map;
-		}
-		public static String getValueByCode(Integer code) {
+		
+		public static String getValueByCode(String code) {
 			LogType[] states = LogType.values();
 			for(LogType state: states) {
-				if(state.getCode() == code) {
-					return state.getName();
+				if(state.getCode().equals(code)) {
+					return state.getCode();
 				}
 			}
 			return null;
 		}
+		
 	}
 	/**
 	 * 图片验证码key
