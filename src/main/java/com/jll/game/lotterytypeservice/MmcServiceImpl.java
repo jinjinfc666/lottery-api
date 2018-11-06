@@ -231,11 +231,15 @@ public class MmcServiceImpl extends DefaultLottoTypeServiceImpl
 		String betNum = maxBetAmount.split("|")[1];
 		PlayType playType = playTypeServ.queryById(Integer.parseInt(playTypeId));
 						
-		if(playType.getPtName().equals("fs") || playType.getPtName().equals("ds")) {
-			playTypeName = playType.getClassification() + "/fs-ds";
+		if(playType.getPtName().equals("fs")) {
+			playTypeName = playType.getClassification() + "/fs";
+		}else if(playType.getPtName().equals("ds")){
+			playTypeName = playType.getClassification() + "/ds";
 		}else {
 			playTypeName = playType.getClassification() + "/" + playType.getPtName();
 		}
+		
+		
 		playTypeFacade = PlayTypeFactory.getInstance().getPlayTypeFacade(playTypeName);
 		
 		winningNum = playTypeFacade.produceLostNumber(betNum);

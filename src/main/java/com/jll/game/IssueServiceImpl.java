@@ -601,8 +601,10 @@ public class IssueServiceImpl implements IssueService
 			return false;
 		}
 				
-		if(playType.getPtName().equals("fs") || playType.getPtName().equals("ds")) {
-			playTypeName = playType.getClassification() + "/fs-ds";
+		if(playType.getPtName().equals("fs")) {
+			playTypeName = playType.getClassification() + "/fs";
+		}else if(playType.getPtName().equals("ds")){
+			playTypeName = playType.getClassification() + "/ds";
 		}else {
 			playTypeName = playType.getClassification() + "/" + playType.getPtName();
 		}
@@ -625,10 +627,12 @@ public class IssueServiceImpl implements IssueService
 			return null;
 		}
 		
-		if(playType.getPtName().equals("fs") || playType.getPtName().equals("ds")) {
-			playTypeName = playType.getClassification() + "/fs-ds";
+		if(playType.getPtName().equals("fs")) {
+			playTypeName = playType.getClassification() + "/fs";
+		}else if(playType.getPtName().equals("ds")){
+			playTypeName = playType.getClassification() + "/ds";
 		}else {
-			playTypeName = playType.getClassification() + "/" + playType.getPtName();			
+			playTypeName = playType.getClassification() + "/" + playType.getPtName();
 		}
 		playTypeFacade = PlayTypeFactory.getInstance().getPlayTypeFacade(playTypeName);
 		

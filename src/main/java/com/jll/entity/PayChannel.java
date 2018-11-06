@@ -6,6 +6,10 @@ package com.jll.entity;
  */
 public class PayChannel implements java.io.Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2678478216909424604L;
 	private Integer id;
 	private String channelName;
 	private String nickName;

@@ -269,8 +269,15 @@ public class CacheRedisServiceImpl implements CacheRedisService
 				return ;
 			}
 			
-			if(playType.getPtName().equals("fs") || playType.getPtName().equals("ds")) {
-				playTypeName = playType.getClassification() + "/fs-ds";
+//			if(playType.getPtName().equals("fs") || playType.getPtName().equals("ds")) {
+//				playTypeName = playType.getClassification() + "/fs-ds";
+//			}else {
+//				playTypeName = playType.getClassification() + "/" + playType.getPtName();
+//			}
+			if(playType.getPtName().equals("fs")) {
+				playTypeName = playType.getClassification() + "/fs";
+			}else if(playType.getPtName().equals("ds")){
+				playTypeName = playType.getClassification() + "/ds";
 			}else {
 				playTypeName = playType.getClassification() + "/" + playType.getPtName();
 			}

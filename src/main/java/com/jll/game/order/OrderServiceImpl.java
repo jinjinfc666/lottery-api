@@ -266,10 +266,12 @@ public class OrderServiceImpl implements OrderService
 					return String.valueOf(Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
 				}
 				
-				if(playType.getPtName().equals("fs") || playType.getPtName().equals("ds")) {
-					playTypeName = playType.getClassification() + "/fs-ds";
+				if(playType.getPtName().equals("fs")) {
+					playTypeName = playType.getClassification() + "/fs";
+				}else if(playType.getPtName().equals("ds")){
+					playTypeName = playType.getClassification() + "/ds";
 				}else {
-					playTypeName = playType.getClassification() + "/" + playType.getPtName();			
+					playTypeName = playType.getClassification() + "/" + playType.getPtName();
 				}
 				playTypeFacade = PlayTypeFactory.getInstance().getPlayTypeFacade(playTypeName);
 			}
