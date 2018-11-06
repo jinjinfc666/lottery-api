@@ -8,17 +8,21 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.jll.common.annotation.LogsInfo;
+import com.jll.common.constants.Constants.LogType;
 import com.jll.common.constants.Message;
+import com.jll.common.utils.StringUtils;
 import com.jll.common.utils.Utils;
 import com.jll.dao.PageQueryDao;
 import com.jll.entity.DepositApplication;
+import com.jll.entity.SysLog;
 import com.jll.entity.UserInfo;
+import com.jll.sys.log.SysLogService;
 import com.jll.user.UserInfoService;
 import com.terran4j.commons.api2doc.annotations.Api2Doc;
 import com.terran4j.commons.api2doc.annotations.ApiComment;
@@ -76,7 +80,9 @@ public class PaymentController
 	  }
 	  
 	  //手动补单
+	 
 	  @RequestMapping(value={"/order/end"}, method={org.springframework.web.bind.annotation.RequestMethod.POST}, produces={"application/json"})
+	  @LogsInfo(logType=StringUtils.OPE_LOG_PROCESS_DEPOSIT)
 	  public Map<String, Object> orderEnd(@RequestBody Map<String, Object> params){
 		  return  paymentService.processOrderEnd(params);
 	  }

@@ -1,6 +1,8 @@
 package com.jll.game.playtype;
 
+import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -13,6 +15,7 @@ import com.jll.common.constants.Constants;
 import com.jll.common.utils.DateUtil;
 import com.jll.entity.Issue;
 import com.jll.entity.OrderInfo;
+import com.jll.entity.UserInfo;
 import com.jll.game.playtypefacade.PlayTypeFactory;
 
 public class Wxh2PlayTypeFacadeImplTest extends ServiceJunitBase{
@@ -24,7 +27,7 @@ public class Wxh2PlayTypeFacadeImplTest extends ServiceJunitBase{
 	@Resource
 	PlayTypeFacade playTypeFacade;
 	
-	final String facadeName = "wxh2|五星后二/fs-ds";
+	final String facadeName = "wxh2|五星后二/ds";
 	
 	@Override
 	protected void setUp() throws Exception {
@@ -37,39 +40,136 @@ public class Wxh2PlayTypeFacadeImplTest extends ServiceJunitBase{
 		//super.tearDown();
 	}
 	
-	public void ItestParseBetNumber(){
-		String betNum = "12,23";
-		
-		List<Map<String, String>> ret = playTypeFacade.parseBetNumber(betNum);
-		Assert.assertNotNull(ret);
-		
-		Assert.assertTrue(ret.size() == 4);
-	}
-	
-	public void ItestIsMatchWinningNum_winning(){
-		Date startTime = new Date();
-		String betNum = "12,23,456";
+	public void testIsMatchWinningNum_winning(){
+		String betNum = "96";
 		Issue issue = new Issue();
-		issue.setIssueNum("");
-		issue.setLotteryType(Constants.LottoType.CQSSC.getCode());
-		issue.setRetNum("1,2,4,9,6");
-		issue.setStartTime(startTime);
-		issue.setState(Constants.IssueState.LOTTO_DARW.getCode());
-		issue.setEndTime(DateUtil.addMinutes(startTime, 10));
+		issue.setRetNum("0,0,0,9,6");
 		
 		OrderInfo order = new OrderInfo();
-		//order.setIssueId(issueId);
 		order.setBetNum(betNum);
 		
 		boolean ret = playTypeFacade.isMatchWinningNum(issue, order);
+		Assert.assertTrue(ret);
+		
+		
+		betNum = "96;99";
+		issue = new Issue();
+		issue.setRetNum("0,0,0,9,6");
+		
+		order = new OrderInfo();
+		order.setBetNum(betNum);
+		
+		ret = playTypeFacade.isMatchWinningNum(issue, order);
+		Assert.assertTrue(ret);
+		
+	}
+	
+	public void testPreProcessNumber(){
+		Map<String, Object> params = new HashMap<>();
+		//Date startTime = new Date();
+		String betNum = "78";
+		Integer times = 1;
+		Float monUnit = 1.0F;
+		Integer playType = 1;
+		String lottoType = "cqssc";
+				
+		UserInfo user = new UserInfo();
+		user.setId(14);
+		user.setPlatRebate(new BigDecimal(5.0F));
+		
+		
+		params.put("betNum", betNum);
+		params.put("times", times);
+		params.put("monUnit", monUnit);
+		params.put("playType", playType);
+		params.put("lottoType", lottoType);
+		
+		Map<String, Object> ret = playTypeFacade.preProcessNumber(params, user);
 		Assert.assertNotNull(ret);
 		
 	}
 	
-	public void testObtainSampleBetNumber(){		
-		String ret = playTypeFacade.obtainSampleBetNumber();
-		Assert.assertNotNull(ret);
+	public void testParseBetNumber(){
+		String betNum = "00";
+		Date startDate = new Date();
+		List<Map<String, String>> ret = playTypeFacade.parseBetNumber(betNum);
 		
+		Date endDate = new Date();
+		System.out.println(String.format("create Arragnge %s , take over %s ms", 
+				ret.size(),
+				endDate.getTime() - startDate.getTime()));
+		
+		Assert.assertNotNull(ret);
+		 
+		Assert.assertTrue(ret.size() == 1000);
+		
+		betNum = "00;99";
+		startDate = new Date();
+		ret = playTypeFacade.parseBetNumber(betNum);
+		
+		endDate = new Date();
+		System.out.println(String.format("create Arragnge %s , take over %s ms", 
+				ret.size(),
+				endDate.getTime() - startDate.getTime()));
+		
+		Assert.assertNotNull(ret);
+		 
+		Assert.assertTrue(ret.size() == 2000);		
 	}
 	
+	public void testObtainSampleBetNumber(){
+		int counter = 0;
+		int maxCounter = 1000;
+		String betNum = null;
+		boolean isWinning = false;
+		boolean isValid = false;
+		while(counter < maxCounter) {
+			betNum = playTypeFacade.obtainSampleBetNumber();
+			
+			System.out.println(String.format("current bet number   %s", 
+					betNum));
+			
+			String winningNum = obtainWinningNum(betNum);
+			OrderInfo order = new OrderInfo();
+			order.setBetNum(betNum);
+			
+			Issue issue = new Issue();
+			issue.setRetNum(winningNum);
+			
+			isValid = playTypeFacade.validBetNum(order);
+			if(!isValid) {
+				continue;
+			}
+			isWinning = playTypeFacade.isMatchWinningNum(issue, order);
+			
+			System.out.println(String.format("winingNum  %s   current bet number   %s   isVliad  %s    isWnning  %s", 
+					winningNum,
+					betNum,
+					isValid,
+					isWinning));
+			
+			Assert.assertTrue(isValid);
+			counter++;
+		}
+	}
+	
+	private String obtainWinningNum(String betNum) {
+		StringBuffer winningNumBuffer = new StringBuffer();
+		List<Map<String, String>> maps = playTypeFacade.parseBetNumber(betNum);
+		if(maps != null && maps.size() > 0) {
+			Map<String, String> row = maps.get(0);
+			String winningNum = row.get(Constants.KEY_FACADE_BET_NUM_SAMPLE);
+			for(int i = 0; i< winningNum.length();) { 
+				String bit = winningNum.substring(i, i + 1);
+				if(!",".equals(bit)) {
+					winningNumBuffer.append(bit).append(",");
+				}
+				
+				i += 1;
+			}
+			winningNumBuffer.delete(winningNumBuffer.length() - 1, winningNumBuffer.length());
+		}
+		
+		return winningNumBuffer.toString();
+	}
 }

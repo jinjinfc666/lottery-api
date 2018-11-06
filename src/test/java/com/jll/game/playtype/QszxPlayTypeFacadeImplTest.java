@@ -27,7 +27,7 @@ public class QszxPlayTypeFacadeImplTest extends ServiceJunitBase{
 	@Resource
 	PlayTypeFacade playTypeFacade;
 	
-	final String facadeName = "qszx|前三直选/fs-ds";
+	final String facadeName = "qszx|前三直选/fs";
 	
 	@Override
 	protected void setUp() throws Exception {
@@ -40,13 +40,42 @@ public class QszxPlayTypeFacadeImplTest extends ServiceJunitBase{
 		//super.tearDown();
 	}
 	
-	public void ItestParseBetNumber(){
-		String betNum = "12,23,456";
-		
+	public void testParseBetNumber(){
+		String betNum = "0,0,0";
+		Date startDate = new Date();
 		List<Map<String, String>> ret = playTypeFacade.parseBetNumber(betNum);
+		Date endDate = new Date();
+		System.out.println(String.format("create Arragnge %s , take over %s ms", 
+				ret.size(),
+				endDate.getTime() - startDate.getTime()));
 		Assert.assertNotNull(ret);
 		
-		Assert.assertTrue(ret.size() == 12);
+		Assert.assertTrue(ret.size() == 100);
+		
+		betNum = "01,0,0";
+		startDate = new Date();
+		ret = playTypeFacade.parseBetNumber(betNum);
+		
+		endDate = new Date();
+		System.out.println(String.format("create Arragnge %s , take over %s ms", 
+				ret.size(),
+				endDate.getTime() - startDate.getTime()));
+		
+		Assert.assertNotNull(ret);
+		
+		Assert.assertTrue(ret.size() == 200);
+		
+		betNum = "0123456789,0123456789,0123456789";
+		startDate = new Date();
+		ret = playTypeFacade.parseBetNumber(betNum);
+		endDate = new Date();
+		System.out.println(String.format("create Arragnge %s , take over %s ms", 
+				ret.size(),
+				endDate.getTime() - startDate.getTime()));
+		
+		Assert.assertNotNull(ret);
+		
+		Assert.assertTrue(ret.size() == 100000);
 	}
 	
 	public void ItestIsMatchWinningNum_winning(){
@@ -69,7 +98,7 @@ public class QszxPlayTypeFacadeImplTest extends ServiceJunitBase{
 		
 	}
 	
-	public void testPreProcessNumber(){
+	public void ItestPreProcessNumber(){
 		Map<String, Object> params = new HashMap<>();
 		//Date startTime = new Date();
 		String betNum = "7,8,5";

@@ -11,7 +11,8 @@
                         http://www.springframework.org/schema/context
                         http://www.springframework.org/schema/context/spring-context-4.0.xsd
                         http://www.springframework.org/schema/mvc
-                        http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd">
+                        http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+          				">
 
 	<context:component-scan base-package="com.jll" >
 		<context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
@@ -82,6 +83,18 @@
         <property name="contentType" value="text/html;charset=UTF-8" />
         <property name="requestContextAttribute" value="request" />  
      </bean> 
+     
+     <!--配置拦截器-->
+    <mvc:interceptors>
+        <!--拦截器1-->
+        <mvc:interceptor>
+            <!--配置拦截器的作用路径-->
+            <mvc:mapping path="/**"/>
+            <mvc:exclude-mapping path=""/>
+            <!--定义在<mvc:interceptor>下面的表示匹配指定路径的请求才进行拦截-->
+            <bean class="com.jll.interceptor.LogInterceptor"/>
+        </mvc:interceptor>
+     </mvc:interceptors>
      
 	<!--避免IE执行AJAX时，返回JSON出现下载文件 -->
 	<!-- <mvc:interceptors>

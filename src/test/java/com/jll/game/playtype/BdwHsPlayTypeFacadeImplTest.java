@@ -38,12 +38,18 @@ public class BdwHsPlayTypeFacadeImplTest extends ServiceJunitBase{
 	}
 	
 	public void testParseBetNumber(){
-		String betNum = "12";
-		
+		String betNum = "0123456789";
+		Date startDate = new Date();
 		List<Map<String, String>> ret = playTypeFacade.parseBetNumber(betNum);
-		Assert.assertNotNull(ret);
 		
-		Assert.assertTrue(ret.size() == 6);
+		Date endDate = new Date();
+		System.out.println(String.format("create Arragnge %s , take over %s ms", 
+				ret.size(),
+				endDate.getTime() - startDate.getTime()));
+		
+		Assert.assertNotNull(ret);
+		 
+		Assert.assertTrue(ret.size() == 100000);
 	}
 	
 	public void ItestIsMatchWinningNum_winning(){

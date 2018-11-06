@@ -14,6 +14,7 @@ import javax.annotation.Resource;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.aspectj.apache.bcel.generic.RET;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Value;
@@ -570,8 +571,8 @@ public class IssueServiceImpl implements IssueService
 		
 		if(isMatch) {//赢
 			//TODO 发奖金
-			BigDecimal prize = calPrize(issue, order, user);
-			
+			Map<String, Object> ret = calPrize(issue, order, user);
+			BigDecimal prize = new BigDecimal((Float)ret.get(Constants.KEY_WIN_AMOUNT));
 			//试玩用户跳过派奖
 			if(UserType.DEMO_PLAYER.getCode() != user.getUserType()){
 				//TODO 增加账户流水
@@ -581,10 +582,10 @@ public class IssueServiceImpl implements IssueService
 			}
 			
 			//TODO 修改订单状态
-			modifyOrderState(order, Constants.OrderState.WINNING);
+			modifyOrderState(order, Constants.OrderState.WINNING, ret);
 		}else {
 			//TODO 修改订单状态
-			modifyOrderState(order, Constants.OrderState.LOSTING);
+			modifyOrderState(order, Constants.OrderState.LOSTING, null);
 		}
 		
 	}
@@ -614,7 +615,7 @@ public class IssueServiceImpl implements IssueService
 		return playTypeFacade.isMatchWinningNum(issue, order);
 	}
 	
-	private BigDecimal calPrize(Issue issue, OrderInfo order, UserInfo user) {
+	private Map<String, Object> calPrize(Issue issue, OrderInfo order, UserInfo user) {
 		String playTypeName = null;
 		PlayTypeFacade playTypeFacade = null;
 		PlayType playType = null;
@@ -635,7 +636,9 @@ public class IssueServiceImpl implements IssueService
 			return null;
 		}
 		
-		return playTypeFacade.calPrize(issue, order, user);
+		Map<String, Object> ret = playTypeFacade.calPrize(issue, order, user);
+		
+		return ret;
 	}
 	
 	private void modifyBal(OrderInfo order, UserInfo user, BigDecimal prize) {
@@ -675,9 +678,15 @@ public class IssueServiceImpl implements IssueService
 		accDetailsServ.saveAccDetails(accDetails);
 	}
 	
-	private void modifyOrderState(OrderInfo order, OrderState orderState) {
+	private void modifyOrderState(OrderInfo order, OrderState orderState, Map<String, Object> payOutInfo) {
 		order.setState(orderState.getCode());
-		
+		if(payOutInfo != null && payOutInfo.size() > 0) {
+			Float winAmount = (Float)payOutInfo.get(Constants.KEY_WIN_AMOUNT);
+			Integer winningBetTotal = (Integer)payOutInfo.get(Constants.KEY_WINNING_BET_TOTAL);
+			
+			order.setWinAmount(winAmount);
+			order.setWinBetTotal(winningBetTotal.floatValue());
+		}
 		orderInfoServ.saveOrder(order);
 	}
 	

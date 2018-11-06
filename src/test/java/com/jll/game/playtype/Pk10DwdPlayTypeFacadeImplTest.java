@@ -251,6 +251,7 @@ public class Pk10DwdPlayTypeFacadeImplTest extends ServiceJunitBase{
 	public void testCalPrize(){
 		String winningNum = "08,05,01,02,03,04,06,07,09,10";
 		String betNum = "01030607080910,02040506070910,01030405060810,,,,,,,";
+		Map<String, Object> ret;
 		BigDecimal prize = null;
 		
 		Issue issue = new Issue();
@@ -272,7 +273,8 @@ public class Pk10DwdPlayTypeFacadeImplTest extends ServiceJunitBase{
 		user.setUserName("test001");
 		user.setUserType(Constants.UserType.PLAYER.getCode());
 		user.setPlatRebate(new BigDecimal(5.0F));
-		prize = playTypeFacade.calPrize(issue, order, user);
+		ret = playTypeFacade.calPrize(issue, order, user);
+		prize = new BigDecimal((Float)ret.get(Constants.KEY_WIN_AMOUNT));
 		Assert.assertNotNull(prize);
 				
 		Assert.assertTrue(prize.compareTo(new BigDecimal(28.006500244140625F)) == 0);

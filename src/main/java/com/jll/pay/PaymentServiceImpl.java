@@ -145,8 +145,8 @@ public class PaymentServiceImpl  implements PaymentService
 				ret.put(Message.KEY_ERROR_CODE, retCode);
 				ret.put(Message.KEY_ERROR_MES, Message.Error.getErrorByCode(retCode).getErrorMes());
 			}
-			ret.put(Message.KEY_DATA, qrCode);
-			ret.put(Message.KEY_DATA_TYPE, "qrcode");
+			ret.put(Message.KEY_REMAKE, qrCode);
+			//ret.put(Message.KEY_DATA_TYPE, "qrcode");
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		}else {
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
@@ -199,6 +199,7 @@ public class PaymentServiceImpl  implements PaymentService
 		
 		PayType pt = cacheRedisService.getPayTypeInfo(info.getPayType());
 		
+		ret.put(Message.KEY_DATA_TYPE, pcInfo.getShowType());
 		//写入订单
 		DepositApplication depositOrder = depositOrderDao.saveDepositOrder(info.getPayType(), info.getPayChannel(),userId, info.getAmount(), "",new Date(),"");
 		pramsInfo.put("depositOrder", depositOrder);
@@ -236,11 +237,16 @@ public class PaymentServiceImpl  implements PaymentService
 			
 			if(retCode.equals(String.valueOf(Message.status.SUCCESS.getCode()))) {
 				ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+				ret.put(Message.KEY_REMAKE, "SUCCESS");
 			}else {
 				ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 				ret.put(Message.KEY_ERROR_CODE, retCode);
 				ret.put(Message.KEY_ERROR_MES, Message.Error.getErrorByCode(retCode).getErrorMes());
 			}
+		//按照系统支付来处理
+		}else{
+			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+			ret.put(Message.KEY_REMAKE,pcInfo.getQrUrl());
 		}
 		return ret;
 	}

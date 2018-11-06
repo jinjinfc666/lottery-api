@@ -277,7 +277,8 @@ public abstract class DefaultLottoTypeServiceImpl implements LotteryTypeService
 		BulletinBoard bulletinBoard;
 		//防止多线程情况下，获取旧的信息
 		bulletinBoard = cacheServ.getBulletinBoard(lottoType);
-		if(bulletinBoard.getCurrIssue() == null) {
+		if(bulletinBoard == null 
+				|| bulletinBoard.getCurrIssue() == null) {
 			try {
 				Thread.sleep(30000);
 				

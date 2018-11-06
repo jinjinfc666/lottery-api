@@ -11,6 +11,7 @@ import java.util.Random;
 
 import org.apache.log4j.Logger;
 
+import com.jll.common.constants.Constants;
 import com.jll.common.utils.MathUtil;
 import com.jll.common.utils.StringUtils;
 import com.jll.common.utils.Utils;
@@ -141,7 +142,8 @@ public class QszuxZsPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 	}
 
 	@Override
-	public BigDecimal calPrize(Issue issue, OrderInfo order, UserInfo user) {
+	public Map<String, Object> calPrize(Issue issue, OrderInfo order, UserInfo user) {
+		Map<String, Object> ret = new HashMap<String, Object>();
 		// 开奖号码的每一位
 		String[] winNumSet = null;
 		// 投注号码的每个位的号码，可能多个号码
@@ -208,7 +210,11 @@ public class QszuxZsPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 		betAmount = MathUtil.multiply(betAmount, monUnit.floatValue(), Float.class);
 		maxWinAmount = MathUtil.multiply(betAmount, singleBettingPrize.floatValue(), Float.class);
 		
-		return new BigDecimal(maxWinAmount);
+		ret.put(Constants.KEY_WINNING_BET_TOTAL, winningBetAmount);
+		ret.put(Constants.KEY_WIN_AMOUNT, maxWinAmount);
+		ret.put(Constants.KEY_SINGLE_BETTING_PRIZE, singleBettingPrize);
+		
+		return ret;
 	}
 
 	/* (non-Javadoc)
@@ -231,7 +237,53 @@ public class QszuxZsPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 	
 	@Override
 	public List<Map<String,String>> parseBetNumber(String betNum){
-		List<Map<String,String>> betNumList = Utils.parseQszuxZsBetNumber(betNum);
+		List<Map<String, String>> betNumList = new ArrayList<>();
+		String[] betNumArray = betNum.split(";");
+		StringBuffer buffer = new StringBuffer();
+		Map<String, String> threeBits = new HashMap<>();
+		
+		for(String singleBetNumArray : betNumArray) {
+			for(int i = 0; i < 10; i++) {
+				for(int ii = 0; ii < 10;ii++){
+					for(int iii = 0; iii < 10;iii++){
+						threeBits.clear();
+						
+						threeBits.put(String.valueOf(i), String.valueOf(i));
+						threeBits.put(String.valueOf(ii), String.valueOf(ii));
+						threeBits.put(String.valueOf(iii), String.valueOf(iii));
+						
+						if(threeBits.size() != 2) {
+							continue;
+						}
+						
+						Iterator<String> ite = threeBits.keySet().iterator();
+						
+						if(!singleBetNumArray.contains(ite.next())
+								|| !singleBetNumArray.contains(ite.next())) {
+							continue;
+						}
+						
+						for(int iiii = 0; iiii < 10;iiii++){
+							for(int iiiii = 0; iiiii < 10;iiiii++){
+								buffer.delete(0, buffer.length());
+								
+								
+								buffer.append(i).append(ii).append(iii).append(iiii).append(iiiii);
+								
+								
+								Map<String, String> row = new HashMap<String, String>();
+								row.put(Constants.KEY_FACADE_BET_NUM, buffer.toString());
+								row.put(Constants.KEY_FACADE_PATTERN, buffer.toString());
+								row.put(Constants.KEY_FACADE_BET_NUM_SAMPLE, buffer.toString());
+								betNumList.add(row);
+								
+							}
+							
+						}
+					}
+				}
+			}
+		}
 		
 		return betNumList;
 	}

@@ -21,7 +21,7 @@ public class Wxh2PlayTypeFacadeImpl  extends DefaultPlayTypeFacadeImpl {
 	
 	private Logger logger = Logger.getLogger(Wxh2PlayTypeFacadeImpl.class);
 	
-	protected String playTypeDesc = "wxh2|五星后二/fs-ds";
+	protected String playTypeDesc = "wxh2|五星后二/fs";
 	
 	@Override
 	public boolean isMatchWinningNum(Issue issue, OrderInfo order) {
@@ -42,29 +42,13 @@ public class Wxh2PlayTypeFacadeImpl  extends DefaultPlayTypeFacadeImpl {
 		
 		for(String temp : betNumMul) {
 			String[] tempSet = temp.split(",");
-			if(StringUtils.isBlank(betNumSet[0])) {
-				betNumSet[0] = tempSet[0];
-			}else {
-				betNumSet[0] = betNumSet[0] + tempSet[0];
-			}
-			
-			if(StringUtils.isBlank(betNumSet[1])) {
-				betNumSet[1] = tempSet[1];
-			}else {
-				betNumSet[1] = betNumSet[1] + tempSet[1];
+			if(tempSet[0].contains(winNumSet[0])
+					&& tempSet[1].contains(winNumSet[1])) {
+				return true;
 			}
 		}
-		
-		logger.debug("proced bet number is :: " + Arrays.asList(betNumSet));
-		
-		for(int i = 0; i < winNumSet.length; i++) {
-			String betNumDigit = betNumSet[i];
-			if(!betNumDigit.contains(winNumSet[i])) {
-				return false;
-			}
-		}
-		
-		return true;
+				
+		return false;
 	}
 
 	@Override
@@ -82,16 +66,32 @@ public class Wxh2PlayTypeFacadeImpl  extends DefaultPlayTypeFacadeImpl {
 		int betTotal = 1;
 		Float betAmount = 0F;
 		Float maxWinAmount = 0F;
+		int winBetTotal = 0;
 		
-		betNumSet = betNum.split(",");
-		for(String subBetNum : betNumSet) {
-			int len = subBetNum.length();
-			betTotal *= MathUtil.combination(1, len);
+		betNumSet = betNum.split(";");
+		for(String singleBetNum : betNumSet) {
+			String[] betNumBits = singleBetNum.split(",");
+			for(String betNumBit : betNumBits) {
+				int len = betNumBit.length();
+				betTotal *= MathUtil.combination(1, len);
+			}
+			
+			winBetTotal++;
 		}
+		
 		
 		betAmount = MathUtil.multiply(betTotal, times, Float.class);
 		betAmount = MathUtil.multiply(betAmount, monUnit, Float.class);
-		maxWinAmount = MathUtil.multiply(betAmount, singleBettingPrize.floatValue(), Float.class);
+		
+		maxWinAmount = MathUtil.multiply(winBetTotal, 
+				times, 
+				Float.class);
+		maxWinAmount = MathUtil.multiply(maxWinAmount, 
+				monUnit, 
+				Float.class);
+		maxWinAmount = MathUtil.multiply(maxWinAmount, 
+				singleBettingPrize.floatValue(), 
+				Float.class);
 		
 		ret.put("playType", playType);
 		ret.put("betAmount", betAmount);
@@ -123,13 +123,7 @@ public class Wxh2PlayTypeFacadeImpl  extends DefaultPlayTypeFacadeImpl {
 			betNumSet = betNumTemp.split(",");
 			if(betNumSet == null || betNumSet.length != 2) {
 				return false;
-			}
-			
-			for(String temp : betNumSet) {
-				if(StringUtils.isBlank(temp)) {
-					return false;
-				}
-			}			
+			}	
 		}
 		
 		
@@ -137,7 +131,8 @@ public class Wxh2PlayTypeFacadeImpl  extends DefaultPlayTypeFacadeImpl {
 	}
 
 	@Override
-	public BigDecimal calPrize(Issue issue, OrderInfo order, UserInfo user) {
+	public Map<String, Object> calPrize(Issue issue, OrderInfo order, UserInfo user) {
+		Map<String, Object> ret = new HashMap<String, Object>();
 		// 开奖号码的每一位
 		String[] winNumSet = null;
 		// 投注号码的每个位的号码，可能多个号码
@@ -177,7 +172,11 @@ public class Wxh2PlayTypeFacadeImpl  extends DefaultPlayTypeFacadeImpl {
 		betAmount = MathUtil.multiply(betAmount, monUnit.floatValue(), Float.class);
 		maxWinAmount = MathUtil.multiply(betAmount, singleBettingPrize.floatValue(), Float.class);
 		
-		return new BigDecimal(maxWinAmount);
+		ret.put(Constants.KEY_WINNING_BET_TOTAL, winningBetAmount);
+		ret.put(Constants.KEY_WIN_AMOUNT, maxWinAmount);
+		ret.put(Constants.KEY_SINGLE_BETTING_PRIZE, singleBettingPrize);
+		
+		return ret;
 	}
 
 	/* (non-Javadoc)
@@ -202,27 +201,79 @@ public class Wxh2PlayTypeFacadeImpl  extends DefaultPlayTypeFacadeImpl {
 	public List<Map<String, String>> parseBetNumber(String betNum){
 		List<Map<String, String>> betNumList = new ArrayList<>();
 		String[] betNumArray = betNum.split(";");
+		StringBuffer buffer = new StringBuffer();
+		/*boolean isMatch1 = false;
+		boolean isMatch2 = false;*/
+		//boolean isMatch3 = false;
+		boolean isMatch4 = false;
+		boolean isMatch5 = false;
+		
 		for(String singleBetNumArray : betNumArray) {
-			String[] betNumBits = singleBetNumArray.split(",");
+			String[] betNumBits = splitBit(singleBetNumArray, 1);
 			
-			for(int i = 0 ; i < betNumBits[0].length(); i++) {
-				String a = betNumBits[0].substring(i, i + 1);
-				for(int ii = 0; ii < betNumBits[1].length(); ii++) {
-					String aa = betNumBits[1].substring(ii, ii + 1);
+			for(int i = 0; i < 10; i++) {				
+				/*if(betNumBits[0].contains(String.valueOf(i))) {
+					isMatch1 = true;
+				}*/
+				
+				for(int ii = 0; ii < 10;ii++){
+					/*if(betNumBits[1].contains(String.valueOf(ii))) {
+						isMatch2 = true;
+					}*/
 					
-					StringBuffer buffer = new StringBuffer();
-					buffer.append(a).append(aa);
 					
-					Map<String, String> row = new HashMap<String, String>();
-					row.put(Constants.KEY_FACADE_BET_NUM, buffer.toString());
-					row.put(Constants.KEY_FACADE_PATTERN, "[0-9]{3}" + buffer.toString());
-					row.put(Constants.KEY_FACADE_BET_NUM_SAMPLE, "000" + buffer.toString());				
-					betNumList.add(row);
 					
+					for(int iii = 0; iii < 10;iii++){
+						/*if(betNumBits[2].contains(String.valueOf(iii))) {
+							isMatch3 = true;
+						}*/
+						
+						
+						for(int iiii = 0; iiii < 10;iiii++){
+							if(betNumBits[0].contains(String.valueOf(iiii))) {
+								isMatch4 = true;
+							}
+							
+							if(!isMatch4) {
+								isMatch4 = false;
+								continue;
+							}
+							
+							for(int iiiii = 0; iiiii < 10;iiiii++){
+								if(betNumBits[1].contains(String.valueOf(iiiii))) {
+									isMatch5 = true;
+								}
+								
+								if(!isMatch5) {
+									isMatch5 = false;
+									continue;
+								}
+								
+								buffer.delete(0, buffer.length());
+								
+								
+								buffer.append(i).append(ii).append(iii).append(iiii).append(iiiii);
+								
+								
+								Map<String, String> row = new HashMap<String, String>();
+								row.put(Constants.KEY_FACADE_BET_NUM, buffer.toString());
+								row.put(Constants.KEY_FACADE_PATTERN, buffer.toString());
+								row.put(Constants.KEY_FACADE_BET_NUM_SAMPLE, buffer.toString());
+								betNumList.add(row);
+								
+								isMatch5 = false;
+							}
+							
+							isMatch4 = false;
+						}
+						
+						//isMatch3 = false;
+					}
+					/*isMatch2 = false;*/
 				}
+				/*isMatch1 = false;*/
 			}
 		}
-		
 		
 		return betNumList;
 	}
@@ -231,20 +282,71 @@ public class Wxh2PlayTypeFacadeImpl  extends DefaultPlayTypeFacadeImpl {
 	public String obtainSampleBetNumber(){
 		Random random = new Random();
 		StringBuffer betNum = new StringBuffer();
+		StringBuffer betNums = new StringBuffer();
+		StringBuffer bitNum = new StringBuffer();
 		
-		int bit = random.nextInt(10);
-		int bit2 = -1;
-		betNum.append(Integer.toString(bit)).append(",");
-		while(true) {
-			bit2 = random.nextInt(10);
-			if(bit != bit2) {
-				betNum.append(Integer.toString(bit2)).append(",");
-				break;
+		int betNumLen = random.nextInt(5) + 1;
+		
+		for(int i = 0; i< betNumLen; i++) {
+			int bitLen = random.nextInt(7) + 1;
+			for(int ii = 0;ii < bitLen; ii++) {
+				while(true) {
+					int bit = random.nextInt(10);
+					if(!bitNum.toString().contains(String.valueOf(bit))) {
+						bitNum.append(bit);
+						break;
+					}
+				}
+			}
+			
+			betNum.append(bitNum.toString()).append(",");
+			bitNum.delete(0, bitNum.length());
+			
+			bitLen = random.nextInt(7) + 1;
+			for(int ii = 0;ii < bitLen; ii++) {
+				while(true) {
+					int bit = random.nextInt(10);
+					if(!bitNum.toString().contains(String.valueOf(bit))) {
+						bitNum.append(bit);
+						break;
+					}
+				}
+			}
+			
+			betNum.append(bitNum.toString());
+			
+			betNums.append(betNum.toString()).append(";");
+			
+			betNum.delete(0, betNum.length());
+			bitNum.delete(0, bitNum.length());
+		}
+		
+		betNums.delete(betNums.length()-1, betNums.length());
+		
+		return betNums.toString();
+	}
+	
+	private String[] splitBit(String singleSel, int step) {
+		List<String> retList = new ArrayList<>();
+		StringBuffer buffer = new StringBuffer();
+		
+		for(int i = 0; i < singleSel.length();) {
+			String temp = singleSel.substring(i, i + step);
+			if(",".equals(temp)) {
+				retList.add(buffer.toString());
+				buffer.delete(0, buffer.length());
+			}else {
+				buffer.append(temp);
+			}
+			
+			i += step;
+			
+			if(i >= singleSel.length()) {
+				retList.add(buffer.toString());
+				buffer.delete(0, buffer.length());
 			}
 		}
 		
-		betNum.delete(betNum.length()-1, betNum.length());
-		
-		return betNum.toString();
+		return retList.toArray(new String[0]);
 	}
 }

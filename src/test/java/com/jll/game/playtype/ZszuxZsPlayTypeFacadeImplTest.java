@@ -40,13 +40,54 @@ public class ZszuxZsPlayTypeFacadeImplTest extends ServiceJunitBase{
 		//super.tearDown();
 	}
 	
-	public void ItestParseBetNumber(){
-		String betNum = "68";
-		
+	public void testParseBetNumber(){
+		String betNum = "0";
+		Date startDate = new Date();
 		List<Map<String, String>> ret = playTypeFacade.parseBetNumber(betNum);
+		Date endDate = new Date();
+		System.out.println(String.format("create Arragnge %s , take over %s ms", 
+				ret.size(),
+				endDate.getTime() - startDate.getTime()));
+		
 		Assert.assertNotNull(ret);
 		
-		Assert.assertTrue(ret.size() == 18);
+		Assert.assertTrue(ret.size() == 0);
+		
+		betNum = "01";
+		startDate = new Date();
+		ret = playTypeFacade.parseBetNumber(betNum);
+		endDate = new Date();
+		System.out.println(String.format("create Arragnge %s , take over %s ms", 
+				ret.size(),
+				endDate.getTime() - startDate.getTime()));
+		
+		Assert.assertNotNull(ret);
+		
+		Assert.assertTrue(ret.size() == 600);
+		
+		betNum = "012";
+		startDate = new Date();
+		ret = playTypeFacade.parseBetNumber(betNum);
+		endDate = new Date();
+		System.out.println(String.format("create Arragnge %s , take over %s ms", 
+				ret.size(),
+				endDate.getTime() - startDate.getTime()));
+		
+		Assert.assertNotNull(ret);
+		
+		Assert.assertTrue(ret.size() == 1800);
+		
+		betNum = "0123456789";
+		startDate = new Date();
+		ret = playTypeFacade.parseBetNumber(betNum);
+		endDate = new Date();
+		System.out.println(String.format("create Arragnge %s , take over %s ms", 
+				ret.size(),
+				endDate.getTime() - startDate.getTime()));
+		
+		Assert.assertNotNull(ret);
+		
+		Assert.assertTrue(ret.size() == 27000);
 	}
 	
 	public void ItestIsMatchWinningNum_winning(){
@@ -125,7 +166,7 @@ public class ZszuxZsPlayTypeFacadeImplTest extends ServiceJunitBase{
 		Assert.assertTrue(betTotal == 4);
 	}
 	
-	public void testIsMatchWinningNum_sameBits(){
+	public void ItestIsMatchWinningNum_sameBits(){
 		Date startTime = new Date();
 		String betNum = "60";
 		Issue issue = new Issue();

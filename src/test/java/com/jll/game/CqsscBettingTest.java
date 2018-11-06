@@ -5805,11 +5805,15 @@ public class CqsscBettingTest extends ControllerJunitBase{
 			tokens.put("token", token);
 			
 			Map<String, Object> ret = queryCurrIssue(token, lottoType);
-			while((ret == null || ret.size() == 0) 
-					&& counter <= 200) {
+			while((ret == null 
+					|| ret.size() == 0
+					|| ret.get("currIssue") == null) 
+					&& counter <= 60000) {
 				counter++;
 				
 				ret = queryCurrIssue(token, lottoType);
+				
+				Thread.sleep(500);
 			}
 			
 			if(ret == null || ret.size() == 0) {
@@ -5857,6 +5861,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 							}							
 						}
 						try {
+							Thread.sleep(60000);
 							manualDrawResult(lottoType,
 									currIssue.getIssueNum(),
 									winningNumBuffer.toString(),
@@ -5901,11 +5906,14 @@ public class CqsscBettingTest extends ControllerJunitBase{
 						
 						PlayType playType = playTypes.get(indx);
 						
-						if(playType.getPtName().equals("fs") || playType.getPtName().equals("ds")) {
-							playTypeName = playType.getClassification() + "/fs-ds";
+						if(playType.getPtName().equals("fs")) {
+							playTypeName = playType.getClassification() + "/fs";
+						}else if(playType.getPtName().equals("ds")){
+							playTypeName = playType.getClassification() + "/ds";
 						}else {
 							playTypeName = playType.getClassification() + "/" + playType.getPtName();
 						}
+						
 						PlayTypeFacade playTypeFacade = PlayTypeFactory.getInstance().getPlayTypeFacade(playTypeName);
 						
 						if(playTypeFacade == null) {

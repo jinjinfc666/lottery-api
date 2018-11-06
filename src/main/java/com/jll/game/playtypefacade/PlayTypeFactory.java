@@ -14,8 +14,11 @@ public class PlayTypeFactory {
 	
 	private PlayTypeFactory() {
 		QszxPlayTypeFacadeImpl qszxPlayTypeFacadeImpl = new QszxPlayTypeFacadeImpl();
+		QszxDsPlayTypeFacadeImpl qszxDsPlayTypeFacadeImpl = new QszxDsPlayTypeFacadeImpl();
 		ZszxPlayTypeFacadeImpl zszxPlayTypeFacadeImpl = new ZszxPlayTypeFacadeImpl();
+		ZszxDsPlayTypeFacadeImpl zszxDsPlayTypeFacadeImpl = new ZszxDsPlayTypeFacadeImpl();
 		HszxPlayTypeFacadeImpl hszxPlayTypeFacadeImpl = new HszxPlayTypeFacadeImpl();
+		HszxDsPlayTypeFacadeImpl hszxDsPlayTypeFacadeImpl = new HszxDsPlayTypeFacadeImpl();
 		QszuxZsPlayTypeFacadeImpl qszuxZsPlayTypeFacadeImpl = new QszuxZsPlayTypeFacadeImpl();
 		QszuxZlPlayTypeFacadeImpl qszuxZlPlayTypeFacadeImpl = new QszuxZlPlayTypeFacadeImpl();
 		QszuxMixPlayTypeFacadeImpl qszuxMixPlayTypeFacadeImpl = new QszuxMixPlayTypeFacadeImpl();
@@ -26,8 +29,10 @@ public class PlayTypeFactory {
 		HszuxZlPlayTypeFacadeImpl hszuxZlPlayTypeFacadeImpl = new HszuxZlPlayTypeFacadeImpl();
 		HszuxHhzxPlayTypeFacadeImpl hszuxHhzxPlayTypeFacadeImpl = new HszuxHhzxPlayTypeFacadeImpl();
 		Wxq2PlayTypeFacadeImpl wxq2PlayTypeFacadeImpl = new Wxq2PlayTypeFacadeImpl();
+		Wxq2DsPlayTypeFacadeImpl wxq2DsPlayTypeFacadeImpl = new Wxq2DsPlayTypeFacadeImpl();
 		Wxq2ZxPlayTypeFacadeImpl wxq2ZxPlayTypeFacadeImpl = new Wxq2ZxPlayTypeFacadeImpl();
 		Wxh2PlayTypeFacadeImpl wxh2PlayTypeFacadeImpl = new Wxh2PlayTypeFacadeImpl();
+		Wxh2DsPlayTypeFacadeImpl wxh2DsPlayTypeFacadeImpl = new Wxh2DsPlayTypeFacadeImpl();
 		Wxh2ZxPlayTypeFacadeImpl wxh2ZxPlayTypeFacadeImpl = new Wxh2ZxPlayTypeFacadeImpl();
 		BdwQsPlayTypeFacadeImpl bdwQsPlayTypeFacadeImpl = new BdwQsPlayTypeFacadeImpl();
 		BdwZsPlayTypeFacadeImpl bdwZsPlayTypeFacadeImpl = new BdwZsPlayTypeFacadeImpl();
@@ -66,8 +71,11 @@ public class PlayTypeFactory {
 		Pk10Dx3PlayTypeFacadeImpl pk10Dx3PlayTypeFacadeImpl =new Pk10Dx3PlayTypeFacadeImpl();
 		
 		playTypeFacades.add(qszxPlayTypeFacadeImpl);
+		playTypeFacades.add(qszxDsPlayTypeFacadeImpl);
 		playTypeFacades.add(zszxPlayTypeFacadeImpl);
+		playTypeFacades.add(zszxDsPlayTypeFacadeImpl);
 		playTypeFacades.add(hszxPlayTypeFacadeImpl);
+		playTypeFacades.add(hszxDsPlayTypeFacadeImpl);
 		playTypeFacades.add(qszuxZsPlayTypeFacadeImpl);
 		playTypeFacades.add(qszuxZlPlayTypeFacadeImpl);
 		playTypeFacades.add(qszuxMixPlayTypeFacadeImpl);
@@ -78,8 +86,10 @@ public class PlayTypeFactory {
 		playTypeFacades.add(hszuxZlPlayTypeFacadeImpl);
 		playTypeFacades.add(hszuxHhzxPlayTypeFacadeImpl);
 		playTypeFacades.add(wxq2PlayTypeFacadeImpl);
+		playTypeFacades.add(wxq2DsPlayTypeFacadeImpl);
 		playTypeFacades.add(wxq2ZxPlayTypeFacadeImpl);
 		playTypeFacades.add(wxh2PlayTypeFacadeImpl);
+		playTypeFacades.add(wxh2DsPlayTypeFacadeImpl);
 		playTypeFacades.add(wxh2ZxPlayTypeFacadeImpl);
 		playTypeFacades.add(bdwQsPlayTypeFacadeImpl);
 		playTypeFacades.add(bdwZsPlayTypeFacadeImpl);
