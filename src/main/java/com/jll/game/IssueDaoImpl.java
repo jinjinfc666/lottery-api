@@ -184,7 +184,7 @@ public class IssueDaoImpl extends DefaultGenericDaoImpl<Issue> implements IssueD
 	@Override
 	public Map<String, Object> queryNear(String lotteryType, Integer codeTypeNameId,Integer userId) {
 		Map<String,Object> map=new HashMap();
-		String sql="From OrderInfo a,PlayType b,Issue c,SysCode d where a.issueId=c.id and a.playType=b.id and d.codeType=:codeTypeNameId and d.codeName=:lotteryType and a.userId=:userId order by a.id desc";
+		String sql="From OrderInfo a,PlayType b,Issue c,SysCode d where a.issueId=c.id and a.playType=b.id AND c.lotteryType=d.codeName and d.codeType=:codeTypeNameId and d.codeName=:lotteryType and a.userId=:userId order by a.id desc";
 		Query<?> query = getSessionFactory().getCurrentSession().createQuery(sql);
 		query.setFirstResult(0);
 		query.setMaxResults(30);
@@ -201,7 +201,7 @@ public class IssueDaoImpl extends DefaultGenericDaoImpl<Issue> implements IssueD
 	@Override
 	public Map<String, Object> queryUnsettlement(String lotteryType,Integer codeTypeNameId, Integer userId) {
 		Map<String,Object> map=new HashMap();
-		String sql="From OrderInfo a,PlayType b,Issue c,SysCode d where a.issueId=c.id and a.playType=b.id and d.codeType=:codeTypeNameId and d.codeName=:lotteryType and a.userId=:userId and (a.state=:state1 or a.state=:state2) order by a.id desc";
+		String sql="From OrderInfo a,PlayType b,Issue c,SysCode d where a.issueId=c.id and a.playType=b.id AND c.lotteryType=d.codeName and d.codeType=:codeTypeNameId and d.codeName=:lotteryType and a.userId=:userId and (a.state=:state1 or a.state=:state2) order by a.id desc";
 		Query<?> query = getSessionFactory().getCurrentSession().createQuery(sql);
 		query.setFirstResult(0);
 		query.setMaxResults(30);

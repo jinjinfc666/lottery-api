@@ -283,6 +283,8 @@ public class EleIn5Q2zxPlayTypeFacadeImpl  extends DefaultPlayTypeFacadeImpl {
 						betNumCombinations.add(betNumCombination);
 						List<String> arrangementSel = arrangementSelect(buffer.toString());
 						for(String sel : arrangementSel) {
+							
+							
 							Map<String, String> row = new HashMap<String, String>();
 							row.put(Constants.KEY_FACADE_BET_NUM, sel);
 							row.put(Constants.KEY_FACADE_PATTERN, sel);
@@ -395,14 +397,13 @@ public class EleIn5Q2zxPlayTypeFacadeImpl  extends DefaultPlayTypeFacadeImpl {
 		for(String[] result : results) {
 			StringBuffer buffer = new StringBuffer();
 			for(String bit : result) {
-				buffer.append(bit);
+				buffer.append(bit).append(",");;
 			}
-			
+			buffer.delete(buffer.length() - 1, buffer.length());
 			ret.add(buffer.toString());
 		}
 		return ret;
 	}
-	
 	private int calBetTotal(String betNum){
 		String[] betNumArray = betNum.split(";");
 		int result = 0;

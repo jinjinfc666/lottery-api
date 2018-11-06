@@ -92,6 +92,7 @@ public class Message {
 		ERROR_SAME_IP_LIMIT_MAX_REG("010040", "The same IP(%s) can only register %s demo users!!!!"),
 		ERROR_DEMO_USER_DISABLE_FUN("010041", "Demo user disable current function!!!!"),		
 		ERROR_USER_NO_BANKCARD("010042", "user no bankcard!!!!"),
+		ERROR_USER_NO_AGENCY("010043","user no agency"),
 		
 		
 		

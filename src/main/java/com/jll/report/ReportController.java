@@ -54,6 +54,8 @@ public class ReportController {
 	@Resource
 	MReportService mReportService;
 	@Resource
+	TReportService tReportService;
+	@Resource
 	LReportService lReportService;
 	@Resource
 	OrderSourceService orderSourceService;
@@ -589,122 +591,82 @@ public class ReportController {
 //			return ret;
 //		}
 //	}
-//	/**
-//	 *团队盈亏报表
-//	 */
-//	@RequestMapping(value={"/MReportTeam"}, method={RequestMethod.GET}, produces={"application/json"})
-//	public Map<String, Object> queryMReportTeam(@RequestParam(name = "userName", required = false) String userName,
-//			  @RequestParam(name = "startTime", required = true) String startTime,//时间 String
-//			  @RequestParam(name = "endTime", required = true) String endTime,//时间 String
-//			  @RequestParam(name = "pageIndex", required = true) Integer pageIndex,//当前请求页
-//			  HttpServletRequest request) {
-//		Map<String, Object> ret = new HashMap<>();
-//		if(StringUtils.isBlank(startTime)||StringUtils.isBlank(endTime)) {
+	/**
+	 *团队盈亏报表
+	 */
+	@RequestMapping(value={"/MReportTeam"}, method={RequestMethod.GET}, produces={"application/json"})
+	public Map<String, Object> queryMReportTeam(@RequestParam(name = "userName", required = false) String userName,
+			  @RequestParam(name = "startTime", required = true) String startTime,//时间 String
+			  @RequestParam(name = "endTime", required = true) String endTime,//时间 String
+			  @RequestParam(name = "pageIndex", required = true) Integer pageIndex,//当前请求页
+			  HttpServletRequest request) {
+		Map<String, Object> ret = new HashMap<>();
+		if(StringUtils.isBlank(startTime)||StringUtils.isBlank(endTime)) {
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+	    	return ret;
+		}
+		Integer pageSize=Constants.Pagination.SUM_NUMBER.getCode();
+		ret.put("pageSize", pageSize);
+		ret.put("pageIndex", pageIndex);
+		ret.put("userName", userName);
+		ret.put("startTime", startTime);
+		ret.put("endTime", endTime);
+		logger.debug(ret+"------------------------------queryMReportTeam--------------------------------------");
+		try {
+			PageBean list = tReportService.queryTeamAll(ret);
+			logger.debug(list+"------------------------------queryMReportTeam--------------------------------------");
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+			ret.put("data", list);
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+		}
+		return ret;
+	}
+	//查找下级
+	@RequestMapping(value={"/MReportNextTeam"}, method={RequestMethod.GET}, produces={"application/json"})
+	public Map<String, Object> queryMReportNextTeam(@RequestParam(name = "userName", required = true) String userName,
+			  @RequestParam(name = "startTime", required = true) String startTime,//时间 String
+			  @RequestParam(name = "endTime", required = true) String endTime,//时间 String
+			  HttpServletRequest request) {
+		Map<String, Object> ret = new HashMap<>();
+		if(StringUtils.isBlank(startTime)||StringUtils.isBlank(endTime)||StringUtils.isBlank(userName)) {
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+	    	return ret;
+		}
+//		UserInfo userinfo=new UserInfo();
+//		userinfo.setUserName(userName);
+//		if(!userInfoService.isUserExisting(userinfo)) {
 //			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 //			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
 //			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
 //	    	return ret;
 //		}
-//		Integer pageSize=Constants.Pagination.SUM_NUMBER.getCode();
-//		ret.put("pageSize", pageSize);
-//		ret.put("pageIndex", pageIndex);
-//		ret.put("userName", userName);
-//		ret.put("startTime", startTime);
-//		ret.put("endTime", endTime);
-//		logger.debug(ret+"------------------------------queryMReportTeam--------------------------------------");
-//		try {
-//			PageBean list = mReportService.queryTeamAll(ret);
-//			logger.debug(list+"------------------------------queryMReportTeam--------------------------------------");
+		ret.put("userName", userName);
+		ret.put("startTime", startTime);
+		ret.put("endTime", endTime);
+		logger.debug(ret+"------------------------------queryMReportTeam--------------------------------------");
+		try {
+			Map<String,Object> list = tReportService.queryNextTeamAll(ret);
+			logger.debug(list+"------------------------------queryMReportTeam--------------------------------------");
 //			ret.clear();
-//			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 //			ret.put("data", list);
-//		}catch(Exception e){
-//			ret.clear();
-//			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-//			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
-//			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
-//		}
-//		return ret;
-//	}
-//	//总计
-//	@RequestMapping(value={"/MReportSumTeam"}, method={RequestMethod.GET}, produces={"application/json"})
-//	public Map<String, Object> queryMReportSumTeam(@RequestParam(name = "userName", required = false) String userName,
-//			  @RequestParam(name = "startTime", required = true) String startTime,//时间 String
-//			  @RequestParam(name = "endTime", required = true) String endTime,//时间 String
-//			  HttpServletRequest request) {
-//		Map<String, Object> ret = new HashMap<>();
-//		if(StringUtils.isBlank(startTime)||StringUtils.isBlank(endTime)) {
-//			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-//			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
-//			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
-//	    	return ret;
-//		}
-////		UserInfo userinfo=new UserInfo();
-////		userinfo.setUserName(userName);
-////		if(!userInfoService.isUserExisting(userinfo)) {
-////			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-////			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
-////			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
-////	    	return ret;
-////		}
-//		ret.put("userName", userName);
-//		ret.put("startTime", startTime);
-//		ret.put("endTime", endTime);
-//		logger.debug(ret+"------------------------------queryMReportSumTeam--------------------------------------");
-//		Map<String,Object> list = null;
-//		try {
-//			list= mReportService.querySumTeam(ret);
-//			logger.debug(list+"------------------------------queryMReportSumTeam--------------------------------------");
-//			list.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-//			return list;
-//		}catch(Exception e){
-//			ret.clear();
-//			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-//			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
-//			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
-//			return ret;
-//		}
-//	}
-//	//查找下级
-//	@RequestMapping(value={"/MReportNextTeam"}, method={RequestMethod.GET}, produces={"application/json"})
-//	public Map<String, Object> queryMReportNextTeam(@RequestParam(name = "userName", required = true) String userName,
-//			  @RequestParam(name = "startTime", required = true) String startTime,//时间 String
-//			  @RequestParam(name = "endTime", required = true) String endTime,//时间 String
-//			  HttpServletRequest request) {
-//		Map<String, Object> ret = new HashMap<>();
-//		if(StringUtils.isBlank(startTime)||StringUtils.isBlank(endTime)||StringUtils.isBlank(userName)) {
-//			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-//			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
-//			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
-//	    	return ret;
-//		}
-////		UserInfo userinfo=new UserInfo();
-////		userinfo.setUserName(userName);
-////		if(!userInfoService.isUserExisting(userinfo)) {
-////			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-////			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
-////			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
-////	    	return ret;
-////		}
-//		ret.put("userName", userName);
-//		ret.put("startTime", startTime);
-//		ret.put("endTime", endTime);
-//		logger.debug(ret+"------------------------------queryMReportTeam--------------------------------------");
-//		try {
-//			Map<String,Object> list = mReportService.queryNextTeamAll(ret);
-//			logger.debug(list+"------------------------------queryMReportTeam--------------------------------------");
-////			ret.clear();
-//			list.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-////			ret.put("data", list);
-//			return list;
-//		}catch(Exception e){
-//			ret.clear();
-//			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-//			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
-//			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
-//			return ret;
-//		}
-//	}
+			return list;
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			return ret;
+		}
+	}
 	/**
 	 *团队盈亏报表(按彩种查询)
 	 */

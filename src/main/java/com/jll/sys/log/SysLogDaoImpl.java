@@ -5,7 +5,6 @@ import org.springframework.stereotype.Repository;
 
 import com.jll.dao.DefaultGenericDaoImpl;//失败后添加登录失败次数和修改锁定时间
 import com.jll.entity.SysLog;
-import com.jll.entity.UserInfo;
 
 @Repository
 public class SysLogDaoImpl extends DefaultGenericDaoImpl<SysLog> implements SysLogDao
