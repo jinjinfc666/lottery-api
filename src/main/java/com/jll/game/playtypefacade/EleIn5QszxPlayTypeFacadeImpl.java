@@ -28,7 +28,7 @@ public class EleIn5QszxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 	
 	private Logger logger = Logger.getLogger(EleIn5QszxPlayTypeFacadeImpl.class);
 	
-	protected String playTypeDesc = "sm|三码/qszx|前三直选/fs-ds";
+	protected String playTypeDesc = "sm|三码/qszx|前三直选/fs";
 	
 	private String betNumOptions = "01,02,03,04,05,06,07,08,09,10,11";
 	

@@ -23,7 +23,7 @@ public class Pk10QszxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 	
 	private Logger logger = Logger.getLogger(Pk10QszxPlayTypeFacadeImpl.class);
 	
-	protected String playTypeDesc = "qsfs|前三复式/fs-ds";
+	protected String playTypeDesc = "qsfs|前三复式/fs";
 	
 	private String betNumOptions = "01,02,03,04,05,06,07,08,09,10";
 	

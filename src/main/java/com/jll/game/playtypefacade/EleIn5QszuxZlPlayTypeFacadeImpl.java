@@ -22,7 +22,7 @@ public class EleIn5QszuxZlPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl  
 
 	private Logger logger = Logger.getLogger(QszxPlayTypeFacadeImpl.class);
 	
-	private String playTypeDesc = "sm|三码/qszux|前三组选/fs-ds";
+	private String playTypeDesc = "sm|三码/qszux|前三组选/fs";
 
 	@Override
 	public String getPlayTypeDesc() {

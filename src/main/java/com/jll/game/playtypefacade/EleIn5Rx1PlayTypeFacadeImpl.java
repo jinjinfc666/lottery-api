@@ -23,7 +23,7 @@ public class EleIn5Rx1PlayTypeFacadeImpl  extends DefaultPlayTypeFacadeImpl {
 	
 	private Logger logger = Logger.getLogger(EleIn5Rx1PlayTypeFacadeImpl.class);
 	
-	protected String playTypeDesc = "rx|任选/rxyzy|任选一中一/fs-ds";
+	protected String playTypeDesc = "rx|任选/rxyzy|任选一中一/fs";
 	
 	private String betNumOptions = "01,02,03,04,05,06,07,08,09,10,11";
 	

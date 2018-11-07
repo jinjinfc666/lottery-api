@@ -30,7 +30,7 @@ public class Pk10Dx3PlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 	
 	private Logger logger = Logger.getLogger(Pk10Dx3PlayTypeFacadeImpl.class);
 	
-	protected String playTypeDesc = "dx|大小/dsm|第三名/fs-ds";
+	protected String playTypeDesc = "dx|大小/dsm|第三名/fs";
 	
 	private final int BIGGER = 1;
 	
