@@ -22,7 +22,7 @@ public class EleIn5QwDsPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 	
 	private Logger logger = Logger.getLogger(QszxPlayTypeFacadeImpl.class);
 	
-	protected String playTypeDesc = "qwx|趣味型/qwdds|趣味定单双/fs-ds";
+	protected String playTypeDesc = "qwx|趣味型/qwdds|趣味定单双/fs";
 	
 	private String[] oddsArray = {"01","03","05","07","09","11"};
 	

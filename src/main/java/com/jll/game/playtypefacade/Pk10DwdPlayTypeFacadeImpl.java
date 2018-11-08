@@ -24,7 +24,7 @@ public class Pk10DwdPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 	
 	private Logger logger = Logger.getLogger(QszxPlayTypeFacadeImpl.class);
 	
-	protected String playTypeDesc = "dwd|定位胆/qs|前十/fs-ds";
+	protected String playTypeDesc = "dwd|定位胆/qs|前十/fs";
 	
 	private String betNumOptions = "01,02,03,04,05,06,07,08,09,10";
 	

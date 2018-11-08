@@ -23,7 +23,7 @@ public class EleIn5BdwQsPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 	
 	private Logger logger = Logger.getLogger(QszxPlayTypeFacadeImpl.class);
 	
-	protected String playTypeDesc = "bdw|不定位/fs-ds";
+	protected String playTypeDesc = "bdw|不定位/fs";
 	
 	@Override
 	public boolean isMatchWinningNum(Issue issue, OrderInfo order) {

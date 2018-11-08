@@ -31,7 +31,7 @@ public class Pk10Lh5V6PlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 	
 	private Logger logger = Logger.getLogger(Pk10Lh5V6PlayTypeFacadeImpl.class);
 	
-	protected String playTypeDesc = "lh|龙虎/5v6|5v6/fs-ds";
+	protected String playTypeDesc = "lh|龙虎/5v6|5v6/fs";
 	
 	private final int DRAGON = 1;
 	
