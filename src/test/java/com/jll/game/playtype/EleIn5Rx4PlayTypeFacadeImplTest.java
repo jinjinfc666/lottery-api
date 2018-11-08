@@ -22,7 +22,7 @@ public class EleIn5Rx4PlayTypeFacadeImplTest extends ServiceJunitBase{
 	@Resource
 	PlayTypeFacade playTypeFacade;
 	
-	final String facadeName = "rx|任选/rxszs|任选四中四/fs-ds";
+	final String facadeName = "rx|任选/rxszs|任选四中四/fs";
 	
 	@Override
 	protected void setUp() throws Exception {

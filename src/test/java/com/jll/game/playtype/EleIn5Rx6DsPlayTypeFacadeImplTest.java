@@ -18,16 +18,16 @@ import com.jll.entity.OrderInfo;
 import com.jll.entity.UserInfo;
 import com.jll.game.playtypefacade.PlayTypeFactory;
 
-public class EleIn5QszxPlayTypeFacadeImplTest extends ServiceJunitBase{
+public class EleIn5Rx6DsPlayTypeFacadeImplTest extends ServiceJunitBase{
 		
-	public EleIn5QszxPlayTypeFacadeImplTest(String name) {
+	public EleIn5Rx6DsPlayTypeFacadeImplTest(String name) {
 		super(name);
 	}	
 	
 	@Resource
 	PlayTypeFacade playTypeFacade;
 	
-	final String facadeName = "sm|三码/qszx|前三直选/fs";
+	final String facadeName = "rx|任选/rxlzw|任选六中五/ds";
 	
 	@Override
 	protected void setUp() throws Exception {
@@ -40,75 +40,52 @@ public class EleIn5QszxPlayTypeFacadeImplTest extends ServiceJunitBase{
 		//super.tearDown();
 	}
 	
-	public void ItestParseBetNumber(){
-		String betNum = "12";
+	public void testIsMatchWinningNum_winning(){
+		String betNum = "01 02 03 09 06 07";
+		Issue issue = new Issue();
+		issue.setRetNum("01,02,03,09,06");
 		
-		List<Map<String, String>> ret = playTypeFacade.parseBetNumber(betNum);
-		Assert.assertNotNull(ret);
+		OrderInfo order = new OrderInfo();
+		order.setBetNum(betNum);
 		
-		Assert.assertTrue(ret.size() == 6);
+		boolean ret = playTypeFacade.isMatchWinningNum(issue, order);
+		Assert.assertTrue(ret);
+		
+		
+		betNum = "01 02 03 09 06 07;08 09 10 11 07 06";
+		issue = new Issue();
+		issue.setRetNum("01,02,03,09,06");
+		
+		order = new OrderInfo();
+		order.setBetNum(betNum);
+		
+		ret = playTypeFacade.isMatchWinningNum(issue, order);
+		Assert.assertTrue(ret);
 	}
 	
-	
-	public void ItestPreProcessNumber_05070408_0405080109_110604(){
-		String betNum = "05070408,0405080109,110604";
-		
+	public void testPreProcessNumber(){
 		Map<String, Object> params = new HashMap<>();
+		//Date startTime = new Date();
+		String betNum = "01 02 03 04 05 06";
 		Integer times = 1;
 		Float monUnit = 1.0F;
 		Integer playType = 1;
-		String lottoType = "gd11x5";
-				
+		//String lottoType = "cqssc";
+		Float betAmount = null;
+		Integer betTotal = null;
+		
 		UserInfo user = new UserInfo();
 		user.setId(14);
 		user.setPlatRebate(new BigDecimal(5.0F));
-		
-		Float betAmount = null;
-		Integer betTotal = null;
 		
 		
 		params.put("betNum", betNum);
 		params.put("times", times);
 		params.put("monUnit", monUnit);
 		params.put("playType", playType);
-		params.put("lottoType", lottoType);
+		//params.put("lottoType", lottoType);
 		
 		Map<String, Object> ret = playTypeFacade.preProcessNumber(params, user);
-		
-		Assert.assertNotNull(ret);
-		
-		betAmount = (Float)ret.get("betAmount");
-		betTotal = (Integer)ret.get("betTotal");
-		
-		Assert.assertTrue(new BigDecimal(betAmount).compareTo(new BigDecimal(44.0F)) == 0);
-		Assert.assertTrue(betTotal == 44);
-	}
-	
-	public void ItestPreProcessNumber_01_0203_02(){
-		String betNum = "01,0203,02";
-		
-		Map<String, Object> params = new HashMap<>();
-		Integer times = 1;
-		Float monUnit = 1.0F;
-		Integer playType = 1;
-		String lottoType = "gd11x5";
-				
-		UserInfo user = new UserInfo();
-		user.setId(14);
-		user.setPlatRebate(new BigDecimal(5.0F));
-		
-		Float betAmount = null;
-		Integer betTotal = null;
-		
-		
-		params.put("betNum", betNum);
-		params.put("times", times);
-		params.put("monUnit", monUnit);
-		params.put("playType", playType);
-		params.put("lottoType", lottoType);
-		
-		Map<String, Object> ret = playTypeFacade.preProcessNumber(params, user);
-		
 		Assert.assertNotNull(ret);
 		
 		betAmount = (Float)ret.get("betAmount");
@@ -116,33 +93,30 @@ public class EleIn5QszxPlayTypeFacadeImplTest extends ServiceJunitBase{
 		
 		Assert.assertTrue(new BigDecimal(betAmount).compareTo(new BigDecimal(1.0F)) == 0);
 		Assert.assertTrue(betTotal == 1);
-	}
-	
-	public void ItestPreProcessNumber_01_0203_0203(){
-		String betNum = "01,0203,0203";
 		
-		Map<String, Object> params = new HashMap<>();
-		Integer times = 1;
-		Float monUnit = 1.0F;
-		Integer playType = 1;
-		String lottoType = "gd11x5";
-				
-		UserInfo user = new UserInfo();
+		
+		params = new HashMap<>();
+		//Date startTime = new Date();
+		betNum = "01 02 03 04 05 06;04 05 06 07 08 09";
+		times = 1;
+		monUnit = 1.0F;
+		playType = 1;
+		//lottoType = "cqssc";
+		betAmount = null;
+		betTotal = null;
+		
+		user = new UserInfo();
 		user.setId(14);
 		user.setPlatRebate(new BigDecimal(5.0F));
-		
-		Float betAmount = null;
-		Integer betTotal = null;
 		
 		
 		params.put("betNum", betNum);
 		params.put("times", times);
 		params.put("monUnit", monUnit);
 		params.put("playType", playType);
-		params.put("lottoType", lottoType);
+		//params.put("lottoType", lottoType);
 		
-		Map<String, Object> ret = playTypeFacade.preProcessNumber(params, user);
-		
+		ret = playTypeFacade.preProcessNumber(params, user);
 		Assert.assertNotNull(ret);
 		
 		betAmount = (Float)ret.get("betAmount");
@@ -150,27 +124,41 @@ public class EleIn5QszxPlayTypeFacadeImplTest extends ServiceJunitBase{
 		
 		Assert.assertTrue(new BigDecimal(betAmount).compareTo(new BigDecimal(2.0F)) == 0);
 		Assert.assertTrue(betTotal == 2);
+		
+		
 	}
 	
-	
-	public void ItestIsMatchWinningNum_winning(){
-		String betNum = "01,02,04";
-		Issue issue = new Issue();
-		issue.setRetNum("01,02,04,09,06");
+	public void testParseBetNumber(){
+		String betNum = "01 02 03 04 05 06";
+		Date startDate = new Date();
+		List<Map<String, String>> ret = playTypeFacade.parseBetNumber(betNum);
 		
-		OrderInfo order = new OrderInfo();
-		//order.setIssueId(issueId);
-		order.setBetNum(betNum);
+		Date endDate = new Date();
+		System.out.println(String.format("create Arragnge %s , take over %s ms", 
+				ret.size(),
+				endDate.getTime() - startDate.getTime()));
 		
-		boolean ret = playTypeFacade.isMatchWinningNum(issue, order);
-		Assert.assertTrue(ret);
+		Assert.assertNotNull(ret);
+		 
+		Assert.assertTrue(ret.size() == 720);
 		
+		betNum = "01 02 03 04 05 06;07 08 09 10 11 06";
+		startDate = new Date();
+		ret = playTypeFacade.parseBetNumber(betNum);
+		
+		endDate = new Date();
+		System.out.println(String.format("create Arragnge %s , take over %s ms", 
+				ret.size(),
+				endDate.getTime() - startDate.getTime()));
+		
+		Assert.assertNotNull(ret);
+		 
+		Assert.assertTrue(ret.size() == 1440);
 	}
 	
 	
 	public void testValidBetNum_invalid_betnum_(){
-		
-		String betNum = "00,01,02";
+		String betNum = "00 01 02 03 04 05";
 		OrderInfo order = new OrderInfo();
 		
 		order.setBetNum(betNum);
@@ -178,7 +166,7 @@ public class EleIn5QszxPlayTypeFacadeImplTest extends ServiceJunitBase{
 		boolean ret = playTypeFacade.validBetNum(order);
 		Assert.assertFalse(ret);
 		
-		betNum = "12,01,02";
+		betNum = "12 01 02 03 04 05";		
 		order = new OrderInfo();
 		
 		order.setBetNum(betNum);
@@ -186,7 +174,7 @@ public class EleIn5QszxPlayTypeFacadeImplTest extends ServiceJunitBase{
 		ret = playTypeFacade.validBetNum(order);
 		Assert.assertFalse(ret);
 		
-		betNum = "01,02,03,04";		
+		betNum = "01";		
 		order = new OrderInfo();
 		
 		order.setBetNum(betNum);
@@ -194,7 +182,7 @@ public class EleIn5QszxPlayTypeFacadeImplTest extends ServiceJunitBase{
 		ret = playTypeFacade.validBetNum(order);
 		Assert.assertFalse(ret);
 		
-		betNum = " ";
+		betNum = "01 02 03 04 05 06 07";
 		order = new OrderInfo();
 		
 		order.setBetNum(betNum);
@@ -202,15 +190,7 @@ public class EleIn5QszxPlayTypeFacadeImplTest extends ServiceJunitBase{
 		ret = playTypeFacade.validBetNum(order);
 		Assert.assertFalse(ret);
 		
-		betNum = "01";
-		order = new OrderInfo();
-		
-		order.setBetNum(betNum);
-		
-		ret = playTypeFacade.validBetNum(order);
-		Assert.assertFalse(ret);		
-		
-		betNum = "1,1,1";		
+		betNum = "01 01 02 03 04 05";
 		order = new OrderInfo();
 		
 		order.setBetNum(betNum);
@@ -218,62 +198,35 @@ public class EleIn5QszxPlayTypeFacadeImplTest extends ServiceJunitBase{
 		ret = playTypeFacade.validBetNum(order);
 		Assert.assertFalse(ret);
 		
-		betNum = "1,1";
+		betNum = "010203040506";
 		order = new OrderInfo();
 		
 		order.setBetNum(betNum);
 		
 		ret = playTypeFacade.validBetNum(order);
 		Assert.assertFalse(ret);
-		
-		betNum = "1";
-		order = new OrderInfo();
-		
-		order.setBetNum(betNum);
-		
-		ret = playTypeFacade.validBetNum(order);
-		Assert.assertFalse(ret);
-		
-		betNum = "01,01,02";
-		order = new OrderInfo();
-		
-		order.setBetNum(betNum);
-		
-		ret = playTypeFacade.validBetNum(order);
-		Assert.assertFalse(ret);
-		
-		betNum = "0102,0102,02";
-		order = new OrderInfo();
-		
-		order.setBetNum(betNum);
-		
-		ret = playTypeFacade.validBetNum(order);
-		Assert.assertFalse(ret);
-				
 	}
 	
-	public void ItestValidBetNum_valid_betnum_(){
-		String betNum = "01,02,";
-		for(int i = 3; i < 12; i++) {
-			if(i < 10) {
-				betNum += "0" + Integer.toString(i);				
-			}else {
-				betNum += Integer.toString(i);			
-			}
-			OrderInfo order = new OrderInfo();
-			
-			order.setBetNum(betNum);
-			
-			boolean ret = playTypeFacade.validBetNum(order);
-			Assert.assertTrue(ret);
-			
-			betNum = "01,02,";
-		}
+	public void testValidBetNum_valid_betnum_(){
+		String betNum = "01 02 03 04 05 06";
+		OrderInfo order = new OrderInfo();
 		
+		order.setBetNum(betNum);
+		
+		boolean ret = playTypeFacade.validBetNum(order);
+		Assert.assertTrue(ret);
+		
+		betNum = "01 02 03 04 05 06;03 04 05 06 07 08";
+		order = new OrderInfo();
+		
+		order.setBetNum(betNum);
+		
+		ret = playTypeFacade.validBetNum(order);
+		Assert.assertTrue(ret);
 	}
 	
-
-	public void ItestObtainSampleBetNumber(){
+	
+	public void testObtainSampleBetNumber(){
 		int counter = 0;
 		int maxCounter = 1000;
 		String betNum = null;
@@ -281,21 +234,24 @@ public class EleIn5QszxPlayTypeFacadeImplTest extends ServiceJunitBase{
 		boolean isValid = false;
 		while(counter < maxCounter) {
 			betNum = playTypeFacade.obtainSampleBetNumber();
-			OrderInfo order = new OrderInfo();
-			order.setBetNum(betNum);
 			
-			isValid = playTypeFacade.validBetNum(order);
-			
-			/*System.out.println(String.format("current bet number   %s   isVliad  %s", 
-					betNum,
-					isValid));*/
-			Assert.assertTrue(isValid);
+			System.out.println(String.format("current bet number   %s", 
+					betNum));
 			
 			String winningNum = obtainWinningNum(betNum);
+			OrderInfo order = new OrderInfo();
+			order.setBetNum(betNum);
 			
 			Issue issue = new Issue();
 			issue.setRetNum(winningNum);
 			
+			isValid = playTypeFacade.validBetNum(order);
+			
+			counter++;
+			
+			if(!isValid) {
+				continue;
+			}
 			isWinning = playTypeFacade.isMatchWinningNum(issue, order);
 			
 			System.out.println(String.format("winingNum  %s   current bet number   %s   isVliad  %s    isWnning  %s", 
@@ -304,10 +260,8 @@ public class EleIn5QszxPlayTypeFacadeImplTest extends ServiceJunitBase{
 					isValid,
 					isWinning));
 			
-			counter++;
+			Assert.assertTrue(isValid);
 			
-			System.out.println(String.format("current counter   %s", 
-					counter));
 		}
 	}
 	
@@ -330,5 +284,4 @@ public class EleIn5QszxPlayTypeFacadeImplTest extends ServiceJunitBase{
 		
 		return winningNumBuffer.toString();
 	}
-	
 }
