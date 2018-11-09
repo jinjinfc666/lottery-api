@@ -255,6 +255,7 @@ public class EleIn5QszxDsPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 		boolean isMatch3 = false;
 		/*boolean isMatch4 = false;
 		boolean isMatch5 = false;*/
+		Map<String, String> threeBits = new HashMap<>();
 		
 		for(String singleBetNumArray : betNumArray) {
 			singleBetNumArray = singleBetNumArray.replaceAll(" ", ",");
@@ -297,6 +298,22 @@ public class EleIn5QszxDsPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 							for(int iiiii = 0; iiiii < 11;iiiii++){
 								/*if(betNumBits[4].contains(String.valueOf(iiiii))) {
 									isMatch5 = true;
+								}*/
+								
+								threeBits.clear();
+								
+								threeBits.put(optionsArray[i], optionsArray[i]);
+								threeBits.put(optionsArray[ii], optionsArray[ii]);
+								threeBits.put(optionsArray[iii], optionsArray[iii]);
+								threeBits.put(optionsArray[iiii], optionsArray[iiii]);
+								threeBits.put(optionsArray[iiiii], optionsArray[iiiii]);
+								
+								if(threeBits.size() != 5) {
+									continue;
+								}
+								
+								/*if(!isPatternMatch(threeBits, singleBetNumArray.replaceAll(",", ""))) {
+									continue;
 								}*/
 								
 								buffer.delete(0, buffer.length());

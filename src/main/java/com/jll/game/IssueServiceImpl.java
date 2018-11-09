@@ -549,7 +549,8 @@ public class IssueServiceImpl implements IssueService
 		}
 		 
 		UserInfo user = userServ.getUserById(order.getUserId());
-		
+		Integer walletId = order.getWalletId();
+		UserAccount wallet = walletServ.queryById(walletId);
 		//被取消的订单 或者延迟开奖的订单,或者已经开奖 跳过开奖
 		if(order.getState() == Constants.OrderState.SYS_CANCEL.getCode()
 				||	order.getState() == Constants.OrderState.WINNING.getCode()
@@ -562,7 +563,8 @@ public class IssueServiceImpl implements IssueService
 		}
 		
 		//试玩用户或者重新派奖的状态下跳过返点 
-		if(UserType.DEMO_PLAYER.getCode() != user.getUserType().intValue()
+		if(wallet.getAccType().intValue() != Constants.WalletType.RED_PACKET_WALLET.getCode()
+				&& UserType.DEMO_PLAYER.getCode() != user.getUserType().intValue()
 				&& order.getState().intValue() != Constants.OrderState.RE_PAYOUT.getCode()){
 			rebate(issue, user, order);
 		}

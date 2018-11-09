@@ -51,7 +51,7 @@ public class QszxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 	}
 
 	@Override
-	public Map<String, Object> preProcessNumber(Map<String, Object> params, UserInfo user) {		
+	public Map<String, Object> preProcessNumber(Map<String, Object> params, UserInfo user) {
 		Map<String, Object> ret = new HashMap<>();
 		String betNum = (String)params.get("betNum");
 		Integer times = (Integer)params.get("times");

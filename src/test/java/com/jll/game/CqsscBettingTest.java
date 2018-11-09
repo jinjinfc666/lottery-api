@@ -39,7 +39,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 		super(name);
 	}
 	
-	public void ItestBetting_qcssc_qszx() throws Exception{
+	public void testBetting_qcssc_qszx() throws Exception{
 		int maxTimes = 6000;
 		int counter = 0;
 		String lottoType = "cqssc";
@@ -96,7 +96,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 						ObjectNode node = array.addObject();
 						node.putPOJO("issueId", currIssueId);
 						node.putPOJO("playType", 1);
-						node.putPOJO("betNum", "1,1,1");
+						node.putPOJO("betNum", "0123456789,0123456789,0123456789");
 						node.putPOJO("times", "1");
 						node.putPOJO("pattern", "1");
 						node.putPOJO("isZh", "0");
@@ -5776,7 +5776,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 	
 	
 	
-	public void testBetting_qcssc() throws Exception{
+	public void ItestBetting_qcssc() throws Exception{
 		int maxTimes = 600000;
 		int counter = 0;
 		String lottoType = "cqssc";

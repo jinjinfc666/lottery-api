@@ -269,11 +269,6 @@ public class CacheRedisServiceImpl implements CacheRedisService
 				return ;
 			}
 			
-//			if(playType.getPtName().equals("fs") || playType.getPtName().equals("ds")) {
-//				playTypeName = playType.getClassification() + "/fs-ds";
-//			}else {
-//				playTypeName = playType.getClassification() + "/" + playType.getPtName();
-//			}
 			if(playType.getPtName().equals("fs")) {
 				playTypeName = playType.getClassification() + "/fs";
 			}else if(playType.getPtName().equals("ds")){
@@ -294,24 +289,14 @@ public class CacheRedisServiceImpl implements CacheRedisService
 			String pattern = temp.get(Constants.KEY_FACADE_PATTERN);
 			String sample = temp.get(Constants.KEY_FACADE_BET_NUM_SAMPLE);
 			boolean isExisting = false;			
-			
-			/*Iterator<String> ite = statInfo.keySet().iterator();
-			while(ite.hasNext()) {
-				String key = ite.next();
-				boolean isMatch = Pattern.matches(key, sample);
-				if(isMatch) {
-					isExisting = true;
-					pattern = key;
-					logger.debug(String.format("key  %s    pattern   %s     sample  %s", key, pattern, sample));
-					break;
-				}
-			}*/
-			
+						
 			params.put("betNum", betNumTemp);
 			params.put("times", order.getTimes());
 			params.put("monUnit", order.getPattern().floatValue());
 			params.put("lottoType", lotteryType);
-			preBetResult = playTypeFacade.preProcessNumber(params, user);
+			if(preBetResult == null) {
+				preBetResult = playTypeFacade.preProcessNumber(params, user);
+			}
 			
 			if(statInfo.get(pattern) != null) {
 				isExisting = true;

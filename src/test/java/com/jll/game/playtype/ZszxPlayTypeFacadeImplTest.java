@@ -20,7 +20,7 @@ public class ZszxPlayTypeFacadeImplTest extends ServiceJunitBase{
 	@Resource
 	PlayTypeFacade playTypeFacade;
 	
-	final String facadeName = "zszx|中三直选/fs-ds";
+	final String facadeName = "zszx|中三直选/fs";
 	
 	@Override
 	protected void setUp() throws Exception {
