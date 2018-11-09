@@ -14,13 +14,21 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.provider.client.ClientCredentialsTokenEndpointFilter;
 
 import com.jll.common.cache.CacheRedisService;
+import com.jll.common.constants.Constants;
 import com.jll.common.constants.Message;
+import com.jll.common.utils.StringUtils;
+import com.jll.entity.UserInfo;
+import com.jll.user.UserInfoService;
 
 public class AuthFilter extends ClientCredentialsTokenEndpointFilter {
 
 	private Logger logger = Logger.getLogger(AuthFilter.class);
 	@Resource
 	CacheRedisService cacheRedisService;
+	
+	@Resource
+	UserInfoService userServ;
+	
 //	@Override
 //	public void afterPropertiesSet() {
 //		
@@ -31,10 +39,37 @@ public class AuthFilter extends ClientCredentialsTokenEndpointFilter {
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
 			throws AuthenticationException, IOException, ServletException {
 		HttpSession session = request.getSession(true);
-//		if(session==null) {
-//			session=request.getSession(true);
-//		}
 		String sessionId = session.getId();
+		String clientId = request.getParameter("client_id");
+		String username = request.getParameter("username");
+		UserInfo user = null;
+		
+		if(StringUtils.isBlank(clientId)
+				|| StringUtils.isBlank(username)) {
+			throw new CusAuthenticationException(Message.Error.ERROR_COMMON_NO_PERMISSION.getCode());  
+		}
+		
+		user = userServ.getUserByUserName(username);
+		
+		if(user == null) {
+			throw new CusAuthenticationException(Message.Error.ERROR_COMMON_NO_PERMISSION.getCode());  
+		}
+		
+		if(Constants.KEY_CLIENT_ID_ADMIN.equals(clientId)) {
+			Integer userType = user.getUserType();
+			if(userType == null 
+					|| userType.intValue() != Constants.UserType.SYS_ADMIN.getCode()) {
+				throw new CusAuthenticationException(Message.Error.ERROR_COMMON_NO_PERMISSION.getCode());  
+			}
+		}else if(Constants.KEY_CLIENT_ID_CLIENT.equals(clientId)) {
+			Integer userType = user.getUserType();
+			if(userType == null 
+					|| userType.intValue() == Constants.UserType.SYS_ADMIN.getCode()) {
+				throw new CusAuthenticationException(Message.Error.ERROR_COMMON_NO_PERMISSION.getCode());  
+			}
+		}else {
+			throw new CusAuthenticationException(Message.Error.ERROR_COMMON_NO_PERMISSION.getCode());  
+		}
 		String recCaptcha = request.getParameter("captcha");
 		//String sessionId = request.getParameter("jsessionid");
 		String key=sessionId;

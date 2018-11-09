@@ -43,6 +43,10 @@
 	</http>
 	
 	<http realm="lottery-api" pattern="/**" create-session="stateless">
+		<!-- <session-management>
+      		<concurrency-control max-sessions="1" error-if-maximum-exceeded="true" />
+  		</session-management> -->
+  
 		<headers>
 			<frame-options policy="SAMEORIGIN" />
 			<header name="Access-Control-Allow-Origin" value="*" />
@@ -69,6 +73,7 @@
     
 	<oauth2:client-details-service id="clientDetailsService" >
         <oauth2:client client-id="lottery-client" authorized-grant-types="password,refresh_token" secret="secret_1" scope="read,write,trust"/>
+        <oauth2:client client-id="lottery-admin" authorized-grant-types="password,refresh_token" secret="secret_1" scope="read,write,trust"/>
     </oauth2:client-details-service>
     
     <beans:bean id="oauth2ClientDetailsUserService" class="org.springframework.security.oauth2.provider.client.ClientDetailsUserDetailsService">
