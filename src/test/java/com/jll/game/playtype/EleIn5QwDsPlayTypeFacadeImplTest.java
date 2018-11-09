@@ -25,7 +25,7 @@ public class EleIn5QwDsPlayTypeFacadeImplTest extends ServiceJunitBase{
 	@Resource
 	PlayTypeFacade playTypeFacade;
 	
-	final String facadeName = "qwx|趣味型/qwdds|趣味定单双/fs-ds";
+	final String facadeName = "qwx|趣味型/qwdds|趣味定单双/fs";
 	
 	@Override
 	protected void setUp() throws Exception {
@@ -132,7 +132,7 @@ public class EleIn5QwDsPlayTypeFacadeImplTest extends ServiceJunitBase{
 		
 	}
 	
-	public void ItestValidBetNum_invalid_betnum_(){
+	public void testValidBetNum_invalid_betnum_(){
 		String betNum = "07060504030201";
 		OrderInfo order = new OrderInfo();
 		
@@ -192,25 +192,58 @@ public class EleIn5QwDsPlayTypeFacadeImplTest extends ServiceJunitBase{
 		Assert.assertFalse(ret);
 	}
 	
-/*	public void ItestValidBetNum_valid_betnum_(){
-		String betNum = "0102";
-		for(int i = 3; i < 12; i++) {
-			if(i < 10) {
-				betNum += "0" + Integer.toString(i);				
-			}else {
-				betNum += Integer.toString(i);			
-			}
-			OrderInfo order = new OrderInfo();
-			
-			order.setBetNum(betNum);
-			
-			boolean ret = playTypeFacade.validBetNum(order);
-			Assert.assertTrue(ret);
-			
-			betNum = "0102";
-		}
+	public void testValidBetNum_valid_betnum_(){
+		String betNum = "060504030201";
+		OrderInfo order = new OrderInfo();
 		
-	}*/
+		order.setBetNum(betNum);
+		
+		boolean ret = playTypeFacade.validBetNum(order);
+		Assert.assertTrue(ret);
+		
+		betNum = "01";		
+		order = new OrderInfo();
+		
+		order.setBetNum(betNum); 
+		
+		ret = playTypeFacade.validBetNum(order);
+		Assert.assertTrue(ret);
+		
+		
+		betNum = "0102";		
+		order = new OrderInfo();
+		
+		order.setBetNum(betNum);
+		
+		ret = playTypeFacade.validBetNum(order);
+		Assert.assertTrue(ret);
+		
+		
+		betNum = "010203";		
+		order = new OrderInfo();
+		
+		order.setBetNum(betNum);
+		
+		ret = playTypeFacade.validBetNum(order);
+		Assert.assertTrue(ret);
+				
+		betNum = "01020304";
+		order = new OrderInfo();
+		
+		order.setBetNum(betNum);
+		
+		ret = playTypeFacade.validBetNum(order);
+		Assert.assertTrue(ret);
+		
+		betNum = "0102030405";
+		order = new OrderInfo();
+		
+		order.setBetNum(betNum);
+		
+		ret = playTypeFacade.validBetNum(order);
+		Assert.assertTrue(ret);
+		
+	}
 	
 
 	public void ItestObtainSampleBetNumber(){
