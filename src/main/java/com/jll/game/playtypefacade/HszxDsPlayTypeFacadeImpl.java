@@ -107,9 +107,15 @@ private Logger logger = Logger.getLogger(QszxPlayTypeFacadeImpl.class);
 			return false;
 		}
 		
-		betNumSet = betNum.split(",");
-		if(betNumSet == null || betNumSet.length != 3) {
-			return false;
+		betNumSet = betNum.split(";");
+		for(String singleBetNum : betNumSet) {
+			if(StringUtils.isBlank(singleBetNum)) {
+				return false;
+			}
+			
+			if(singleBetNum.length() != 3) {
+				return false;
+			}
 		}
 		
 		return true;

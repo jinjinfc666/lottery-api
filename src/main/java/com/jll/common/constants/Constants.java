@@ -1543,16 +1543,18 @@ public class Constants {
 	
 	
 	public static enum PayChannelShowType{
-		REDIRECT(0),//重定向
-		IMG_PATH(1),//图片地址
-		JUMP_URL(2),//跳转地址
-		QR_CODE(3),//二维码地址
-		MESSAGE(4);//只显示消息
+		REDIRECT(0,"重定向"),//重定向
+		IMG_PATH(1,"图片地址"),//图片地址
+		JUMP_URL(2,"跳转地址"),//跳转地址
+		QR_CODE(3,"二维码地址"),//二维码地址
+		MESSAGE(4,"只显示消息");//只显示消息
 		
 		private int code;
+		private String desc;
 
-		private PayChannelShowType(int code) {
+		private PayChannelShowType(int code,String desc) {
 			this.code = code;
+			this.desc=desc;
 		}
 
 		public int getCode() {
@@ -1562,8 +1564,21 @@ public class Constants {
 		public void setCode(int code) {
 			this.code = code;
 		}
+		public String getDesc() {
+			return desc;
+		}
 
-		
+		public void setDesc(String desc) {
+			this.desc = desc;
+		}
+		public static Map<Integer,String> getMap() {
+			Map<Integer,String> map=new HashMap<Integer,String>();
+			PayChannelShowType[] names = PayChannelShowType.values();
+			for(PayChannelShowType name: names) {
+				map.put(name.getCode(), name.getDesc());
+			}
+			return map;
+		}
 		
 	}
 	public static enum PayTypeState{

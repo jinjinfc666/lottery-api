@@ -266,14 +266,15 @@ public class LotteryCenterController {
 				downCounter = downCounter/1000 - Long.valueOf(lottoAttri.getCodeVal());
 				
 				if(downCounter < 0) {
-					Issue nextIssue = lotCenServ.queryNextIssue(lastIssue);
-					if(nextIssue != null) {
-						downCounter = nextIssue.getStartTime().getTime() - nowTime.getTime();
-						downCounter = downCounter/1000;
-						currentIssue.setDownCounter(downCounter);
-					}else {
-						currentIssue.setDownCounter(-1L);
-					}
+//					Issue nextIssue = lotCenServ.queryNextIssue(lastIssue);
+//					if(nextIssue != null) {
+//						downCounter = nextIssue.getStartTime().getTime() - nowTime.getTime();
+//						downCounter = downCounter/1000;
+//						currentIssue.setDownCounter(downCounter);
+//					}else {
+//						currentIssue.setDownCounter(-1L);
+//					}
+					currentIssue.setDownCounter(0L);
 				}else {
 					currentIssue.setDownCounter(downCounter);					
 				}

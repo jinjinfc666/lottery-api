@@ -342,6 +342,23 @@ public class DepositController {
 		}
 		return ret;
 	}
+	//选择showType
+	@RequestMapping(value={"/queryShowType"}, method={RequestMethod.GET}, produces={"application/json"})
+	public Map<String, Object> queryShowType() {
+		Map<String, Object> ret = new HashMap<>();
+		try {
+			ret.clear();
+			Map<Integer,String> map=Constants.PayChannelShowType.getMap();
+			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+			ret.put("data", map);
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+		}
+		return ret;
+	}
 	//添加充值渠道需要的pay_code
 	@RequestMapping(value={"/queryPayCode"}, method={RequestMethod.GET}, produces={"application/json"})
 	public Map<String, Object> queryPayCode(@RequestParam(name = "platId", required = true) String platId,
