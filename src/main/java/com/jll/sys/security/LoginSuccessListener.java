@@ -23,7 +23,7 @@ public class LoginSuccessListener implements ApplicationListener<AuthenticationS
 		UsernamePasswordAuthenticationToken UPAT=(UsernamePasswordAuthenticationToken) event.getSource();
 		User user=(User) UPAT.getPrincipal();
 		String userName = user.getUsername();
-		if(!userName.equals("lottery-client")) {
+		if(!userName.equals("lottery-client")&&!userName.equals("lottery-admin")) {
 			loginService.updateSuccessLogin(userName);
 		}
 	}
