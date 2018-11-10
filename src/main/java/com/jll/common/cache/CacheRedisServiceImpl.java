@@ -857,4 +857,20 @@ public class CacheRedisServiceImpl implements CacheRedisService
 		String key=Constants.Captcha.CAPTCHA.getCode();
 		cacheDao.deleteSessionIdCaptcha(key, keyCaptcha);
 	}
+
+	@Override
+	public boolean lock(String key, Object val, Integer expired) {
+		CacheObject<Object> cacheObj = new CacheObject<>();
+		cacheObj.setKey(key);
+		cacheObj.setContent(val);
+		cacheObj.setExpired(expired);
+		return cacheDao.lock(cacheObj);
+	}
+
+	@Override
+	public void releaseLock(String key) {
+		CacheObject<Object> cacheObj = new CacheObject<>();
+		cacheObj.setKey(key);
+		cacheDao.releaseLock(cacheObj);
+	}
 }

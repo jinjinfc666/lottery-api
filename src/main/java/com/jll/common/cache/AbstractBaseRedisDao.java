@@ -118,8 +118,48 @@ public abstract class AbstractBaseRedisDao implements GenericDaoIf<CacheObject>{
 
 	@Override
 	public void delete(CacheObject entity) {
-		// TODO Auto-generated method stub
-		
+		String key = entity.getKey();
+		redisTemplate.execute(new RedisCallback<Boolean>() {
+			public Boolean doInRedis(RedisConnection connection) throws DataAccessException {
+				boolean ret = false;
+
+				RedisSerializer<String> serializer = getRedisSerializer();
+				
+				ByteArrayOutputStream boos = null;
+				ObjectOutputStream oos = null;
+				try {
+					boos = new ByteArrayOutputStream();
+					oos = new ObjectOutputStream(boos);
+					oos.writeObject(entity);
+					connection.del(serializer.serialize(key));
+										
+					ret = true;
+				} catch (IOException e) {
+					e.printStackTrace();
+					//return false;
+				}finally {
+					if(oos != null) {
+						try {
+							oos.close();
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+					
+					if(boos != null) {
+						try {
+							boos.close();
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+				}
+
+				return ret;
+			}
+		});
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -184,5 +224,60 @@ public abstract class AbstractBaseRedisDao implements GenericDaoIf<CacheObject>{
 	public long queryCount(String HQL, List<Object> params, Class<CacheObject> clazz) {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+	
+	public boolean lock(CacheObject entity) {	
+		String key = entity.getKey();
+		boolean result = redisTemplate.execute(new RedisCallback<Boolean>() {
+			public Boolean doInRedis(RedisConnection connection) throws DataAccessException {
+				boolean ret = false;
+
+				RedisSerializer<String> serializer = getRedisSerializer();
+				
+				ByteArrayOutputStream boos = null;
+				ObjectOutputStream oos = null;
+				try {
+					boos = new ByteArrayOutputStream();
+					oos = new ObjectOutputStream(boos);
+					oos.writeObject(entity);
+					ret = connection.setNX(serializer.serialize(key), boos.toByteArray());
+					
+					if(entity.getExpired() != null && entity.getExpired().intValue() != 0) {
+						redisTemplate.expire(key, entity.getExpired().intValue(), TimeUnit.SECONDS);
+					}
+					
+					//ret = true;
+				} catch (IOException e) {
+					e.printStackTrace();
+					//return false;
+				}finally {
+					if(oos != null) {
+						try {
+							oos.close();
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+					
+					if(boos != null) {
+						try {
+							boos.close();
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+				}
+
+				return ret;
+			}
+		});
+		
+		return result;
+	}
+	
+	public void releaseLock(CacheObject entity) {
+		delete(entity);
 	}
 }  

@@ -357,4 +357,15 @@ public class CacheRedisDaoImpl  extends AbstractBaseRedisDao implements CacheRed
 		return 0;
 	}
 
+	/*@Override
+	public boolean lock(CacheObject entity) {
+		return lock(entity);
+	}*/
+
+	/*@Override
+	public void releaseLock(CacheObject entity) {
+		// TODO Auto-generated method stub
+		
+	}
+*/
 }

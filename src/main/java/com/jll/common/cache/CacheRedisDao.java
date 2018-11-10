@@ -113,5 +113,9 @@ public interface CacheRedisDao {
 	String getSessionIdCaptcha(String key,String keyCaptcha);
 	//删除缓存中的图片验证码
 	void deleteSessionIdCaptcha(String key,String keyCaptcha);
+	
+	boolean lock(CacheObject entity);
+	
+	void releaseLock(CacheObject entity);
 }
 

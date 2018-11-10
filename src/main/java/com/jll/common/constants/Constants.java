@@ -62,6 +62,10 @@ public class Constants {
 	
 	public final static String KEY_CLIENT_ID_CLIENT = "lottery-client";
 	
+	public final static String KEY_LOCK_BETTING = "lock_betting_{userId}_{issue}";
+	
+	public final static Integer LOCK_BETTING_EXPIRED = 60;
+	
 	public static enum DepositOrderState{
 		
 		INIT_OR_PUSHED(0),

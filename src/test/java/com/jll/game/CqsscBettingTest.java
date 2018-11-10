@@ -39,7 +39,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 		super(name);
 	}
 	
-	public void testBetting_qcssc_qszx() throws Exception{
+	public void ItestBetting_qcssc_qszx() throws Exception{
 		int maxTimes = 6000;
 		int counter = 0;
 		String lottoType = "cqssc";
@@ -5776,11 +5776,11 @@ public class CqsscBettingTest extends ControllerJunitBase{
 	
 	
 	
-	public void ItestBetting_qcssc() throws Exception{
+	public void testBetting_qcssc() throws Exception{
 		int maxTimes = 600000;
 		int counter = 0;
 		String lottoType = "cqssc";
-		long maxWaittingTime = 10000;
+		long maxWaittingTime = 1000;
 		
 		String userName = "test001";
 		String pwd = "test001";

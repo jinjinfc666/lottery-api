@@ -212,4 +212,18 @@ public interface CacheRedisService {
 	String getSessionIdCaptcha(String keyCaptcha);
 	//删除缓存中的图片验证码
 	void deleteSessionIdCaptcha(String keyCaptcha);
+	
+	/**
+	 * 申请一个锁
+	 * @param key
+	 * @param val
+	 * @return
+	 */
+	boolean lock(String key, Object val, Integer expired);
+	
+	/**
+	 * 释放一个锁
+	 * @param key
+	 */
+	void releaseLock(String key);
 }

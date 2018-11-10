@@ -79,7 +79,6 @@ public class OrderServiceImpl implements OrderService
 		boolean isIssueValid = false;
 		String isBalValid = "";
 		boolean isWalletValid = false;
-		boolean isBetting = false;
 		Date currTime = new Date();
 		String opeType = Constants.AccOperationType.BETTING.getCode();
 		String sysCodeType = Constants.SysCodeTypes.FLOW_TYPES.getCode();
@@ -90,6 +89,9 @@ public class OrderServiceImpl implements OrderService
 		String seqVal = null;
 		int bettingBlockTimes = 1000;
 		int bettingBlockCounter = 0;
+		String keyLock = Constants.KEY_LOCK_BETTING;
+		keyLock = keyLock.replace("{userId}", String.valueOf(user.getId()));
+		keyLock = keyLock.replace("{issue}", String.valueOf(orders.get(0).getIssueId()));
 		
 		if(Constants.LottoType.MMC.getCode().equals(lotteryType)) {
 			processMMCIssue(orders);
@@ -117,85 +119,77 @@ public class OrderServiceImpl implements OrderService
 			return String.valueOf(Message.Error.ERROR_COMMON_NO_ACCOUNT_OPERATION.getCode());
 		}
 		
-//		while(bettingBlockCounter < bettingBlockTimes) {
-//			bettingBlockCounter++;
-//			
-//			isBetting = cacheServ.isUserBetting(user, orders.get(0));
-//			logger.debug(String.format("user %s is betting:%s", user.getId(), isBetting));
-//			if(!isBetting) {
-//				break;
-//			}
-//			
-//			try {
-//				Thread.sleep(100);
-//			} catch (InterruptedException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//		}
-//		
-//		cacheServ.setUserBettingFlag(user, orders.get(0));
-		
-		for(OrderInfo order : orders) {
+
+		while(bettingBlockCounter < bettingBlockTimes) {
+			if(cacheServ.lock(keyLock, keyLock, Constants.LOCK_BETTING_EXPIRED)) {
+				for(OrderInfo order : orders) {
+					
+					seqVal = Utils.gen16DigitsSeq(getSeq());
+					order.setWalletId(walletId);
+					order.setOrderNum(seqVal);
+					order.setUserId(user.getId());
+					order.setCreateTime(currTime);
+					order.setState(Constants.OrderState.WAITTING_PAYOUT.getCode());
+					order.setDelayPayoutFlag(OrderDelayState.NON_DEPLAY.getCode());
+					orderDao.saveOrders(order);
+					
+					UserAccountDetails userDetails = new UserAccountDetails();
+					userDetails.setUserId(user.getId());
+					userDetails.setAmount(order.getBetAmount());
+					userDetails.setCreateTime(currTime);
+					
+					SysCode bettingCode = accOpetioans.get(opeType);
+					userDetails.setOperationType(bettingCode.getCodeName());
+					userDetails.setOrderId(order.getId());
+					float postAmount = MathUtil.subtract(wallet.getBalance().floatValue(), 
+							order.getBetAmount(), 
+							Float.class);
+					
+					userDetails.setPostAmount(postAmount);
+					userDetails.setPreAmount(wallet.getBalance().floatValue());
+					userDetails.setUserId(order.getUserId());
+					userDetails.setWalletId(walletId);
+					userDetails.setDataItemType(Constants.DataItemType.BALANCE.getCode());
+					accDetailsServ.saveAccDetails(userDetails);
+					
+					wallet.setBalance(postAmount);
+					
+					
+					//update the statistic in cache
+					cacheServ.statGroupByBettingNum(lotteryType, order, user);
+				}
+				
+				//update balance
+				walletServ.updateWallet(wallet);
+				
+				cacheServ.releaseUserBettingFlag(user, orders.get(0));
+				
+				if(Constants.LottoType.MMC.getCode().equals(lotteryType)) {
+					int issueId = orders.get(0).getIssueId();
+					Issue issue = issueServ.getIssueById(issueId);
+					issue.setState(Constants.IssueState.END_ISSUE.getCode());
+					issueServ.saveIssue(issue);
+					
+					final String message = lotteryType +"|"+ issue.getIssueNum();
+					cacheServ.publishMessage(Constants.TOPIC_WINNING_NUMBER, 
+							message);
+					
+				}
+				
+				cacheServ.releaseLock(keyLock);
+				break;
+			}
 			
-			seqVal = Utils.gen16DigitsSeq(getSeq());
-			order.setWalletId(walletId);
-			order.setOrderNum(seqVal);
-			order.setUserId(user.getId());
-			order.setCreateTime(currTime);
-			order.setState(Constants.OrderState.WAITTING_PAYOUT.getCode());
-			order.setDelayPayoutFlag(OrderDelayState.NON_DEPLAY.getCode());
-			orderDao.saveOrders(order);
 			
-			UserAccountDetails userDetails = new UserAccountDetails();
-			userDetails.setUserId(user.getId());
-			userDetails.setAmount(order.getBetAmount());
-			userDetails.setCreateTime(currTime);
-			
-			SysCode bettingCode = accOpetioans.get(opeType);
-			userDetails.setOperationType(bettingCode.getCodeName());
-			userDetails.setOrderId(order.getId());
-			float postAmount = MathUtil.subtract(wallet.getBalance().floatValue(), 
-					order.getBetAmount(), 
-					Float.class);
-			
-			userDetails.setPostAmount(postAmount);
-			userDetails.setPreAmount(wallet.getBalance().floatValue());
-			userDetails.setUserId(order.getUserId());
-			userDetails.setWalletId(walletId);
-			userDetails.setDataItemType(Constants.DataItemType.BALANCE.getCode());
-			accDetailsServ.saveAccDetails(userDetails);
-			
-			wallet.setBalance(postAmount);
-			
-			
-			//update the statistic in cache
-			cacheServ.statGroupByBettingNum(lotteryType, order, user);
+			bettingBlockCounter++;
+			try {
+				Thread.sleep(120);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		
-		//update balance
-		walletServ.updateWallet(wallet);
-		
-		cacheServ.releaseUserBettingFlag(user, orders.get(0));
-		
-		if(Constants.LottoType.MMC.getCode().equals(lotteryType)) {
-			int issueId = orders.get(0).getIssueId();
-			Issue issue = issueServ.getIssueById(issueId);
-			issue.setState(Constants.IssueState.END_ISSUE.getCode());
-			issueServ.saveIssue(issue);
-			
-			final String message = lotteryType +"|"+ issue.getIssueNum();
-			cacheServ.publishMessage(Constants.TOPIC_WINNING_NUMBER, 
-					message);
-			
-		}
-		
-		/*try {
-			Thread.sleep(60000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}*/
 		return String.valueOf(Message.status.SUCCESS.getCode());
 	}
 
