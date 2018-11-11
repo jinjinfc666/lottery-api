@@ -64,7 +64,11 @@ public class Constants {
 	
 	public final static String KEY_LOCK_BETTING = "lock_betting_{userId}_{issue}";
 	
+	public final static String KEY_LOCK_CACHE_STATISTIC = "lock_cache_statistic";
+	
 	public final static Integer LOCK_BETTING_EXPIRED = 60;
+	
+	public final static Integer LOCK_CACHE_STATISTIC_EXPIRED = 300;
 	
 	public static enum DepositOrderState{
 		

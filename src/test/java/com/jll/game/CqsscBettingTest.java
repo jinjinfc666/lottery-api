@@ -5776,7 +5776,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 	
 	
 	
-	public void testBetting_qcssc() throws Exception{
+	public void ItestBetting_qcssc() throws Exception{
 		int maxTimes = 600000;
 		int counter = 0;
 		String lottoType = "cqssc";
@@ -5985,6 +5985,229 @@ public class CqsscBettingTest extends ControllerJunitBase{
 			
 		}
 	}
+	
+	
+	public void testBetting_qcssc_statistic() throws Exception{
+		int maxTimes = 50;
+		int counter = 0;
+		String lottoType = "cqssc";
+		long maxWaittingTime = 100;
+		
+		String userName = "test001";
+		String pwd = "test001";
+		//String token ;
+		//String winningNum = null;
+		StringBuffer winningNumBuffer = new StringBuffer();
+		Map<String, Integer> currIndx = new HashMap<>();
+		Map<String, PlayTypeFacade> betNumbers = new HashMap<>();
+		Map<String, String> tokens = new HashMap<>();
+		
+		try {
+			Thread.sleep(60*1000);
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		
+		while(counter < maxTimes) {
+			Thread.sleep(maxWaittingTime);
+			String token = queryToken(userName, pwd);
+			tokens.put("token", token);
+			
+			Map<String, Object> ret = queryCurrIssue(token, lottoType);
+			while((ret == null 
+					|| ret.size() == 0
+					|| ret.get("currIssue") == null) 
+					&& counter <= 60000) {
+				counter++;
+				
+				ret = queryCurrIssue(token, lottoType);
+				
+				Thread.sleep(500);
+			}
+			
+			if(ret == null || ret.size() == 0) {
+				Assert.fail("Can't obtain the current issue!!!!");
+			}
+			
+			Issue currIssue = (Issue)ret.get("currIssue");
+			List<PlayType> playTypes = (List<PlayType>)ret.get("playTypes");
+			if(currIssue.getDownCounter() <= 0) {
+				Thread.sleep(60000);
+				Thread exe = new Thread(new Runnable(){
+					@Override
+					public void run() {
+						String userName = "admin";
+						String pwd = "test001";
+						String adminToken = queryToken(userName, pwd);
+						Random random = new Random();
+						int playTypeIndx = random.nextInt(betNumbers.size());
+						Iterator<String> keys = betNumbers.keySet().iterator();
+						int indx = 0;
+						PlayTypeFacade playTypeFacade = null;
+						String betNum = null;
+						while(keys.hasNext()) {
+							betNum = keys.next();
+							if(indx == playTypeIndx) {
+								playTypeFacade = betNumbers.get(betNum);
+								break;
+							}
+							
+							indx++;
+						}
+						//winningNum = winningNumBuffer.toString();
+						if(winningNumBuffer.length() == 0) {
+							List<Map<String, String>> maps = playTypeFacade.parseBetNumber(betNum);
+							if(maps != null && maps.size() > 0) {
+								Map<String, String> row = maps.get(0);
+								String winningNum = row.get(Constants.KEY_FACADE_BET_NUM_SAMPLE);
+								for(int i = 0; i< winningNum.length(); i++) {
+									String bit = winningNum.substring(i, i + 1);
+									if(!",".equals(bit)) {
+										winningNumBuffer.append(bit).append(",");
+									}
+								}
+								winningNumBuffer.delete(winningNumBuffer.length() - 1, winningNumBuffer.length());
+							}							
+						}
+						try {
+							Thread.sleep(60000);
+							manualDrawResult(lottoType,
+									currIssue.getIssueNum(),
+									winningNumBuffer.toString(),
+									adminToken);
+							
+							Thread.sleep(120000);
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+				});
+				exe.start();
+				
+				winningNumBuffer.delete(0, winningNumBuffer.length());
+				playTypes.clear();
+				currIndx.remove("currIndx");
+				continue;
+			}
+			
+			final Integer currIssueId = currIssue.getId();
+			Thread exe = new Thread(new Runnable(){
+				@Override
+				public void run() {
+					ObjectMapper mapper = new ObjectMapper();
+					ByteArrayInputStream bis = null;
+					String playTypeName = null;
+					String betNum = null;
+					try {
+						ArrayNode array = mapper.createArrayNode();
+						/*Integer indx = currIndx.get("currIndx");
+						if(indx == null) {
+							indx = 0;
+							currIndx.put("currIndx", indx);
+						}else {
+							indx++;
+							if(indx > playTypes.size() - 1) {
+								indx = playTypes.size() -1;
+							}
+							currIndx.put("currIndx", indx);
+						}*/
+						
+						Integer indx = 1;
+						PlayType playType = playTypes.get(indx);
+						
+						if(playType.getPtName().equals("fs")) {
+							playTypeName = playType.getClassification() + "/fs";
+						}else if(playType.getPtName().equals("ds")){
+							playTypeName = playType.getClassification() + "/ds";
+						}else {
+							playTypeName = playType.getClassification() + "/" + playType.getPtName();
+						}
+						
+						PlayTypeFacade playTypeFacade = PlayTypeFactory.getInstance().getPlayTypeFacade(playTypeName);
+						
+						if(playTypeFacade == null) {
+							return ;
+						}
+						
+						//betNum = playTypeFacade.obtainSampleBetNumber();
+						betNum = "123";
+						betNumbers.put(betNum, playTypeFacade);
+												
+						ObjectNode node = array.addObject();
+						node.putPOJO("issueId", currIssueId);
+						node.putPOJO("playType", playType.getId());
+						node.putPOJO("betNum", betNum.toString());
+						node.putPOJO("times", "1");
+						node.putPOJO("pattern", "1");
+						node.putPOJO("isZh", "0");
+						node.putPOJO("terminalType", "0");
+						
+						System.out.println(mapper.writeValueAsString(node));
+						bis = new ByteArrayInputStream(mapper.writeValueAsBytes(array));
+						WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/" +lottoType+ "/bet/zh/1/wallet/15",
+								bis,
+								MediaType.APPLICATION_JSON_VALUE);
+						WebConversation wc = new WebConversation();
+						
+						String token = tokens.get("token");
+						request.setHeaderField("Authorization", "bearer " + token);
+						
+						WebResponse response = wc.sendRequest(request);
+						
+						int  status = response.getResponseCode();
+						
+						Assert.assertEquals(HttpServletResponse.SC_OK, status);
+						String result = response.getText();
+						
+						Map<String, Object> retItems = null;
+						
+						retItems = mapper.readValue(result, HashMap.class);
+						
+						Assert.assertNotNull(retItems);
+						
+						Assert.assertEquals(Message.status.SUCCESS.getCode(), retItems.get(Message.KEY_STATUS));
+						
+						
+						Thread.sleep(20000);
+						
+						
+					} catch (Exception e) {
+						e.printStackTrace();
+						//throw e;
+					}finally {
+						if(bis != null) {
+							try {
+								bis.close();
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						}						
+					}
+					
+				}
+			});
+			
+			exe.start();
+			
+			counter++;
+			
+		}
+		
+		
+		
+		try {
+			Thread.sleep(600*1000);
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+	}
+	
 	
 	
 	public void manualDrawResult(String lottoType, 

@@ -132,28 +132,6 @@ public interface CacheRedisService {
 	
 	void deleteIpBlackList (String codeTypeName, Integer codeName);
 
-	/**
-	 * 相同用户是否有相同期次的订单正在处理
-	 * @param user
-	 * @param orders
-	 * @return
-	 */
-	boolean isUserBetting(UserInfo user, OrderInfo order);
-
-	/**
-	 * 标识正在处理用户一个订单
-	 * @param user
-	 * @param orders
-	 */
-	void setUserBettingFlag(UserInfo user, OrderInfo order);
-
-	/**
-	 * 将用户订单的处理标识取消
-	 * @param user
-	 * @param orders
-	 */
-	void releaseUserBettingFlag(UserInfo user, OrderInfo order);
-
 	boolean isTimesValid(String lottoType, Integer times);
 
 	boolean isMonUnitValid(String lottoType, Float monUnit);

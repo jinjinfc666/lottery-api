@@ -23,6 +23,10 @@ public class QszxDsPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 	//protected String playTypeDesc = "qszx|前三直选/fs-ds";
 	protected String playTypeDesc = "qszx|前三直选/ds";
 	
+	private String betNumOptions = "0,1,2,3,4,5,6,7,8,9";
+	
+	String[] optionsArray = {"0","1","2","3","4","5","6","7","8","9"};
+	
 	@Override
 	public boolean isMatchWinningNum(Issue issue, OrderInfo order) {
 		//每次点击选号按钮所选号码，多个所选号码以;分割
@@ -322,13 +326,23 @@ public class QszxDsPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 	public String obtainSampleBetNumber(){
 		Random random = new Random();
 		StringBuffer betNum = new StringBuffer();
-		for(int i = 0 ; i < 3; i++) {
-			int bit = random.nextInt(10);
-			betNum.append(Integer.toString(bit)).append(",");
+		StringBuffer bitBetBum = new StringBuffer();
+		int betNums = random.nextInt(5) + 1;
+
+		for (int a = 0; a < betNums; a++) {
+			for (int i = 0; i < 3; i++) {
+				int bit = random.nextInt(10);
+				String bitStr = optionsArray[bit];
+				bitBetBum.append(bitStr);
+
+			}		
+			betNum.append(bitBetBum).append(";");
+			
+			bitBetBum.delete(0, bitBetBum.length());
 		}
-		
-		betNum.delete(betNum.length()-1, betNum.length());
-		
+
+		betNum.delete(betNum.length() - 1, betNum.length());
+
 		return betNum.toString();
 	}
 	

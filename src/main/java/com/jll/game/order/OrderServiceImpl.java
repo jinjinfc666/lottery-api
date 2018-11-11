@@ -19,6 +19,7 @@ import com.jll.common.cache.CacheRedisService;
 import com.jll.common.constants.Constants;
 import com.jll.common.constants.Message;
 import com.jll.common.constants.Constants.OrderDelayState;
+import com.jll.common.threadpool.QueueManager;
 import com.jll.common.threadpool.ThreadPoolManager;
 import com.jll.common.utils.MathUtil;
 import com.jll.common.utils.Utils;
@@ -87,7 +88,7 @@ public class OrderServiceImpl implements OrderService
 		UserInfo user = userServ.getUserByUserName(userName);
 		UserAccount wallet = walletServ.queryById(walletId);
 		String seqVal = null;
-		int bettingBlockTimes = 1000;
+		int bettingBlockTimes = 3000;
 		int bettingBlockCounter = 0;
 		String keyLock = Constants.KEY_LOCK_BETTING;
 		keyLock = keyLock.replace("{userId}", String.valueOf(user.getId()));
@@ -156,13 +157,18 @@ public class OrderServiceImpl implements OrderService
 					
 					
 					//update the statistic in cache
-					cacheServ.statGroupByBettingNum(lotteryType, order, user);
+					QueueManager.getInstance().exeThread(new Runnable() {
+						@Override
+						public void run() {
+							cacheServ.statGroupByBettingNum(lotteryType, order, user);
+						}						
+					});
+					
+					//cacheServ.statGroupByBettingNum(lotteryType, order, user);
 				}
 				
 				//update balance
 				walletServ.updateWallet(wallet);
-				
-				cacheServ.releaseUserBettingFlag(user, orders.get(0));
 				
 				if(Constants.LottoType.MMC.getCode().equals(lotteryType)) {
 					int issueId = orders.get(0).getIssueId();
@@ -183,7 +189,7 @@ public class OrderServiceImpl implements OrderService
 			
 			bettingBlockCounter++;
 			try {
-				Thread.sleep(120);
+				Thread.sleep(100);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

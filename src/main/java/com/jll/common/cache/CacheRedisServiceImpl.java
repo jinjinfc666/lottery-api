@@ -45,7 +45,7 @@ public class CacheRedisServiceImpl implements CacheRedisService
 {
 	private Logger logger = Logger.getLogger(CacheRedisServiceImpl.class);
 
-	private Object locker = new Object();
+	//private Object locker = new Object();
 	
 	@Resource
 	CacheRedisDao cacheDao;
@@ -233,7 +233,7 @@ public class CacheRedisServiceImpl implements CacheRedisService
 	//playType 玩法--------------------End----------------------------------
 	
 	@Override
-	public synchronized void statGroupByBettingNum(String lotteryType, OrderInfo order, UserInfo user) {
+	public void statGroupByBettingNum(String lotteryType, OrderInfo order, UserInfo user) {
 		StringBuffer cacheKey = new StringBuffer();
 		cacheKey.append(Constants.KEY_STAT_ISSUE_BETTING)
 		.append(lotteryType).append(order.getIssueId());
@@ -248,142 +248,130 @@ public class CacheRedisServiceImpl implements CacheRedisService
 		String betNums = order.getBetNum();
 		//String[] betNumSet = null;
 		List<Map<String, String>> betNumMapping = null;
+		int bettingBlockTimes = 3000;
+		int bettingBlockCounter = 0;
+		String keyLock = Constants.KEY_LOCK_CACHE_STATISTIC;
 		
-		cacheObj = cacheDao.getStatGroupByBettingNum(cacheKey.toString());
-		
-		if(cacheObj == null) {
-			cacheObj = new CacheObject<>();
-			statInfo = new HashMap<>();
-			cacheObj.setKey(cacheKey.toString());
-			cacheObj.setContent(statInfo);
-			cacheObj.setExpired(1*60*60);
-		}
-		
-		if(playTypeFacade == null) {
-			playTypeId = order.getPlayType();
-			if(playTypeId == null) {
-				return ;
-			}
-			playType = playTypeServ.queryById(playTypeId);
-			if(playType == null) {
-				return ;
-			}
-			
-			if(playType.getPtName().equals("fs")) {
-				playTypeName = playType.getClassification() + "/fs";
-			}else if(playType.getPtName().equals("ds")){
-				playTypeName = playType.getClassification() + "/ds";
-			}else {
-				playTypeName = playType.getClassification() + "/" + playType.getPtName();
-			}
-			playTypeFacade = PlayTypeFactory.getInstance().getPlayTypeFacade(playTypeName);
-		}		
-		
-		betNumMapping = playTypeFacade.parseBetNumber(betNums);
-		statInfo = cacheObj.getContent();
-		
-		Date startDate = new Date();
-		//TODO
-		for(Map<String, String> temp : betNumMapping) {
-			String betNumTemp = temp.get(Constants.KEY_FACADE_BET_NUM);
-			String pattern = temp.get(Constants.KEY_FACADE_PATTERN);
-			String sample = temp.get(Constants.KEY_FACADE_BET_NUM_SAMPLE);
-			boolean isExisting = false;			
-						
-			params.put("betNum", betNumTemp);
-			params.put("times", order.getTimes());
-			params.put("monUnit", order.getPattern().floatValue());
-			params.put("lottoType", lotteryType);
-			if(preBetResult == null) {
-				preBetResult = playTypeFacade.preProcessNumber(params, user);
-			}
-			
-			if(statInfo.get(pattern) != null) {
-				isExisting = true;
-			}
-			
-			if(isExisting) {
-				isExisting = false;				
-				statInfo.put(pattern, 
-						MathUtil.add((Float)statInfo.get(pattern), 
-								(Float)preBetResult.get("maxWinAmount"), 
-								Float.class));
-			}else {
-				statInfo.put(pattern, preBetResult.get("maxWinAmount"));
-			}
-			
-			if(statInfo.get(Constants.KEY_ISSUE_TOTAL_BETTING_AMOUNT) == null) {
-				statInfo.put(Constants.KEY_ISSUE_TOTAL_BETTING_AMOUNT, 
-						preBetResult.get("betAmount"));
-			}else {
-				Float total = (Float)statInfo.get(Constants.KEY_ISSUE_TOTAL_BETTING_AMOUNT);
-				total = MathUtil.add(total, 
-						(Float)preBetResult.get("betAmount"), 
-						Float.class);
-				statInfo.put(Constants.KEY_ISSUE_TOTAL_BETTING_AMOUNT, 
-						total);
-			}		
-			
-		}
-		
-		Date endDate = new Date();
-		
-		logger.debug(String.format("totaly take over  %s,   try to add %s  records  ,  existing %s records", 
-				endDate.getTime() - startDate.getTime(),
-				betNumMapping.size(),
-				statInfo.size()));
-		
-		/*for(Map<String, String> temp : betNumMapping) {
-			String betNumTemp = temp.get(Constants.KEY_FACADE_BET_NUM);
-			String pattern = temp.get(Constants.KEY_FACADE_PATTERN);
-			String sample = temp.get(Constants.KEY_FACADE_BET_NUM_SAMPLE);
-			boolean isExisting = false;			
-			
-			Iterator<String> ite = statInfo.keySet().iterator();
-			while(ite.hasNext()) {
-				String key = ite.next();
-				boolean isMatch = Pattern.matches(key, sample);
-				if(isMatch) {
-					isExisting = true;
-					pattern = key;
-					logger.debug(String.format("key  %s    pattern   %s     sample  %s", key, pattern, sample));
-					break;
+		while(bettingBlockCounter < bettingBlockTimes) {
+			if(lock(keyLock, keyLock, Constants.LOCK_CACHE_STATISTIC_EXPIRED)) {
+				
+				cacheObj = cacheDao.getStatGroupByBettingNum(cacheKey.toString());
+				
+				if(cacheObj == null) {
+					cacheObj = new CacheObject<>();
+					statInfo = new HashMap<>();
+					cacheObj.setKey(cacheKey.toString());
+					cacheObj.setContent(statInfo);
+					cacheObj.setExpired(1*60*60);
 				}
+				
+				if(playTypeFacade == null) {
+					playTypeId = order.getPlayType();
+					if(playTypeId == null) {
+						return ;
+					}
+					playType = playTypeServ.queryById(playTypeId);
+					if(playType == null) {
+						return ;
+					}
+					
+					if(playType.getPtName().equals("fs")) {
+						playTypeName = playType.getClassification() + "/fs";
+					}else if(playType.getPtName().equals("ds")){
+						playTypeName = playType.getClassification() + "/ds";
+					}else {
+						playTypeName = playType.getClassification() + "/" + playType.getPtName();
+					}
+					playTypeFacade = PlayTypeFactory.getInstance().getPlayTypeFacade(playTypeName);
+				}		
+				
+				betNumMapping = playTypeFacade.parseBetNumber(betNums);
+				statInfo = cacheObj.getContent();
+				
+				Date startDate = new Date();
+				//TODO
+				for(Map<String, String> temp : betNumMapping) {
+					String betNumTemp = temp.get(Constants.KEY_FACADE_BET_NUM);
+					String pattern = temp.get(Constants.KEY_FACADE_PATTERN);
+					String sample = temp.get(Constants.KEY_FACADE_BET_NUM_SAMPLE);
+					boolean isExisting = false;			
+					
+					params.put("betNum", betNumTemp);
+					params.put("times", order.getTimes());
+					params.put("monUnit", order.getPattern().floatValue());
+					params.put("lottoType", lotteryType);
+					if(preBetResult == null) {
+						preBetResult = playTypeFacade.preProcessNumber(params, user);
+					}
+					
+					if(statInfo.get(pattern) != null) {
+						isExisting = true;
+					}
+					
+					if(isExisting) {
+						isExisting = false;				
+						statInfo.put(pattern, 
+								MathUtil.add((Float)statInfo.get(pattern), 
+										(Float)preBetResult.get("maxWinAmount"), 
+										Float.class));
+					}else {
+						statInfo.put(pattern, preBetResult.get("maxWinAmount"));
+					}
+					
+					if(statInfo.get(Constants.KEY_ISSUE_TOTAL_BETTING_AMOUNT) == null) {
+						statInfo.put(Constants.KEY_ISSUE_TOTAL_BETTING_AMOUNT, 
+								preBetResult.get("betAmount"));
+					}else {
+						Float total = (Float)statInfo.get(Constants.KEY_ISSUE_TOTAL_BETTING_AMOUNT);
+						total = MathUtil.add(total, 
+								(Float)preBetResult.get("betAmount"), 
+								Float.class);
+						statInfo.put(Constants.KEY_ISSUE_TOTAL_BETTING_AMOUNT, 
+								total);
+					}		
+					
+				}
+				
+				Date endDate = new Date();
+				
+				logger.debug(String.format("Thread ID: %s   totaly take over  %s,   try to add %s  records  ,  existing %s records", 
+						Thread.currentThread().getId(),
+						endDate.getTime() - startDate.getTime(),
+						betNumMapping.size(),
+						statInfo.size()));
+				
+				
+				
+				
+				//TODO 
+				Iterator<String> ite = statInfo.keySet().iterator();
+				while(ite.hasNext()) {
+					String key = ite.next();
+					Float val = (Float)statInfo.get(key);
+					logger.debug(String.format("Thread ID: %s   curr bet num  %s,   total bet amount %s  ", 
+							Thread.currentThread().getId(),
+							key,
+							String.valueOf(val)));
+					
+				}
+				cacheObj.setContent(statInfo);
+				
+				cacheDao.setStatGroupByBettingNum(cacheObj);
+				
+				
+				releaseLock(keyLock);
+				break;
 			}
 			
-			params.put("betNum", betNumTemp);
-			params.put("times", order.getTimes());
-			params.put("monUnit", order.getPattern().floatValue());
-			params.put("lottoType", lotteryType);
-			preBetResult = playTypeFacade.preProcessNumber(params, user);
 			
-			if(isExisting) {
-				isExisting = false;				
-				statInfo.put(pattern, 
-						MathUtil.add((Float)statInfo.get(pattern), 
-								(Float)preBetResult.get("maxWinAmount"), 
-								Float.class));
-			}else {
-				statInfo.put(pattern, preBetResult.get("maxWinAmount"));
+			bettingBlockCounter++;
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-			
-			if(statInfo.get(Constants.KEY_ISSUE_TOTAL_BETTING_AMOUNT) == null) {
-				statInfo.put(Constants.KEY_ISSUE_TOTAL_BETTING_AMOUNT, 
-						preBetResult.get("betAmount"));
-			}else {
-				Float total = (Float)statInfo.get(Constants.KEY_ISSUE_TOTAL_BETTING_AMOUNT);
-				total = MathUtil.add(total, 
-						(Float)preBetResult.get("betAmount"), 
-						Float.class);
-				statInfo.put(Constants.KEY_ISSUE_TOTAL_BETTING_AMOUNT, 
-						total);
-			}		
-			
-		}*/
-		
-		cacheObj.setContent(statInfo);
-		
-		cacheDao.setStatGroupByBettingNum(cacheObj);
+		}
 	}
 
 	@Override
@@ -495,66 +483,6 @@ public class CacheRedisServiceImpl implements CacheRedisService
 	@Override
 	public void deleteIpBlackList(String codeTypeName, Integer codeName) {
 		cacheDao.deleteIpBlackList(codeTypeName, codeName);
-	}
-
-	@Override
-	public boolean isUserBetting(UserInfo user, OrderInfo order) {
-		StringBuffer cacheKey = new StringBuffer();
-		cacheKey.append("betting_flag_").append(order.getIssueId()).append("_").append(user.getUserId());
-		
-		CacheObject<Integer> cacheObj = getUserBettingFlag(cacheKey.toString());
-		
-		if(cacheObj == null) {
-			return false;
-		}
-		
-		return cacheObj.getContent().intValue() == 0?false:true;
-	}
-
-	@Override
-	public synchronized void setUserBettingFlag(UserInfo user, OrderInfo order) {
-		synchronized(locker) {
-			StringBuffer cacheKey = new StringBuffer();
-			CacheObject<Integer> cacheObj = null;
-			
-			cacheKey.append("betting_flag_").append(order.getIssueId()).append("_").append(user.getUserId());
-			cacheObj = getUserBettingFlag(cacheKey.toString());
-			
-			if(cacheObj == null) {
-				cacheObj = new CacheObject<>();
-				cacheObj.setExpired(24*60*60);
-				cacheObj.setKey(cacheKey.toString());
-			}
-			
-			cacheObj.setContent(1);
-			
-			cacheDao.setUserBettingFlag(cacheObj);
-		}
-	}
-
-	private CacheObject<Integer> getUserBettingFlag(String cacheKey) {
-		CacheObject<Integer> cacheObj = cacheDao.getUserBettingFlag(cacheKey);
-		
-		return cacheObj;
-	}
-
-	@Override
-	public void releaseUserBettingFlag(UserInfo user, OrderInfo order) {
-		StringBuffer cacheKey = new StringBuffer();
-		CacheObject<Integer> cacheObj = null;
-		
-		cacheKey.append("betting_flag_").append(order.getIssueId()).append("_").append(user.getUserId());
-		cacheObj = getUserBettingFlag(cacheKey.toString());
-		
-		if(cacheObj == null) {
-			cacheObj = new CacheObject<>();
-			cacheObj.setExpired(24*60*60);
-			cacheObj.setKey(cacheKey.toString());
-		}
-		
-		cacheObj.setContent(0);
-		
-		cacheDao.setUserBettingFlag(cacheObj);		
 	}
 
 	@Override
