@@ -55,35 +55,43 @@ public class LotteryCenterServiceImpl implements LotteryCenterService
 	
 	@Override
 	public synchronized void makeAPlan() {
-		if(StringUtils.isBlank(lotteryTypeImpl)) {
-			return ;
-		}
-		
-		String[] impls = lotteryTypeImpl.split(",");
-		if(impls == null || impls.length == 0) {
-			return;
-		}
-		
-		for(String impl : impls) {
-			LotteryTypeService lotteryTypeServ = LotteryTypeFactory.getInstance().createLotteryType(impl);
-			if(lotteryTypeServ == null 
-					|| lotteryTypeServ.getLotteryType()
+		String keyLock = Constants.KEY_LOCK_MAKING_PLAN;
+		//加互斥锁，防止多进程同步执行
+		if(cacheServ.lock(keyLock, keyLock, Constants.LOCK_MAKING_PLAN_EXPIRED)) {
+			if(StringUtils.isBlank(lotteryTypeImpl)) {
+				return ;
+			}
+			
+			String[] impls = lotteryTypeImpl.split(",");
+			if(impls == null || impls.length == 0) {
+				return;
+			}
+			
+			for(String impl : impls) {
+				LotteryTypeService lotteryTypeServ = LotteryTypeFactory.getInstance().createLotteryType(impl);
+				if(lotteryTypeServ == null 
+						|| lotteryTypeServ.getLotteryType()
 						.equals(Constants.LottoType.MMC.getCode())) {
-				continue;
+					continue;
+				}
+				
+				String lotteryType = lotteryTypeServ.getLotteryType();
+				boolean isPlanExisting = isPlanExisting(lotteryType);
+				if(isPlanExisting) {
+					continue;
+				}
+				
+				List<Issue> issues = lotteryTypeServ.makeAPlan();
+				if(issues != null && issues.size() > 0) {
+					String cacheKey = lotteryType;
+					cacheServ.setPlan(cacheKey, issues);
+				}
 			}
 			
-			String lotteryType = lotteryTypeServ.getLotteryType();
-			boolean isPlanExisting = isPlanExisting(lotteryType);
-			if(isPlanExisting) {
-				continue;
-			}
 			
-			List<Issue> issues = lotteryTypeServ.makeAPlan();
-			if(issues != null && issues.size() > 0) {
-				String cacheKey = lotteryType;
-				cacheServ.setPlan(cacheKey, issues);
-			}
+			cacheServ.releaseLock(keyLock);
 		}
+		
 	}
 
 	private boolean isPlanExisting(String lotteryType) {
@@ -157,23 +165,29 @@ public class LotteryCenterServiceImpl implements LotteryCenterService
 	 */
 	@Override
 	public synchronized void exeScheduleIssue() {
-		//logger.debug(String.format("It's ready to process schedule....."));
-		Map<String, SysCode> lottoTypes = cacheServ.getSysCode(Constants.SysCodeTypes.LOTTERY_TYPES.getCode());
-		if(lottoTypes == null || lottoTypes.size() == 0) {
-			return ;
-		}
-		//logger.debug(String.format("current lotto type count %s ", lottoTypes.size()));
-		Iterator<String> ite = lottoTypes.keySet().iterator();
-		while(ite.hasNext()) {
-			String key = ite.next();
-			SysCode sysCode = lottoTypes.get(key);
-			//logger.debug(String.format("current lotto type  %s ", key));
-			if(key.equals(Constants.LottoType.MMC.getCode())) {
-				continue;
+		String keyLock = Constants.KEY_LOCK_SCHEDULE_ISSUE;
+		//加互斥锁，防止多进程同步执行
+		if(cacheServ.lock(keyLock, keyLock, Constants.LOCK_SCHEDULE_ISSUE_EXPIRED)) {
+			//logger.debug(String.format("It's ready to process schedule....."));
+			Map<String, SysCode> lottoTypes = cacheServ.getSysCode(Constants.SysCodeTypes.LOTTERY_TYPES.getCode());
+			if(lottoTypes == null || lottoTypes.size() == 0) {
+				return ;
 			}
-			if(sysCode.getIsCodeType().intValue() == Constants.SysCodeTypesFlag.code_val.getCode()) {
-				dealBulletinBoard(sysCode);
-			}
+			//logger.debug(String.format("current lotto type count %s ", lottoTypes.size()));
+			Iterator<String> ite = lottoTypes.keySet().iterator();
+			while(ite.hasNext()) {
+				String key = ite.next();
+				SysCode sysCode = lottoTypes.get(key);
+				//logger.debug(String.format("current lotto type  %s ", key));
+				if(key.equals(Constants.LottoType.MMC.getCode())) {
+					continue;
+				}
+				if(sysCode.getIsCodeType().intValue() == Constants.SysCodeTypesFlag.code_val.getCode()) {
+					dealBulletinBoard(sysCode);
+				}
+			}			
+			
+			cacheServ.releaseLock(keyLock);
 		}
 	}
 
