@@ -35,8 +35,8 @@ public class SysOperationControllerTest extends ControllerJunitBase{
 		String issueNum = "181010-120";
 		String userName = "admin";
 		String pwd = "test001";
-		
-		String token = queryToken(userName, pwd);
+		String clientId = "lottery-admin";
+		String token = queryToken(userName, pwd, clientId);
 		ObjectMapper mapper = new ObjectMapper();
 		ByteArrayInputStream bis = null;
 		try {
@@ -83,8 +83,8 @@ public class SysOperationControllerTest extends ControllerJunitBase{
 		String issueNum = "991010-119";
 		String userName = "admin";
 		String pwd = "test001";
-		
-		String token = queryToken(userName, pwd);
+		String clientId = "lottery-admin";
+		String token = queryToken(userName, pwd, clientId);
 		ObjectMapper mapper = new ObjectMapper();
 		ByteArrayInputStream bis = null;
 		try {
@@ -138,8 +138,8 @@ public class SysOperationControllerTest extends ControllerJunitBase{
 		String issueNum = "991010-119";
 		String userName = "test001";
 		String pwd = "test001";
-		
-		String token = queryToken(userName, pwd);
+		String clientId = "lottery-client";
+		String token = queryToken(userName, pwd, clientId);
 		ObjectMapper mapper = new ObjectMapper();
 		ByteArrayInputStream bis = null;
 		try {			
@@ -187,8 +187,8 @@ public class SysOperationControllerTest extends ControllerJunitBase{
 		String issueNum = "181010-120";
 		String userName = "admin";
 		String pwd = "test001";
-		
-		String token = queryToken(userName, pwd);
+		String clientId = "lottery-admin";
+		String token = queryToken(userName, pwd, clientId);
 		ObjectMapper mapper = new ObjectMapper();
 		ByteArrayInputStream bis = null;
 		try {			
@@ -239,8 +239,8 @@ public class SysOperationControllerTest extends ControllerJunitBase{
 		String issueNum = "181013-986";
 		String userName = "admin";
 		String pwd = "test001";
-		
-		String token = queryToken(userName, pwd);
+		String clientId = "lottery-admin";
+		String token = queryToken(userName, pwd, clientId);
 		ObjectMapper mapper = new ObjectMapper();
 		ByteArrayInputStream bis = null;
 		try {			
@@ -290,8 +290,8 @@ public class SysOperationControllerTest extends ControllerJunitBase{
 		String issueNum = "181013-1005";
 		String userName = "admin";
 		String pwd = "test001";
-		
-		String token = queryToken(userName, pwd);
+		String clientId = "lottery-admin";
+		String token = queryToken(userName, pwd, clientId);
 		ObjectMapper mapper = new ObjectMapper();
 		ByteArrayInputStream bis = null;
 		try {			
@@ -341,8 +341,8 @@ public class SysOperationControllerTest extends ControllerJunitBase{
 		String issueNum = "181013-217";
 		String userName = "admin";
 		String pwd = "test001";
-		
-		String token = queryToken(userName, pwd);
+		String clientId = "lottery-admin";
+		String token = queryToken(userName, pwd, clientId);
 		ObjectMapper mapper = new ObjectMapper();
 		ByteArrayInputStream bis = null;
 		try {			
@@ -392,8 +392,8 @@ public class SysOperationControllerTest extends ControllerJunitBase{
 		String issueNum = "181013-224";
 		String userName = "admin";
 		String pwd = "test001";
-		
-		String token = queryToken(userName, pwd);
+		String clientId = "lottery-admin";
+		String token = queryToken(userName, pwd, clientId);
 		ObjectMapper mapper = new ObjectMapper();
 		ByteArrayInputStream bis = null;
 		try {			
@@ -440,8 +440,8 @@ public class SysOperationControllerTest extends ControllerJunitBase{
 		String issueNum = "181027-62";
 		String userName = "admin";
 		String pwd = "test001";
-		
-		String token = queryToken(userName, pwd);
+		String clientId = "lottery-admin";
+		String token = queryToken(userName, pwd, clientId);
 		ObjectMapper mapper = new ObjectMapper();
 		ByteArrayInputStream bis = null;
 		try {			

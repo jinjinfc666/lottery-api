@@ -80,51 +80,74 @@ public class OrderServiceImpl implements OrderService
 		boolean isIssueValid = false;
 		String isBalValid = "";
 		boolean isWalletValid = false;
-		Date currTime = new Date();
+		Date currTime = null;
 		String opeType = Constants.AccOperationType.BETTING.getCode();
 		String sysCodeType = Constants.SysCodeTypes.FLOW_TYPES.getCode();
 		Map<String, SysCode> accOpetioans = cacheServ.getSysCode(sysCodeType);
 		String userName = SecurityContextHolder.getContext().getAuthentication().getName();
 		UserInfo user = userServ.getUserByUserName(userName);
-		UserAccount wallet = walletServ.queryById(walletId);
+		UserAccount wallet = null;
 		String seqVal = null;
-		int bettingBlockTimes = 3000;
+		/*int bettingBlockTimes = 3000;
 		int bettingBlockCounter = 0;
 		String keyLock = Constants.KEY_LOCK_BETTING;
 		keyLock = keyLock.replace("{userId}", String.valueOf(user.getId()));
 		keyLock = keyLock.replace("{issue}", String.valueOf(orders.get(0).getIssueId()));
 		
-		if(Constants.LottoType.MMC.getCode().equals(lotteryType)) {
-			processMMCIssue(orders);
-		}
-		
-		isWalletValid = isWalletValid(walletId);
-		if(!isWalletValid) {
-			return String.valueOf(Message.Error.ERROR_USER__WALLET_INVALID.getCode());
-		}
-		
-		
-		if(!Constants.LottoType.MMC.getCode().equals(lotteryType)) {
-			isIssueValid = verifyIssue(orders, lotteryType);
-			if(!isIssueValid) {
-				return String.valueOf(Message.Error.ERROR_GAME_EXPIRED_ISSUE.getCode());
-			}
-		}
-		
-		isBalValid = verifyBal(orders, wallet, lotteryType, user);
-		if(!isBalValid.equals(String.valueOf(Message.status.SUCCESS.getCode()))) {
-			return isBalValid;
-		}
-		
-		if(accOpetioans == null || accOpetioans.size() == 0) {
-			return String.valueOf(Message.Error.ERROR_COMMON_NO_ACCOUNT_OPERATION.getCode());
-		}
-		
+		while (bettingBlockCounter < bettingBlockTimes) {
+			logger.debug(
+					String.format("Thread Id %s    loker  %s   entering", 
+							Thread.currentThread().getId(), 
+							keyLock));
+			
+			if (cacheServ.lock(keyLock, keyLock, Constants.LOCK_BETTING_EXPIRED)) {
+				logger.debug(
+						String.format("Thread Id %s    loker   %s  enter", 
+								Thread.currentThread().getId(), 
+								keyLock));
+				
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}*/
+				wallet = walletServ.queryById(walletId);
 
-		while(bettingBlockCounter < bettingBlockTimes) {
-			if(cacheServ.lock(keyLock, keyLock, Constants.LOCK_BETTING_EXPIRED)) {
-				for(OrderInfo order : orders) {
-					
+				currTime = new Date();
+
+				if (Constants.LottoType.MMC.getCode().equals(lotteryType)) {
+					processMMCIssue(orders);
+				}
+
+				isWalletValid = isWalletValid(walletId);
+				if (!isWalletValid) {
+					return String.valueOf(Message.Error.ERROR_USER__WALLET_INVALID.getCode());
+				}
+
+				if (!Constants.LottoType.MMC.getCode().equals(lotteryType)) {
+					isIssueValid = verifyIssue(orders, lotteryType);
+					if (!isIssueValid) {
+						return String.valueOf(Message.Error.ERROR_GAME_EXPIRED_ISSUE.getCode());
+					}
+				}
+
+				isBalValid = verifyBal(orders, wallet, lotteryType, user);
+				if (!isBalValid.equals(String.valueOf(Message.status.SUCCESS.getCode()))) {
+					return isBalValid;
+				}
+
+				if (accOpetioans == null || accOpetioans.size() == 0) {
+					return String.valueOf(Message.Error.ERROR_COMMON_NO_ACCOUNT_OPERATION.getCode());
+				}
+
+				/*
+				 * try { Thread.sleep(2000); } catch (InterruptedException e) { // TODO
+				 * Auto-generated catch block e.printStackTrace(); }
+				 */
+
+				for (OrderInfo order : orders) {
+
 					seqVal = Utils.gen16DigitsSeq(getSeq());
 					order.setWalletId(walletId);
 					order.setOrderNum(seqVal);
@@ -133,60 +156,63 @@ public class OrderServiceImpl implements OrderService
 					order.setState(Constants.OrderState.WAITTING_PAYOUT.getCode());
 					order.setDelayPayoutFlag(OrderDelayState.NON_DEPLAY.getCode());
 					orderDao.saveOrders(order);
-					
+
 					UserAccountDetails userDetails = new UserAccountDetails();
 					userDetails.setUserId(user.getId());
 					userDetails.setAmount(order.getBetAmount());
 					userDetails.setCreateTime(currTime);
-					
+
 					SysCode bettingCode = accOpetioans.get(opeType);
 					userDetails.setOperationType(bettingCode.getCodeName());
 					userDetails.setOrderId(order.getId());
 					float postAmount = MathUtil.subtract(wallet.getBalance().floatValue(), 
-							order.getBetAmount(), 
+							order.getBetAmount(),
 							Float.class);
-					
+
 					userDetails.setPostAmount(postAmount);
 					userDetails.setPreAmount(wallet.getBalance().floatValue());
 					userDetails.setUserId(order.getUserId());
 					userDetails.setWalletId(walletId);
 					userDetails.setDataItemType(Constants.DataItemType.BALANCE.getCode());
 					accDetailsServ.saveAccDetails(userDetails);
-					
+
 					wallet.setBalance(postAmount);
-					
-					
-					//update the statistic in cache
+
+					// update the statistic in cache
 					QueueManager.getInstance().exeThread(new Runnable() {
 						@Override
 						public void run() {
 							cacheServ.statGroupByBettingNum(lotteryType, order, user);
-						}						
+						}
 					});
-					
-					//cacheServ.statGroupByBettingNum(lotteryType, order, user);
 				}
-				
-				//update balance
+
+				// update balance
 				walletServ.updateWallet(wallet);
-				
-				if(Constants.LottoType.MMC.getCode().equals(lotteryType)) {
+
+				if (Constants.LottoType.MMC.getCode().equals(lotteryType)) {
 					int issueId = orders.get(0).getIssueId();
 					Issue issue = issueServ.getIssueById(issueId);
 					issue.setState(Constants.IssueState.END_ISSUE.getCode());
 					issueServ.saveIssue(issue);
-					
-					final String message = lotteryType +"|"+ issue.getIssueNum();
-					cacheServ.publishMessage(Constants.TOPIC_WINNING_NUMBER, 
-							message);
-					
+
+					final String message = lotteryType + "|" + issue.getIssueNum();
+					cacheServ.publishMessage(Constants.TOPIC_WINNING_NUMBER, message);
+
 				}
-				
+
+				/*
+				 * try { Thread.sleep(5000); } catch (InterruptedException e) { // TODO
+				 * Auto-generated catch block e.printStackTrace(); }
+				 */
+
+				/*logger.debug(
+						String.format("Thread Id %s    loker   %s  exit", Thread.currentThread().getId(), keyLock));
+
 				cacheServ.releaseLock(keyLock);
 				break;
 			}
-			
-			
+
 			bettingBlockCounter++;
 			try {
 				Thread.sleep(100);
@@ -194,7 +220,7 @@ public class OrderServiceImpl implements OrderService
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		}
+		}*/
 		
 		return String.valueOf(Message.status.SUCCESS.getCode());
 	}

@@ -151,6 +151,27 @@ public class LotteryCenterController {
 		boolean isLotteryTypeExisting = false;
 		String retCode = null;
 		
+		String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+		UserInfo user = userServ.getUserByUserName(userName);
+		
+		int bettingBlockTimes = 3000;
+		int bettingBlockCounter = 0;
+		String keyLock = Constants.KEY_LOCK_BETTING;
+		keyLock = keyLock.replace("{userId}", String.valueOf(user.getId()));
+		keyLock = keyLock.replace("{issue}", String.valueOf(orders.get(0).getIssueId()));
+		
+		while (bettingBlockCounter < bettingBlockTimes) {
+			logger.debug(
+					String.format("Thread Id %s    loker  %s   entering", 
+							Thread.currentThread().getId(), 
+							keyLock));
+			
+			if (cacheServ.lock(keyLock, keyLock, Constants.LOCK_BETTING_EXPIRED)) {
+				logger.debug(
+						String.format("Thread Id %s    loker   %s  enter", 
+								Thread.currentThread().getId(), 
+								keyLock));				
+				
 		isLotteryTypeExisting = cacheServ.isCodeExisting(SysCodeTypes.LOTTERY_TYPES, lotteryType);
 		if(!isLotteryTypeExisting) {
 			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
@@ -192,6 +213,21 @@ public class LotteryCenterController {
 		
 		resp.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		
+		logger.debug(
+				String.format("Thread Id %s    loker   %s  exit", Thread.currentThread().getId(), keyLock));
+
+		cacheServ.releaseLock(keyLock);
+		break;
+	}
+
+	bettingBlockCounter++;
+	try {
+		Thread.sleep(100);
+	} catch (InterruptedException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+}
 		return resp;
 	}
 	

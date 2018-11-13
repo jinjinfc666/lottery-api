@@ -9,7 +9,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
+import com.jll.common.cache.CacheRedisService;
 import com.jll.common.cache.CacheRedisServiceImpl;
+import com.jll.common.constants.Constants;
 import com.jll.common.threadpool.ThreadPoolManager;
 import com.jll.common.utils.StringUtils;
 import com.jll.entity.Issue;
@@ -26,52 +28,63 @@ public class PayoutListenerImpl implements MessageDelegateListener {
 	@Resource
 	IssueService issueServ;
 	
+	@Resource
+	CacheRedisService cacheServ;
+	
 	@Value("${sys_lottery_type_impl}")
 	private String lotteryTypeImpl;
 	
 	@Override
 	public void handleMessage(Serializable message) {
-		String[] lottoTypeAndIssueNum = null;
-		Issue issue = null;
-		String lottoType = null;
-		String issueNum = null;
-		lottoTypeAndIssueNum = ((String)message).split("\\|");
-		lottoType = lottoTypeAndIssueNum[0];
-		issueNum = lottoTypeAndIssueNum[1];
-		issue = issueServ.getIssueByIssueNum(lottoType, issueNum);
-		if(issue == null || StringUtils.isBlank(issue.getRetNum())) {
-			return ;
-		}
-		
-		lottoType = issue.getLotteryType();
-		
-		if(StringUtils.isBlank(lotteryTypeImpl)) {
-			return ;
-		}
-		
-		String[] impls = lotteryTypeImpl.split(",");
-		if(impls == null || impls.length == 0) {
-			return;
-		}
-		
-		for(String impl : impls) {
-			LotteryTypeService lotteryTypeServ = LotteryTypeFactory
-					.getInstance().createLotteryType(impl);
-			if(lotteryTypeServ != null
-					&& lotteryTypeServ.getLotteryType().equals(lottoType)) {
-				
-				ThreadPoolManager.getInstance().exeThread(new Runnable() {
+		ThreadPoolManager.getInstance().exeThread(new Runnable() {
 
-					@Override
-					public void run() {
-						lotteryTypeServ.payout((String)message);
+			@Override
+			public void run() {
+				String[] lottoTypeAndIssueNum = null;
+				Issue issue = null;
+				String lottoType = null;
+				String issueNum = null;
+				String keyLock = Constants.KEY_LOCK_PAY_OUT;
+				
+				
+				lottoTypeAndIssueNum = ((String)message).split("\\|");
+				lottoType = lottoTypeAndIssueNum[0];
+				issueNum = lottoTypeAndIssueNum[1];
+				issue = issueServ.getIssueByIssueNum(lottoType, issueNum);
+				if(issue == null || StringUtils.isBlank(issue.getRetNum())) {
+					return ;
+				}
+				
+				lottoType = issue.getLotteryType();
+				
+				if(StringUtils.isBlank(lotteryTypeImpl)) {
+					return ;
+				}
+				
+				keyLock = keyLock.replace("{lottoType}", lottoType);
+				keyLock = keyLock.replace("{issue}", issueNum);
+				
+				if(cacheServ.lock(keyLock, keyLock, Constants.LOCK_PAY_OUT_EXPIRED)) {
+					String[] impls = lotteryTypeImpl.split(",");
+					if(impls == null || impls.length == 0) {
+						return;
 					}
 					
-				});
-				
-				break;
+					for(String impl : impls) {
+						LotteryTypeService lotteryTypeServ = LotteryTypeFactory
+								.getInstance().createLotteryType(impl);
+						if(lotteryTypeServ != null
+								&& lotteryTypeServ.getLotteryType().equals(lottoType)) {
+							lotteryTypeServ.payout((String)message);
+							break;
+						}
+					}
+					
+					cacheServ.releaseLock(keyLock);
+				}
 			}
-		}
+		});
+		
 	}
 
 }

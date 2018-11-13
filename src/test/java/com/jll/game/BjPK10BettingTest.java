@@ -54,7 +54,8 @@ public class BjPK10BettingTest extends ControllerJunitBase{
 		
 		String userName = "test001";
 		String pwd = "test001";
-		String token = queryToken(userName, pwd);
+		String clientId = "lottery-client";
+		String token = queryToken(userName, pwd, clientId);
 		
 		while(counter < maxTimes) {
 			Thread.sleep(maxWaittingTime);
@@ -170,8 +171,8 @@ public class BjPK10BettingTest extends ControllerJunitBase{
 						}
 						String userName = "test001";
 						String pwd = "test001";
-						
-						String token = queryToken(userName, pwd);
+						String clientId = "lottery-client";
+						String token = queryToken(userName, pwd, clientId);
 						ObjectMapper mapper = new ObjectMapper();
 						ByteArrayInputStream bis = null;
 						try {
@@ -276,8 +277,8 @@ public class BjPK10BettingTest extends ControllerJunitBase{
 						}
 						String userName = "test001";
 						String pwd = "test001";
-						
-						String token = queryToken(userName, pwd);
+						String clientId = "lottery-client";
+						String token = queryToken(userName, pwd, clientId);
 						ObjectMapper mapper = new ObjectMapper();
 						ByteArrayInputStream bis = null;
 						try {
@@ -381,8 +382,8 @@ public class BjPK10BettingTest extends ControllerJunitBase{
 						}
 						String userName = "test001";
 						String pwd = "test001";
-						
-						String token = queryToken(userName, pwd);
+						String clientId = "lottery-client";
+						String token = queryToken(userName, pwd, clientId);
 						ObjectMapper mapper = new ObjectMapper();
 						ByteArrayInputStream bis = null;
 						try {
@@ -486,8 +487,8 @@ public class BjPK10BettingTest extends ControllerJunitBase{
 						}
 						String userName = "test001";
 						String pwd = "test001";
-						
-						String token = queryToken(userName, pwd);
+						String clientId = "lottery-client";
+						String token = queryToken(userName, pwd, clientId);
 						ObjectMapper mapper = new ObjectMapper();
 						ByteArrayInputStream bis = null;
 						try {
@@ -591,8 +592,8 @@ public class BjPK10BettingTest extends ControllerJunitBase{
 						}
 						String userName = "test001";
 						String pwd = "test001";
-						
-						String token = queryToken(userName, pwd);
+						String clientId = "lottery-client";
+						String token = queryToken(userName, pwd, clientId);
 						ObjectMapper mapper = new ObjectMapper();
 						ByteArrayInputStream bis = null;
 						try {
@@ -695,8 +696,8 @@ public class BjPK10BettingTest extends ControllerJunitBase{
 						}
 						String userName = "test001";
 						String pwd = "test001";
-						
-						String token = queryToken(userName, pwd);
+						String clientId = "lottery-client";
+						String token = queryToken(userName, pwd, clientId);
 						ObjectMapper mapper = new ObjectMapper();
 						ByteArrayInputStream bis = null;
 						try {
@@ -799,8 +800,8 @@ public class BjPK10BettingTest extends ControllerJunitBase{
 						}
 						String userName = "test001";
 						String pwd = "test001";
-						
-						String token = queryToken(userName, pwd);
+						String clientId = "lottery-client";
+						String token = queryToken(userName, pwd, clientId);
 						ObjectMapper mapper = new ObjectMapper();
 						ByteArrayInputStream bis = null;
 						try {
@@ -905,8 +906,8 @@ public class BjPK10BettingTest extends ControllerJunitBase{
 						}
 						String userName = "test001";
 						String pwd = "test001";
-						
-						String token = queryToken(userName, pwd);
+						String clientId = "lottery-client";
+						String token = queryToken(userName, pwd, clientId);
 						ObjectMapper mapper = new ObjectMapper();
 						ByteArrayInputStream bis = null;
 						try {
@@ -1009,8 +1010,8 @@ public class BjPK10BettingTest extends ControllerJunitBase{
 						}
 						String userName = "test001";
 						String pwd = "test001";
-						
-						String token = queryToken(userName, pwd);
+						String clientId = "lottery-client";
+						String token = queryToken(userName, pwd, clientId);
 						ObjectMapper mapper = new ObjectMapper();
 						ByteArrayInputStream bis = null;
 						try {
@@ -1114,8 +1115,8 @@ public class BjPK10BettingTest extends ControllerJunitBase{
 						}
 						String userName = "test001";
 						String pwd = "test001";
-						
-						String token = queryToken(userName, pwd);
+						String clientId = "lottery-client";
+						String token = queryToken(userName, pwd, clientId);
 						ObjectMapper mapper = new ObjectMapper();
 						ByteArrayInputStream bis = null;
 						try {
@@ -1218,8 +1219,8 @@ public class BjPK10BettingTest extends ControllerJunitBase{
 						}
 						String userName = "test001";
 						String pwd = "test001";
-						
-						String token = queryToken(userName, pwd);
+						String clientId = "lottery-client";
+						String token = queryToken(userName, pwd, clientId);
 						ObjectMapper mapper = new ObjectMapper();
 						ByteArrayInputStream bis = null;
 						try {
@@ -1323,8 +1324,8 @@ public class BjPK10BettingTest extends ControllerJunitBase{
 						}
 						String userName = "test001";
 						String pwd = "test001";
-						
-						String token = queryToken(userName, pwd);
+						String clientId = "lottery-client";
+						String token = queryToken(userName, pwd, clientId);
 						ObjectMapper mapper = new ObjectMapper();
 						ByteArrayInputStream bis = null;
 						try {
@@ -1429,8 +1430,8 @@ public class BjPK10BettingTest extends ControllerJunitBase{
 						}
 						String userName = "test001";
 						String pwd = "test001";
-						
-						String token = queryToken(userName, pwd);
+						String clientId = "lottery-client";
+						String token = queryToken(userName, pwd, clientId);
 						ObjectMapper mapper = new ObjectMapper();
 						ByteArrayInputStream bis = null;
 						try {
@@ -1528,8 +1529,8 @@ public class BjPK10BettingTest extends ControllerJunitBase{
 						}
 						String userName = "test001";
 						String pwd = "test001";
-						
-						String token = queryToken(userName, pwd);
+						String clientId = "lottery-client";
+						String token = queryToken(userName, pwd, clientId);
 						ObjectMapper mapper = new ObjectMapper();
 						ByteArrayInputStream bis = null;
 						try {
@@ -1631,8 +1632,8 @@ public class BjPK10BettingTest extends ControllerJunitBase{
 						}
 						String userName = "test001";
 						String pwd = "test001";
-						
-						String token = queryToken(userName, pwd);
+						String clientId = "lottery-client";
+						String token = queryToken(userName, pwd, clientId);
 						ObjectMapper mapper = new ObjectMapper();
 						ByteArrayInputStream bis = null;
 						try {
@@ -1729,8 +1730,8 @@ public class BjPK10BettingTest extends ControllerJunitBase{
 						}
 						String userName = "test001";
 						String pwd = "test001";
-						
-						String token = queryToken(userName, pwd);
+						String clientId = "lottery-client";
+						String token = queryToken(userName, pwd, clientId);
 						ObjectMapper mapper = new ObjectMapper();
 						ByteArrayInputStream bis = null;
 						try {
@@ -1828,8 +1829,8 @@ public class BjPK10BettingTest extends ControllerJunitBase{
 						}
 						String userName = "test001";
 						String pwd = "test001";
-						
-						String token = queryToken(userName, pwd);
+						String clientId = "lottery-client";
+						String token = queryToken(userName, pwd, clientId);
 						ObjectMapper mapper = new ObjectMapper();
 						ByteArrayInputStream bis = null;
 						try {
@@ -1927,8 +1928,8 @@ public class BjPK10BettingTest extends ControllerJunitBase{
 						}
 						String userName = "test001";
 						String pwd = "test001";
-						
-						String token = queryToken(userName, pwd);
+						String clientId = "lottery-client";
+						String token = queryToken(userName, pwd, clientId);
 						ObjectMapper mapper = new ObjectMapper();
 						ByteArrayInputStream bis = null;
 						try {
@@ -2026,8 +2027,8 @@ public class BjPK10BettingTest extends ControllerJunitBase{
 						}
 						String userName = "test001";
 						String pwd = "test001";
-						
-						String token = queryToken(userName, pwd);
+						String clientId = "lottery-client";
+						String token = queryToken(userName, pwd, clientId);
 						ObjectMapper mapper = new ObjectMapper();
 						ByteArrayInputStream bis = null;
 						try {
@@ -2125,8 +2126,8 @@ public class BjPK10BettingTest extends ControllerJunitBase{
 						}
 						String userName = "test001";
 						String pwd = "test001";
-						
-						String token = queryToken(userName, pwd);
+						String clientId = "lottery-client";
+						String token = queryToken(userName, pwd, clientId);
 						ObjectMapper mapper = new ObjectMapper();
 						ByteArrayInputStream bis = null;
 						try {
@@ -2224,8 +2225,8 @@ public class BjPK10BettingTest extends ControllerJunitBase{
 						}
 						String userName = "test001";
 						String pwd = "test001";
-						
-						String token = queryToken(userName, pwd);
+						String clientId = "lottery-client";
+						String token = queryToken(userName, pwd, clientId);
 						ObjectMapper mapper = new ObjectMapper();
 						ByteArrayInputStream bis = null;
 						try {
@@ -2323,8 +2324,8 @@ public class BjPK10BettingTest extends ControllerJunitBase{
 						}
 						String userName = "test001";
 						String pwd = "test001";
-						
-						String token = queryToken(userName, pwd);
+						String clientId = "lottery-client";
+						String token = queryToken(userName, pwd, clientId);
 						ObjectMapper mapper = new ObjectMapper();
 						ByteArrayInputStream bis = null;
 						try {
@@ -2422,8 +2423,8 @@ public class BjPK10BettingTest extends ControllerJunitBase{
 						}
 						String userName = "test001";
 						String pwd = "test001";
-						
-						String token = queryToken(userName, pwd);
+						String clientId = "lottery-client";
+						String token = queryToken(userName, pwd, clientId);
 						ObjectMapper mapper = new ObjectMapper();
 						ByteArrayInputStream bis = null;
 						try {
@@ -2521,8 +2522,8 @@ public class BjPK10BettingTest extends ControllerJunitBase{
 						}
 						String userName = "test001";
 						String pwd = "test001";
-						
-						String token = queryToken(userName, pwd);
+						String clientId = "lottery-client";
+						String token = queryToken(userName, pwd, clientId);
 						ObjectMapper mapper = new ObjectMapper();
 						ByteArrayInputStream bis = null;
 						try {
@@ -2620,8 +2621,8 @@ public class BjPK10BettingTest extends ControllerJunitBase{
 						}
 						String userName = "test001";
 						String pwd = "test001";
-						
-						String token = queryToken(userName, pwd);
+						String clientId = "lottery-client";
+						String token = queryToken(userName, pwd, clientId);
 						ObjectMapper mapper = new ObjectMapper();
 						ByteArrayInputStream bis = null;
 						try {
@@ -2720,8 +2721,8 @@ public class BjPK10BettingTest extends ControllerJunitBase{
 						}
 						String userName = "test001";
 						String pwd = "test001";
-						
-						String token = queryToken(userName, pwd);
+						String clientId = "lottery-client";
+						String token = queryToken(userName, pwd, clientId);
 						ObjectMapper mapper = new ObjectMapper();
 						ByteArrayInputStream bis = null;
 						try {
@@ -2820,8 +2821,8 @@ public class BjPK10BettingTest extends ControllerJunitBase{
 						}
 						String userName = "test001";
 						String pwd = "test001";
-						
-						String token = queryToken(userName, pwd);
+						String clientId = "lottery-client";
+						String token = queryToken(userName, pwd, clientId);
 						ObjectMapper mapper = new ObjectMapper();
 						ByteArrayInputStream bis = null;
 						try {
@@ -2920,8 +2921,8 @@ public class BjPK10BettingTest extends ControllerJunitBase{
 						}
 						String userName = "test001";
 						String pwd = "test001";
-						
-						String token = queryToken(userName, pwd);
+						String clientId = "lottery-client";
+						String token = queryToken(userName, pwd, clientId);
 						ObjectMapper mapper = new ObjectMapper();
 						ByteArrayInputStream bis = null;
 						try {
@@ -3020,8 +3021,8 @@ public class BjPK10BettingTest extends ControllerJunitBase{
 						}
 						String userName = "test001";
 						String pwd = "test001";
-						
-						String token = queryToken(userName, pwd);
+						String clientId = "lottery-client";
+						String token = queryToken(userName, pwd, clientId);
 						ObjectMapper mapper = new ObjectMapper();
 						ByteArrayInputStream bis = null;
 						try {
@@ -3120,8 +3121,8 @@ public class BjPK10BettingTest extends ControllerJunitBase{
 						}
 						String userName = "test001";
 						String pwd = "test001";
-						
-						String token = queryToken(userName, pwd);
+						String clientId = "lottery-client";
+						String token = queryToken(userName, pwd, clientId);
 						ObjectMapper mapper = new ObjectMapper();
 						ByteArrayInputStream bis = null;
 						try {
@@ -3221,8 +3222,8 @@ public class BjPK10BettingTest extends ControllerJunitBase{
 						}
 						String userName = "test001";
 						String pwd = "test001";
-						
-						String token = queryToken(userName, pwd);
+						String clientId = "lottery-client";
+						String token = queryToken(userName, pwd, clientId);
 						ObjectMapper mapper = new ObjectMapper();
 						ByteArrayInputStream bis = null;
 						try {
@@ -3322,8 +3323,8 @@ public class BjPK10BettingTest extends ControllerJunitBase{
 						}
 						String userName = "test001";
 						String pwd = "test001";
-						
-						String token = queryToken(userName, pwd);
+						String clientId = "lottery-client";
+						String token = queryToken(userName, pwd, clientId);
 						ObjectMapper mapper = new ObjectMapper();
 						ByteArrayInputStream bis = null;
 						try {
@@ -3422,8 +3423,8 @@ public class BjPK10BettingTest extends ControllerJunitBase{
 						}
 						String userName = "test001";
 						String pwd = "test001";
-						
-						String token = queryToken(userName, pwd);
+						String clientId = "lottery-client";
+						String token = queryToken(userName, pwd, clientId);
 						ObjectMapper mapper = new ObjectMapper();
 						ByteArrayInputStream bis = null;
 						try {
@@ -3522,8 +3523,8 @@ public class BjPK10BettingTest extends ControllerJunitBase{
 						}
 						String userName = "test001";
 						String pwd = "test001";
-						
-						String token = queryToken(userName, pwd);
+						String clientId = "lottery-client";
+						String token = queryToken(userName, pwd, clientId);
 						ObjectMapper mapper = new ObjectMapper();
 						ByteArrayInputStream bis = null;
 						try {
@@ -3622,8 +3623,8 @@ public class BjPK10BettingTest extends ControllerJunitBase{
 						}
 						String userName = "test001";
 						String pwd = "test001";
-						
-						String token = queryToken(userName, pwd);
+						String clientId = "lottery-client";
+						String token = queryToken(userName, pwd, clientId);
 						ObjectMapper mapper = new ObjectMapper();
 						ByteArrayInputStream bis = null;
 						try {
@@ -3722,8 +3723,8 @@ public class BjPK10BettingTest extends ControllerJunitBase{
 						}
 						String userName = "test001";
 						String pwd = "test001";
-						
-						String token = queryToken(userName, pwd);
+						String clientId = "lottery-client";
+						String token = queryToken(userName, pwd, clientId);
 						ObjectMapper mapper = new ObjectMapper();
 						ByteArrayInputStream bis = null;
 						try {
@@ -3822,8 +3823,8 @@ public class BjPK10BettingTest extends ControllerJunitBase{
 						}
 						String userName = "test001";
 						String pwd = "test001";
-						
-						String token = queryToken(userName, pwd);
+						String clientId = "lottery-client";
+						String token = queryToken(userName, pwd, clientId);
 						ObjectMapper mapper = new ObjectMapper();
 						ByteArrayInputStream bis = null;
 						try {
@@ -3921,8 +3922,8 @@ public class BjPK10BettingTest extends ControllerJunitBase{
 						}
 						String userName = "test001";
 						String pwd = "test001";
-						
-						String token = queryToken(userName, pwd);
+						String clientId = "lottery-client";
+						String token = queryToken(userName, pwd, clientId);
 						ObjectMapper mapper = new ObjectMapper();
 						ByteArrayInputStream bis = null;
 						try {
@@ -4022,8 +4023,8 @@ public class BjPK10BettingTest extends ControllerJunitBase{
 						}
 						String userName = "test001";
 						String pwd = "test001";
-						
-						String token = queryToken(userName, pwd);
+						String clientId = "lottery-client";
+						String token = queryToken(userName, pwd, clientId);
 						ObjectMapper mapper = new ObjectMapper();
 						ByteArrayInputStream bis = null;
 						try {
@@ -4121,8 +4122,8 @@ public class BjPK10BettingTest extends ControllerJunitBase{
 						}
 						String userName = "test001";
 						String pwd = "test001";
-						
-						String token = queryToken(userName, pwd);
+						String clientId = "lottery-client";
+						String token = queryToken(userName, pwd, clientId);
 						ObjectMapper mapper = new ObjectMapper();
 						ByteArrayInputStream bis = null;
 						try {
@@ -4221,8 +4222,8 @@ public class BjPK10BettingTest extends ControllerJunitBase{
 						}
 						String userName = "test001";
 						String pwd = "test001";
-						
-						String token = queryToken(userName, pwd);
+						String clientId = "lottery-client";
+						String token = queryToken(userName, pwd, clientId);
 						ObjectMapper mapper = new ObjectMapper();
 						ByteArrayInputStream bis = null;
 						try {
@@ -4319,8 +4320,8 @@ public class BjPK10BettingTest extends ControllerJunitBase{
 						}
 						String userName = "test001";
 						String pwd = "test001";
-						
-						String token = queryToken(userName, pwd);
+						String clientId = "lottery-client";
+						String token = queryToken(userName, pwd, clientId);
 						ObjectMapper mapper = new ObjectMapper();
 						ByteArrayInputStream bis = null;
 						try {
@@ -4419,8 +4420,8 @@ public class BjPK10BettingTest extends ControllerJunitBase{
 						}
 						String userName = "test001";
 						String pwd = "test001";
-						
-						String token = queryToken(userName, pwd);
+						String clientId = "lottery-client";
+						String token = queryToken(userName, pwd, clientId);
 						ObjectMapper mapper = new ObjectMapper();
 						ByteArrayInputStream bis = null;
 						try {
@@ -4518,8 +4519,8 @@ public class BjPK10BettingTest extends ControllerJunitBase{
 						}
 						String userName = "test001";
 						String pwd = "test001";
-						
-						String token = queryToken(userName, pwd);
+						String clientId = "lottery-client";
+						String token = queryToken(userName, pwd, clientId);
 						ObjectMapper mapper = new ObjectMapper();
 						ByteArrayInputStream bis = null;
 						try {
@@ -4617,8 +4618,8 @@ public class BjPK10BettingTest extends ControllerJunitBase{
 						}
 						String userName = "test001";
 						String pwd = "test001";
-						
-						String token = queryToken(userName, pwd);
+						String clientId = "lottery-client";
+						String token = queryToken(userName, pwd, clientId);
 						ObjectMapper mapper = new ObjectMapper();
 						ByteArrayInputStream bis = null;
 						try {
@@ -4717,8 +4718,8 @@ public class BjPK10BettingTest extends ControllerJunitBase{
 						}
 						String userName = "test001";
 						String pwd = "test001";
-						
-						String token = queryToken(userName, pwd);
+						String clientId = "lottery-client";
+						String token = queryToken(userName, pwd, clientId);
 						ObjectMapper mapper = new ObjectMapper();
 						ByteArrayInputStream bis = null;
 						try {
@@ -4816,8 +4817,8 @@ public class BjPK10BettingTest extends ControllerJunitBase{
 						}
 						String userName = "test001";
 						String pwd = "test001";
-						
-						String token = queryToken(userName, pwd);
+						String clientId = "lottery-client";
+						String token = queryToken(userName, pwd, clientId);
 						ObjectMapper mapper = new ObjectMapper();
 						ByteArrayInputStream bis = null;
 						try {
@@ -4915,8 +4916,8 @@ public class BjPK10BettingTest extends ControllerJunitBase{
 						}
 						String userName = "test001";
 						String pwd = "test001";
-						
-						String token = queryToken(userName, pwd);
+						String clientId = "lottery-client";
+						String token = queryToken(userName, pwd, clientId);
 						ObjectMapper mapper = new ObjectMapper();
 						ByteArrayInputStream bis = null;
 						try {
@@ -5014,8 +5015,8 @@ public class BjPK10BettingTest extends ControllerJunitBase{
 						}
 						String userName = "test001";
 						String pwd = "test001";
-						
-						String token = queryToken(userName, pwd);
+						String clientId = "lottery-client";
+						String token = queryToken(userName, pwd, clientId);
 						ObjectMapper mapper = new ObjectMapper();
 						ByteArrayInputStream bis = null;
 						try {
@@ -5114,8 +5115,8 @@ public class BjPK10BettingTest extends ControllerJunitBase{
 						}
 						String userName = "test001";
 						String pwd = "test001";
-						
-						String token = queryToken(userName, pwd);
+						String clientId = "lottery-client";
+						String token = queryToken(userName, pwd, clientId);
 						ObjectMapper mapper = new ObjectMapper();
 						ByteArrayInputStream bis = null;
 						try {
@@ -5215,8 +5216,8 @@ public class BjPK10BettingTest extends ControllerJunitBase{
 						}
 						String userName = "test001";
 						String pwd = "test001";
-						
-						String token = queryToken(userName, pwd);
+						String clientId = "lottery-client";
+						String token = queryToken(userName, pwd, clientId);
 						ObjectMapper mapper = new ObjectMapper();
 						ByteArrayInputStream bis = null;
 						try {
@@ -5312,8 +5313,8 @@ public class BjPK10BettingTest extends ControllerJunitBase{
 						}
 						String userName = "test001";
 						String pwd = "test001";
-						
-						String token = queryToken(userName, pwd);
+						String clientId = "lottery-client";
+						String token = queryToken(userName, pwd, clientId);
 						ObjectMapper mapper = new ObjectMapper();
 						ByteArrayInputStream bis = null;
 						try {
@@ -5411,8 +5412,8 @@ public class BjPK10BettingTest extends ControllerJunitBase{
 						}
 						String userName = "test001";
 						String pwd = "test001";
-						
-						String token = queryToken(userName, pwd);
+						String clientId = "lottery-client";
+						String token = queryToken(userName, pwd, clientId);
 						ObjectMapper mapper = new ObjectMapper();
 						ByteArrayInputStream bis = null;
 						try {
@@ -5511,8 +5512,8 @@ public class BjPK10BettingTest extends ControllerJunitBase{
 						}
 						String userName = "test001";
 						String pwd = "test001";
-						
-						String token = queryToken(userName, pwd);
+						String clientId = "lottery-client";
+						String token = queryToken(userName, pwd, clientId);
 						ObjectMapper mapper = new ObjectMapper();
 						ByteArrayInputStream bis = null;
 						try {
@@ -5610,8 +5611,8 @@ public class BjPK10BettingTest extends ControllerJunitBase{
 						}*/
 						String userName = "test001";
 						String pwd = "test001";
-						
-						String token = queryToken(userName, pwd);
+						String clientId = "lottery-client";
+						String token = queryToken(userName, pwd, clientId);
 						ObjectMapper mapper = new ObjectMapper();
 						ByteArrayInputStream bis = null;
 						try {
@@ -5784,6 +5785,8 @@ public class BjPK10BettingTest extends ControllerJunitBase{
 		
 		String userName = "test001";
 		String pwd = "test001";
+		String clientId = "lottery-client";
+		
 		//String token ;
 		//String winningNum = null;
 		StringBuffer winningNumBuffer = new StringBuffer();
@@ -5801,7 +5804,7 @@ public class BjPK10BettingTest extends ControllerJunitBase{
 		
 		while(counter < maxTimes) {
 			Thread.sleep(maxWaittingTime);
-			String token = queryToken(userName, pwd);
+			String token = queryToken(userName, pwd, clientId);
 			tokens.put("token", token);
 			
 			Map<String, Object> ret = queryCurrIssue(token, lottoType);
@@ -5829,7 +5832,8 @@ public class BjPK10BettingTest extends ControllerJunitBase{
 					public void run() {
 						String userName = "admin";
 						String pwd = "test001";
-						String adminToken = queryToken(userName, pwd);
+						String clientId = "lottery-admin";
+						String adminToken = queryToken(userName, pwd, clientId);
 						Random random = new Random();
 						int playTypeIndx = random.nextInt(betNumbers.size());
 						Iterator<String> keys = betNumbers.keySet().iterator();

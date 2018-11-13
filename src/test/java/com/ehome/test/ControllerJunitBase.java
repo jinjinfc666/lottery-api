@@ -140,7 +140,7 @@ public class ControllerJunitBase extends ServletTestCase {
 		return https;
 	}
 	
-	protected String queryToken(String userName, String pwd) {
+	protected String queryToken(String userName, String pwd, String clientId) {
 		String token = null;
 		String sessionId = querySessionId();
 		String tokenURL = "http://localhost:8080/oauth/token";
@@ -158,7 +158,7 @@ public class ControllerJunitBase extends ServletTestCase {
 			WebConversation wc = new WebConversation();
 			
 			request.setParameter("grant_type", "password");
-			request.setParameter("client_id", "lottery-client");
+			request.setParameter("client_id", clientId);
 			request.setParameter("client_secret", "secret_1");
 			request.setParameter("username", userName);
 			request.setParameter("password", pwd);

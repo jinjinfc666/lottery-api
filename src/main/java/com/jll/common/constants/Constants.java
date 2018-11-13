@@ -70,6 +70,10 @@ public class Constants {
 	
 	public final static String KEY_LOCK_SCHEDULE_ISSUE = "lock_schedule_issue";
 	
+	public final static String KEY_LOCK_WINNING_NUMBER = "lock_winning_number_{lottoType}_{issue}";
+	
+	public final static String KEY_LOCK_PAY_OUT = "lock_pay_out_{lottoType}_{issue}";
+	
 	public final static Integer LOCK_BETTING_EXPIRED = 60;
 	
 	public final static Integer LOCK_CACHE_STATISTIC_EXPIRED = 300;
@@ -77,6 +81,10 @@ public class Constants {
 	public final static Integer LOCK_MAKING_PLAN_EXPIRED = 30;
 	
 	public final static Integer LOCK_SCHEDULE_ISSUE_EXPIRED = 30;
+	
+	public final static Integer LOCK_WINNING_NUMBER_EXPIRED = 30;
+	
+	public final static Integer LOCK_PAY_OUT_EXPIRED = 30;
 	
 	public static enum DepositOrderState{
 		

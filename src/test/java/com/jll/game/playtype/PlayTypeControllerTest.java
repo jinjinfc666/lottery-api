@@ -34,8 +34,8 @@ public class PlayTypeControllerTest extends ControllerJunitBase{
 		
 		String userName = "test001";
 		String pwd = "test001";
-		
-		String token = queryToken(userName, pwd);
+		String clientId = "lottery-client";
+		String token = queryToken(userName, pwd, clientId);
 		ObjectMapper mapper = new ObjectMapper();
 		ByteArrayInputStream bis = null;
 		try {

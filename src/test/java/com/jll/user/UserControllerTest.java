@@ -30,8 +30,8 @@ public class UserControllerTest extends ControllerJunitBase{
 	public void ItestRegUser() throws Exception{
 		String userName = "agent001";
 		String pwd = "agent001";
-		
-		String token = queryToken(userName, pwd);
+		String clientId = "lottery-client";
+		String token = queryToken(userName, pwd, clientId);
 		ObjectMapper mapper = new ObjectMapper();
 		ByteArrayInputStream bis = null;
 		try {
@@ -75,7 +75,8 @@ public class UserControllerTest extends ControllerJunitBase{
 	public void ItestRegAgent() throws Exception{
 		String userName = "admin";
 		String pwd = "admin";
-		String token = queryToken(userName, pwd);
+		String clientId = "lottery-admin";
+		String token = queryToken(userName, pwd, clientId);
 		
 		ObjectMapper mapper = new ObjectMapper();
 		ByteArrayInputStream bis = null;
@@ -120,7 +121,8 @@ public class UserControllerTest extends ControllerJunitBase{
 	public void ItestRegSysUser() throws Exception{
 		String userName = "admin";
 		String pwd = "admin";
-		String token = queryToken(userName, pwd);
+		String clientId = "lottery-admin";
+		String token = queryToken(userName, pwd, clientId);
 		
 		ObjectMapper mapper = new ObjectMapper();
 		ByteArrayInputStream bis = null;
@@ -338,8 +340,8 @@ public class UserControllerTest extends ControllerJunitBase{
 	public void testQueryAllUsers() throws Exception{
 		String userName = "test001";
 		String pwd = "test001";
-		
-		String token = queryToken(userName, pwd);
+		String clientId = "lottery-client";
+		String token = queryToken(userName, pwd, clientId);
 		
 		ObjectMapper mapper = new ObjectMapper();
 		ByteArrayInputStream bis = null;
