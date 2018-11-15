@@ -3,6 +3,7 @@ package com.jll.game.playtypefacade;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -119,12 +120,19 @@ public class QszxDsPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 		
 		betNumSet = betNum.split(";");
 		for(String singleBetNum : betNumSet) {
-			if(StringUtils.isBlank(singleBetNum)) {
+						
+			if(singleBetNum.length() != 3) {
 				return false;
 			}
 			
-			if(singleBetNum.length() != 3) {
-				return false;
+			Map<String, String> tempBits = splitBetNum(singleBetNum);
+						
+			Iterator<String> ite = tempBits.keySet().iterator();
+			while(ite.hasNext()) {
+				String key = ite.next();
+				if(!betNumOptions.contains(key)) {
+					return false;
+				}				
 			}
 		}
 		
@@ -369,5 +377,17 @@ public class QszxDsPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 		}
 		
 		return retList.toArray(new String[0]);
+	}
+	
+	private Map<String, String> splitBetNum(String temp) {
+		Map<String, String> bits = new HashMap<String, String>();
+				
+		for(int i = 0; i < temp.length();) {
+			String bit = temp.substring(i, i + 1);
+			bits.put(bit, bit);
+			i += 1;
+		}
+		
+		return bits;
 	}
 }

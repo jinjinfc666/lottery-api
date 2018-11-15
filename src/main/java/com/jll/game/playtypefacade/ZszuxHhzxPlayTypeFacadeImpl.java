@@ -25,6 +25,10 @@ public class ZszuxHhzxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl  {
 	
 	private String playTypeDesc = "zszux|中三组选/hhzxds";
 	
+	private String betNumOptions = "0,1,2,3,4,5,6,7,8,9";
+	
+	String[] optionsArray = {"0","1","2","3","4","5","6","7","8","9"};
+	
 	@Override
 	public String getPlayTypeDesc() {
 		return playTypeDesc;
@@ -40,28 +44,28 @@ public class ZszuxHhzxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl  {
 		String[] betNumMul = null;
 		String betNum = null;
 		String winNum = null;
-
+		Map<String,String> winningNumBits = new HashMap<>();
+		
+		
 		winNum = issue.getRetNum();
 		betNum = order.getBetNum();
 		winNum = winNum.substring(2, 7);
 		winNumSet = winNum.split(",");
 		betNumMul = betNum.split(";");
 
-		logger.debug("proceed bet number is :: " + Arrays.asList(betNumSet));
-
+		for(int i = 0; i < winNum.replaceAll(",", "").length(); i++) {
+			String bit = winNum.replaceAll(",", "").substring(i, i + 1);
+			winningNumBits.put(bit, bit);
+		}
+		
+		if(winningNumBits.size() != 2 
+				&& winningNumBits.size() != 3) {
+			return false;
+		}
+		
 		for (String temp : betNumMul) {
-			if (temp.contains(winNumSet[0]) 
-					&& temp.contains(winNumSet[1]) 
-					&& temp.contains(winNumSet[2])) {
-				if(isZxZs(temp)) {
-					if(isPatternMath(temp, winNum.replace(",", ""))) {
-						return true;
-					}
-				}else if(isZxZl(temp)){
-					if(isPatternMath(temp, winNum.replace(",", ""))) {
-						return true;		
-					}
-				}
+			if(isPatternMath(temp, winNum.replace(",", ""))) {						
+				return true;
 			}
 		}
 
@@ -194,21 +198,14 @@ public class ZszuxHhzxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl  {
 		singleBetAmount = MathUtil.multiply(singleBetAmount, monUnit, Float.class);
 		
 		for(String temp : betNumMul) {
-			if(temp.contains(winNumSet[0]) 
-					&& temp.contains(winNumSet[1])
-					&& temp.contains(winNumSet[2])) {
+			if(isPatternMath(temp, winNum.replace(",", ""))) {						
 				if(isZxZs(temp)) {
-					if(isPatternMath(temp, winNum.replace(",", ""))) {						
-						winningBetAmountZs++;
-					}
-					
-				}else if(isZxZl(temp)){
-					if(isPatternMath(temp, winNum.replace(",", ""))) {						
-						winningBetAmountZl++;
-					}
+					winningBetAmountZs++;
+				}else if(isZxZl(temp)) {
+					winningBetAmountZl++;
 				}
 			}
-		}		
+		}
 		
 		winningBetAmount = winningBetAmountZl + winningBetAmountZs;
 		maxWinAmountZs = MathUtil.multiply(singleBetAmountZs, winningBetAmountZs, Float.class);
@@ -328,92 +325,63 @@ public class ZszuxHhzxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl  {
 		return betNumList;
 	}
 	
-	private List<Map<String, String>> parseZszuxZLBetNumber(String betNum){
-		List<Map<String, String>> betNumList = new ArrayList<>();
-		String[] betNumArray = betNum.split(";");
-		List<String[]> arrangements = new ArrayList<>();
-		
-		for(String singleBetNumArray : betNumArray) {
-			String[] betNumBits = new String[singleBetNumArray.length()];
-			for(int i = 0; i < singleBetNumArray.length(); i++) {
-				betNumBits[i] = singleBetNumArray.substring(i, i + 1);
-			}
-			List<String[]> combinations = new ArrayList<>();
-			MathUtil.combinationSelect(betNumBits, 3, combinations);
-			
-			
-			for(String[] combination : combinations) {
-				MathUtil.arrangementSelect(combination, 3, arrangements);				
-			}
-			
-			
-			for(String[] temp : arrangements) {
-				StringBuffer buffer = new StringBuffer();
-				for(String tempBit : temp) {
-					buffer.append(tempBit);
-				}
-				
-				//buffer.append("**");
-				String tempStr = buffer.toString();
-				if(!isExisting(betNumList, tempStr)) {
-					Map<String, String> row = new HashMap<String, String>();
-					row.put(Constants.KEY_FACADE_BET_NUM, tempStr);
-					row.put(Constants.KEY_FACADE_PATTERN, "[0-9]{1}" + tempStr + "[0-9]{1}");
-					row.put(Constants.KEY_FACADE_BET_NUM_SAMPLE, "0" + tempStr + "0");				
-					betNumList.add(row);
-					//betNumList.add(tempStr);
-				}
-			}
-		}
-		
-		return betNumList;
-	}
-	
-	private boolean isExisting(List<Map<String, String>> betNumList, String tempStr) {
-		for(Map<String, String> temp : betNumList) {
-			String betNum = temp.get(Constants.KEY_FACADE_BET_NUM);
-			if(StringUtils.isBlank(betNum)) {
-				return false;
-			}
-			
-			if(betNum.equals(tempStr)) {
-				return true;
-			}
-		}
-		
-		return false;
-	}
 	
 	@Override
 	public String obtainSampleBetNumber(){
 		Random random = new Random();
 		StringBuffer betNum = new StringBuffer();
+		StringBuffer betNums = new StringBuffer();
+		int betNumCounter = random.nextInt(5) + 1;
+		//组三 0  or 组六 1
+		int typeFlag = 0;
 		
-		int bit = random.nextInt(10);
-		int bit2 = -1;
-		int bit3 = -1;
-		betNum.append(Integer.toString(bit));
-		while(true) {
-			bit2 = random.nextInt(10);
-			if(bit != bit2) {
-				betNum.append(Integer.toString(bit2));
-				break;
+		for(int i = 0 ;i < betNumCounter; i++) {
+			//int betNumLen = random.nextInt(6) + 3;
+			typeFlag = random.nextInt(2);
+			
+			if(typeFlag == 0) {
+				for(int ii = 0; ii < 3; ) {
+					int bit = random.nextInt(10);
+					if(betNum.toString().contains(optionsArray[bit])) {
+						continue;
+					}
+					if(ii == 0) {
+						betNum.append(optionsArray[bit]);
+						ii++;
+						betNum.append(optionsArray[bit]);
+						ii++;						
+					}else {
+						betNum.append(optionsArray[bit]);
+						ii++;
+					}
+				}
+				
+				betNums.append(betNum.toString()).append(";");
+				
+				betNum.delete(0, betNum.length());
+				
+			}else {
+				for(int ii = 0; ii < 3; ) {
+					
+					
+					int bit = random.nextInt(10);
+					if(betNum.toString().contains(optionsArray[bit])) {
+						continue;
+					}
+					
+					betNum.append(optionsArray[bit]);
+					ii++;
+				}
+				
+				betNums.append(betNum.toString()).append(";");
+				
+				betNum.delete(0, betNum.length());
 			}
 		}
 		
-		
-		while(true) {
-			bit3 = random.nextInt(10);
-			if(bit3 != bit2
-					&& bit3 != bit) {
-				betNum.append(Integer.toString(bit3));
-				break;
-			}
-		}
-		
-		//betNum.delete(betNum.length()-1, betNum.length());
-		
-		return betNum.toString();
+		betNums.delete(betNums.length() - 1, betNums.length());		
+				
+		return betNums.toString();
 	}
 	
 	/**

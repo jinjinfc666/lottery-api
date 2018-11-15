@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -21,6 +22,10 @@ public class ZszxDsPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 	private Logger logger = Logger.getLogger(QszxPlayTypeFacadeImpl.class);
 	
 	protected String playTypeDesc = "zszx|中三直选/ds";
+	
+	private String betNumOptions = "0,1,2,3,4,5,6,7,8,9";
+	
+	String[] optionsArray = {"0","1","2","3","4","5","6","7","8","9"};
 	
 	@Override
 	public String getPlayTypeDesc() {
@@ -106,12 +111,19 @@ public class ZszxDsPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 		
 		betNumSet = betNum.split(";");
 		for(String singleBetNum : betNumSet) {
-			if(StringUtils.isBlank(singleBetNum)) {
+						
+			if(singleBetNum.length() != 3) {
 				return false;
 			}
 			
-			if(singleBetNum.length() != 3) {
-				return false;
+			Map<String, String> tempBits = splitBetNum(singleBetNum);
+						
+			Iterator<String> ite = tempBits.keySet().iterator();
+			while(ite.hasNext()) {
+				String key = ite.next();
+				if(!betNumOptions.contains(key)) {
+					return false;
+				}				
 			}
 		}
 		
@@ -266,13 +278,23 @@ public class ZszxDsPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 	public String obtainSampleBetNumber(){
 		Random random = new Random();
 		StringBuffer betNum = new StringBuffer();
-		for(int i = 0 ; i < 3; i++) {
-			int bit = random.nextInt(10);
-			betNum.append(Integer.toString(bit)).append(",");
+		StringBuffer bitBetBum = new StringBuffer();
+		int betNums = random.nextInt(5) + 1;
+
+		for (int a = 0; a < betNums; a++) {
+			for (int i = 0; i < 3; i++) {
+				int bit = random.nextInt(10);
+				String bitStr = optionsArray[bit];
+				bitBetBum.append(bitStr);
+
+			}		
+			betNum.append(bitBetBum).append(";");
+			
+			bitBetBum.delete(0, bitBetBum.length());
 		}
-		
-		betNum.delete(betNum.length()-1, betNum.length());
-		
+
+		betNum.delete(betNum.length() - 1, betNum.length());
+
 		return betNum.toString();
 	}
 	
@@ -298,5 +320,17 @@ public class ZszxDsPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 		}
 		
 		return retList.toArray(new String[0]);
+	}
+	
+	private Map<String, String> splitBetNum(String temp) {
+		Map<String, String> bits = new HashMap<String, String>();
+				
+		for(int i = 0; i < temp.length();) {
+			String bit = temp.substring(i, i + 1);
+			bits.put(bit, bit);
+			i += 1;
+		}
+		
+		return bits;
 	}
 }

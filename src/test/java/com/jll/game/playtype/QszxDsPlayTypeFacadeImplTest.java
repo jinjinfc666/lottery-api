@@ -11,6 +11,7 @@ import javax.annotation.Resource;
 import org.junit.Assert;
 
 import com.ehome.test.ServiceJunitBase;
+import com.jll.common.constants.Constants;
 import com.jll.entity.Issue;
 import com.jll.entity.OrderInfo;
 import com.jll.entity.UserInfo;
@@ -113,5 +114,119 @@ public class QszxDsPlayTypeFacadeImplTest extends ServiceJunitBase{
 		Assert.assertNotNull(ret);
 		 
 		Assert.assertTrue(ret.size() == 200);		
+	}
+	
+	
+	public void testValidBetNum_invalid_betnum_(){
+		String betNum = "a12";
+		OrderInfo order = new OrderInfo();
+		
+		order.setBetNum(betNum);
+		
+		boolean ret = playTypeFacade.validBetNum(order);
+		Assert.assertFalse(ret);
+				
+		betNum = "01";		
+		order = new OrderInfo();
+		
+		order.setBetNum(betNum);
+		
+		ret = playTypeFacade.validBetNum(order);
+		Assert.assertFalse(ret);
+		
+		betNum = "0123456789";
+		order = new OrderInfo();
+		
+		order.setBetNum(betNum);
+		
+		ret = playTypeFacade.validBetNum(order);
+		Assert.assertFalse(ret);
+		
+		betNum = "001;01";
+		order = new OrderInfo();
+		
+		order.setBetNum(betNum);
+		
+		ret = playTypeFacade.validBetNum(order);
+		Assert.assertFalse(ret);
+		
+	}
+	
+	public void testValidBetNum_valid_betnum_(){
+		String betNum = "020";
+		OrderInfo order = new OrderInfo();
+		
+		order.setBetNum(betNum);
+		
+		boolean ret = playTypeFacade.validBetNum(order);
+		Assert.assertTrue(ret);
+		
+		betNum = "123;345";
+		order = new OrderInfo();
+		
+		order.setBetNum(betNum);
+		
+		ret = playTypeFacade.validBetNum(order);
+		Assert.assertTrue(ret);
+		
+	}
+	
+	public void testObtainSampleBetNumber(){
+		int counter = 0;
+		int maxCounter = 1000;
+		String betNum = null;
+		boolean isWinning = false;
+		boolean isValid = false;
+		while(counter < maxCounter) {
+			betNum = playTypeFacade.obtainSampleBetNumber();
+			
+			System.out.println(String.format("current bet number   %s", 
+					betNum));
+			
+			String winningNum = obtainWinningNum(betNum);
+			OrderInfo order = new OrderInfo();
+			order.setBetNum(betNum);
+			
+			Issue issue = new Issue();
+			issue.setRetNum(winningNum);
+			
+			isValid = playTypeFacade.validBetNum(order);
+			
+			counter++;
+			
+			if(!isValid) {
+				continue;
+			}
+			isWinning = playTypeFacade.isMatchWinningNum(issue, order);
+			
+			System.out.println(String.format("winingNum  %s   current bet number   %s   isVliad  %s    isWnning  %s", 
+					winningNum,
+					betNum,
+					isValid,
+					isWinning));
+			
+			Assert.assertTrue(isValid);
+			
+		}
+	}
+	
+	private String obtainWinningNum(String betNum) {
+		StringBuffer winningNumBuffer = new StringBuffer();
+		List<Map<String, String>> maps = playTypeFacade.parseBetNumber(betNum);
+		if(maps != null && maps.size() > 0) {
+			Map<String, String> row = maps.get(0);
+			String winningNum = row.get(Constants.KEY_FACADE_BET_NUM_SAMPLE);
+			for(int i = 0; i< winningNum.length();) { 
+				String bit = winningNum.substring(i, i + 1);
+				if(!",".equals(bit)) {
+					winningNumBuffer.append(bit).append(",");
+				}
+				
+				i += 1;
+			}
+			winningNumBuffer.delete(winningNumBuffer.length() - 1, winningNumBuffer.length());
+		}
+		
+		return winningNumBuffer.toString();
 	}
 }

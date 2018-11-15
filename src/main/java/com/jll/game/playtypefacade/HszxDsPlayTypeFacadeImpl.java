@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -22,6 +23,10 @@ public class HszxDsPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 private Logger logger = Logger.getLogger(QszxPlayTypeFacadeImpl.class);
 	
 	protected String playTypeDesc = "hszx|后三直选/ds";
+	
+	private String betNumOptions = "0,1,2,3,4,5,6,7,8,9";
+	
+	private String[] optionsArray = {"0","1","2","3","4","5","6","7","8","9"};
 	
 	@Override
 	public String getPlayTypeDesc() {
@@ -109,12 +114,23 @@ private Logger logger = Logger.getLogger(QszxPlayTypeFacadeImpl.class);
 		
 		betNumSet = betNum.split(";");
 		for(String singleBetNum : betNumSet) {
-			if(StringUtils.isBlank(singleBetNum)) {
+			if(singleBetNum.length() != 3) {
 				return false;
 			}
 			
-			if(singleBetNum.length() != 3) {
+			Map<String, String> tempBits = splitBetNum(singleBetNum);
+			/*if(tempBits.size() == 0
+					|| tempBits.size() > 10
+					|| tempBits.size() != betNumMulTempBit.length()) {
 				return false;
+			}*/
+			
+			Iterator<String> ite = tempBits.keySet().iterator();
+			while(ite.hasNext()) {
+				String key = ite.next();
+				if(!betNumOptions.contains(key)) {
+					return false;
+				}				
 			}
 		}
 		
@@ -312,5 +328,17 @@ private Logger logger = Logger.getLogger(QszxPlayTypeFacadeImpl.class);
 		}
 		
 		return retList.toArray(new String[0]);
+	}
+	
+	private Map<String, String> splitBetNum(String temp) {
+		Map<String, String> bits = new HashMap<String, String>();
+				
+		for(int i = 0; i < temp.length();) {
+			String bit = temp.substring(i, i + 1);
+			bits.put(bit, bit);
+			i += 1;
+		}
+		
+		return bits;
 	}
 }

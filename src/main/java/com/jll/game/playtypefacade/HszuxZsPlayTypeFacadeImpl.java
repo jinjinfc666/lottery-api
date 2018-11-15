@@ -25,6 +25,10 @@ public class HszuxZsPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 	
 	private String playTypeDesc = "hszux|后三组选/zsfs";
 
+	private String betNumOptions = "0,1,2,3,4,5,6,7,8,9";
+	
+	String[] optionsArray = {"0","1","2","3","4","5","6","7","8","9"};
+	
 	@Override
 	public String getPlayTypeDesc() {
 		return playTypeDesc;
@@ -34,17 +38,12 @@ public class HszuxZsPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 	public boolean isMatchWinningNum(Issue issue, OrderInfo order) {
 		//开奖号码的每一位
 		String[] winNumSet = null;
-		//投注号码的每个位的号码，可能多个号码
-		String[] betNumSet = new String[3];
 		//每次点击选号按钮所选号码，多个所选号码以;分割
 		String[] betNumMul = null;
 		String betNum = null;
 		String winNum = null;
 		Map<String, String> winNumMap = new HashMap<>();
-		//在前三位有2位重复情况下的数位1
-		String winNumBit1 = null;
-		//
-		String winNumBit2 = null;
+		
 				
 		winNum = issue.getRetNum();
 		betNum = order.getBetNum();
@@ -60,25 +59,11 @@ public class HszuxZsPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 			return false;
 		}
 		
-		logger.debug("proceed bet number is :: " + Arrays.asList(betNumSet));
-		
-		Iterator<String> keys = winNumMap.keySet().iterator();
-		while(keys.hasNext()) {
-			String key = keys.next();
-			if(StringUtils.isBlank(winNumBit1)) {
-				winNumBit1 = key;
-			}else {
-				winNumBit2 = key;
-			}
-		}
-		
-		for(String temp : betNumMul) {
-			if(temp.contains(winNumBit1) 
-					&&temp.contains(winNumBit2)) {
+		for(String singleBetNum : betNumMul) {
+			if(isPatternMatch(winNumMap, singleBetNum)) {
 				return true;
-			}
+			}			
 		}
-		
 		
 		return false;
 	}
@@ -94,18 +79,29 @@ public class HszuxZsPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 		Float prizePattern = userServ.calPrizePattern(user, lottoType);
 		BigDecimal winningRate = calWinningRate();
 		BigDecimal singleBettingPrize = calSingleBettingPrize(prizePattern, winningRate);
-		int betTotal = 1;
+		int betTotal = 0;
 		Float betAmount = 0F;
 		Float maxWinAmount = 0F;
+		int winBetTotal = 0;
+		String[] betNumSet = null;
 		
 		
-		int len = betNum.length();
-		betTotal = (int)(MathUtil.combination(2, len) 
-						* MathUtil.combination(1, 2));
+		betNumSet = betNum.split(";");
+		for(String singleBetNum : betNumSet) {
+			int len = singleBetNum.length();
+			betTotal += (int)(MathUtil.combination(2, len) 
+					* MathUtil.combination(1, 2));
+			
+			winBetTotal++;
+		}
+		
 		
 		betAmount = MathUtil.multiply(betTotal, times, Float.class);
 		betAmount = MathUtil.multiply(betAmount, monUnit, Float.class);
-		maxWinAmount = MathUtil.multiply(betAmount, singleBettingPrize.floatValue(), Float.class);
+		
+		maxWinAmount = MathUtil.multiply(winBetTotal, times, Float.class);
+		maxWinAmount = MathUtil.multiply(maxWinAmount, monUnit.floatValue(), Float.class);
+		maxWinAmount = MathUtil.multiply(maxWinAmount, singleBettingPrize.floatValue(), Float.class);
 		
 		ret.put("playType", playType);
 		ret.put("betAmount", betAmount);
@@ -127,17 +123,23 @@ public class HszuxZsPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 		}
 		
 		betNumMul = betNum.split(";");
-		for(String betNumTemp : betNumMul) {
-			if(StringUtils.isBlank(betNumTemp)) {
+		for(String betNumTemp : betNumMul) {						
+			Map<String, String> tempBits = splitBetNum(betNumTemp);
+			if(tempBits.size() < 2
+					|| tempBits.size() > 10
+					|| tempBits.size() != betNumTemp.length()) {
 				return false;
 			}
 			
-			if(betNumTemp.length() < 2 
-					|| betNumTemp.length() > 10
-					|| !Utils.validateNum(betNumTemp)) {
-				return false;
+			Iterator<String> ite = tempBits.keySet().iterator();
+			while(ite.hasNext()) {
+				String key = ite.next();
+				if(!betNumOptions.contains(key)) {
+					return false;
+				}				
 			}
 		}
+		
 		return true;
 	}
 
@@ -157,10 +159,7 @@ public class HszuxZsPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 		BigDecimal monUnit = order.getPattern();
 		BigDecimal singleBettingPrize = null;
 		Map<String, String> winNumMap = new HashMap<>();
-		//在前三位有2位重复情况下的数位1
-		String winNumBit1 = null;
-		//
-		String winNumBit2 = null;
+		
 		//1700 --- 1960
 		Float prizePattern = userServ.calPrizePattern(user, issue.getLotteryType());
 		BigDecimal winningRate = calWinningRate();
@@ -175,20 +174,9 @@ public class HszuxZsPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 		for(String winNumBit : winNumSet) {
 			winNumMap.put(winNumBit, winNumBit);
 		}
-		
-		Iterator<String> keys = winNumMap.keySet().iterator();
-		while(keys.hasNext()) {
-			String key = keys.next();
-			if(StringUtils.isBlank(winNumBit1)) {
-				winNumBit1 = key;
-			}else {
-				winNumBit2 = key;
-			}
-		}
-		
+				
 		for(String temp : betNumMul) {
-			if(temp.contains(winNumBit1) 
-					&&temp.contains(winNumBit2)) {
+			if(isPatternMatch(winNumMap, temp)) {
 				winningBetAmount++;
 			}
 		}
@@ -273,40 +261,58 @@ public class HszuxZsPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 		}
 		
 		return betNumList;
-	}
-	
-	private static boolean isExisting(List<Map<String, String>> betNumList, String tempStr) {
-		for(Map<String, String> temp : betNumList) {
-			String betNum = temp.get(Constants.KEY_FACADE_BET_NUM);
-			if(StringUtils.isBlank(betNum)) {
-				return false;
-			}
-			
-			if(betNum.equals(tempStr)) {
-				return true;
-			}
-		}
-		
-		return false;
-	}
+	}	
 	
 	@Override
 	public String obtainSampleBetNumber(){
 		Random random = new Random();
 		StringBuffer betNum = new StringBuffer();
+		StringBuffer betNums = new StringBuffer();
+		int betNumCounter = random.nextInt(5) + 1;
 		
-		int bit = random.nextInt(10);
-		int bit2 = -1;
-		betNum.append(Integer.toString(bit));
+		for(int i = 0 ;i < betNumCounter; i++) {
+			int betNumLen = random.nextInt(6) + 2;
+			for(int ii = 0; ii < betNumLen; ) {
+				int bit = random.nextInt(10);
+				if(betNum.toString().contains(optionsArray[bit])) {
+					continue;
+				}
+				
+				betNum.append(optionsArray[bit]);
+				ii++;
+			}
+			
+			betNums.append(betNum.toString()).append(";");
+			
+			betNum.delete(0, betNum.length());
+		}
 		
-		while(true) {
-			bit2 = random.nextInt(10);
-			if(bit != bit2) {
-				betNum.append(Integer.toString(bit2));
-				break;
+		betNums.delete(betNums.length() - 1, betNums.length());		
+				
+		return betNums.toString();
+	}
+	
+	private Map<String, String> splitBetNum(String temp) {
+		Map<String, String> bits = new HashMap<String, String>();
+				
+		for(int i = 0; i < temp.length();) {
+			String bit = temp.substring(i, i + 1);
+			bits.put(bit, bit);
+			i += 1;
+		}
+		
+		return bits;
+	}
+	
+	private boolean isPatternMatch(Map<String, String> pattern, String singleBetNum) {
+		Iterator<String> ite = pattern.keySet().iterator();
+		while(ite.hasNext()) {
+			String key = ite.next();
+			if(!singleBetNum.contains(key)) {
+				return false;
 			}
 		}
-				
-		return betNum.toString();
+		
+		return true;
 	}
 }

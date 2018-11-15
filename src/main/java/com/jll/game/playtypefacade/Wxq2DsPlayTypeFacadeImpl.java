@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -22,6 +23,10 @@ public class Wxq2DsPlayTypeFacadeImpl  extends DefaultPlayTypeFacadeImpl {
 	private Logger logger = Logger.getLogger(Wxq2DsPlayTypeFacadeImpl.class);
 	
 	protected String playTypeDesc = "wxq2|五星前二/ds";
+	
+	private String betNumOptions = "0,1,2,3,4,5,6,7,8,9";
+	
+	String[] optionsArray = {"0","1","2","3","4","5","6","7","8","9"};
 	
 	@Override
 	public boolean isMatchWinningNum(Issue issue, OrderInfo order) {
@@ -97,23 +102,30 @@ public class Wxq2DsPlayTypeFacadeImpl  extends DefaultPlayTypeFacadeImpl {
 	@Override
 	public boolean validBetNum(OrderInfo order) {
 		String betNum = null;
-		String[] betNumMul = null;
+		String[] betNumSet = null;
+		
 		betNum = order.getBetNum();
 		if(StringUtils.isBlank(betNum)) {
 			return false;
 		}
 		
-		betNumMul = betNum.split(";");
-		for(String betNumTemp : betNumMul) {
-			if(StringUtils.isBlank(betNumTemp)) {
+		betNumSet = betNum.split(";");
+		for(String singleBetNum : betNumSet) {
+						
+			if(singleBetNum.length() != 2) {
 				return false;
 			}
 			
-			if(betNumTemp.length() != 2) {
-				return false;
-			}	
+			Map<String, String> tempBits = splitBetNum(singleBetNum);
+						
+			Iterator<String> ite = tempBits.keySet().iterator();
+			while(ite.hasNext()) {
+				String key = ite.next();
+				if(!betNumOptions.contains(key)) {
+					return false;
+				}				
+			}
 		}
-		
 		
 		return true;
 	}
@@ -266,30 +278,24 @@ public class Wxq2DsPlayTypeFacadeImpl  extends DefaultPlayTypeFacadeImpl {
 	public String obtainSampleBetNumber(){
 		Random random = new Random();
 		StringBuffer betNum = new StringBuffer();
-		StringBuffer betNums = new StringBuffer();
-		//StringBuffer bitNum = new StringBuffer();
-		
-		int betNumLen = random.nextInt(5) + 1;
-		
-		for(int i = 0; i< betNumLen; i++) {
-			int bitLen = 2;
-			for(int ii = 0;ii < bitLen; ii++) {
-				while(true) {
-					int bit = random.nextInt(10);
-					if(!betNum.toString().contains(String.valueOf(bit))) {
-						betNum.append(bit);
-						break;
-					}
-				}
-			}
+		StringBuffer bitBetBum = new StringBuffer();
+		int betNums = random.nextInt(5) + 1;
+
+		for (int a = 0; a < betNums; a++) {
+			for (int i = 0; i < 2; i++) {
+				int bit = random.nextInt(10);
+				String bitStr = optionsArray[bit];
+				bitBetBum.append(bitStr);
+
+			}		
+			betNum.append(bitBetBum).append(";");
 			
-			betNums.append(betNum.toString()).append(";");
-			betNum.delete(0, betNum.length());
+			bitBetBum.delete(0, bitBetBum.length());
 		}
-		
-		betNums.delete(betNums.length()-1, betNums.length());
-		
-		return betNums.toString();
+
+		betNum.delete(betNum.length() - 1, betNum.length());
+
+		return betNum.toString();
 	}
 	
 	private String[] splitBit(String singleSel, int step) {
@@ -315,5 +321,17 @@ public class Wxq2DsPlayTypeFacadeImpl  extends DefaultPlayTypeFacadeImpl {
 		}
 		
 		return retList.toArray(new String[0]);
+	}
+	
+	private Map<String, String> splitBetNum(String temp) {
+		Map<String, String> bits = new HashMap<String, String>();
+				
+		for(int i = 0; i < temp.length();) {
+			String bit = temp.substring(i, i + 1);
+			bits.put(bit, bit);
+			i += 1;
+		}
+		
+		return bits;
 	}
 }

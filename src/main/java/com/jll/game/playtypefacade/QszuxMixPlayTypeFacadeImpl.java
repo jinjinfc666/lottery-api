@@ -25,6 +25,10 @@ public class QszuxMixPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl  {
 	
 	private String playTypeDesc = "qszux|前三组选/hhzxds";
 	
+	private String betNumOptions = "0,1,2,3,4,5,6,7,8,9";
+	
+	String[] optionsArray = {"0","1","2","3","4","5","6","7","8","9"};
+	
 	@Override
 	public String getPlayTypeDesc() {
 		return playTypeDesc;
@@ -32,37 +36,30 @@ public class QszuxMixPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl  {
 	
 	@Override
 	public boolean isMatchWinningNum(Issue issue, OrderInfo order) {
-		// 开奖号码的每一位
-		String[] winNumSet = null;
-		// 投注号码的每个位的号码，可能多个号码
-		String[] betNumSet = new String[3];
 		// 每次点击选号按钮所选号码，多个所选号码以;分割
 		String[] betNumMul = null;
 		String betNum = null;
 		String winNum = null;
-
+		Map<String,String> winningNumBits = new HashMap<>();
+		
 		winNum = issue.getRetNum();
 		winNum = winNum.substring(0, 5);
 		betNum = order.getBetNum();
-		winNumSet = winNum.split(",");
 		betNumMul = betNum.split(";");
-
-		//logger.debug("proceed bet number is :: " + Arrays.asList(betNumSet));
-
+		
+		for(int i = 0; i < winNum.replaceAll(",", "").length(); i++) {
+			String bit = winNum.replaceAll(",", "").substring(i, i + 1);
+			winningNumBits.put(bit, bit);
+		}
+		
+		if(winningNumBits.size() != 2 
+				&& winningNumBits.size() != 3) {
+			return false;
+		}
+		
 		for (String temp : betNumMul) {
-			if (temp.contains(winNumSet[0]) 
-					&& temp.contains(winNumSet[1]) 
-					&& temp.contains(winNumSet[2])) {
-								
-				if(isZxZs(temp)) {
-					if(isPatternMath(temp, winNum.replace(",", ""))) {						
-						return true;
-					}
-				}else if(isZxZl(temp)){
-					if(isPatternMath(temp, winNum.replace(",", ""))) {
-						return true;		
-					}
-				}
+			if(isPatternMath(temp, winNum.replace(",", ""))) {						
+				return true;
 			}
 		}
 
@@ -197,21 +194,15 @@ public class QszuxMixPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl  {
 		singleBetAmount = MathUtil.multiply(singleBetAmount, monUnit, Float.class);
 		
 		for(String temp : betNumMul) {
-			if(temp.contains(winNumSet[0]) 
-					&& temp.contains(winNumSet[1])
-					&& temp.contains(winNumSet[2])) {
+			if(isPatternMath(temp, winNum.replace(",", ""))) {						
 				if(isZxZs(temp)) {
-					if(isPatternMath(temp, winNum.replace(",", ""))) {						
-						winningBetAmountZs++;
-					}
-					
-				}else if(isZxZl(temp)){
-					if(isPatternMath(temp, winNum.replace(",", ""))) {						
-						winningBetAmountZl++;
-					}
-				}	
+					winningBetAmountZs++;
+				}else if(isZxZl(temp)) {
+					winningBetAmountZl++;
+				}
 			}
-		}		
+		}
+		
 		
 		winningBetAmount = winningBetAmountZl + winningBetAmountZs;
 		maxWinAmountZs = MathUtil.multiply(singleBetAmountZs, winningBetAmountZs, Float.class);
@@ -417,28 +408,57 @@ public class QszuxMixPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl  {
 	public String obtainSampleBetNumber(){
 		Random random = new Random();
 		StringBuffer betNum = new StringBuffer();
+		StringBuffer betNums = new StringBuffer();
+		int betNumCounter = random.nextInt(5) + 1;
+		//组三 0  or 组六 1
+		int typeFlag = 0;
 		
-		int bit = random.nextInt(10);
-		int bit2 = -1;
-		int bit3 = -1;
-		betNum.append(Integer.toString(bit));
-		
-		while(true) {
-			bit2 = random.nextInt(10);
-			if(bit != bit2) {
-				betNum.append(Integer.toString(bit2));
-				break;
+		for(int i = 0 ;i < betNumCounter; i++) {
+			//int betNumLen = random.nextInt(6) + 3;
+			typeFlag = random.nextInt(2);
+			
+			if(typeFlag == 0) {
+				for(int ii = 0; ii < 3; ) {
+					int bit = random.nextInt(10);
+					if(betNum.toString().contains(optionsArray[bit])) {
+						continue;
+					}
+					if(ii == 0) {
+						betNum.append(optionsArray[bit]);
+						ii++;
+						betNum.append(optionsArray[bit]);
+						ii++;						
+					}else {
+						betNum.append(optionsArray[bit]);
+						ii++;
+					}
+				}
+				
+				betNums.append(betNum.toString()).append(";");
+				
+				betNum.delete(0, betNum.length());
+				
+			}else {
+				for(int ii = 0; ii < 3; ) {
+					
+					
+					int bit = random.nextInt(10);
+					if(betNum.toString().contains(optionsArray[bit])) {
+						continue;
+					}
+					
+					betNum.append(optionsArray[bit]);
+					ii++;
+				}
+				
+				betNums.append(betNum.toString()).append(";");
+				
+				betNum.delete(0, betNum.length());
 			}
 		}
-
-		while(true) {
-			bit3 = random.nextInt(10);
-			if(bit != bit3
-					&& bit2 != bit3) {
-				betNum.append(Integer.toString(bit3));
-				break;
-			}
-		}
-		return betNum.toString();
+		
+		betNums.delete(betNums.length() - 1, betNums.length());		
+				
+		return betNums.toString();
 	}
 }

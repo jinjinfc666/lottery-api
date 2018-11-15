@@ -3,6 +3,7 @@ package com.jll.game.playtypefacade;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -12,6 +13,7 @@ import org.apache.log4j.Logger;
 import com.jll.common.constants.Constants;
 import com.jll.common.utils.MathUtil;
 import com.jll.common.utils.StringUtils;
+import com.jll.common.utils.Utils;
 import com.jll.entity.Issue;
 import com.jll.entity.OrderInfo;
 import com.jll.entity.UserInfo;
@@ -22,6 +24,10 @@ public class QszxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 	
 	//protected String playTypeDesc = "qszx|前三直选/fs-ds";
 	protected String playTypeDesc = "qszx|前三直选/fs";
+	
+	private String betNumOptions = "0,1,2,3,4,5,6,7,8,9";
+	
+	String[] optionsArray = {"0","1","2","3","4","5","6","7","8","9"};
 	
 	@Override
 	public boolean isMatchWinningNum(Issue issue, OrderInfo order) {
@@ -62,7 +68,8 @@ public class QszxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 		BigDecimal winningRate = calWinningRate();
 		BigDecimal singleBettingPrize = calSingleBettingPrize(prizePattern, winningRate);
 		String[] betNumSet = null;
-		int betTotal = 1;
+		int betTotal = 0;
+		int singleBetTotal = 1;
 		Float betAmount = 0F;
 		Float maxWinAmount = 0F;
 		int winBetTotal = 0;
@@ -70,11 +77,14 @@ public class QszxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 		betNumSet = betNum.split(";");
 		for(String singleBetNum : betNumSet) {
 			String[] betNumBits = singleBetNum.split(",");
+			
+			singleBetTotal = 1;
 			for(String betNumBit : betNumBits) {
 				int len = betNumBit.length();
-				betTotal *= MathUtil.combination(1, len);
+				singleBetTotal *= MathUtil.combination(1, len);
 			}
 			
+			betTotal += singleBetTotal;
 			winBetTotal++;
 		}
 		
@@ -110,6 +120,7 @@ public class QszxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 	public boolean validBetNum(OrderInfo order) {
 		String betNum = null;
 		String[] betNumSet = null;
+		Map<String, String> allBetNumBit = new HashMap<>();
 		
 		betNum = order.getBetNum();
 		if(StringUtils.isBlank(betNum)) {
@@ -118,14 +129,37 @@ public class QszxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 		
 		betNumSet = betNum.split(";");
 		for(String singleBetNum : betNumSet) {
-			if(StringUtils.isBlank(singleBetNum)) {
+			
+			String[] betNumMulTempSet = singleBetNum.split(",");
+			if(betNumMulTempSet == null 
+					|| betNumMulTempSet.length != 3) {
 				return false;
 			}
 			
-			String[] betNumBits = singleBetNum.split(",");
-			
-			if(betNumBits.length != 3) {
-				return false;
+			for(String betNumMulTempBit : betNumMulTempSet) {
+								
+				allBetNumBit.clear();
+				
+				Map<String, String> tempBits = splitBetNum(betNumMulTempBit);
+				if(tempBits.size() == 0
+						|| tempBits.size() > 10
+						|| tempBits.size() != betNumMulTempBit.length()) {
+					return false;
+				}
+				
+				Iterator<String> ite = tempBits.keySet().iterator();
+				while(ite.hasNext()) {
+					String key = ite.next();
+					if(!betNumOptions.contains(key)) {
+						return false;
+					}
+					
+					if(allBetNumBit.containsKey(key)) {
+						return false;
+					}
+					
+					allBetNumBit.put(key, key);
+				}
 			}
 		}
 		
@@ -330,14 +364,39 @@ public class QszxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 	public String obtainSampleBetNumber(){
 		Random random = new Random();
 		StringBuffer betNum = new StringBuffer();
-		for(int i = 0 ; i < 3; i++) {
-			int bit = random.nextInt(10);
-			betNum.append(Integer.toString(bit)).append(",");
+		StringBuffer betNums = new StringBuffer();
+		StringBuffer bitNum = new StringBuffer();
+		
+		int betNumLen = random.nextInt(5) + 1;
+		for(int a = 0; a < betNumLen; a++) {
+			for(int i = 0 ; i < 3; i++) {				
+				int bitLen = random.nextInt(6) + 1;
+				
+				for(int ii = 0; ii < bitLen;) {
+					int bit = random.nextInt(10);
+					if(bitNum.toString().contains(optionsArray[bit])) {
+						continue;
+					}
+					
+					bitNum.append(optionsArray[bit]);
+					ii++;
+				}
+				
+				betNum.append(bitNum.toString()).append(",");
+				
+				bitNum.delete(0, bitNum.length());
+			}
+			
+			betNum.delete(betNum.length()-1, betNum.length());
+			
+			betNums.append(betNum.toString()).append(";");
+			
+			betNum.delete(0, betNum.length());
 		}
 		
-		betNum.delete(betNum.length()-1, betNum.length());
+		betNums.delete(betNums.length()-1, betNums.length());
 		
-		return betNum.toString();
+		return betNums.toString();
 	}
 	
 	private String[] splitBit(String singleSel, int step) {
@@ -362,5 +421,17 @@ public class QszxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 		}
 		
 		return retList.toArray(new String[0]);
+	}
+	
+	private Map<String, String> splitBetNum(String temp) {
+		Map<String, String> bits = new HashMap<String, String>();
+				
+		for(int i = 0; i < temp.length();) {
+			String bit = temp.substring(i, i + 1);
+			bits.put(bit, bit);
+			i += 1;
+		}
+		
+		return bits;
 	}
 }
