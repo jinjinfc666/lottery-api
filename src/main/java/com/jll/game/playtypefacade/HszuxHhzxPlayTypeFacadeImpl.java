@@ -195,11 +195,11 @@ public class HszuxHhzxPlayTypeFacadeImpl  extends DefaultPlayTypeFacadeImpl  {
 		winNumSet = winNum.split(",");
 		betNumMul = betNum.split(";");	
 		singleBetAmountZs = MathUtil.multiply(1, times, Float.class);
-		singleBetAmountZs = MathUtil.multiply(singleBetAmountZs, monUnit, Float.class);
+		singleBetAmountZs = MathUtil.multiply(singleBetAmountZs, monUnit.floatValue(), Float.class);
 		singleBetAmountZs = MathUtil.multiply(singleBetAmountZs, singleBettingPrizeZs.floatValue(), Float.class);
 		
 		singleBetAmountZl = MathUtil.multiply(1, times, Float.class);
-		singleBetAmountZl = MathUtil.multiply(singleBetAmountZl, monUnit, Float.class);
+		singleBetAmountZl = MathUtil.multiply(singleBetAmountZl, monUnit.floatValue(), Float.class);
 		singleBetAmountZl = MathUtil.multiply(singleBetAmountZl, singleBettingPrizeZl.floatValue(), Float.class);
 		
 		

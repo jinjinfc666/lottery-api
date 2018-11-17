@@ -191,7 +191,7 @@ public class QszuxMixPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl  {
 		/*betAmount = MathUtil.multiply(winningBetAmount, times, Float.class);
 		betAmount = MathUtil.multiply(betAmount, monUnit, Float.class);*/
 		singleBetAmount = MathUtil.multiply(1, times, Float.class);
-		singleBetAmount = MathUtil.multiply(singleBetAmount, monUnit, Float.class);
+		singleBetAmount = MathUtil.multiply(singleBetAmount, monUnit.floatValue(), Float.class);
 		
 		for(String temp : betNumMul) {
 			if(isPatternMath(temp, winNum.replace(",", ""))) {						

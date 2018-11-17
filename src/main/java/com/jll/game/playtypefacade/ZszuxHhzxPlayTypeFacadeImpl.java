@@ -195,7 +195,7 @@ public class ZszuxHhzxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl  {
 		winNumSet = winNum.split(",");
 		betNumMul = betNum.split(";");	
 		singleBetAmount = MathUtil.multiply(1, times, Float.class);
-		singleBetAmount = MathUtil.multiply(singleBetAmount, monUnit, Float.class);
+		singleBetAmount = MathUtil.multiply(singleBetAmount, monUnit.floatValue(), Float.class);
 		
 		for(String temp : betNumMul) {
 			if(isPatternMath(temp, winNum.replace(",", ""))) {						
