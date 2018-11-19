@@ -37,7 +37,7 @@ import com.jll.user.wallet.WalletService;
  * @author Administrator
  *
  */
-public class MmcServiceImpl extends DefaultLottoTypeServiceImpl
+public class MmcServiceImpl extends DefaultPrivateLottoTypeServiceImpl
 {
 	private Logger logger = Logger.getLogger(MmcServiceImpl.class);
 
@@ -56,6 +56,8 @@ public class MmcServiceImpl extends DefaultLottoTypeServiceImpl
 	UserAccountDetailsService accDetailsServ = (UserAccountDetailsService)SpringContextUtil.getBean("userAccountDetailsServiceImpl");
 	
 	UserInfoService userServ = (UserInfoService)SpringContextUtil.getBean("userInfoServiceImpl");
+	
+	String codeTypeName = Constants.SysCodeTypes.LOTTERY_CONFIG_MMC.getCode();
 	
 	@Override
 	public synchronized List<Issue> makeAPlan() {
@@ -107,7 +109,7 @@ public class MmcServiceImpl extends DefaultLottoTypeServiceImpl
 		
 	}
 
-	@Override
+	/*@Override
 	public void queryWinningNum(String message) {
 		logger.debug(String.format("Trying to handle %s", message));
 		String[] lottoTypeAndIssueNum = null;
@@ -158,7 +160,7 @@ public class MmcServiceImpl extends DefaultLottoTypeServiceImpl
 				return;
 			}
 		}
-	}
+	}*/
 
 	/**
 	 * 计算平台彩种盈亏
@@ -270,5 +272,10 @@ public class MmcServiceImpl extends DefaultLottoTypeServiceImpl
 		//inform the progress to payout
 		logger.debug(String.format("sending message to handle pay out %s", lottoType +"|"+ issueNum));
 		cacheServ.publishMessage(Constants.TOPIC_PAY_OUT, lottoType +"|"+ issueNum);
+	}
+
+	@Override
+	public String getCodeTypeName() {
+		return codeTypeName;
 	}
 }
