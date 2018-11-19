@@ -31,11 +31,7 @@ public class LReportServiceImpl implements LReportService {
 		String userName=(String) ret.get("userName");
 		Integer pageIndex=(Integer) ret.get("pageIndex");
 		Integer pageSize=(Integer) ret.get("pageSize");
-		List<?> userNameList=null;
-		if(StringUtils.isBlank(userName)) {
-			userNameList=userInfoDao.queryByAll();
-		}
-		return lReportDao.queryLReport(codeName,startTime, endTime, userName,pageIndex,pageSize,userNameList);
+		return lReportDao.queryLReport(codeName,startTime, endTime, userName,pageIndex,pageSize);
 	}
 	//团队盈亏报表(按彩种查询)总计
 	@Override
@@ -44,11 +40,7 @@ public class LReportServiceImpl implements LReportService {
 		String startTime=(String) ret.get("startTime");
 		String endTime=(String) ret.get("endTime");
 		String userName=(String) ret.get("userName");
-		List<?> userNameList=null;
-		if(StringUtils.isBlank(userName)) {
-			userNameList=userInfoDao.queryByAll();
-		}
-		return lReportDao.queryLReportSum(codeName,startTime, endTime, userName,userNameList);
+		return lReportDao.queryLReportSum(codeName,startTime, endTime, userName);
 	}
 	//团队盈亏报表(按彩种查询) 下级
 	@Override

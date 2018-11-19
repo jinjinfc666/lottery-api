@@ -34,6 +34,9 @@ public class LoginServiceImpl implements LoginService
 	public void updateFailLogin(String userName) {
 		UserInfo userInfo=userInfoDao.getUserByUserName(userName);
 		Integer failLoginCount=userInfo.getFailLoginCount();
+		if(failLoginCount==null) {
+			failLoginCount=0;
+		}
 		String codeTypeName=Constants.SysCodeTypes.SYS_RUNTIME_ARGUMENT.getCode();
 		String codeNameCount=Constants.SysRuntimeArgument.FAIL_LOGIN_COUNT.getCode();
 		String codeNameLock=Constants.SysRuntimeArgument.LOCKING_TIME.getCode();
@@ -61,7 +64,12 @@ public class LoginServiceImpl implements LoginService
 		Integer state=0;
 		UserInfo userInfo=userInfoDao.getUserByUserName(userName);
 		Integer failLoginCount=0;
+		Integer loginCount=userInfo.getLoginCount();
+		if(loginCount==null) {
+			loginCount=0;
+		}
 		userInfo.setFailLoginCount(failLoginCount);
+		userInfo.setLoginCount(loginCount+1);
 		Date date=null;
 		userInfo.setUnlockTime(date);
 		userInfo.setState(state);

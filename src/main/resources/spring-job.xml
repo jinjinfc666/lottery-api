@@ -11,6 +11,8 @@
 
 	<bean id="lotteryCenterServiceImpl" class="com.jll.game.LotteryCenterServiceImpl">
 	</bean>
+<!-- 	<bean id="StatisticalPlanServiceImpl" class="com.jll.report.statistic.StatisticalPlanServiceImpl"> -->
+<!-- 	</bean> -->
 
 	<bean id="makeAPlanJobDetail"
 		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
@@ -23,6 +25,12 @@
 		<property name="targetObject" ref="lotteryCenterServiceImpl" />
 		<property name="targetMethod" value="exeScheduleIssue" />
 	</bean>
+	
+<!-- 	<bean id="scheduleStatisticalDataJobDetail" -->
+<!-- 		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean"> -->
+<!-- 		<property name="targetObject" ref="StatisticalPlanServiceImpl" /> -->
+<!-- 		<property name="targetMethod" value="statisticalData" /> -->
+<!-- 	</bean> -->
 	
 	<bean id="cronTrigger"
 		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
@@ -38,11 +46,18 @@
 		<property name="cronExpression" value="0/1 * * * * ?" />
 	</bean>
 	
+<!-- 	<bean id="scheduleStatisticalDataCronTrigger" -->
+<!-- 		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean"> -->
+<!-- 		<property name="jobDetail" ref="scheduleStatisticalDataJobDetail"/> -->
+<!-- 		<property name="cronExpression" value="0 0/10 * * * ?" /> -->
+<!-- 	</bean> -->
+	
 	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
 		<property name="triggers">
 			<list>
 				<ref bean="cronTrigger"/>
 				<ref bean="processScheduleIssueCronTrigger"/>
+<!-- 				<ref bean="scheduleStatisticalDataCronTrigger"/> -->
 			</list>
 		</property>
 	</bean>

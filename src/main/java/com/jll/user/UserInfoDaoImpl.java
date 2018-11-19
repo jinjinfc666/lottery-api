@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.query.Query;
 import org.springframework.stereotype.Repository;
 
+import com.jll.common.constants.Constants;
 import com.jll.common.constants.Constants.UserType;
 import com.jll.common.utils.DateUtil;
 import com.jll.common.utils.StringUtils;
@@ -37,7 +38,7 @@ public class UserInfoDaoImpl extends DefaultGenericDaoImpl<UserInfo> implements 
 
 	@Override
 	public long getCountUser(String userName) {
-		Integer userType=2;
+		Integer userType=Constants.UserType.SYS_ADMIN.getCode();
 		String sql = "select count(*) from UserInfo where userName=? and userType !=?";
 	    Query query = getSessionFactory().getCurrentSession().createQuery(sql);
 //	    Query query = getSessionFactory().getCurrentSession().createSQLQuery(sql);
@@ -155,13 +156,15 @@ public class UserInfoDaoImpl extends DefaultGenericDaoImpl<UserInfo> implements 
 	@Override
 	public Map<String,Object> queryAllUserInfo(Integer id,String userName,Integer proxyId,String startTime,String endTime,Integer pageIndex,Integer pageSize) {
 		Map<String,Object> map=new HashMap<String,Object>();
-		Integer userType=2;
+		Integer userType=Constants.UserType.SYS_ADMIN.getCode();
+		Integer userTypea=Constants.UserType.DEMO_PLAYER.getCode();
 		map.put("startTime", startTime);
 		map.put("endTime", endTime);
 		map.put("userType", userType);
+		map.put("userTypea", userTypea);
 		String hql="";
 		if(proxyId!=null) {
-			hql=("select a.* from (select *,FIND_IN_SET(:proxyId,superior) as aa from user_info)a where a.aa=1 and a.user_type !=:userType and a.create_time>=:startTime and a.create_time<:endTime");
+			hql=("select a.* from (select *,FIND_IN_SET(:proxyId,superior) as aa from user_info)a where a.aa=1 and a.user_type !=:userType and a.user_type!=:userTypea and a.create_time>=:startTime and a.create_time<:endTime");
 			map.put("proxyId", proxyId);
 			map.put("startTime", startTime);
 			map.put("endTime", endTime);
@@ -183,7 +186,7 @@ public class UserInfoDaoImpl extends DefaultGenericDaoImpl<UserInfo> implements 
 				userNameSql=" and userName=:userName";
 				map.put("userName", userName);
 			}
-			String timeSql=" where user_type !=:userType and create_time >=:startTime and create_time <:endTime";
+			String timeSql=" where user_type !=:userType and user_type !=:userTypea and create_time >=:startTime and create_time <:endTime";
 			hql=("from UserInfo"+timeSql+idSql+userNameSql);
 			PageBean page=new PageBean();
 			page.setPageIndex(pageIndex);
@@ -207,11 +210,13 @@ public class UserInfoDaoImpl extends DefaultGenericDaoImpl<UserInfo> implements 
 	//点击代理查询下一级代理
 	@Override
 	public List<UserInfo> queryAgentByAgent(Integer id) {
-		Integer userType=2;
-		String sql="select * from(select *,FIND_IN_SET(:id,superior) as aa from user_info where user_type !=:userType)a where a.aa=1";
+		Integer userType=Constants.UserType.SYS_ADMIN.getCode();
+		Integer userTypea=Constants.UserType.DEMO_PLAYER.getCode();
+		String sql="select * from(select *,FIND_IN_SET(:id,superior) as aa from user_info where user_type !=:userType and user_type !=:userTypea)a where a.aa=1";
 		Query<UserInfo> query1 = getSessionFactory().getCurrentSession().createNativeQuery(sql,UserInfo.class);
 	    query1.setParameter("id", id);
 	    query1.setParameter("userType", userType);
+	    query1.setParameter("userTypea", userTypea);
 	    List<UserInfo> list=query1.list();
 	    return list;
 	} 
@@ -220,7 +225,7 @@ public class UserInfoDaoImpl extends DefaultGenericDaoImpl<UserInfo> implements 
 	public UserInfo querySumAgent() {
 		List<Object> params = new ArrayList<>();
 		String sql="from UserInfo where userType=?";
-		params.add(3);
+		params.add(Constants.UserType.GENERAL_AGENCY.getCode());
 		List<UserInfo> list=query(sql, params, UserInfo.class);
 		return list.get(0);
 	}
@@ -237,7 +242,7 @@ public class UserInfoDaoImpl extends DefaultGenericDaoImpl<UserInfo> implements 
 	public List<?> queryByAll() {
 		List<Object> params = new ArrayList<>();
 		String sql="from UserInfo where userType=?";
-		params.add(3);
+		params.add(Constants.UserType.GENERAL_AGENCY.getCode());
 		List<UserInfo> list=query(sql, params, UserInfo.class);
 		String sql1="select a.user_name from(select *,FIND_IN_SET(:id,superior) as aa from user_info)a where a.aa=1";
 	    Query<?> query1 = getSessionFactory().getCurrentSession().createNativeQuery(sql1);
@@ -249,17 +254,19 @@ public class UserInfoDaoImpl extends DefaultGenericDaoImpl<UserInfo> implements 
 	@Override
 	public Map<String, Object> queryAllAgent(String userName, Integer pageIndex, Integer pageSize) {
 		Map<String,Object> map=new HashMap<String,Object>();
-		Integer userType=2;
-		Integer userTypea=0;
+		Integer userType=Constants.UserType.SYS_ADMIN.getCode();
+		Integer userTypea=Constants.UserType.PLAYER.getCode();
+		Integer userTypeb=Constants.UserType.DEMO_PLAYER.getCode();
 		map.put("userType", userType);
 		map.put("userTypea", userTypea);
+		map.put("userTypeb", userTypeb);
 		String hql="";
 		String userNameSql="";
 		if(!StringUtils.isBlank(userName)) {
 			userNameSql=" and userName=:userName";
 			map.put("userName", userName);
 		}
-		hql=("from UserInfo where userType !=:userType and userType !=:userTypea "+userNameSql);
+		hql=("from UserInfo where userType !=:userType and userType !=:userTypea AND userType!=:userTypeb "+userNameSql);
 		PageBean page=new PageBean();
 		page.setPageIndex(pageIndex);
 		page.setPageSize(pageSize);

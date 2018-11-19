@@ -42,46 +42,61 @@ public class AuthFilter extends ClientCredentialsTokenEndpointFilter {
 		String sessionId = session.getId();
 		String clientId = request.getParameter("client_id");
 		String username = request.getParameter("username");
+		String grantType = request.getParameter("grant_type");
 		UserInfo user = null;
-		
-		if(StringUtils.isBlank(clientId)
-				|| StringUtils.isBlank(username)) {
-			throw new CusAuthenticationException(Message.Error.ERROR_COMMON_NO_PERMISSION.getCode());  
+		if(StringUtils.isBlank(grantType)) {
+			throw new CusAuthenticationException(Message.Error.ERROR_COMMON_NO_PERMISSION.getCode());
 		}
-		
-		user = userServ.getUserByUserName(username);
-		
-		if(user == null) {
-			throw new CusAuthenticationException(Message.Error.ERROR_COMMON_NO_PERMISSION.getCode());  
-		}
-		
-		if(Constants.KEY_CLIENT_ID_ADMIN.equals(clientId)) {
-			Integer userType = user.getUserType();
-			if(userType == null 
-					|| userType.intValue() != Constants.UserType.SYS_ADMIN.getCode()) {
+		if(grantType.equals("password")) {
+			if(StringUtils.isBlank(clientId)
+					|| StringUtils.isBlank(username)) {
 				throw new CusAuthenticationException(Message.Error.ERROR_COMMON_NO_PERMISSION.getCode());  
 			}
-		}else if(Constants.KEY_CLIENT_ID_CLIENT.equals(clientId)) {
-			Integer userType = user.getUserType();
-			if(userType == null 
-					|| userType.intValue() == Constants.UserType.SYS_ADMIN.getCode()) {
+			
+			user = userServ.getUserByUserName(username);
+			
+			if(user == null) {
+				throw new CusAuthenticationException(Message.Error.ERROR_COMMON_NO_PERMISSION.getCode());  
+			}
+			
+			if(Constants.KEY_CLIENT_ID_ADMIN.equals(clientId)) {
+				Integer userType = user.getUserType();
+				if(userType == null 
+						|| userType.intValue() != Constants.UserType.SYS_ADMIN.getCode()) {
+					throw new CusAuthenticationException(Message.Error.ERROR_COMMON_NO_PERMISSION.getCode());  
+				}
+			}else if(Constants.KEY_CLIENT_ID_CLIENT.equals(clientId)) {
+				Integer userType = user.getUserType();
+				if(userType == null 
+						|| userType.intValue() == Constants.UserType.SYS_ADMIN.getCode()) {
+					throw new CusAuthenticationException(Message.Error.ERROR_COMMON_NO_PERMISSION.getCode());  
+				}
+			}else {
+				throw new CusAuthenticationException(Message.Error.ERROR_COMMON_NO_PERMISSION.getCode());  
+			}
+			String recCaptcha = request.getParameter("captcha");
+			//String sessionId = request.getParameter("jsessionid");
+			String key=sessionId;
+			String saveCaptcha = cacheRedisService.getSessionIdCaptcha(key);
+			cacheRedisService.deleteSessionIdCaptcha(key);
+			if(recCaptcha == null || saveCaptcha == null)
+	            throw new CusAuthenticationException(Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());  
+	        if(!saveCaptcha.equalsIgnoreCase(recCaptcha)){   
+	        	
+	            throw new CusAuthenticationException(Message.Error.ERROR_LOGIN_INVALID_CAPTCHA.getCode());  
+	        }
+		}else if(grantType.equals("refresh_token")){
+			String refreshToken = request.getParameter("refresh_token");
+			String clientSecret = request.getParameter("client_secret");
+			if(StringUtils.isBlank(refreshToken)||StringUtils.isBlank(clientId)||StringUtils.isBlank(clientSecret)) {
+				throw new CusAuthenticationException(Message.Error.ERROR_COMMON_NO_PERMISSION.getCode());  
+			}
+			if((!Constants.KEY_CLIENT_ID_ADMIN.equals(clientId)&&!Constants.KEY_CLIENT_ID_CLIENT.equals(clientId))||!clientSecret.equals("secret_1")) {
 				throw new CusAuthenticationException(Message.Error.ERROR_COMMON_NO_PERMISSION.getCode());  
 			}
 		}else {
 			throw new CusAuthenticationException(Message.Error.ERROR_COMMON_NO_PERMISSION.getCode());  
 		}
-		String recCaptcha = request.getParameter("captcha");
-		//String sessionId = request.getParameter("jsessionid");
-		String key=sessionId;
-		String saveCaptcha = cacheRedisService.getSessionIdCaptcha(key);
-		cacheRedisService.deleteSessionIdCaptcha(key);
-		if(recCaptcha == null || saveCaptcha == null)
-            throw new CusAuthenticationException(Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());  
-        if(!saveCaptcha.equalsIgnoreCase(recCaptcha)){   
-        	
-            throw new CusAuthenticationException(Message.Error.ERROR_LOGIN_INVALID_CAPTCHA.getCode());  
-        }
-        
 		return super.attemptAuthentication(request, response);
 	}
 }

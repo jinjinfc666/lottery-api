@@ -14,6 +14,7 @@ import org.hibernate.query.Query;
 import org.hibernate.type.DateType;
 import org.springframework.stereotype.Repository;
 
+import com.jll.common.constants.Constants;
 import com.jll.dao.DefaultGenericDaoImpl;
 import com.jll.dao.PageBean;
 import com.jll.entity.UserAccountDetails;
@@ -57,8 +58,9 @@ public class FlowDetailDaoImpl extends DefaultGenericDaoImpl<UserAccountDetails>
 			map.put("startTime", beginDate);
 			map.put("endTime", endDate);
 		}
-		String sql="from UserAccountDetails a,UserInfo b,SysCode c where a.userId=b.id and a.operationType=c.codeName and c.codeType=:codeTypeNameId "+userNameSql+amountStartSql+amountEndSql+operationTypeSql+timeSql+" order by a.id desc";
-		String sql1="select coalesce(SUM(a.amount),0) from UserAccountDetails a,UserInfo b,SysCode c where a.userId=b.id and a.operationType=c.codeName and c.codeType=:codeTypeNameId "+userNameSql+amountStartSql+amountEndSql+operationTypeSql+timeSql+" order by a.id desc";
+		map.put("userType", Constants.UserType.DEMO_PLAYER.getCode());
+		String sql="from UserAccountDetails a,UserInfo b,SysCode c where a.userId=b.id and a.operationType=c.codeName and c.codeType=:codeTypeNameId and b.userType!=:userType "+userNameSql+amountStartSql+amountEndSql+operationTypeSql+timeSql+" order by a.id desc";
+		String sql1="select coalesce(SUM(a.amount),0) from UserAccountDetails a,UserInfo b,SysCode c where a.userId=b.id and a.operationType=c.codeName and c.codeType=:codeTypeNameId and b.userType!=:userType "+userNameSql+amountStartSql+amountEndSql+operationTypeSql+timeSql+" order by a.id desc";
 		
 		Query<?> query1 = getSessionFactory().getCurrentSession().createQuery(sql1);
 		map.put("codeTypeNameId", codeTypeNameId);

@@ -83,9 +83,10 @@ public class LoyTstDaoImpl extends DefaultGenericDaoImpl<OrderInfo> implements L
 		}
 		String betting=Constants.AccOperationType.BETTING.getCode();
 //		String sql="from OrderInfo a,UserInfo b,UserAccountDetails c,Issue d,SysCode e,PlayType f where a.userId=b.id and a.issueId=d.id and a.id=c.orderId and d.lotteryType=e.codeName and e.codeType=:codeTypeNameId and a.playType=f.id and c.operationType=:betting "+lotteryTypeSql+isZhSql+stateSql+terminalTypeSql+timeSql+issueNumSql+userNameSql+orderNumSql+" group by a.id order by a.id desc";
-		String sql="from OrderInfo a,UserInfo b,Issue c,SysCode d,PlayType e where a.userId=b.id and a.issueId=c.id and a.playType=e.id and c.lotteryType=d.codeName and d.codeType=:codeTypeNameId "+lotteryTypeSql+isZhSql+stateSql+terminalTypeSql+timeSql+issueNumSql+userNameSql+orderNumSql+" order by a.id desc";
+		String sql="from OrderInfo a,UserInfo b,Issue c,SysCode d,PlayType e,UserAccount f where a.userId=b.id and a.issueId=c.id and a.playType=e.id and a.walletId=f.id and c.lotteryType=d.codeName and d.codeType=:codeTypeNameId and b.userType!=:userType "+lotteryTypeSql+isZhSql+stateSql+terminalTypeSql+timeSql+issueNumSql+userNameSql+orderNumSql+" order by a.id desc";
 		logger.debug(sql+"-----------------------------queryLoyTst----SQL--------------------------------");
 		map.put("codeTypeNameId", codeTypeNameId);
+		map.put("userType", Constants.UserType.DEMO_PLAYER.getCode());
 		PageBean page=new PageBean();
 		page.setPageIndex(pageIndex);
 		page.setPageSize(pageSize);

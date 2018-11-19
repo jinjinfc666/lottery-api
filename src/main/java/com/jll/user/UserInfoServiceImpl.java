@@ -164,10 +164,10 @@ public class UserInfoServiceImpl implements UserInfoService
 			return ret;
 		}
 		BCryptPasswordEncoder bcEncoder = new  BCryptPasswordEncoder();
-		String oldDbPwd = bcEncoder.encode(oldPwd);
-		if(!bcEncoder.matches(oldDbPwd, dbInfo.getLoginPwd())){
+//		String oldDbPwd = bcEncoder.encode(oldPwd);
+		if(!bcEncoder.matches(oldPwd, dbInfo.getLoginPwd())){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_OLD_LOGIN_PWD_ERROR);
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_OLD_LOGIN_PWD_ERROR.getCode());
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_OLD_LOGIN_PWD_ERROR.getErrorMes());
 			return ret;
 		}
@@ -191,10 +191,10 @@ public class UserInfoServiceImpl implements UserInfoService
 			return ret;
 		}
 		BCryptPasswordEncoder bcEncoder = new  BCryptPasswordEncoder();
-		String oldDbPwd = bcEncoder.encode(oldPwd);
-		if(!bcEncoder.matches(oldDbPwd, dbInfo.getLoginPwd())){
+//		String oldDbPwd = bcEncoder.encode(oldPwd);
+		if(!bcEncoder.matches(oldPwd, dbInfo.getLoginPwd())){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_OLD_LOGIN_PWD_ERROR);
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_OLD_LOGIN_PWD_ERROR.getCode());
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_OLD_LOGIN_PWD_ERROR.getErrorMes());
 			return ret;
 		}
@@ -216,11 +216,11 @@ public class UserInfoServiceImpl implements UserInfoService
 			return ret;
 		}
 		BCryptPasswordEncoder bcEncoder = new  BCryptPasswordEncoder();
-		String oldDbPwd = bcEncoder.encode(oldPwd);
+//		String oldDbPwd = bcEncoder.encode(oldPwd);
 //		if(!oldDbPwd.equals(dbInfo.getLoginPwd())){
-		if(!bcEncoder.matches(oldDbPwd, dbInfo.getLoginPwd())){
+		if(!bcEncoder.matches(oldPwd, dbInfo.getLoginPwd())){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_OLD_LOGIN_PWD_ERROR);
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_OLD_LOGIN_PWD_ERROR.getCode());
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_OLD_LOGIN_PWD_ERROR.getErrorMes());
 			return ret;
 		}
@@ -510,6 +510,8 @@ public class UserInfoServiceImpl implements UserInfoService
 	}
 	@Override
 	public void resetLoginPwd(UserInfo user) {
+		Integer loginCount=0;
+		user.setLoginCount(loginCount);
 		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();		
 		user.setLoginPwd(encoder.encode(defaultPwd));
 		userDao.saveUser(user);
@@ -796,7 +798,7 @@ public class UserInfoServiceImpl implements UserInfoService
 		}
 		return 0;
 	}
-	//修改用户状态
+	//修改用户
 	@Override
 	public void updateUserType(UserInfo user) {
 		Integer state=user.getState();
@@ -1524,6 +1526,9 @@ public class UserInfoServiceImpl implements UserInfoService
 			String[] stringSuperior = new String[stringArr.length];
 			for(int a=0;a<stringArr.length;a++) {
 				Integer userIdNew=Integer.valueOf(stringArr[a]);
+				if(userIdNew==Constants.VAL_SUPERIOR) {
+					userIdNew=userDao.getGeneralAgency().getId();
+				}
 				UserInfo userInfoNew=userDao.getUserById(userIdNew);
 				if(userInfoNew!=null) {
 					stringSuperior[a]=userInfoNew.getUserName();
@@ -1531,6 +1536,19 @@ public class UserInfoServiceImpl implements UserInfoService
 			}
 			String str2 = StringUtils.join(stringSuperior, ",");
 			userInfo.setSuperior(str2);
+			if(!SecurityUtils.checkPermissionIsOK(SecurityContextHolder.getContext().getAuthentication(), SecurityUtils.PERMISSION_ROLE_USER_INFO)){
+				//真实姓名只显示第一个字，电话号码只显示后面三位，电子邮件只显示头三个字母以及邮箱地址，微信和qq都只显示后面三位字母
+				userInfo.setPhoneNum(StringUtils.abbreviate(userInfo.getPhoneNum(),3,StringUtils.MORE_ASTERISK));
+				if(!StringUtils.isEmpty(userInfo.getEmail())){
+					String[] emails = userInfo.getEmail().split("@");
+					userInfo.setEmail(StringUtils.abbreviate(emails[0],3,StringUtils.MORE_ASTERISK)+"@"+emails[1]);
+				}
+				userInfo.setWechat(StringUtils.abbreviate(userInfo.getWechat(),3,StringUtils.MORE_ASTERISK));
+				userInfo.setQq(StringUtils.abbreviate(userInfo.getQq(),3,StringUtils.MORE_ASTERISK));
+				
+			}
+			userInfo.setLoginPwd(StringUtils.MORE_ASTERISK);
+			userInfo.setFundPwd(StringUtils.MORE_ASTERISK);
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 			ret.put(Message.KEY_DATA, userInfo);
@@ -1631,6 +1649,23 @@ public class UserInfoServiceImpl implements UserInfoService
 		
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		return ret;
+	}
+
+	@Override
+	public boolean verifRebate(UserInfo userInfo) {
+		String superior=userInfo.getSuperior();
+		String first=StringUtils.substringBefore(superior,",");
+		Integer lastAgentId=Integer.valueOf(first);
+		if(lastAgentId==Constants.VAL_SUPERIOR) {
+			lastAgentId=userDao.getGeneralAgency().getId();
+		}
+		BigDecimal lastAgentPlatRebate=this.getUserById(lastAgentId).getPlatRebate();
+		BigDecimal selfPlatRebate=userInfo.getRebate().add(userInfo.getPlatRebate());
+		int a=lastAgentPlatRebate.compareTo(selfPlatRebate);
+		if(a==0) {
+			return true;
+		}
+		return false;
 	}
 	
 }

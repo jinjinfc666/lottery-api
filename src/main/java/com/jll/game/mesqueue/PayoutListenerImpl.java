@@ -65,22 +65,23 @@ public class PayoutListenerImpl implements MessageDelegateListener {
 				keyLock = keyLock.replace("{issue}", issueNum);
 				
 				if(cacheServ.lock(keyLock, keyLock, Constants.LOCK_PAY_OUT_EXPIRED)) {
-					String[] impls = lotteryTypeImpl.split(",");
-					if(impls == null || impls.length == 0) {
-						return;
-					}
-					
-					for(String impl : impls) {
-						LotteryTypeService lotteryTypeServ = LotteryTypeFactory
-								.getInstance().createLotteryType(impl);
-						if(lotteryTypeServ != null
-								&& lotteryTypeServ.getLotteryType().equals(lottoType)) {
-							lotteryTypeServ.payout((String)message);
-							break;
+					try {
+						String[] impls = lotteryTypeImpl.split(",");
+						if(impls == null || impls.length == 0) {
+							return;
 						}
+						for(String impl : impls) {
+							LotteryTypeService lotteryTypeServ = LotteryTypeFactory
+									.getInstance().createLotteryType(impl);
+							if(lotteryTypeServ != null
+									&& lotteryTypeServ.getLotteryType().equals(lottoType)) {
+								lotteryTypeServ.payout((String)message);
+								break;
+							}
+						}
+					}finally {
+						cacheServ.releaseLock(keyLock);
 					}
-					
-					cacheServ.releaseLock(keyLock);
 				}
 			}
 		});

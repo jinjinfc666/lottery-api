@@ -16,6 +16,7 @@ import org.hibernate.query.Query;
 import org.hibernate.type.DateType;
 import org.springframework.stereotype.Repository;
 
+import com.jll.common.constants.Constants;
 import com.jll.dao.DefaultGenericDaoImpl;
 import com.jll.dao.PageBean;
 import com.jll.entity.LotteryPlReport;
@@ -28,44 +29,38 @@ import com.jll.user.UserInfoServiceImpl;
 
 @Repository
 public class LReportDaoImpl extends DefaultGenericDaoImpl<LotteryPlReport> implements LReportDao {
-	private Logger logger = Logger.getLogger(UserInfoServiceImpl.class);
 	//团队盈亏报表(按彩种查询)
 	
 	@Override
-	public PageBean queryLReport(String codeName, String startTime, String endTime, String userName,Integer pageIndex,Integer pageSize,List<?> userNameList) {
+	public PageBean queryLReport(String codeName, String startTime, String endTime, String userName,Integer pageIndex,Integer pageSize) {
 		String userNameSql="";
 		String timeSql="";
 		String codeNameSql="";
 		Map<String,Object> map=new HashMap<String,Object>();
 		if(!StringUtils.isBlank(codeName)) {
-			codeNameSql=" and codeName=:codeName";
+			codeNameSql=" and code_name=:codeName";
 			map.put("codeName", codeName);
 		}
 		if(!StringUtils.isBlank(userName)) {
-			userNameSql=" and userName=:userName";
+			userNameSql=" and user_name=:userName";
 			map.put("userName", userName);
 		}else {
-			userNameSql=" and  userName in(:userNameList)";
-			map.put("userNameList", userNameList);
+			userNameSql=" and  user_type=:userName";
+			map.put("userName", Constants.UserType.AGENCY.getCode());
 		}
 		if(!StringUtils.isBlank(startTime)&&!StringUtils.isBlank(endTime)) {
-			timeSql=" createTime >=:startTime and createTime <:endTime";
+			timeSql=" create_time >=:startTime and create_time <:endTime";
 			Date beginDate = java.sql.Date.valueOf(startTime);
 		    Date endDate = java.sql.Date.valueOf(endTime);
 			map.put("startTime", beginDate);
 			map.put("endTime", endDate);
 		}
 		String sql=null;
-		if(!StringUtils.isBlank(userName)) {
-			sql="from LotteryPlReport  where "+timeSql+userNameSql+codeNameSql+" order by id";
-		}else {
-			sql = "from LotteryPlReport where "+timeSql+userNameSql+codeNameSql+" order by id";
-		} 
-		logger.debug(sql+"-----------------------------queryLoyTst----SQL--------------------------------");
+		sql = "select user_name,SUM(consumption) as consumption, SUM(cancel_amount) as cancel_amount,SUM(return_prize) as return_prize,SUM(rebate) as rebate,SUM(profit) as profit from lottery_pl_report where "+timeSql+userNameSql+codeNameSql+" GROUP BY user_name";
 		PageBean page=new PageBean();
 		page.setPageIndex(pageIndex);
 		page.setPageSize(pageSize);
-		PageBean pageBean=queryByPagination(page, sql,map);
+		PageBean pageBean=queryBySqlPagination(page, sql,map);
 		return pageBean;
 		
 		
@@ -93,7 +88,7 @@ public class LReportDaoImpl extends DefaultGenericDaoImpl<LotteryPlReport> imple
 	}
 	//团队盈亏报表(按彩种查询)总计
 	@Override
-	public Map<String,Object> queryLReportSum(String codeName, String startTime, String endTime, String userName,List<?> userNameList) {
+	public Map<String,Object> queryLReportSum(String codeName, String startTime, String endTime, String userName) {
 		String userNameSql="";
 		String timeSql="";
 		String codeNameSql="";
@@ -106,8 +101,8 @@ public class LReportDaoImpl extends DefaultGenericDaoImpl<LotteryPlReport> imple
 			userNameSql=" and user_name=:userName";
 			map.put("userName", userName);
 		}else {
-			userNameSql=" and  user_name in(:userNameList)";
-			map.put("userNameList", userNameList);
+			userNameSql=" and  user_type=:userName";
+			map.put("userName", Constants.UserType.AGENCY.getCode());
 		}
 		if(!StringUtils.isBlank(startTime)&&!StringUtils.isBlank(endTime)) {
 			timeSql=" create_time >=:startTime and create_time <:endTime";
@@ -117,12 +112,11 @@ public class LReportDaoImpl extends DefaultGenericDaoImpl<LotteryPlReport> imple
 			map.put("endTime", endDate);
 		}
 		String sql=null;
-		if(!StringUtils.isBlank(userName)) {
+//		if(!StringUtils.isBlank(userName)) {
 			sql="select sum(consumption) as sumConsumption,sum(cancel_amount) as sumCancelAmount,sum(return_prize) as sumSeturnPrize,sum(rebate) as sumRebate,sum(profit) as sumProfit from lottery_pl_report where "+timeSql+userNameSql+codeNameSql;
-		}else {
-			sql = "select sum(consumption) as sumConsumption,sum(cancel_amount) as sumCancelAmount,sum(return_prize) as sumSeturnPrize,sum(rebate) as sumRebate,sum(profit) as sumProfit from lottery_pl_report where "+timeSql+userNameSql+codeNameSql;
-		} 
-		logger.debug(sql+"-----------------------------queryLoyTst----SQL--------------------------------");
+//		}else {
+//			sql="select sum(consumption) as sumConsumption,sum(cancel_amount) as sumCancelAmount,sum(return_prize) as sumSeturnPrize,sum(rebate) as sumRebate,sum(profit) as sumProfit from lottery_pl_report where "+timeSql+userNameSql+codeNameSql;
+//		} 
 		Query<?> query = getSessionFactory().getCurrentSession().createSQLQuery(sql);
 		if (map != null) {  
             Set<String> keySet = map.keySet();  
@@ -165,7 +159,6 @@ public class LReportDaoImpl extends DefaultGenericDaoImpl<LotteryPlReport> imple
 	public Map<String,Object> queryLReportNext(String codeName, String startTime, String endTime, String userName) {
 		Map<String,Object> map=new HashMap<String,Object>();
 		String sql = "from UserInfo where userName = :userName";
-		logger.debug(sql+"-----------------------------queryNextTeamAll----SQL--------------------------------");
 	    Query<UserInfo> query = getSessionFactory().getCurrentSession().createQuery(sql,UserInfo.class);
 	    query.setParameter("userName", userName);
 	    List<UserInfo> list = query.list();
@@ -183,8 +176,7 @@ public class LReportDaoImpl extends DefaultGenericDaoImpl<LotteryPlReport> imple
 	    query2.setParameter("startTime", beginDate,DateType.INSTANCE);
 	    query2.setParameter("endTime", endDate,DateType.INSTANCE);
     	List<?> LReportList=null;
-    	LReportList=query2.list();
-	    logger.debug(LReportList.size()+"-----------------------------queryNextTeamAll----SQL--------------------------------");	    
+    	LReportList=query2.list();    
 	    Iterator<?> it=LReportList.iterator();
 	    List<LotteryPlReport> listRecord=new ArrayList<LotteryPlReport>();
 		while(it.hasNext()) {
@@ -213,7 +205,6 @@ public class LReportDaoImpl extends DefaultGenericDaoImpl<LotteryPlReport> imple
 		querysum.setParameter("endTime", endDate,DateType.INSTANCE);
     	List<?> ListSum=null;
     	ListSum=querysum.list();
-	    logger.debug(ListSum.size()+"-----------------------------queryNextTeamAll----SQL--------------------------------");
 	    Iterator<?> itSum=ListSum.iterator();
 	    List<LotteryPlReport> listRecordSum=new ArrayList<LotteryPlReport>();
 	    LotteryPlReport l=new LotteryPlReport();

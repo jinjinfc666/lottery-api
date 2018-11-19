@@ -13,6 +13,7 @@ import org.hibernate.query.Query;
 import org.hibernate.type.DateType;
 import org.springframework.stereotype.Repository;
 
+import com.jll.common.constants.Constants;
 import com.jll.dao.DefaultGenericDaoImpl;
 import com.jll.dao.PageBean;
 import com.jll.entity.UserInfo;
@@ -52,7 +53,7 @@ public class SysUserDaoImpl extends DefaultGenericDaoImpl<UserInfo> implements S
 			userNameSql=" and a.userName=:userName";
 			map.put("userName", userName);
 		}
-		Integer userType=2;
+		Integer userType=Constants.UserType.SYS_ADMIN.getCode();
 		map.put("userType", userType);
 		String sql="from UserInfo a where a.userType=:userType "+userNameSql+" order by a.id";
 		PageBean page=new PageBean();

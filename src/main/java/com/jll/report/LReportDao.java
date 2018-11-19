@@ -11,9 +11,9 @@ import com.jll.entity.LotteryPlReport;
  */
 public interface LReportDao {
 	//团队盈亏报表(按彩种查询)
-	public PageBean queryLReport(String codeName,String startTime,String endTime,String userName,Integer pageIndex,Integer pageSize,List<?> userNameList);
+	public PageBean queryLReport(String codeName,String startTime,String endTime,String userName,Integer pageIndex,Integer pageSize);
 	//团队盈亏报表(按彩种查询)总计
-	public Map<String,Object> queryLReportSum(String codeName,String startTime,String endTime,String userName,List<?> userNameList);
+	public Map<String,Object> queryLReportSum(String codeName,String startTime,String endTime,String userName);
 	//团队盈亏报表(按彩种查询) 下级
 	public Map<String,Object> queryLReportNext(String codeName,String startTime,String endTime,String userName);
 }

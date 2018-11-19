@@ -57,46 +57,49 @@ public class WinningNumberListenerImpl implements MessageDelegateListener {
 					keyLock = keyLock.replace("{issue}", issueNum);
 					
 					if(cacheServ.lock(keyLock, keyLock, Constants.LOCK_WINNING_NUMBER_EXPIRED)) {
-						//mmc期次保存到数据库会有延迟
-						if(lottoType.equals(Constants.LottoType.MMC.getCode())) {
-							try {
-								Thread.sleep(10000);
-							} catch (InterruptedException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
+						try {
+							//mmc期次保存到数据库会有延迟
+							if(lottoType.equals(Constants.LottoType.MMC.getCode())) {
+								try {
+									Thread.sleep(10000);
+								} catch (InterruptedException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
 							}
-						}
-						
-						issue = issueServ.getIssueByIssueNum(lottoType, issueNum);
-						if(issue == null || !StringUtils.isBlank(issue.getRetNum())) {
-							logger.debug(String.format("return with no issue or the issue has winning number", ""));
-							return ;
-						}
-						
-						if(StringUtils.isBlank(lotteryTypeImpl)) {
-							logger.debug(String.format("return with no lottery Type Impl", ""));
-							return ; 
-						}
-						
-						String[] impls = lotteryTypeImpl.split(",");
-						if(impls == null || impls.length == 0) {
-							return;
-						}
-						
-						for(String impl : impls) {
-							LotteryTypeService lotteryTypeServ = LotteryTypeFactory
-									.getInstance().createLotteryType(impl);
 							
-							if(lotteryTypeServ != null
-									&& lotteryTypeServ.getLotteryType().equals(lottoType)) {
-								lotteryTypeServ.queryWinningNum((String)message);
-								
-								break;
+							issue = issueServ.getIssueByIssueNum(lottoType, issueNum);
+							if(issue == null || !StringUtils.isBlank(issue.getRetNum())) {
+								logger.debug(String.format("return with no issue or the issue has winning number", ""));
+								return ;
 							}
+							
+							if(StringUtils.isBlank(lotteryTypeImpl)) {
+								logger.debug(String.format("return with no lottery Type Impl", ""));
+								return ; 
+							}
+							
+							String[] impls = lotteryTypeImpl.split(",");
+							if(impls == null || impls.length == 0) {
+								return;
+							}
+							
+							for(String impl : impls) {
+								LotteryTypeService lotteryTypeServ = LotteryTypeFactory
+										.getInstance().createLotteryType(impl);
+								
+								if(lotteryTypeServ != null
+										&& lotteryTypeServ.getLotteryType().equals(lottoType)) {
+									lotteryTypeServ.queryWinningNum((String)message);
+									
+									break;
+								}
+							}
+						}finally {
+							cacheServ.releaseLock(keyLock);
 						}
 						
 						
-						cacheServ.releaseLock(keyLock);
 					}
 					
 				}catch(Exception ex)

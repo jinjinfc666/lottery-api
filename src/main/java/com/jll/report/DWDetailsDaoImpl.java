@@ -66,15 +66,16 @@ public class DWDetailsDaoImpl extends DefaultGenericDaoImpl<DepositApplication> 
 			map.put("startTime", beginDate);
 			map.put("endTime", endDate);
 		}
+		map.put("userType", Constants.UserType.DEMO_PLAYER.getCode());
 		String sql="";
 		String sql1="";
 		if(type.equals("1")) {
-			sql="from DepositApplication a,UserInfo b,PayChannel e,PayType f where a.userId=b.id and a.payType=f.id and a.payChannel=e.id "+stateSql+userNameSql+orderNumSql+amountStartSql+amountEndSql+timeSql+" order by a.id";
-			sql1="select coalesce(SUM(a.amount),0) from DepositApplication a,UserInfo b where a.userId=b.id  "+stateSql+userNameSql+orderNumSql+amountStartSql+amountEndSql+timeSql+" order by a.id";
+			sql="from DepositApplication a,UserInfo b,PayChannel e,PayType f where a.userId=b.id and a.payType=f.id and b.userType!=:userType and a.payChannel=e.id "+stateSql+userNameSql+orderNumSql+amountStartSql+amountEndSql+timeSql+" order by a.id";
+			sql1="select coalesce(SUM(a.amount),0) from DepositApplication a,UserInfo b where a.userId=b.id and b.userType!=:userType  "+stateSql+userNameSql+orderNumSql+amountStartSql+amountEndSql+timeSql+" order by a.id";
 		}else if(type.equals("2")){
-			sql="from WithdrawApplication a,UserInfo b,UserAccount e,UserBankCard f where a.userId=b.id and a.walletId=e.id and a.bankCardId=f.id "
+			sql="from WithdrawApplication a,UserInfo b,UserAccount e,UserBankCard f where a.userId=b.id and a.walletId=e.id and a.bankCardId=f.id and b.userType!=:userType "
 					+ ""+stateSql+userNameSql+orderNumSql+amountStartSql+amountEndSql+timeSql+" order by a.id";
-			sql1="select coalesce(SUM(a.amount),0) from WithdrawApplication a,UserInfo b where a.userId=b.id "+stateSql+userNameSql+orderNumSql+amountStartSql+amountEndSql+timeSql+" order by a.id";
+			sql1="select coalesce(SUM(a.amount),0) from WithdrawApplication a,UserInfo b where a.userId=b.id and b.userType!=:userType "+stateSql+userNameSql+orderNumSql+amountStartSql+amountEndSql+timeSql+" order by a.id";
 		}
 		logger.debug(sql+"-----------------------------queryLoyTst----SQL--------------------------------");
 		logger.debug(sql1+"-----------------------------queryLoyTst----SQL--------------------------------");

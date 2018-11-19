@@ -141,4 +141,7 @@ public interface UserInfoService
 	Map<String, Object> saveRandomDemoUserInfo(HttpServletRequest request);
 	
 	Map<String, Object> updateDemoUserDisableLogin();
+	
+	//判断返点
+	boolean verifRebate(UserInfo userInfo);
 }

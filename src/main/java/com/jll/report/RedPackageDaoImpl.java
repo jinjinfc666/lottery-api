@@ -47,12 +47,14 @@ public class RedPackageDaoImpl extends HibernateDaoSupport implements RedPackage
 			map.put("startTime", beginDate);
 			map.put("endTime", endDate);
 		}
-		Integer userType=Constants.UserTypes.SYSTEM_USER.getCode();
+		Integer userType=Constants.UserType.SYS_ADMIN.getCode();
+		Integer userTypea=Constants.UserType.DEMO_PLAYER.getCode();
 		Integer accType=Constants.WalletType.RED_PACKET_WALLET.getCode();
-		String sql="from UserAccountDetails a,UserAccount b,UserInfo c,SysCode d where a.walletId=b.id and a.userId=c.id and a.operationType=d.codeName  and c.userType !=:userType and b.accType=:accType  "+userNameSql+timeSql+" order by a.id";
+		String sql="from UserAccountDetails a,UserAccount b,UserInfo c,SysCode d where a.walletId=b.id and a.userId=c.id and a.operationType=d.codeName  and c.userType !=:userType and c.userType !=:userTypea and b.accType=:accType  "+userNameSql+timeSql+" order by a.id";
 		logger.debug(sql+"-----------------------------RedPackageDaoImpl----SQL--------------------------------");
 		Query<?> query = getSessionFactory().getCurrentSession().createQuery(sql);
 		query.setParameter("userType", userType);
+		query.setParameter("userTypea", userTypea);
 		query.setParameter("accType", accType);
 		if (map != null) {  
             Set<String> keySet = map.keySet();  

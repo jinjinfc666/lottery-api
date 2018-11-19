@@ -32,7 +32,9 @@ import com.jll.entity.PlayType;
 import com.jll.entity.SysCode;
 import com.jll.entity.UserInfo;
 import com.jll.game.order.OrderService;
+import com.jll.game.playtype.PlayTypeFacade;
 import com.jll.game.playtype.PlayTypeService;
+import com.jll.game.playtypefacade.PlayTypeFactory;
 import com.jll.sysSettings.syscode.SysCodeService;
 import com.jll.user.UserInfoService;
 import com.jll.user.wallet.WalletService;
@@ -90,8 +92,10 @@ public class LotteryCenterController {
 			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
 			return resp;
 		}
-		Integer playType = (Integer)params.get("playType");
+		Integer playTypeId = (Integer)params.get("playType");
 		String retCode = null;
+		
+		
 		
 		params.put("lottoType", lotteryType);
 		params.put("monUnit", monUnit);
@@ -103,6 +107,43 @@ public class LotteryCenterController {
 			return resp;
 		}
 		
+		//验证号码-----------------------------------------------Start---------------------------------------------------------
+		String playTypeName = null;
+		PlayType playType = null;
+		PlayTypeFacade playTypeFacade = null;
+		boolean isBetNumValid = false;
+		OrderInfo order=new OrderInfo();
+		order.setBetNum(betNum);
+		if(playTypeId == null) {
+			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+			return resp;
+		}
+		playType = playTypeServ.queryById(playTypeId);
+		if(playType == null) {
+			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+			return resp;
+		}
+		
+		if(playType.getPtName().equals("fs")) {
+			playTypeName = playType.getClassification() + "/fs";
+		}else if(playType.getPtName().equals("ds")){
+			playTypeName = playType.getClassification() + "/ds";
+		}else {
+			playTypeName = playType.getClassification() + "/" + playType.getPtName();
+		}
+		playTypeFacade = PlayTypeFactory.getInstance().getPlayTypeFacade(playTypeName);
+		isBetNumValid = playTypeFacade.validBetNum(order);
+		if(!isBetNumValid) {
+			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_GAME_INVALID_BET_NUM.getCode());
+			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_GAME_INVALID_BET_NUM.getErrorMes());
+			return resp;
+		}
+		//验证号码-----------------------------------------------End---------------------------------------------------------
 		isTimesValid = cacheServ.isTimesValid(lotteryType, times);
 		
 		if(!isTimesValid) {
@@ -120,7 +161,7 @@ public class LotteryCenterController {
 			return resp;
 		}
 		
-		isPlayTypeValid = cacheServ.isPlayTypeValid(lotteryType, playType);
+		isPlayTypeValid = cacheServ.isPlayTypeValid(lotteryType, playTypeId);
 		if(!isPlayTypeValid) {
 			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_GAME_INVALID_PLAY_TYPE.getCode());
@@ -167,67 +208,69 @@ public class LotteryCenterController {
 							keyLock));
 			
 			if (cacheServ.lock(keyLock, keyLock, Constants.LOCK_BETTING_EXPIRED)) {
-				logger.debug(
-						String.format("Thread Id %s    loker   %s  enter", 
-								Thread.currentThread().getId(), 
-								keyLock));				
-				
-		isLotteryTypeExisting = cacheServ.isCodeExisting(SysCodeTypes.LOTTERY_TYPES, lotteryType);
-		if(!isLotteryTypeExisting) {
-			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_GAME_LOTTERY_TYPE_INVALID.getCode());
-			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_GAME_LOTTERY_TYPE_INVALID.getErrorMes());
-			return resp;
-		}
-				
-		Constants.ZhState zh = Constants.ZhState.getByCode(zhFlag);
-		if(zh == null) {
-			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_GAME_INVALID_ZH_FLAG.getCode());
-			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_GAME_INVALID_ZH_FLAG.getErrorMes());
-			return resp;
-		}
+				try {
+							logger.debug(
+									String.format("Thread Id %s    loker   %s  enter", 
+											Thread.currentThread().getId(), 
+											keyLock));				
+							
+					isLotteryTypeExisting = cacheServ.isCodeExisting(SysCodeTypes.LOTTERY_TYPES, lotteryType);
+					if(!isLotteryTypeExisting) {
+						resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+						resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_GAME_LOTTERY_TYPE_INVALID.getCode());
+						resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_GAME_LOTTERY_TYPE_INVALID.getErrorMes());
+						return resp;
+					}
+							
+					Constants.ZhState zh = Constants.ZhState.getByCode(zhFlag);
+					if(zh == null) {
+						resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+						resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_GAME_INVALID_ZH_FLAG.getCode());
+						resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_GAME_INVALID_ZH_FLAG.getErrorMes());
+						return resp;
+					}
+					
+					if(orders == null || orders.size() == 0) {
+						resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+						resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_GAME_NO_ORDER.getCode());
+						resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_GAME_NO_ORDER.getErrorMes());
+						return resp;
+					}
+					
+					if(zh.getCode() == Constants.ZhState.NON_ZH.getCode()
+							&& orders.size() > 1) {
+						resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+						resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_GAME_MULTIPLE_ORDERS_NOT_ALLOWED.getCode());
+						resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_GAME_MULTIPLE_ORDERS_NOT_ALLOWED.getErrorMes());
+						return resp;
+					}
+					
+					retCode = orderServ.saveOrders(orders, walletId, zhFlag,lotteryType);
+					if(!String.valueOf(Message.status.SUCCESS.getCode()).equals(retCode)) {
+						resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+						resp.put(Message.KEY_ERROR_CODE, Message.Error.getErrorByCode(retCode).getCode());
+						resp.put(Message.KEY_ERROR_MES, Message.Error.getErrorByCode(retCode).getErrorMes());
+						return resp;
+					}
+					
+					resp.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+					
+					logger.debug(
+							String.format("Thread Id %s    loker   %s  exit", Thread.currentThread().getId(), keyLock));
+				}finally {
+					cacheServ.releaseLock(keyLock);
+					break;
+				}
+			}
 		
-		if(orders == null || orders.size() == 0) {
-			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_GAME_NO_ORDER.getCode());
-			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_GAME_NO_ORDER.getErrorMes());
-			return resp;
+			bettingBlockCounter++;
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
-		
-		if(zh.getCode() == Constants.ZhState.NON_ZH.getCode()
-				&& orders.size() > 1) {
-			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_GAME_MULTIPLE_ORDERS_NOT_ALLOWED.getCode());
-			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_GAME_MULTIPLE_ORDERS_NOT_ALLOWED.getErrorMes());
-			return resp;
-		}
-		
-		retCode = orderServ.saveOrders(orders, walletId, zhFlag,lotteryType);
-		if(!String.valueOf(Message.status.SUCCESS.getCode()).equals(retCode)) {
-			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			resp.put(Message.KEY_ERROR_CODE, Message.Error.getErrorByCode(retCode).getCode());
-			resp.put(Message.KEY_ERROR_MES, Message.Error.getErrorByCode(retCode).getErrorMes());
-			return resp;
-		}
-		
-		resp.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-		
-		logger.debug(
-				String.format("Thread Id %s    loker   %s  exit", Thread.currentThread().getId(), keyLock));
-
-		cacheServ.releaseLock(keyLock);
-		break;
-	}
-
-	bettingBlockCounter++;
-	try {
-		Thread.sleep(100);
-	} catch (InterruptedException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	}
-}
 		return resp;
 	}
 	

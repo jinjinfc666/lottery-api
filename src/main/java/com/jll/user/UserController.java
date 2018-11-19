@@ -1,5 +1,6 @@
 package com.jll.user;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -196,10 +197,14 @@ public class UserController {
 			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_NO_GENERAL_AGENCY.getErrorMes());
 			return resp;
 		}
-		if(StringUtils.isBlank(generalAgency.getSuperior())) {
-			user.setSuperior(Integer.toString(generalAgency.getId()));
+		if(generalAgency.getUserType()==Constants.UserType.GENERAL_AGENCY.getCode()) {
+			user.setSuperior(Integer.toString(Constants.VAL_SUPERIOR));
 		}else {
-			user.setSuperior(Integer.toString(generalAgency.getId()) +","+generalAgency.getSuperior());
+			if(StringUtils.isBlank(generalAgency.getSuperior())) {
+				user.setSuperior(Integer.toString(generalAgency.getId()));
+			}else {
+				user.setSuperior(Integer.toString(generalAgency.getId()) +","+generalAgency.getSuperior());
+			}
 		}
 		if(user.getUserType()==null) {
 			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
@@ -887,6 +892,7 @@ public class UserController {
 			Integer userId=userInfo.getId();
 			Integer state=userInfo.getState();
 			Integer userType=userInfo.getUserType();
+			BigDecimal platRebate=userInfo.getPlatRebate();
 			UserInfo user = userInfoService.getUserById(userId);
 			user.setId(userId);
 			if(userType!=null) {
@@ -895,14 +901,25 @@ public class UserController {
 			if(state!=null) {
 				user.setState(state);
 			}
+			if(platRebate!=null) {
+				user.setPlatRebate(platRebate);
+			}
+			if(!userInfoService.verifRebate(user)) {
+				ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+				ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_PLATREBATE_WRONG.getCode());
+				ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_PLATREBATE_WRONG.getErrorMes());
+				return ret; 
+			}
+			ret.clear();
 			userInfoService.updateUserType(user);
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+			return ret; 
 		}catch(Exception e){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			return ret; 
 		}
-		return ret; 
 	}
 	//查询用户详细信息
 	@RequestMapping(value={"/queryUserInfo"}, method={RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)

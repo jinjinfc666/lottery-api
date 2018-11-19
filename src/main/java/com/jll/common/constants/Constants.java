@@ -64,6 +64,8 @@ public class Constants {
 	
 	public final static String KEY_LOCK_BETTING = "lock_betting_{userId}_{issue}";
 	
+	public final static String KEY_LOCK_STATISTICAL = "lock_betting_statistical";
+	
 	public final static String KEY_LOCK_CACHE_STATISTIC = "lock_cache_statistic";
 	
 	public final static String KEY_LOCK_MAKING_PLAN = "lock_making_plan";
@@ -85,6 +87,12 @@ public class Constants {
 	public final static Integer LOCK_WINNING_NUMBER_EXPIRED = 30;
 	
 	public final static Integer LOCK_PAY_OUT_EXPIRED = 30;
+	
+	public final static Integer LOCK_STATISTIC_EXPIRED = 60;
+	//再给总代添加下级代理时需要填写的superior
+	public final static Integer VAL_SUPERIOR = 0;
+	
+	
 	
 	public static enum DepositOrderState{
 		
@@ -962,29 +970,29 @@ public class Constants {
 	/**
 	 *用户类型
 	 */
-	public static enum UserTypes{
-		PLATFORM_USER(0,"平台客户"),
-		PROXY(1,"代理"),
-		SYSTEM_USER(2,"系统用户"),
-		GENERAL_AGENT(3,"总代");
-		
-		private Integer code;
-		
-		private String names;
-		
-		private UserTypes(Integer code, String names) {
-			this.code = code;
-			this.names = names;
-		}
-		
-		public Integer getCode() {
-			return this.code;
-		}
-		
-		public String getNames() {
-			return this.names;
-		}
-	}
+//	public static enum UserTypes{
+//		PLATFORM_USER(0,"平台客户"),
+//		PROXY(1,"代理"),
+//		SYSTEM_USER(2,"系统用户"),
+//		GENERAL_AGENT(3,"总代");
+//		
+//		private Integer code;
+//		
+//		private String names;
+//		
+//		private UserTypes(Integer code, String names) {
+//			this.code = code;
+//			this.names = names;
+//		}
+//		
+//		public Integer getCode() {
+//			return this.code;
+//		}
+//		
+//		public String getNames() {
+//			return this.names;
+//		}
+//	}
 
 	/**
 	 *报表统计 需要的类型：扣除

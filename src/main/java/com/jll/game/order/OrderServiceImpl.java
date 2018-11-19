@@ -282,7 +282,7 @@ public class OrderServiceImpl implements OrderService
 		
 		for(OrderInfo order : orders) {
 			
-			if(playTypeFacade == null) {
+//			if(playTypeFacade == null) {
 				playTypeId = order.getPlayType();
 				if(playTypeId == null) {
 					return String.valueOf(Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
@@ -300,7 +300,7 @@ public class OrderServiceImpl implements OrderService
 					playTypeName = playType.getClassification() + "/" + playType.getPtName();
 				}
 				playTypeFacade = PlayTypeFactory.getInstance().getPlayTypeFacade(playTypeName);
-			}
+//			}
 			
 			isBetNumValid = playTypeFacade.validBetNum(order);
 			if(!isBetNumValid) {
@@ -336,9 +336,9 @@ public class OrderServiceImpl implements OrderService
 			}
 			
 			if(issueId == null
-					|| issueId.intValue() == order.getIssueId()) {
+					|| issueId.intValue() == order.getIssueId().intValue()) {
 				issueId = order.getIssueId();
-			}else if(issueId.intValue() != order.getIssueId()){
+			}else if(issueId.intValue() != order.getIssueId().intValue()){
 				return false;
 			}
 						
