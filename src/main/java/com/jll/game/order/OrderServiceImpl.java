@@ -33,6 +33,7 @@ import com.jll.entity.SysCode;
 import com.jll.entity.UserAccount;
 import com.jll.entity.UserAccountDetails;
 import com.jll.entity.UserInfo;
+import com.jll.game.BulletinBoard;
 import com.jll.game.IssueService;
 import com.jll.game.LotteryTypeFactory;
 import com.jll.game.LotteryTypeService;
@@ -77,7 +78,7 @@ public class OrderServiceImpl implements OrderService
 	
 	@Override
 	public String saveOrders(List<OrderInfo> orders, int walletId, int zhFlag, String lotteryType) {
-		boolean isIssueValid = false;
+		String isIssueValid = "";
 		String isBalValid = "";
 		boolean isWalletValid = false;
 		Date currTime = null;
@@ -127,8 +128,8 @@ public class OrderServiceImpl implements OrderService
 
 				if (!Constants.LottoType.MMC.getCode().equals(lotteryType)) {
 					isIssueValid = verifyIssue(orders, lotteryType);
-					if (!isIssueValid) {
-						return String.valueOf(Message.Error.ERROR_GAME_EXPIRED_ISSUE.getCode());
+					if (!isIssueValid.equals(String.valueOf(Message.status.SUCCESS.getCode()))) {
+						return String.valueOf(isIssueValid);
 					}
 				}
 
@@ -324,29 +325,81 @@ public class OrderServiceImpl implements OrderService
 		
 		return bal.compareTo(totalAmount) == 1 ?String.valueOf(Message.status.SUCCESS.getCode()):String.valueOf(Message.Error.ERROR_GAME_BAL_INSUFFICIENT.getCode());
 	}
-
-	private boolean verifyIssue(List<OrderInfo> orders, String lotteryType) {
-		boolean isIssueValid = false;
-		Integer issueId = null;
-		
-		for(OrderInfo order : orders) {
-			
-			if(order.getIssueId() == null) {
-				return false;
+	
+	private Issue verifyIssueCache(Integer issueId,String lotteryType) {
+		List<Issue> list=cacheServ.getPlan(lotteryType);
+		Issue verify=null;
+		for(Issue issue:list) {
+			Integer issueIdCache=issue.getId();
+			if(issueIdCache.intValue()==issueId.intValue()) {
+				verify=issue;
+				break;
 			}
-			
-			if(issueId == null
-					|| issueId.intValue() == order.getIssueId().intValue()) {
-				issueId = order.getIssueId();
-			}else if(issueId.intValue() != order.getIssueId().intValue()){
-				return false;
-			}
-						
 		}
-		
-		isIssueValid = cacheServ.isIssueBetting(lotteryType, issueId);
-				
-		return isIssueValid;
+		return verify;
+	}
+	
+	private String verifyIssue(List<OrderInfo> orders, String lotteryType) {
+		//获取当前期次
+		BulletinBoard bulletinBoard = cacheServ.getBulletinBoard(lotteryType);
+		if(bulletinBoard == null) {
+			return Message.Error.ERROR_GAME_EXPIRED_ISSUE.getCode();
+		}
+		Integer issueId = null;
+		Integer isZh=orders.get(0).getIsZh();
+		if(isZh.intValue()==Constants.ZhState.NON_ZH.getCode()) {
+			for(OrderInfo order : orders) {
+				if(order.getIssueId() == null) {
+					return Message.Error.ERROR_GAME_EXPIRED_ISSUE.getCode();
+				}
+				if(issueId == null
+						|| issueId.intValue() == order.getIssueId().intValue()) {
+					issueId = order.getIssueId();
+				}else if(issueId.intValue() != order.getIssueId().intValue()){
+					return Message.Error.ERROR_GAME_EXPIRED_ISSUE.getCode();
+				}
+				//验证期次
+				Issue currIssue = bulletinBoard.getCurrIssue();
+				if(currIssue == null 
+						|| currIssue.getId().intValue() != issueId
+						|| currIssue.getState() != Constants.IssueState.BETTING.getCode()) {
+					return Message.Error.ERROR_GAME_EXPIRED_ISSUE.getCode();
+				}	
+				Integer orderIsZh=order.getIsZh();
+				if(orderIsZh==null||orderIsZh.intValue()!=Constants.ZhState.NON_ZH.getCode()) {
+					return Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode();
+				}
+			}
+		}else if(isZh.intValue()==Constants.ZhState.ZH.getCode()){
+			for(OrderInfo order : orders) {
+				if(order.getIssueId() == null) {
+					return Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode();
+				}
+//				if(issueId == null
+//						|| issueId.intValue() == order.getIssueId().intValue()) {
+//					issueId = order.getIssueId();
+//				}else if(issueId.intValue() != order.getIssueId().intValue()){
+//					return Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode();
+//				}
+				issueId=order.getIssueId();
+				//验证期次
+				Issue issue=verifyIssueCache(issueId,lotteryType);
+				if(issue==null) {
+					return Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode();
+				}
+				Issue currIssue = bulletinBoard.getCurrIssue();
+				if(currIssue == null 
+						|| currIssue.getId().intValue() >= issueId.intValue()
+						|| issue.getState() != Constants.IssueState.INIT.getCode()) {
+					return Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode();
+				}	
+				Integer orderIsZh=order.getIsZh();
+				if(orderIsZh==null||orderIsZh.intValue()!=Constants.ZhState.ZH.getCode()) {
+					return Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode();
+				}
+			}
+		}
+		return String.valueOf(Message.status.SUCCESS.getCode());
 	}
 	
 	private synchronized Long getSeq() {
