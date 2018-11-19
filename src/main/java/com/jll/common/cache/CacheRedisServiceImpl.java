@@ -289,6 +289,27 @@ public class CacheRedisServiceImpl implements CacheRedisService
 				statInfo = cacheObj.getContent();
 				
 				Date startDate = new Date();
+				
+				params.put("betNum", betNums);
+				params.put("times", order.getTimes());
+				params.put("monUnit", order.getPattern().floatValue());
+				params.put("lottoType", lotteryType);
+				
+				preBetResult = playTypeFacade.preProcessNumber(params, user);
+				if(statInfo.get(Constants.KEY_ISSUE_TOTAL_BETTING_AMOUNT) == null) {
+					statInfo.put(Constants.KEY_ISSUE_TOTAL_BETTING_AMOUNT, 
+							preBetResult.get("betAmount"));
+				}else {
+					Float total = (Float)statInfo.get(Constants.KEY_ISSUE_TOTAL_BETTING_AMOUNT);
+					total = MathUtil.add(total, 
+							(Float)preBetResult.get("betAmount"), 
+							Float.class);
+					statInfo.put(Constants.KEY_ISSUE_TOTAL_BETTING_AMOUNT, 
+							total);
+				}		
+				
+				
+				preBetResult = null;
 				//TODO
 				for(Map<String, String> temp : betNumMapping) {
 					String betNumTemp = temp.get(Constants.KEY_FACADE_BET_NUM);
@@ -318,7 +339,7 @@ public class CacheRedisServiceImpl implements CacheRedisService
 						statInfo.put(pattern, preBetResult.get("maxWinAmount"));
 					}
 					
-					if(statInfo.get(Constants.KEY_ISSUE_TOTAL_BETTING_AMOUNT) == null) {
+					/*if(statInfo.get(Constants.KEY_ISSUE_TOTAL_BETTING_AMOUNT) == null) {
 						statInfo.put(Constants.KEY_ISSUE_TOTAL_BETTING_AMOUNT, 
 								preBetResult.get("betAmount"));
 					}else {
@@ -328,7 +349,7 @@ public class CacheRedisServiceImpl implements CacheRedisService
 								Float.class);
 						statInfo.put(Constants.KEY_ISSUE_TOTAL_BETTING_AMOUNT, 
 								total);
-					}		
+					}		*/
 					
 				}
 				

@@ -90,7 +90,7 @@ public abstract class DefaultPrivateLottoTypeServiceImpl extends DefaultLottoTyp
 				if(lottoTypeAndIssueNum.length == 3) {
 					manualDrawResult(lottoType, 
 							issueNum, 
-							lottoTypeAndIssueNum[2]);					
+							lottoTypeAndIssueNum[2]);
 				}
 				return ;
 			}
@@ -139,9 +139,10 @@ public abstract class DefaultPrivateLottoTypeServiceImpl extends DefaultLottoTyp
 
 	private void interventional(String lottoType, String issueNum, SysCode sysCodeWinningRate) {
 		String winningNum;
+		StringBuffer winnngNumBuffer = new StringBuffer();
 		Issue issue;
-		StringBuffer buffer = null;
-		boolean isMatch = false;
+		/*StringBuffer buffer = null;
+		boolean isMatch = false;*/
 		
 		issue = issueServ.getIssueByIssueNum(lottoType, issueNum);
 		
@@ -150,6 +151,7 @@ public abstract class DefaultPrivateLottoTypeServiceImpl extends DefaultLottoTyp
 				issue.getId());
 		Map<String, Object> rateDistribute = new HashMap<>();
 		Double maxRate = null;		
+		Double minRate = null;
 		
 		if(statInfo == null || statInfo.size() == 0) {
 			nonInterventional(lottoType, issueNum);
@@ -163,9 +165,9 @@ public abstract class DefaultPrivateLottoTypeServiceImpl extends DefaultLottoTyp
 				continue;
 			}
 			Float betAmount = (Float)statInfo.get(Constants.KEY_ISSUE_TOTAL_BETTING_AMOUNT);
-			Float prizeAmount = (Float)statInfo.get(key);
+			Float maxWinAmount = (Float)statInfo.get(key);
 			
-			Double rate = MathUtil.divide(prizeAmount, betAmount, 5);
+			Double rate = MathUtil.divide(maxWinAmount, betAmount, 5);
 			if(rate < Double.parseDouble(sysCodeWinningRate.getCodeVal())){
 				if(rateDistribute.get(String.valueOf(rate)) != null) {
 					key = rateDistribute.get(String.valueOf(rate)) + ";";
@@ -178,22 +180,60 @@ public abstract class DefaultPrivateLottoTypeServiceImpl extends DefaultLottoTyp
 						|| maxRate.doubleValue() < rate.doubleValue()) {
 					maxRate = rate;
 				}
+			}else {
+				if(minRate == null
+						|| minRate.doubleValue() > rate.doubleValue()) {
+					minRate = rate;
+					
+					if(rateDistribute.get(String.valueOf(rate)) != null) {
+						key = rateDistribute.get(String.valueOf(rate)) + ";";
+						rateDistribute.put(String.valueOf(rate), key);						
+					}else {
+						rateDistribute.put(String.valueOf(rate), key);
+					}
+				}
 			}
 			
 		}
 		
-		if(maxRate == null || statInfo.size() < 10) {
-			nonMatch(lottoType, issueNum, statInfo);
-			return;
+		if(maxRate == null) {
+			boolean needProcess = nonMatch(lottoType, issueNum, statInfo);
+			if(!needProcess 
+					|| minRate == null) {
+				return ;
+			}
+			
+			winningNum = (String)rateDistribute.get(String.valueOf(minRate));
+		}else {
+			winningNum = (String)rateDistribute.get(String.valueOf(maxRate));
 		}
 		
-		String maxBetAmount = (String)rateDistribute.get(String.valueOf(maxRate));
-		if(maxBetAmount.contains(";")) {
-			maxBetAmount = maxBetAmount.substring(0, 
-					maxBetAmount.indexOf(";"));
+		//winningNum = (String)rateDistribute.get(String.valueOf(maxRate));
+		if(winningNum.contains(";")) {
+			String[] winningNumSet = winningNum.split(";");
+			Random random = new Random();
+			int indx = random.nextInt(winningNumSet.length);
+			
+			winningNum = winningNumSet[indx];
 		}
 		
-		while(true) {
+		for(int i = 0; i< winningNum.length(); i++) {
+			winnngNumBuffer.append(winningNum.substring(i, i + 1)).append(",");
+		}
+		
+		winnngNumBuffer.delete(winnngNumBuffer.length() - 1, winnngNumBuffer.length());
+		issue = issueServ.getIssueByIssueNum(lottoType, issueNum);
+		issue.setRetNum(winnngNumBuffer.toString());
+		issue.setState(Constants.IssueState.LOTTO_DARW.getCode());
+		issueServ.saveIssue(issue);
+		
+		changeBulletinBoard(lottoType, issueNum, issue);
+		
+		//inform the progress to payout
+		cacheServ.publishMessage(Constants.TOPIC_PAY_OUT, lottoType +"|"+ issueNum);
+		
+		
+		/*while(true) {
 			buffer = new StringBuffer();
 			Random random = new Random();
 			for(int i = 0; i < 5; i++) {
@@ -224,54 +264,120 @@ public abstract class DefaultPrivateLottoTypeServiceImpl extends DefaultLottoTyp
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		}		
+		}		*/
 	}
 
-	private void nonMatch(String lottoType, String issueNum, Map<String, Object> statInfo) {
+	/**
+	 * 
+	 * @param lottoType
+	 * @param issueNum
+	 * @param statInfo
+	 * @return  
+	 *            false  没有匹配中奖号码，需要后续处理
+	 *            true   已经处理过中奖号码，不需要后续处理
+	 */
+	private boolean nonMatch(String lottoType, String issueNum, Map<String, Object> statInfo) {
 		StringBuffer buffer = null;
-		boolean isMatch = false;
+		StringBuffer winningNumBuffer = null;
+		//boolean isMatch = false;
 		Issue issue;
-		String winningNum;
+		String winningNum = null;
+		String[] optionsArray = {"0","1","2","3","4","5","6","7","8","9"};
 		
-		while(true) {
-			buffer = new StringBuffer();
-			Random random = new Random();
-			for(int i = 0; i < 5; i++) {
-				int currIndex = random.nextInt(10);
-				buffer.append(Integer.toString(currIndex)).append(",");
-			}
-			
-			buffer.delete(buffer.length() - 1, buffer.length() + 1);
-			
-			Iterator<String> ite = statInfo.keySet().iterator();
-			while(ite.hasNext()) {
-				String key = ite.next();
-				isMatch = Pattern.matches(key, buffer.toString());
-				if(isMatch) {
-					break;
+		if(statInfo.size() < 100000) {
+			boolean isFound = false;
+			for(int i = 0; i < 10 && !isFound; i++) {
+				for(int ii = 0; ii < 10 && !isFound;ii++){					
+					for(int iii = 0; iii < 10 && !isFound;iii++){
+						for(int iiii = 0; iiii < 10 && !isFound;iiii++){
+							for(int iiiii = 0; iiiii < 10 && !isFound;iiiii++){
+								buffer = new StringBuffer();
+								winningNumBuffer = new StringBuffer();
+								
+								buffer.append(optionsArray[i])
+								.append(optionsArray[ii])
+								.append(optionsArray[iii])
+								.append(optionsArray[iiii])
+								.append(optionsArray[iiiii]);
+								
+								winningNumBuffer.append(optionsArray[i]).append(",")
+								.append(optionsArray[ii]).append(",")
+								.append(optionsArray[iii]).append(",")
+								.append(optionsArray[iiii]).append(",")
+								.append(optionsArray[iiiii]);
+								
+								if(!statInfo.containsKey(buffer.toString())) {									
+									winningNum = winningNumBuffer.toString();
+									isFound = true;
+									break;
+								}
+							}
+						}
+					}
 				}
 			}
 			
-			if(!isMatch) {
-				winningNum = buffer.toString();
-				issue = issueServ.getIssueByIssueNum(lottoType, issueNum);
-				issue.setRetNum(winningNum);
-				issue.setState(Constants.IssueState.LOTTO_DARW.getCode());
-				issueServ.saveIssue(issue);
-				
-				changeBulletinBoard(lottoType, issueNum, issue);
-				
-				//inform the progress to payout
-				cacheServ.publishMessage(Constants.TOPIC_PAY_OUT, lottoType +"|"+ issueNum);
-				break;
+			
+			if(StringUtils.isBlank(winningNum)) {
+				return true;
 			}
-			try {
-				Thread.sleep(100);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			
+			issue = issueServ.getIssueByIssueNum(lottoType, issueNum);
+			issue.setRetNum(winningNum);
+			issue.setState(Constants.IssueState.LOTTO_DARW.getCode());
+			issueServ.saveIssue(issue);
+			
+			changeBulletinBoard(lottoType, issueNum, issue);
+			
+			//inform the progress to payout
+			cacheServ.publishMessage(Constants.TOPIC_PAY_OUT, lottoType +"|"+ issueNum);
+			
+			return false;
+			
+			/*while(true) {
+				buffer = new StringBuffer();
+				Random random = new Random();
+				for(int i = 0; i < 5; i++) {
+					int currIndex = random.nextInt(10);
+					buffer.append(Integer.toString(currIndex)).append(",");
+				}
+				
+				buffer.delete(buffer.length() - 1, buffer.length() + 1);
+				
+				Iterator<String> ite = statInfo.keySet().iterator();
+				while(ite.hasNext()) {
+					String key = ite.next();
+					isMatch = Pattern.matches(key, buffer.toString());
+					if(isMatch) {
+						break;
+					}
+				}
+				
+				if(!isMatch) {
+					winningNum = buffer.toString();
+					issue = issueServ.getIssueByIssueNum(lottoType, issueNum);
+					issue.setRetNum(winningNum);
+					issue.setState(Constants.IssueState.LOTTO_DARW.getCode());
+					issueServ.saveIssue(issue);
+					
+					changeBulletinBoard(lottoType, issueNum, issue);
+					
+					//inform the progress to payout
+					cacheServ.publishMessage(Constants.TOPIC_PAY_OUT, lottoType +"|"+ issueNum);
+					break;
+				}
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}*/
+			
 		}
+		
+		
+		return true;
 	}
 
 	private void nonInterventional(String lottoType, String issueNum) {
