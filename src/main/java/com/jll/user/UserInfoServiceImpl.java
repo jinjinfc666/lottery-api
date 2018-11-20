@@ -1475,6 +1475,14 @@ public class UserInfoServiceImpl implements UserInfoService
 	//前台用户自己添加银行卡
 	@Override
 	public Map<String, Object> addUserBank(UserBankCard bank) {
+		Map<String,Object> map=new HashMap<String,Object>();
+		if(bank.getCardNum()==null||bank.getBankBranch()==null) {
+			map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+			return map;
+		}
+		
 		String userName=SecurityContextHolder.getContext().getAuthentication().getName();//当前登录的用户
 		UserInfo userInfo=userDao.getUserByUserName(userName);
 		Map<String, Object> bankInfo = verifyUserBankInfo(userInfo.getId(), bank);
@@ -1536,6 +1544,7 @@ public class UserInfoServiceImpl implements UserInfoService
 			}
 			String str2 = StringUtils.join(stringSuperior, ",");
 			userInfo.setSuperior(str2);
+			//需要加上权限设置
 			if(!SecurityUtils.checkPermissionIsOK(SecurityContextHolder.getContext().getAuthentication(), SecurityUtils.PERMISSION_ROLE_USER_INFO)){
 				//真实姓名只显示第一个字，电话号码只显示后面三位，电子邮件只显示头三个字母以及邮箱地址，微信和qq都只显示后面三位字母
 				userInfo.setPhoneNum(StringUtils.abbreviate(userInfo.getPhoneNum(),3,StringUtils.MORE_ASTERISK));
@@ -1547,6 +1556,7 @@ public class UserInfoServiceImpl implements UserInfoService
 				userInfo.setQq(StringUtils.abbreviate(userInfo.getQq(),3,StringUtils.MORE_ASTERISK));
 				
 			}
+			
 			userInfo.setLoginPwd(StringUtils.MORE_ASTERISK);
 			userInfo.setFundPwd(StringUtils.MORE_ASTERISK);
 			ret.clear();

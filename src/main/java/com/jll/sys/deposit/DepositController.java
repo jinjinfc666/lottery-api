@@ -359,35 +359,35 @@ public class DepositController {
 		}
 		return ret;
 	}
-	//添加充值渠道需要的pay_code
-	@RequestMapping(value={"/queryPayCode"}, method={RequestMethod.GET}, produces={"application/json"})
-	public Map<String, Object> queryPayCode(@RequestParam(name = "platId", required = true) String platId,
-			  HttpServletRequest request) {
-		Map<String, Object> ret = new HashMap<>();
-		try {
-			ret.clear();
-			if(platId.equals(Constants.PayType.WISDOM_PAYMENT.getCode())) {
-				ret.put(Message.KEY_DATA, Constants.WisdomPayment.getMap());
-			}else if(platId.equals(Constants.PayType.CAI_PAY.getCode())) {
-				ret.put(Message.KEY_DATA, Constants.CaiPay.getMap());
-			}else if(platId.equals(Constants.PayType.TLY_PAY.getCode())){
-				Map<String,SysCode> map=cacheServ.getSysCode(Constants.SysCodeTypes.BANK_CODE_LIST.getCode());
-				Map<String,String> mapNew=new HashMap<String,String>();
-				Set<String> keys = map.keySet();   //此行可省略，直接将map.keySet()写在for-each循环的条件中
-				for(String key:keys){
-					mapNew.put(map.get(key).getCodeName(), map.get(key).getRemark());
-				}
-				ret.put(Message.KEY_DATA, mapNew);
-			}
-			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-		}catch(Exception e){
-			ret.clear();
-			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
-			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
-		}
-		return ret;
-	}
+//	//添加充值渠道需要的pay_code
+//	@RequestMapping(value={"/queryPayCode"}, method={RequestMethod.GET}, produces={"application/json"})
+//	public Map<String, Object> queryPayCode(@RequestParam(name = "platId", required = true) String platId,
+//			  HttpServletRequest request) {
+//		Map<String, Object> ret = new HashMap<>();
+//		try {
+//			ret.clear();
+//			if(platId.equals(Constants.PayType.WISDOM_PAYMENT.getCode())) {
+//				ret.put(Message.KEY_DATA, Constants.WisdomPayment.getMap());
+//			}else if(platId.equals(Constants.PayType.CAI_PAY.getCode())) {
+//				ret.put(Message.KEY_DATA, Constants.CaiPay.getMap());
+//			}else if(platId.equals(Constants.PayType.TLY_PAY.getCode())){
+//				Map<String,SysCode> map=cacheServ.getSysCode(Constants.SysCodeTypes.BANK_CODE_LIST.getCode());
+//				Map<String,String> mapNew=new HashMap<String,String>();
+//				Set<String> keys = map.keySet();   //此行可省略，直接将map.keySet()写在for-each循环的条件中
+//				for(String key:keys){
+//					mapNew.put(map.get(key).getCodeName(), map.get(key).getRemark());
+//				}
+//				ret.put(Message.KEY_DATA, mapNew);
+//			}
+//			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+//		}catch(Exception e){
+//			ret.clear();
+//			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+//			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+//			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+//		}
+//		return ret;
+//	}
 	//添加
 	@RequestMapping(value={"/addPayChannel"}, method={RequestMethod.POST}, produces={"application/json"})
 	public Map<String, Object> addPayChannel(@RequestBody PayChannel payChannel) {

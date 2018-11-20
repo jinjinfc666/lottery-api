@@ -7,14 +7,18 @@ import java.util.Map;
 
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPReply;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.jll.common.constants.Message;  
 @Service
 @Transactional
+@PropertySource("classpath:selfPay-setting.properties")
 public class FTPServiceImpl implements FTPService {    
-     
+	@Value("${self_pay_img_address}")
+	String address;
     private  FTPClient ftp;    
     /** 
      *  
@@ -76,6 +80,7 @@ public class FTPServiceImpl implements FTPService {
     @Override
     public Map<String,Object> upload(String imgName) throws Exception{
     	String ip="110.92.64.70";
+//    	String ip=address;
 		Map<String,Object> map=new HashMap<String,Object>();
 		this.connect("/home/jinlilai", ip, 21, "jinlilai", "jinlilai");
 		File file = new File(imgName);

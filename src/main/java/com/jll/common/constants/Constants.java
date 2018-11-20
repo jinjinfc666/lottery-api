@@ -718,35 +718,74 @@ public class Constants {
 	/**
 	 *彩票交易明细列表：查询条件：是否追号
 	 */
-	public static enum IsZh{
-		IS_ZH("1", "是"),
-		NO_ZH("0", "否");
-		private String code;
+	public static enum ZhState{
+		NON_ZH(0, "非追号"),
+		ZH(1, "追号");
 		
-		private String names;
+		private int code;
+		private String desc;
 		
-		private IsZh(String code, String names) {
+		private ZhState(int code, String desc) {
 			this.code = code;
-			this.names = names;
+			this.desc = desc;
 		}
 		
-		public String getCode() {
-			return this.code;
+		public int getCode() {
+			return code;
 		}
 		
-		public String getNames() {
-			return this.names;
+		public String getDesc() {
+			return this.desc;
 		}
 		
-		public static Map<String,Object> getIsZhByCode() {
-			Map<String,Object> map=new HashMap<String,Object>();
-			IsZh[] names = IsZh.values();
-			for(IsZh name: names) {
-				map.put(name.getCode(), name.getNames());
+		public static ZhState getByCode(int code) {
+			ZhState[] zhStates = ZhState.values();
+			for(ZhState zh : zhStates) {
+				if(zh.getCode() == code) {
+					return zh;
+				}
+			}
+			
+			return null;
+		}
+		public static Map<Integer,String> getIsZhByCode() {
+			Map<Integer,String> map=new HashMap<Integer,String>();
+			ZhState[] names = ZhState.values();
+			for(ZhState name: names) {
+				map.put(name.getCode(), name.getDesc());
 			}
 			return map;
 		}
-	}
+	}	
+//	public static enum IsZh{
+//		IS_ZH("0", "是"),
+//		NO_ZH("1", "否");
+//		private String code;
+//		
+//		private String names;
+//		
+//		private IsZh(String code, String names) {
+//			this.code = code;
+//			this.names = names;
+//		}
+//		
+//		public String getCode() {
+//			return this.code;
+//		}
+//		
+//		public String getNames() {
+//			return this.names;
+//		}
+//		
+//		public static Map<String,Object> getIsZhByCode() {
+//			Map<String,Object> map=new HashMap<String,Object>();
+//			IsZh[] names = IsZh.values();
+//			for(IsZh name: names) {
+//				map.put(name.getCode(), name.getNames());
+//			}
+//			return map;
+//		}
+//	}
 	/**
 	 *彩票交易明细列表：查询条件：中奖情况
 	 */
@@ -1260,38 +1299,7 @@ public class Constants {
 			return map;
 		}
 	}
-	
-	public static enum ZhState{
-		ZH(0, "追号"),
-		NON_ZH(1, "非追号");
-		
-		private int code;
-		private String desc;
-		
-		private ZhState(int code, String desc) {
-			this.code = code;
-			this.desc = desc;
-		}
-		
-		public int getCode() {
-			return code;
-		}
-		
-		public String getDesc() {
-			return this.desc;
-		}
-		
-		public static ZhState getByCode(int code) {
-			ZhState[] zhStates = ZhState.values();
-			for(ZhState zh : zhStates) {
-				if(zh.getCode() == code) {
-					return zh;
-				}
-			}
-			
-			return null;
-		}
-	}	
+
 	
 	/**
 	 *彩种的玩法类型
@@ -2297,70 +2305,70 @@ public class Constants {
 		}
 		
 	}
-	/**
-	 * 智慧付
-	 */
-	public static enum WisdomPayment{
-		WEIXIN1("001","微信支付1"),
-		WEIXIN2("002","微信支付2"),
-		WEIXIN3("003","微信支付3"),
-		WEIXIN4("004","微信支付4"),
-		WEIXIN5("005","微信支付5");
-		
-		private String code;
-		private String name;
-		
-		private WisdomPayment(String code,String name) {
-			this.code = code;
-			this.name = name;
-		}
-		
-		public String getCode() {
-			return this.code;
-		}
-		public String getName() {
-			return this.name;
-		}
-		public static Map<String,String> getMap() {
-			Map<String,String> map=new HashMap<String,String>();
-			WisdomPayment[] names = WisdomPayment.values();
-			for(WisdomPayment name: names) {
-				map.put(name.getCode(), name.getName());
-			}
-			return map;
-		}
-	}
-	/**
-	 * 彩付
-	 */
-	public static enum CaiPay{
-		WEIXIN1("001","微信支付1"),
-		WEIXIN2("002","微信支付2"),
-		WEIXIN3("003","微信支付3"),
-		WEIXIN4("004","微信支付4"),
-		WEIXIN5("005","微信支付5");
-		
-		private String code;
-		private String name;
-		
-		private CaiPay(String code,String name) {
-			this.code = code;
-			this.name = name;
-		}
-		
-		public String getCode() {
-			return this.code;
-		}
-		public String getName() {
-			return this.name;
-		}
-		public static Map<String,String> getMap() {
-			Map<String,String> map=new HashMap<String,String>();
-			CaiPay[] names = CaiPay.values();
-			for(CaiPay name: names) {
-				map.put(name.getCode(), name.getName());
-			}
-			return map;
-		}
-	}
+//	/**
+//	 * 智慧付
+//	 */
+//	public static enum WisdomPayment{
+//		WEIXIN1("001","微信支付1"),
+//		WEIXIN2("002","微信支付2"),
+//		WEIXIN3("003","微信支付3"),
+//		WEIXIN4("004","微信支付4"),
+//		WEIXIN5("005","微信支付5");
+//		
+//		private String code;
+//		private String name;
+//		
+//		private WisdomPayment(String code,String name) {
+//			this.code = code;
+//			this.name = name;
+//		}
+//		
+//		public String getCode() {
+//			return this.code;
+//		}
+//		public String getName() {
+//			return this.name;
+//		}
+//		public static Map<String,String> getMap() {
+//			Map<String,String> map=new HashMap<String,String>();
+//			WisdomPayment[] names = WisdomPayment.values();
+//			for(WisdomPayment name: names) {
+//				map.put(name.getCode(), name.getName());
+//			}
+//			return map;
+//		}
+//	}
+//	/**
+//	 * 彩付
+//	 */
+//	public static enum CaiPay{
+//		WEIXIN1("001","微信支付1"),
+//		WEIXIN2("002","微信支付2"),
+//		WEIXIN3("003","微信支付3"),
+//		WEIXIN4("004","微信支付4"),
+//		WEIXIN5("005","微信支付5");
+//		
+//		private String code;
+//		private String name;
+//		
+//		private CaiPay(String code,String name) {
+//			this.code = code;
+//			this.name = name;
+//		}
+//		
+//		public String getCode() {
+//			return this.code;
+//		}
+//		public String getName() {
+//			return this.name;
+//		}
+//		public static Map<String,String> getMap() {
+//			Map<String,String> map=new HashMap<String,String>();
+//			CaiPay[] names = CaiPay.values();
+//			for(CaiPay name: names) {
+//				map.put(name.getCode(), name.getName());
+//			}
+//			return map;
+//		}
+//	}
 }
