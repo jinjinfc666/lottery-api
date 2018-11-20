@@ -2363,4 +2363,21 @@ public class Constants {
 			return map;
 		}
 	}
+	
+	public static enum ZhBlockState{
+		BLOCK(0),
+		NON_BLOCK(1);
+		
+		private int code;
+		
+		private ZhBlockState(int code) {
+			this.code = code;
+		}
+		
+		public int getCode() {
+			return code;
+		}
+		
+		
+	}
 }

@@ -8,6 +8,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
@@ -88,6 +89,7 @@ public class OrderServiceImpl implements OrderService
 		UserInfo user = userServ.getUserByUserName(userName);
 		UserAccount wallet = null;
 		String seqVal = null;
+		String zhTransactionNum = null;
 
 		wallet = walletServ.queryById(walletId);
 
@@ -128,6 +130,13 @@ public class OrderServiceImpl implements OrderService
 			order.setCreateTime(currTime);
 			order.setState(Constants.OrderState.WAITTING_PAYOUT.getCode());
 			order.setDelayPayoutFlag(OrderDelayState.NON_DEPLAY.getCode());
+			if(order.getIsZh() != null 
+					&& order.getIsZh().intValue() == Constants.ZhState.ZH.getCode()) {
+				if(StringUtils.isBlank(zhTransactionNum)) {
+					zhTransactionNum = seqVal;
+				}
+				order.setZhTrasactionNum(zhTransactionNum);				
+			}
 			orderDao.saveOrders(order);
 
 			UserAccountDetails userDetails = new UserAccountDetails();
@@ -352,5 +361,11 @@ public class OrderServiceImpl implements OrderService
 	@Override
 	public PageBean<OrderInfo> queryOrdersByPage(PageBean<OrderInfo> page) {
 		return orderDao.queryOrdersByPage(page);
+	}
+
+	@Override
+	public List<OrderInfo> queryZhOrder(String transactionNum) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

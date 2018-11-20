@@ -88,6 +88,12 @@
                 <comment>׷������£��н����Ƿ����</comment>
             </column>
         </property>
+        
+        <property generated="never" lazy="false" name="zhTrasactionNum" optimistic-lock="true" type="string" unique="false">
+            <column length="300" name="zh_trasaction_num">
+            </column>
+        </property>
+        
         <property generated="never" lazy="false" name="terminalType" optimistic-lock="true" type="java.lang.Integer" unique="false">
             <column name="terminal_type">
                 <comment>0,pc��;1,�ֻ���</comment>

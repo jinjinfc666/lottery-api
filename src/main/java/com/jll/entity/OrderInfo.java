@@ -27,6 +27,7 @@ public class OrderInfo implements java.io.Serializable {
 	private Integer delayPayoutFlag;
 	private Integer isZh;
 	private Integer isZhBlock;
+	private String zhTrasactionNum;
 	private Integer terminalType;
 	private Date createTime;
 
@@ -35,7 +36,7 @@ public class OrderInfo implements java.io.Serializable {
 
 	public OrderInfo(String orderNum, Integer userId, Integer issueId, Integer walletId, Integer playType, String betNum,
 			Integer betTotal, Float betAmount, Float winBetTotal,Float winAmount,Integer times, BigDecimal pattern, BigDecimal prizeRate, Integer state,
-			Integer delayPayoutFlag, Integer isZh, Integer isZhBlock, Integer terminalType, Date createTime) {
+			Integer delayPayoutFlag, Integer isZh, Integer isZhBlock, String zhTrasactionNum, Integer terminalType, Date createTime) {
 		this.orderNum = orderNum;
 		this.userId = userId;
 		this.issueId = issueId;
@@ -53,6 +54,7 @@ public class OrderInfo implements java.io.Serializable {
 		this.delayPayoutFlag = delayPayoutFlag;
 		this.isZh = isZh;
 		this.isZhBlock = isZhBlock;
+		this.zhTrasactionNum = zhTrasactionNum;
 		this.terminalType = terminalType;
 		this.createTime = createTime;
 	}
@@ -200,6 +202,15 @@ public class OrderInfo implements java.io.Serializable {
 
 	public void setIsZhBlock(Integer isZhBlock) {
 		this.isZhBlock = isZhBlock;
+	}
+
+	
+	public String getZhTrasactionNum() {
+		return zhTrasactionNum;
+	}
+
+	public void setZhTrasactionNum(String zhTrasactionNum) {
+		this.zhTrasactionNum = zhTrasactionNum;
 	}
 
 	public Integer getTerminalType() {
