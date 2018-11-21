@@ -76,7 +76,7 @@ public class Constants {
 	
 	public final static String KEY_LOCK_PAY_OUT = "lock_pay_out_{lottoType}_{issue}";
 	
-	public final static Integer LOCK_BETTING_EXPIRED = 60;
+	public final static Integer LOCK_BETTING_EXPIRED = 5;
 	
 	public final static Integer LOCK_CACHE_STATISTIC_EXPIRED = 300;
 	

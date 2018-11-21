@@ -57,8 +57,8 @@ public class DepositOrderServiceImpl implements DepositOrderService
 		addDtl.setCreateTime(new Date());
 		
 		addDtl.setAmount(depositOrder.getAmount().floatValue());
-		addDtl.setPreAmount(mainAcc.getBalance().floatValue());
-		addDtl.setPostAmount(Double.valueOf(BigDecimalUtil.add(addDtl.getPreAmount(),addDtl.getAmount())).floatValue());
+		addDtl.setPreAmount(mainAcc.getBalance());
+		addDtl.setPostAmount(Double.valueOf(BigDecimalUtil.add(addDtl.getPreAmount(),addDtl.getAmount())));
 		addDtl.setWalletId(mainAcc.getId());
 		addDtl.setOperationType(Constants.AccOperationType.DEPOSIT.getCode());
 		addDtl.setOrderId(depositOrder.getId());

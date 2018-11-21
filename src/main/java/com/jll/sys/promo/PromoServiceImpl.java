@@ -160,17 +160,17 @@ public class PromoServiceImpl implements PromoService
 		addDtl.setCreateTime(new Date());
 		addDtl.setAmount(Double.valueOf(dbPro.getValue()).floatValue());
 		if(PromoValueType.CASH.getCode() == dbPro.getValueType()){
-			addDtl.setPreAmount(dbAcc.getBalance().floatValue());
+			addDtl.setPreAmount(dbAcc.getBalance());
 			addDtl.setWalletId(dbAcc.getId());
 			addDtl.setOperationType(AccOperationType.PROMO_CASH.getCode());
 			dbAcc.setBalance(addDtl.getPostAmount());
 		}else{
-			addDtl.setPreAmount(dbAcc.getRewardPoints().floatValue());
+			addDtl.setPreAmount(dbAcc.getRewardPoints().doubleValue());
 			addDtl.setWalletId(dbAcc.getId());
 			addDtl.setOperationType(AccOperationType.PROMO_POINTS.getCode());
 			dbAcc.setBalance(addDtl.getPostAmount());
 		}
-		addDtl.setPostAmount(Double.valueOf(BigDecimalUtil.add(addDtl.getAmount(),addDtl.getPreAmount())).floatValue());
+		addDtl.setPostAmount(Double.valueOf(BigDecimalUtil.add(addDtl.getAmount(),addDtl.getPreAmount())));
 		supserDao.save(addDtl);
 		supserDao.update(dbAcc);
 		PromoClaim addCla= new PromoClaim();
@@ -231,8 +231,8 @@ public class PromoServiceImpl implements PromoService
 			addDtl.setUserId(userInfo.getId());
 			addDtl.setCreateTime(new Date());
 			addDtl.setAmount(Double.valueOf(prizeAmt).floatValue());
-			addDtl.setPreAmount(dbAcc.getBalance().floatValue());
-			addDtl.setPostAmount(Double.valueOf(BigDecimalUtil.add(addDtl.getAmount(),addDtl.getPreAmount())).floatValue());
+			addDtl.setPreAmount(dbAcc.getBalance());
+			addDtl.setPostAmount(Double.valueOf(BigDecimalUtil.add(addDtl.getAmount(),addDtl.getPreAmount())));
 			addDtl.setWalletId(dbAcc.getId());
 			addDtl.setOperationType(AccOperationType.ACTIVITY_GIFT_RED.getCode());
 			supserDao.save(addDtl);
@@ -266,8 +266,8 @@ public class PromoServiceImpl implements PromoService
 		addDtl.setUserId(userInfo.getId());
 		addDtl.setCreateTime(new Date());
 		addDtl.setAmount(Double.valueOf(prizeAmt).floatValue());
-		addDtl.setPreAmount(dbAcc.getRewardPoints().floatValue());
-		addDtl.setPostAmount(Double.valueOf(BigDecimalUtil.add(addDtl.getAmount(),addDtl.getPreAmount())).floatValue());
+		addDtl.setPreAmount(dbAcc.getRewardPoints().doubleValue());
+		addDtl.setPostAmount(Double.valueOf(BigDecimalUtil.add(addDtl.getAmount(),addDtl.getPreAmount())));
 		addDtl.setWalletId(dbAcc.getId());
 		addDtl.setOperationType(AccOperationType.DAILY_SIGN_IN.getCode());
 		supserDao.save(addDtl);

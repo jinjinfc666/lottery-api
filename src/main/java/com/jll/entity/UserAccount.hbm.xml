@@ -12,16 +12,16 @@
         <property generated="never" lazy="false" name="accName" optimistic-lock="true" type="string" unique="false">
             <column length="50" name="acc_name"/>
         </property>
-        <property generated="never" lazy="false" name="balance" optimistic-lock="true" type="java.lang.Float" unique="false">
+        <property generated="never" lazy="false" name="balance" optimistic-lock="true" type="java.lang.Double" unique="false">
             <column name="balance">
             </column>
         </property>
-        <property generated="never" lazy="false" name="freeze" optimistic-lock="true" type="java.lang.Float" unique="false">
+        <property generated="never" lazy="false" name="freeze" optimistic-lock="true" type="java.lang.Double" unique="false">
             <column name="freeze">
                 <comment>������</comment>
             </column>
         </property>
-        <property generated="never" lazy="false" name="prize" optimistic-lock="true" type="java.lang.Float" unique="false">
+        <property generated="never" lazy="false" name="prize" optimistic-lock="true" type="java.lang.Double" unique="false">
             <column name="prize">
                 <comment>����</comment>
             </column>

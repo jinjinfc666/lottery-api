@@ -883,8 +883,8 @@ public class UserInfoServiceImpl implements UserInfoService
 		addDtl.setUserId(dbInfo.getId());
 		addDtl.setCreateTime(new Date());
 		addDtl.setAmount(Double.valueOf(amount).floatValue());
-		addDtl.setPreAmount(dbAcc.getRewardPoints().floatValue());
-		addDtl.setPostAmount(Double.valueOf(BigDecimalUtil.sub(addDtl.getPreAmount(),addDtl.getAmount())).floatValue());
+		addDtl.setPreAmount(dbAcc.getRewardPoints().doubleValue());
+		addDtl.setPostAmount(Double.valueOf(BigDecimalUtil.sub(addDtl.getPreAmount(),addDtl.getAmount())).doubleValue());
 		addDtl.setWalletId(dbAcc.getId());
 		addDtl.setOperationType(AccOperationType.POINTS_EXCHANGE.getCode());
 		supserDao.save(addDtl);
@@ -899,8 +899,8 @@ public class UserInfoServiceImpl implements UserInfoService
 		addRedDtl.setUserId(dbInfo.getId());
 		addRedDtl.setCreateTime(new Date());
 		addRedDtl.setAmount(Double.valueOf(redAddAmt).floatValue());
-		addRedDtl.setPreAmount(redAcc.getBalance().floatValue());
-		addRedDtl.setPostAmount(Double.valueOf(BigDecimalUtil.add(addRedDtl.getPreAmount(),addRedDtl.getAmount())).floatValue());
+		addRedDtl.setPreAmount(redAcc.getBalance().doubleValue());
+		addRedDtl.setPostAmount(Double.valueOf(BigDecimalUtil.add(addRedDtl.getPreAmount(),addRedDtl.getAmount())).doubleValue());
 		addRedDtl.setWalletId(redAcc.getId());
 		addRedDtl.setOperationType(AccOperationType.POINTS_EXCHANGE.getCode());
 		supserDao.save(addRedDtl);
@@ -1601,7 +1601,7 @@ public class UserInfoServiceImpl implements UserInfoService
 		regUser(user,request);
 		
 		UserAccount dbAcc = (UserAccount) supserDao.findByName(UserAccount.class, "userId", user.getId(), "accType", WalletType.MAIN_WALLET.getCode()).get(0);
-		dbAcc.setBalance(new Double(demoBal).floatValue());
+		dbAcc.setBalance(new Double(demoBal));
 		supserDao.update(dbAcc);
 		
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());

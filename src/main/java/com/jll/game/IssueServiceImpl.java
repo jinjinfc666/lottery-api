@@ -211,7 +211,7 @@ public class IssueServiceImpl implements IssueService
 						//收回返点
 						UserAccountDetails addDtail = userAccountDetailsService.initCreidrRecord(qAcc.getUserId(),qAcc, qAcc.getBalance().doubleValue(), -qDtl.getAmount().doubleValue(), AccOperationType.CANCEL_REBATE.getCode(),order.getId());
 						dtlLists.add(addDtail);
-						qAcc.setBalance(new BigDecimal(addDtail.getPostAmount()).floatValue());
+						qAcc.setBalance(addDtail.getPostAmount());
 					}
 				}
 				
@@ -227,7 +227,7 @@ public class IssueServiceImpl implements IssueService
 					double prize = Utils.toDouble(ret.get(0).getAmount());
 					UserAccountDetails addDtail = userAccountDetailsService.initCreidrRecord(curAcc.getUserId(),curAcc, curAcc.getBalance().doubleValue(), prize, AccOperationType.REFUND.getCode(),order.getId());
 					dtlLists.add(addDtail);
-					curAcc.setBalance(new BigDecimal(addDtail.getPostAmount()).floatValue());
+					curAcc.setBalance(addDtail.getPostAmount());
 				}
 				
 				//回收盈利金额
@@ -242,7 +242,7 @@ public class IssueServiceImpl implements IssueService
 					double prize = Utils.toDouble(ret.get(0).getAmount());
 					UserAccountDetails addDtail = userAccountDetailsService.initCreidrRecord(curAcc.getUserId(),curAcc, curAcc.getBalance().doubleValue(), -prize, AccOperationType.RECOVERY_PAYOUT.getCode(),order.getId());
 					dtlLists.add(addDtail);
-					curAcc.setBalance(new BigDecimal(addDtail.getPostAmount()).floatValue());
+					curAcc.setBalance(addDtail.getPostAmount());
 				}
 				order.setState(state.getCode());
 			}
@@ -591,7 +591,10 @@ public class IssueServiceImpl implements IssueService
 					zhOrders = orderInfoServ.queryZhOrder(order.getZhTrasactionNum());
 					if(zhOrders != null) {
 						for(OrderInfo temp : zhOrders) {
-							processOrderCancel(temp.getOrderNum());
+							if(temp.getState().intValue() == Constants.OrderState.WAITTING_PAYOUT.getCode()
+									&& temp.getId().intValue() != order.getId().intValue()) {
+								processOrderCancel(temp.getOrderNum());
+							}
 						}
 					}
 				}
@@ -668,7 +671,7 @@ public class IssueServiceImpl implements IssueService
 		walletType = wallet.getAccType();
 		wallet = walletServ.queryUserAccount(user.getId(), walletType);
 		bal = new BigDecimal(wallet.getBalance()).add(prize);
-		wallet.setBalance(bal.floatValue());
+		wallet.setBalance(bal.doubleValue());
 		
 		walletServ.updateWallet(wallet);
 	}
@@ -691,8 +694,8 @@ public class IssueServiceImpl implements IssueService
 		accDetails.setDataItemType(Constants.DataItemType.BALANCE.getCode());
 		accDetails.setOperationType(opeType.getCode());
 		accDetails.setOrderId(order.getId());
-		accDetails.setPostAmount(postAmount.floatValue());
-		accDetails.setPreAmount(preAmount.floatValue());
+		accDetails.setPostAmount(postAmount.doubleValue());
+		accDetails.setPreAmount(preAmount.doubleValue());
 		accDetails.setUserId(user.getId());
 		accDetails.setWalletId(wallet.getId());
 		accDetailsServ.saveAccDetails(accDetails);

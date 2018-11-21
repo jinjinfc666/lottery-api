@@ -13,13 +13,13 @@
             <column name="amount" precision="8">
             </column>
         </property>
-        <property generated="never" lazy="false" name="preAmount" optimistic-lock="true" type="java.lang.Float" unique="false">
+        <property generated="never" lazy="false" name="preAmount" optimistic-lock="true" type="java.lang.Double" unique="false">
             <column name="pre_amount" precision="8">
                 <comment>�䶯ǰ���</comment>
             </column>
         </property>
-        <property generated="never" lazy="false" name="postAmount" optimistic-lock="true" type="java.lang.Float" unique="false">
-            <column name="post_amount" precision="8">
+        <property generated="never" lazy="false" name="postAmount" optimistic-lock="true" type="java.lang.Double" unique="false">
+            <column name="post_amount" precision="11">
                 <comment>�䶯����</comment>
             </column>
         </property>

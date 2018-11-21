@@ -7685,7 +7685,7 @@ public class FiveFCBettingTest extends ControllerJunitBase{
 	 * 追号投注
 	 * @throws Exception
 	 */
-	public void testBetting_5fc_zh() throws Exception{
+	public void ItestBetting_5fc_zh() throws Exception{
 		int maxTimes = 6500;
 		int counter = 0;
 		String lottoType = "5fc";
@@ -7703,7 +7703,7 @@ public class FiveFCBettingTest extends ControllerJunitBase{
 		Map<String, Integer> betNumIndex = new HashMap<>();
 		String[] timesArray1 = {"1", "2","3","4"};
 		String[] timesArray2 = {"5000","10000"};
-		String[] betNumArray = {"0123456789,0123456789,0123456789", "0123456789,0123456789,0123456789","0123456789,0123456789,0123456789","1,2,6","1,2,7"};
+		String[] betNumArray = {"1,2,3", "1,2,4","1,2,5","1,2,6","1,2,7"};
 		
 		isPerforming.put("isPerforming", false);
 		doneFlag.put("isDone", false);		
@@ -7889,6 +7889,219 @@ public class FiveFCBettingTest extends ControllerJunitBase{
 			e1.printStackTrace();
 		}
 	}
+	
+	
+	
+	/**
+	 * 追号投注,中奖停止追号
+	 * @throws Exception
+	 */
+	public void testBetting_5fc_zh_zj_block() throws Exception{
+		int maxTimes = 6500;
+		int counter = 0;
+		String lottoType = "5fc";
+		long maxWaittingTime = 15000;
+		
+		String userName = "test001";
+		String pwd = "test001";
+		String clientId = "lottery-client";
+		StringBuffer winningNumBuffer = new StringBuffer();
+		Map<String, Integer> currIndx = new HashMap<>();
+		Map<String, PlayTypeFacade> betNumbers = new HashMap<>();
+		Map<String, String> tokens = new HashMap<>();
+		Map<String, Boolean> isPerforming = new HashMap<>();
+		Map<String, Boolean> doneFlag = new HashMap<>();
+		Map<String, Integer> betNumIndex = new HashMap<>();
+		String[] timesArray1 = {"1", "2","3","4"};
+		String[] timesArray2 = {"5000","10000"};
+		String[] betNumArray = {"1,2,3", "1,2,4","1,2,5","1,2,6","1,2,7"};
+		
+		isPerforming.put("isPerforming", false);
+		doneFlag.put("isDone", false);		
+		
+		while(counter < maxTimes) {
+			boolean isDone = doneFlag.get("isDone");
+			if(isDone) {
+				break;
+			}
+			
+			String token = queryToken(userName, pwd, clientId);
+			tokens.put("token", token);
+			
+			Map<String, Object> ret = queryCurrIssue(token, lottoType);
+			
+			int queryIssueCount = 0;
+			
+			while((ret == null 
+					|| ret.size() == 0
+					|| ret.get("currIssue") == null) 
+					&& queryIssueCount <= 60000) {
+				queryIssueCount++;
+				
+				ret = queryCurrIssue(token, lottoType);
+				
+				Thread.sleep(500);
+			}
+			
+			if(ret == null || ret.size() == 0) {
+				Assert.fail("Can't obtain the current issue!!!!");
+			}
+			
+			if(counter >= 50) {
+				maxWaittingTime = 1000;
+			}
+			
+			Thread.sleep(maxWaittingTime);
+			
+			
+			Issue currIssue = (Issue)ret.get("currIssue");
+			List<PlayType> playTypes = (List<PlayType>)ret.get("playTypes");
+			
+			if(currIssue != null) {
+				System.out.println(String.format("down counter   %s",currIssue.getDownCounter()));
+			}
+			
+			if(currIssue.getDownCounter() <= 0 && !isPerforming.get("isPerforming")) {
+				doneFlag.put("isDone", true);		
+			}
+			
+			betNumIndex.put("counter", counter);
+			if(counter < 5) {
+				final Integer currIssueId = currIssue.getId();
+				Thread exe = new Thread(new Runnable(){
+					@Override
+					public void run() {
+						ObjectMapper mapper = new ObjectMapper();
+						ByteArrayInputStream bis = null;
+						String playTypeName = null;
+						String betNum = null;
+						try {
+							ArrayNode array = mapper.createArrayNode();
+							
+							//Integer indx = currIndx.get("currIndx");
+							Integer indx = 0;
+							/*if(indx == null) {
+								indx = 0;
+								currIndx.put("currIndx", indx);
+							}else {
+								indx++;
+								if(indx > playTypes.size() - 1) {
+									indx = playTypes.size() -1;
+								}
+								currIndx.put("currIndx", indx);
+							}*/
+							
+							PlayType playType = playTypes.get(indx);
+							
+							if(playType.getPtName().equals("fs")) {
+								playTypeName = playType.getClassification() + "/fs";
+							}else if(playType.getPtName().equals("ds")){
+								playTypeName = playType.getClassification() + "/ds";
+							}else {
+								playTypeName = playType.getClassification() + "/" + playType.getPtName();
+							}
+							
+							PlayTypeFacade playTypeFacade = PlayTypeFactory.getInstance().getPlayTypeFacade(playTypeName);
+							
+							if(playTypeFacade == null) {
+								return ;
+							}
+							
+							System.out.println(String.format("current counter  %s", betNumIndex.get("counter").intValue()));
+							if(betNumIndex.get("counter").intValue() >= 5) {
+								betNumIndex.put("counter", 4);
+							}
+							//betNum = playTypeFacade.obtainSampleBetNumber();
+							betNum = betNumArray[betNumIndex.get("counter").intValue()];
+							betNumbers.put(betNum, playTypeFacade);
+							String times = null;
+							Random random = new Random();
+							if(betNumIndex.get("counter").intValue() < 3) {
+								times = timesArray1[random.nextInt(2)];
+							}else {
+								times = timesArray2[random.nextInt(2)];
+							}
+							
+							Map<String, Object> zhIssueRet = queryZhIssue(token, lottoType);
+							List<Issue> zhIssues = (List<Issue>)zhIssueRet.get("zhIssue");
+							if(zhIssues != null && zhIssues.size() > 0) {
+								for(int i = 0; i < 5 && zhIssues.size() > 5; i++) {
+									ObjectNode node = array.addObject();
+									node.putPOJO("issueId", zhIssues.get(i).getId());
+									node.putPOJO("playType", playType.getId());
+									node.putPOJO("betNum", betNum.toString());
+									node.putPOJO("times", times);
+									node.putPOJO("pattern", "1");
+									node.putPOJO("isZh", String.valueOf(Constants.ZhState.ZH.getCode()));
+									node.putPOJO("isZhBlock", String.valueOf(Constants.ZhBlockState.BLOCK.getCode()));
+									node.putPOJO("terminalType", "0");									
+								}
+							}
+							
+							
+							bis = new ByteArrayInputStream(mapper.writeValueAsBytes(array));
+							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/" +lottoType+ "/bet/zh/"+String.valueOf(Constants.ZhState.ZH.getCode())+"/wallet/15",
+									bis,
+									MediaType.APPLICATION_JSON_VALUE);
+							WebConversation wc = new WebConversation();
+							
+							String token = tokens.get("token");
+							request.setHeaderField("Authorization", "bearer " + token);
+							
+							WebResponse response = wc.sendRequest(request);
+							
+							int  status = response.getResponseCode();
+							
+							Assert.assertEquals(HttpServletResponse.SC_OK, status);
+							String result = response.getText();
+							
+							Map<String, Object> retItems = null;
+							
+							retItems = mapper.readValue(result, HashMap.class);
+							
+							Assert.assertNotNull(retItems);
+							
+							Assert.assertEquals(Message.status.SUCCESS.getCode(), retItems.get(Message.KEY_STATUS));
+							
+							
+							Thread.sleep(20000);
+							
+							
+						} catch (Exception e) {
+							e.printStackTrace();
+							//throw e;
+						}finally {
+							if(bis != null) {
+								try {
+									bis.close();
+								} catch (IOException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+							}						
+						}
+						
+					}
+				});
+				
+				exe.start();
+				
+				counter++;
+				betNumIndex.put("counter", counter);
+			}			
+			
+		}
+		
+		
+		
+		try {
+			Thread.sleep(1900*1000);
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+	}
+	
 	
 	
 	
