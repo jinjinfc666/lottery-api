@@ -13,5 +13,5 @@ public interface UserAccountDetailsService
 	
 	double getUserOperAmountTotal(int userId,int walletId,String operationType,Date start,Date end);
 	
-	UserAccountDetails initCreidrRecord(int userId,UserAccount userAcc,double beforAmt,double addAmt,String operType,Integer orderId);
+	UserAccountDetails initCreidrRecord(int userId,UserAccount userAcc,double beforAmt,double addAmt,String operType,Integer orderId,String remark);
 }

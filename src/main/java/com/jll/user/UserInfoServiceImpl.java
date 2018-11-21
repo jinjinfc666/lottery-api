@@ -261,69 +261,69 @@ public class UserInfoServiceImpl implements UserInfoService
 	@Override
 	public Map<String, Object> updateUserInfo(UserInfo userInfo) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-		UserInfo dbInfo = getCurLoginInfo();
-		
-		if(null == dbInfo
-				|| !StringUtils.checkEmailFmtIsOK(userInfo.getEmail())
-				|| !StringUtils.checkRealNameFmtIsOK(userInfo.getRealName())
-				|| !StringUtils.checkQqFmtIsOK(userInfo.getQq())
-				|| !StringUtils.checkWercharFmtIsOK(userInfo.getWechat())
-				|| !StringUtils.checkPhoneFmtIsOK(userInfo.getPhoneNum())){
-			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
-			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
-			return ret;
-		}
-		boolean isAdmin = SecurityUtils.checkPermissionIsOK(SecurityContextHolder.getContext().getAuthentication(), SecurityUtils.PERMISSION_ROLE_ADMIN);
-		
-		if(!isAdmin 
-				&& !StringUtils.isEmpty(dbInfo.getRealName())
-				&& !StringUtils.isEmpty(userInfo.getRealName())){
-			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_MORE_UPDATE_REAL_NAME.getCode());
-			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_MORE_UPDATE_REAL_NAME.getErrorMes());
-			return ret;
-		}else if((!isAdmin 
-						&& StringUtils.isEmpty(dbInfo.getRealName())
-						&& !StringUtils.isEmpty(userInfo.getRealName()))
-				||(isAdmin && !StringUtils.isEmpty(userInfo.getRealName()))){
-			dbInfo.setRealName(userInfo.getRealName());
-		}
-		
-		
-		if(!isAdmin 
-				&& !StringUtils.isEmpty(dbInfo.getEmail())
-				&& !StringUtils.isEmpty(userInfo.getEmail())){
-			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_MORE_UPDATE_EMAIL.getCode());
-			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_MORE_UPDATE_EMAIL.getErrorMes());
-			return ret;
-		}else if((!isAdmin 
-						&& StringUtils.isEmpty(dbInfo.getEmail())
-						&& !StringUtils.isEmpty(userInfo.getEmail()))
-				||(isAdmin && !StringUtils.isEmpty(userInfo.getEmail()))){
-			dbInfo.setEmail(userInfo.getEmail());
-			dbInfo.setIsValidEmail(Constants.EmailValidState.UNVERIFIED.getCode());
-		}
-		
-		if(!isAdmin 
-				&& !StringUtils.isEmpty(dbInfo.getPhoneNum())
-				&& !StringUtils.isEmpty(userInfo.getPhoneNum())){
-			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_MORE_UPDATE_PHONE_NUM.getCode());
-			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_MORE_UPDATE_PHONE_NUM.getErrorMes());
-			return ret;
-		}else if((!isAdmin 
-						&& StringUtils.isEmpty(dbInfo.getEmail())
-						&& !StringUtils.isEmpty(userInfo.getPhoneNum()))
-				||(isAdmin && !StringUtils.isEmpty(userInfo.getPhoneNum()))){
-			dbInfo.setPhoneNum(userInfo.getPhoneNum());
-			dbInfo.setIsValidPhone(Constants.PhoneValidState.UNVERIFIED.getCode());
-		}
-		dbInfo.setUserId(userInfo.getUserId());
-		dbInfo.setWechat(userInfo.getWechat());
-		dbInfo.setQq(userInfo.getQq());
-		supserDao.update(dbInfo);
+//		UserInfo dbInfo = getCurLoginInfo();
+//		
+//		if(null == dbInfo
+//				|| !StringUtils.checkEmailFmtIsOK(userInfo.getEmail())
+//				|| !StringUtils.checkRealNameFmtIsOK(userInfo.getRealName())
+//				|| !StringUtils.checkQqFmtIsOK(userInfo.getQq())
+//				|| !StringUtils.checkWercharFmtIsOK(userInfo.getWechat())
+//				|| !StringUtils.checkPhoneFmtIsOK(userInfo.getPhoneNum())){
+//			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+//			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+//			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+//			return ret;
+//		}
+//		boolean isAdmin = SecurityUtils.checkPermissionIsOK(SecurityContextHolder.getContext().getAuthentication(), SecurityUtils.PERMISSION_ROLE_ADMIN);
+//		
+//		if(!isAdmin 
+//				&& !StringUtils.isEmpty(dbInfo.getRealName())
+//				&& !StringUtils.isEmpty(userInfo.getRealName())){
+//			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+//			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_MORE_UPDATE_REAL_NAME.getCode());
+//			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_MORE_UPDATE_REAL_NAME.getErrorMes());
+//			return ret;
+//		}else if((!isAdmin 
+//						&& StringUtils.isEmpty(dbInfo.getRealName())
+//						&& !StringUtils.isEmpty(userInfo.getRealName()))
+//				||(isAdmin && !StringUtils.isEmpty(userInfo.getRealName()))){
+//			dbInfo.setRealName(userInfo.getRealName());
+//		}
+//		
+//		
+//		if(!isAdmin 
+//				&& !StringUtils.isEmpty(dbInfo.getEmail())
+//				&& !StringUtils.isEmpty(userInfo.getEmail())){
+//			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+//			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_MORE_UPDATE_EMAIL.getCode());
+//			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_MORE_UPDATE_EMAIL.getErrorMes());
+//			return ret;
+//		}else if((!isAdmin 
+//						&& StringUtils.isEmpty(dbInfo.getEmail())
+//						&& !StringUtils.isEmpty(userInfo.getEmail()))
+//				||(isAdmin && !StringUtils.isEmpty(userInfo.getEmail()))){
+//			dbInfo.setEmail(userInfo.getEmail());
+//			dbInfo.setIsValidEmail(Constants.EmailValidState.UNVERIFIED.getCode());
+//		}
+//		
+//		if(!isAdmin 
+//				&& !StringUtils.isEmpty(dbInfo.getPhoneNum())
+//				&& !StringUtils.isEmpty(userInfo.getPhoneNum())){
+//			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+//			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_MORE_UPDATE_PHONE_NUM.getCode());
+//			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_MORE_UPDATE_PHONE_NUM.getErrorMes());
+//			return ret;
+//		}else if((!isAdmin 
+//						&& StringUtils.isEmpty(dbInfo.getEmail())
+//						&& !StringUtils.isEmpty(userInfo.getPhoneNum()))
+//				||(isAdmin && !StringUtils.isEmpty(userInfo.getPhoneNum()))){
+//			dbInfo.setPhoneNum(userInfo.getPhoneNum());
+//			dbInfo.setIsValidPhone(Constants.PhoneValidState.UNVERIFIED.getCode());
+//		}
+//		dbInfo.setUserId(userInfo.getUserId());
+//		dbInfo.setWechat(userInfo.getWechat());
+//		dbInfo.setQq(userInfo.getQq());
+//		supserDao.update(dbInfo);
 		
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		return ret;
@@ -1035,12 +1035,12 @@ public class UserInfoServiceImpl implements UserInfoService
 		
 		supserDao.save(wtd);
 		
-		UserAccountDetails accDtal1 = userAccountDetailsService.initCreidrRecord(dbInfo.getId(), mainAcc, mainAcc.getBalance().doubleValue(), -amount, AccOperationType.WD_FREEZE.getCode(),wtd.getId());
+		UserAccountDetails accDtal1 = userAccountDetailsService.initCreidrRecord(dbInfo.getId(), mainAcc, mainAcc.getBalance().doubleValue(), -amount, AccOperationType.WD_FREEZE.getCode(),wtd.getId(),"");
 		mainAcc.setBalance(accDtal1.getPostAmount());
 		accDtal1.setOrderId(wtd.getId());
 		supserDao.save(accDtal1);
 		
-		UserAccountDetails accDtal2 = userAccountDetailsService.initCreidrRecord(dbInfo.getId(), mainAcc, mainAcc.getFreeze().doubleValue(), amount, AccOperationType.WD_FREEZE.getCode(),wtd.getId());
+		UserAccountDetails accDtal2 = userAccountDetailsService.initCreidrRecord(dbInfo.getId(), mainAcc, mainAcc.getFreeze().doubleValue(), amount, AccOperationType.WD_FREEZE.getCode(),wtd.getId(),"");
 		accDtal2.setOrderId(wtd.getId());
 		mainAcc.setFreeze(accDtal2.getPostAmount());
 		supserDao.save(accDtal2);
@@ -1076,7 +1076,7 @@ public class UserInfoServiceImpl implements UserInfoService
 		}
 		
 		UserAccount mainAcc = (UserAccount) supserDao.get(UserAccount.class, dbWtd.getWalletId());
-		UserAccountDetails addDtail1 = userAccountDetailsService.initCreidrRecord(dbWtd.getUserId(),mainAcc, mainAcc.getFreeze().doubleValue(), -dbWtd.getAmount().doubleValue(), AccOperationType.WD_UNFREEZE.getCode(),dbWtd.getId());
+		UserAccountDetails addDtail1 = userAccountDetailsService.initCreidrRecord(dbWtd.getUserId(),mainAcc, mainAcc.getFreeze().doubleValue(), -dbWtd.getAmount().doubleValue(), AccOperationType.WD_UNFREEZE.getCode(),dbWtd.getId(),"");
 		supserDao.save(addDtail1);
 		mainAcc.setFreeze(addDtail1.getPostAmount());
 		
@@ -1088,11 +1088,11 @@ public class UserInfoServiceImpl implements UserInfoService
 		
 		//审核不通过，退还金额，
 		if(WithdrawOrderState.ORDER_END.getCode() != wtd.getState()){
-			UserAccountDetails addDtail2 = userAccountDetailsService.initCreidrRecord(dbWtd.getUserId(),mainAcc, mainAcc.getBalance().doubleValue(), dbWtd.getAmount().doubleValue(), AccOperationType.WD_UNFREEZE.getCode(),dbWtd.getId());
+			UserAccountDetails addDtail2 = userAccountDetailsService.initCreidrRecord(dbWtd.getUserId(),mainAcc, mainAcc.getBalance().doubleValue(), dbWtd.getAmount().doubleValue(), AccOperationType.WD_UNFREEZE.getCode(),dbWtd.getId(),"");
 			supserDao.save(addDtail2);
 			mainAcc.setBalance(addDtail2.getPostAmount());
 		}else{
-			UserAccountDetails addDtail2 = userAccountDetailsService.initCreidrRecord(dbWtd.getUserId(),mainAcc, mainAcc.getBalance().doubleValue(), dbWtd.getAmount().doubleValue(), AccOperationType.WITHDRAW.getCode(),dbWtd.getId());
+			UserAccountDetails addDtail2 = userAccountDetailsService.initCreidrRecord(dbWtd.getUserId(),mainAcc, mainAcc.getBalance().doubleValue(), dbWtd.getAmount().doubleValue(), AccOperationType.WITHDRAW.getCode(),dbWtd.getId(),"");
 			supserDao.save(addDtail2);
 		}
 		supserDao.update(dbWtd);
@@ -1131,10 +1131,10 @@ public class UserInfoServiceImpl implements UserInfoService
 		
 		UserAccount subAcc = (UserAccount) supserDao.findByName(UserAccount.class, "userId", toUserInfo.getId(), "accType", WalletType.MAIN_WALLET.getCode()).get(0);
 		
-		UserAccountDetails mainDtl = userAccountDetailsService.initCreidrRecord(fromUserInfo.getId(), mainAcc, mainAcc.getBalance().doubleValue(), -amount, AccOperationType.TRANSFER.getCode(),0);
+		UserAccountDetails mainDtl = userAccountDetailsService.initCreidrRecord(fromUserInfo.getId(), mainAcc, mainAcc.getBalance().doubleValue(), -amount, AccOperationType.TRANSFER.getCode(),0,"in");
 		mainAcc.setBalance(mainDtl.getPostAmount());
 		
-		UserAccountDetails subDtl = userAccountDetailsService.initCreidrRecord(toUserInfo.getId(), subAcc, subAcc.getBalance().doubleValue(), amount, AccOperationType.TRANSFER.getCode(),0);
+		UserAccountDetails subDtl = userAccountDetailsService.initCreidrRecord(toUserInfo.getId(), subAcc, subAcc.getBalance().doubleValue(), amount, AccOperationType.TRANSFER.getCode(),0,"out");
 		subAcc.setBalance(subDtl.getPostAmount());
 		
 		supserDao.save(mainDtl);
@@ -1156,11 +1156,11 @@ public class UserInfoServiceImpl implements UserInfoService
 	}
 	//点击代理查询下一级代理
 	@Override
-	public Map<String,Object> queryAgentByAgent(Integer id) {
+	public Map<String,Object> queryAgentByAgent(Integer id,String startTime,String endTime) {
 		boolean isOrNo=this.isOrNoUserInfo(id);
 		Map<String,Object> map=new HashMap<String,Object>();
 		if(isOrNo) {
-			List<UserInfo> list=userDao.queryAgentByAgent(id);
+			List<UserInfo> list=userDao.queryAgentByAgent(id,startTime,endTime);
 			map.clear();
 			map.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 			if(list!=null&&list.size()>0) { 
@@ -1326,11 +1326,11 @@ public class UserInfoServiceImpl implements UserInfoService
 		wtd.setOperator(dbInfo.getId());
 		supserDao.save(wtd);
 		
-		UserAccountDetails accDtal1 = userAccountDetailsService.initCreidrRecord(dbInfo.getId(), mainAcc, mainAcc.getBalance().doubleValue(), -amount, AccOperationType.WD_FREEZE.getCode(),wtd.getId());
+		UserAccountDetails accDtal1 = userAccountDetailsService.initCreidrRecord(dbInfo.getId(), mainAcc, mainAcc.getBalance().doubleValue(), -amount, AccOperationType.WD_FREEZE.getCode(),wtd.getId(),"");
 		mainAcc.setBalance(accDtal1.getPostAmount());
 		supserDao.save(accDtal1);
 		
-		UserAccountDetails accDtal2 = userAccountDetailsService.initCreidrRecord(dbInfo.getId(), mainAcc, mainAcc.getFreeze().doubleValue(), amount, AccOperationType.WD_FREEZE.getCode(),wtd.getId());
+		UserAccountDetails accDtal2 = userAccountDetailsService.initCreidrRecord(dbInfo.getId(), mainAcc, mainAcc.getFreeze().doubleValue(), amount, AccOperationType.WD_FREEZE.getCode(),wtd.getId(),"");
 		mainAcc.setFreeze(accDtal2.getPostAmount());
 		
 		supserDao.save(accDtal2);
@@ -1379,24 +1379,24 @@ public class UserInfoServiceImpl implements UserInfoService
 				|| AccOperationType.PROMO_CASH.getCode().equals(dtl.getOperationType())
 				|| AccOperationType.SYS_DEDUCTION.getCode().equals(dtl.getOperationType())
 				|| AccOperationType.SYS_ADD.getCode().equals(dtl.getOperationType())){
-			UserAccountDetails accDtal1 = userAccountDetailsService.initCreidrRecord(userId,userAcc,userAcc.getBalance().doubleValue(),addAmt,dtl.getOperationType(),0);
+			UserAccountDetails accDtal1 = userAccountDetailsService.initCreidrRecord(userId,userAcc,userAcc.getBalance().doubleValue(),addAmt,dtl.getOperationType(),0,"");
 			supserDao.save(accDtal1);
 			userAcc.setBalance(accDtal1.getPostAmount());
 		}else if(AccOperationType.PLAT_REWARD.getCode().equals(dtl.getOperationType())
 				|| AccOperationType.PROMO_POINTS.getCode().equals(dtl.getOperationType())){
 			//只对积分进行操作
-			UserAccountDetails accDtal1 = userAccountDetailsService.initCreidrRecord(userId,userAcc,userAcc.getRewardPoints().doubleValue(),addAmt,dtl.getOperationType(),0);
+			UserAccountDetails accDtal1 = userAccountDetailsService.initCreidrRecord(userId,userAcc,userAcc.getRewardPoints().doubleValue(),addAmt,dtl.getOperationType(),0,"");
 			supserDao.save(accDtal1);
 			userAcc.setRewardPoints(accDtal1.getPostAmount().longValue());
 		
 		}else if(AccOperationType.ACC_FREEZE.getCode().equals(dtl.getOperationType())
 				|| AccOperationType.ACC_UNFREEZE.getCode().equals(dtl.getOperationType())){
 			//对余额和冻结金额进行操作
-			UserAccountDetails accDtal1 = userAccountDetailsService.initCreidrRecord(userId,userAcc,userAcc.getBalance().doubleValue(),addAmt,dtl.getOperationType(),0);
+			UserAccountDetails accDtal1 = userAccountDetailsService.initCreidrRecord(userId,userAcc,userAcc.getBalance().doubleValue(),addAmt,dtl.getOperationType(),0,"");
 			supserDao.save(accDtal1);
 			userAcc.setBalance(accDtal1.getPostAmount());
 			
-			UserAccountDetails accDtal2 = userAccountDetailsService.initCreidrRecord(userId,userAcc,userAcc.getFreeze().doubleValue(),-addAmt,dtl.getOperationType(),0);
+			UserAccountDetails accDtal2 = userAccountDetailsService.initCreidrRecord(userId,userAcc,userAcc.getFreeze().doubleValue(),-addAmt,dtl.getOperationType(),0,"");
 			supserDao.save(accDtal2);
 			userAcc.setFreeze(accDtal2.getPostAmount());
 		}
@@ -1677,5 +1677,4 @@ public class UserInfoServiceImpl implements UserInfoService
 		}
 		return false;
 	}
-	
 }

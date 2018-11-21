@@ -209,7 +209,7 @@ public class IssueServiceImpl implements IssueService
 							qAcc = accMaps.get(qDtl.getWalletId());
 						}
 						//收回返点
-						UserAccountDetails addDtail = userAccountDetailsService.initCreidrRecord(qAcc.getUserId(),qAcc, qAcc.getBalance().doubleValue(), -qDtl.getAmount().doubleValue(), AccOperationType.CANCEL_REBATE.getCode(),order.getId());
+						UserAccountDetails addDtail = userAccountDetailsService.initCreidrRecord(qAcc.getUserId(),qAcc, qAcc.getBalance().doubleValue(), -qDtl.getAmount().doubleValue(), AccOperationType.CANCEL_REBATE.getCode(),order.getId(),"");
 						dtlLists.add(addDtail);
 						qAcc.setBalance(new BigDecimal(addDtail.getPostAmount()).floatValue());
 					}
@@ -225,7 +225,7 @@ public class IssueServiceImpl implements IssueService
 					
 					List<UserAccountDetails> ret = supserDao.findByCriteria(criteria);
 					double prize = Utils.toDouble(ret.get(0).getAmount());
-					UserAccountDetails addDtail = userAccountDetailsService.initCreidrRecord(curAcc.getUserId(),curAcc, curAcc.getBalance().doubleValue(), prize, AccOperationType.REFUND.getCode(),order.getId());
+					UserAccountDetails addDtail = userAccountDetailsService.initCreidrRecord(curAcc.getUserId(),curAcc, curAcc.getBalance().doubleValue(), prize, AccOperationType.REFUND.getCode(),order.getId(),"");
 					dtlLists.add(addDtail);
 					curAcc.setBalance(new BigDecimal(addDtail.getPostAmount()).floatValue());
 				}
@@ -240,7 +240,7 @@ public class IssueServiceImpl implements IssueService
 					
 					List<UserAccountDetails> ret = supserDao.findByCriteria(criteria);
 					double prize = Utils.toDouble(ret.get(0).getAmount());
-					UserAccountDetails addDtail = userAccountDetailsService.initCreidrRecord(curAcc.getUserId(),curAcc, curAcc.getBalance().doubleValue(), -prize, AccOperationType.RECOVERY_PAYOUT.getCode(),order.getId());
+					UserAccountDetails addDtail = userAccountDetailsService.initCreidrRecord(curAcc.getUserId(),curAcc, curAcc.getBalance().doubleValue(), -prize, AccOperationType.RECOVERY_PAYOUT.getCode(),order.getId(),"");
 					dtlLists.add(addDtail);
 					curAcc.setBalance(new BigDecimal(addDtail.getPostAmount()).floatValue());
 				}

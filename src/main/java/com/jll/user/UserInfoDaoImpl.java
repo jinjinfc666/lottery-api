@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.hibernate.query.Query;
+import org.hibernate.type.DateType;
 import org.springframework.stereotype.Repository;
 
 import com.jll.common.constants.Constants;
@@ -209,14 +210,26 @@ public class UserInfoDaoImpl extends DefaultGenericDaoImpl<UserInfo> implements 
 	}
 	//点击代理查询下一级代理
 	@Override
-	public List<UserInfo> queryAgentByAgent(Integer id) {
+	public List<UserInfo> queryAgentByAgent(Integer id,String startTime,String endTime) {
+		String timeSql="";
+		if(!StringUtils.isBlank(startTime)&&!StringUtils.isBlank(endTime)) {
+			timeSql=" and create_time >=:startTime and create_time <:endTime";
+		}
 		Integer userType=Constants.UserType.SYS_ADMIN.getCode();
 		Integer userTypea=Constants.UserType.DEMO_PLAYER.getCode();
-		String sql="select * from(select *,FIND_IN_SET(:id,superior) as aa from user_info where user_type !=:userType and user_type !=:userTypea)a where a.aa=1";
+		Integer userTypeb=Constants.UserType.GENERAL_AGENCY.getCode();
+		String sql="select * from(select *,FIND_IN_SET(:id,superior) as aa from user_info where user_type !=:userType and user_type !=:userTypea and user_type !=:userTypeb "+timeSql+")a where a.aa=1";
 		Query<UserInfo> query1 = getSessionFactory().getCurrentSession().createNativeQuery(sql,UserInfo.class);
 	    query1.setParameter("id", id);
 	    query1.setParameter("userType", userType);
 	    query1.setParameter("userTypea", userTypea);
+	    query1.setParameter("userTypeb", userTypeb);
+	    if(!StringUtils.isBlank(startTime)&&!StringUtils.isBlank(endTime)) {
+	    	Date beginDate = java.sql.Date.valueOf(startTime);
+		    Date endDate = java.sql.Date.valueOf(endTime);
+		    query1.setParameter("startTime", beginDate,DateType.INSTANCE);
+		    query1.setParameter("endTime", endDate,DateType.INSTANCE);
+		}
 	    List<UserInfo> list=query1.list();
 	    return list;
 	} 

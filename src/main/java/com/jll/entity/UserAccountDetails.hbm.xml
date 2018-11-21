@@ -41,5 +41,10 @@
         <property generated="never" lazy="false" name="createTime" optimistic-lock="true" type="timestamp" unique="false">
             <column length="19" name="create_time"/>
         </property>
+        <property generated="never" lazy="false" name="remark" optimistic-lock="true" type="text" unique="false">
+            <column name="remark">
+                <comment>�˻��������ͣ���Ӧϵͳ����</comment>
+            </column>
+        </property>
     </class>
 </hibernate-mapping>

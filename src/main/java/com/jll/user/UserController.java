@@ -1090,10 +1090,19 @@ public class UserController {
 	//点击代理查询下一级代理
 	@RequestMapping(value={"/queryAgentByAgent"}, method={RequestMethod.GET}, produces={"application/json"})
 	public Map<String, Object> queryAgentByAgent(@RequestParam(name = "id", required = true) Integer id,
+			@RequestParam(name = "startTime", required = false) String startTime,
+			@RequestParam(name = "endTime", required = false) String endTime,
 			  HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
+		if((!StringUtils.isBlank(startTime)&&StringUtils.isBlank(endTime))||(StringUtils.isBlank(startTime)&&!StringUtils.isBlank(endTime))) {
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+			return ret;
+		}
 		try {
-			Map<String,Object> map=userInfoService.queryAgentByAgent(id);
+			Map<String,Object> map=userInfoService.queryAgentByAgent(id,startTime,endTime);
 			return map;
 		}catch(Exception e){
 			ret.clear();
@@ -1106,15 +1115,24 @@ public class UserController {
 	//前端登录的代理查询下一级代理
 	@RequestMapping(value={"/QDAgentNextAgent"}, method={RequestMethod.GET}, produces={"application/json"})
 	public Map<String, Object> queryQDAgentNextAgent(@RequestParam(name = "id", required = false) Integer id,
+			@RequestParam(name = "startTime", required = false) String startTime,
+			@RequestParam(name = "endTime", required = false) String endTime,
 			  HttpServletRequest request) {
+		Map<String, Object> ret = new HashMap<>();
+		if((!StringUtils.isBlank(startTime)&&StringUtils.isBlank(endTime))||(StringUtils.isBlank(startTime)&&!StringUtils.isBlank(endTime))) {
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+			return ret;
+		}
 		if(id==null) {
 			String userName=SecurityContextHolder.getContext().getAuthentication().getName();//当前登录的用户
 			UserInfo userInfo=userInfoService.getUserByUserName(userName);
 			id=userInfo.getId();
 		}
-		Map<String, Object> ret = new HashMap<>();
 		try {
-			Map<String,Object> map=userInfoService.queryAgentByAgent(id);
+			Map<String,Object> map=userInfoService.queryAgentByAgent(id,startTime,endTime);
 			return map;
 		}catch(Exception e){
 			ret.clear();

@@ -18,12 +18,13 @@ public class UserAccountDetails implements java.io.Serializable {
 	private String operationType;
 	private int dataItemType;
 	private Date createTime;
+	private String remark;
 
 	public UserAccountDetails() {
 	}
 
 	public UserAccountDetails(Integer userId, Float amount, Float preAmount, Float postAmount, Integer walletId,
-			Integer orderId, String operationType, int dataItemType, Date createTime) {
+			Integer orderId, String operationType, int dataItemType, Date createTime,String remark) {
 		this.userId = userId;
 		this.amount = amount;
 		this.preAmount = preAmount;
@@ -33,6 +34,16 @@ public class UserAccountDetails implements java.io.Serializable {
 		this.operationType = operationType;
 		this.dataItemType = dataItemType;
 		this.createTime = createTime;
+		this.remark = remark;
+	}
+	
+	
+	public String getRemark() {
+		return remark;
+	}
+
+	public void setRemark(String remark) {
+		this.remark = remark;
 	}
 
 	public Integer getId() {
