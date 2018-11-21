@@ -261,7 +261,7 @@ public class ReportController {
 		Map<String, Object> ret = new HashMap<>();
 		try {
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-			ret.put("data", Constants.IsZh.getIsZhByCode());
+			ret.put("data", Constants.ZhState.getIsZhByCode());
 		}catch(Exception e){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());

@@ -245,13 +245,13 @@ public class LotteryCenterController {
 						return resp;
 					}
 					
-					if(zh.getCode() == Constants.ZhState.NON_ZH.getCode()
-							&& orders.size() > 1) {
-						resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-						resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_GAME_MULTIPLE_ORDERS_NOT_ALLOWED.getCode());
-						resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_GAME_MULTIPLE_ORDERS_NOT_ALLOWED.getErrorMes());
-						return resp;
-					}
+//					if(zh.getCode() == Constants.ZhState.NON_ZH.getCode()
+//							&& orders.size() > 1) {
+//						resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+//						resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_GAME_MULTIPLE_ORDERS_NOT_ALLOWED.getCode());
+//						resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_GAME_MULTIPLE_ORDERS_NOT_ALLOWED.getErrorMes());
+//						return resp;
+//					}
 					
 					retCode = orderServ.saveOrders(orders, walletId, zhFlag,lotteryType);
 					if(!String.valueOf(Message.status.SUCCESS.getCode()).equals(retCode)) {
