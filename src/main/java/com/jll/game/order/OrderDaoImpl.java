@@ -115,5 +115,14 @@ public class OrderDaoImpl extends DefaultGenericDaoImpl<OrderInfo> implements Or
 		
 		return this.queryByPagination(page, sql, params, OrderInfo.class);
 	}
+
+	@Override
+	public List<OrderInfo> queryZhOrder(String transactionNum) {
+		List<Object> params = new ArrayList<>();
+		String sql = "from OrderInfo where zhTrasactionNum = ?";
+		params.add(transactionNum);		
+		
+		return this.query(sql, params, OrderInfo.class);
+	}
 	
 }

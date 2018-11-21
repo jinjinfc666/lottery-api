@@ -8,6 +8,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
@@ -88,8 +89,17 @@ public class OrderServiceImpl implements OrderService
 		UserInfo user = userServ.getUserByUserName(userName);
 		UserAccount wallet = null;
 		String seqVal = null;
+		String zhTransactionNum = null;
 
 		wallet = walletServ.queryById(walletId);
+		
+		
+		logger.debug(String.format("starting to cal balance  %s", 
+				
+				new BigDecimal(wallet.getBalance()).toString()));
+		
+		
+
 		if (!Constants.LottoType.MMC.getCode().equals(lotteryType)) {
 			isIssueValid = verifyIssue(orders, lotteryType);
 			if (!isIssueValid.equals(String.valueOf(Message.status.SUCCESS.getCode()))) {
@@ -97,63 +107,73 @@ public class OrderServiceImpl implements OrderService
 			}
 		}
 		currTime = new Date();
-
+		
 		if (Constants.LottoType.MMC.getCode().equals(lotteryType)) {
 			processMMCIssue(orders);
 		}
-
+		
 		isWalletValid = isWalletValid(walletId);
 		if (!isWalletValid) {
 			return String.valueOf(Message.Error.ERROR_USER__WALLET_INVALID.getCode());
 		}
-
+		
 		if (!Constants.LottoType.MMC.getCode().equals(lotteryType)) {
 			isIssueValid = verifyIssue(orders, lotteryType);
 			if (!isIssueValid.equals(String.valueOf(Message.status.SUCCESS.getCode()))) {
 				return String.valueOf(isIssueValid);
 			}
 		}
-
+		
 		isBalValid = verifyBal(orders, wallet, lotteryType, user);
 		if (!isBalValid.equals(String.valueOf(Message.status.SUCCESS.getCode()))) {
 			return isBalValid;
 		}
-
+		
 		if (accOpetioans == null || accOpetioans.size() == 0) {
 			return String.valueOf(Message.Error.ERROR_COMMON_NO_ACCOUNT_OPERATION.getCode());
 		}
-
-
+		
+		
 		for (OrderInfo order : orders) {
-
+			
 			seqVal = Utils.gen16DigitsSeq(getSeq());
 			order.setWalletId(walletId);
 			order.setOrderNum(seqVal);
 			order.setUserId(user.getId());
-			order.setCreateTime(currTime);
+			order.setCreateTime(new Date());
+			if(order.getIsZhBlock() == null) {
+				order.setIsZhBlock(Constants.ZhBlockState.NON_BLOCK.getCode());
+			}
 			order.setState(Constants.OrderState.WAITTING_PAYOUT.getCode());
 			order.setDelayPayoutFlag(OrderDelayState.NON_DEPLAY.getCode());
+			if(order.getIsZh() != null 
+					&& order.getIsZh().intValue() == Constants.ZhState.ZH.getCode()) {
+				if(StringUtils.isBlank(zhTransactionNum)) {
+					zhTransactionNum = seqVal;
+				}
+				order.setZhTrasactionNum(zhTransactionNum);				
+			}
 			orderDao.saveOrders(order);
-
+			
 			UserAccountDetails userDetails = new UserAccountDetails();
 			userDetails.setUserId(user.getId());
 			userDetails.setAmount(order.getBetAmount());
 			userDetails.setCreateTime(currTime);
-
+			
 			SysCode bettingCode = accOpetioans.get(opeType);
 			userDetails.setOperationType(bettingCode.getCodeName());
 			userDetails.setOrderId(order.getId());
-			float postAmount = MathUtil.subtract(wallet.getBalance().floatValue(), order.getBetAmount(), Float.class);
-
+			Double postAmount = MathUtil.subtract(wallet.getBalance(), order.getBetAmount(), Double.class);
+			
 			userDetails.setPostAmount(postAmount);
-			userDetails.setPreAmount(wallet.getBalance().floatValue());
+			userDetails.setPreAmount(wallet.getBalance());
 			userDetails.setUserId(order.getUserId());
 			userDetails.setWalletId(walletId);
 			userDetails.setDataItemType(Constants.DataItemType.BALANCE.getCode());
 			accDetailsServ.saveAccDetails(userDetails);
-
+			
 			wallet.setBalance(postAmount);
-
+			
 			// update the statistic in cache
 			QueueManager.getInstance().exeThread(new Runnable() {
 				@Override
@@ -162,10 +182,12 @@ public class OrderServiceImpl implements OrderService
 				}
 			});
 		}
-
+		
 		// update balance
 		walletServ.updateWallet(wallet);
-
+	
+		logger.debug(String.format("Done cal balance  %s", new BigDecimal(wallet.getBalance()).toString()));
+		
 		if (Constants.LottoType.MMC.getCode().equals(lotteryType)) {
 			int issueId = orders.get(0).getIssueId();
 			Issue issue = issueServ.getIssueById(issueId);
@@ -409,5 +431,10 @@ public class OrderServiceImpl implements OrderService
 	@Override
 	public PageBean<OrderInfo> queryOrdersByPage(PageBean<OrderInfo> page) {
 		return orderDao.queryOrdersByPage(page);
+	}
+
+	@Override
+	public List<OrderInfo> queryZhOrder(String transactionNum) {
+		return orderDao.queryZhOrder(transactionNum);
 	}
 }

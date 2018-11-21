@@ -11,8 +11,8 @@ public class UserAccountDetails implements java.io.Serializable {
 	private Integer id;
 	private Integer userId;
 	private Float amount;
-	private Float preAmount;
-	private Float postAmount;
+	private Double preAmount;
+	private Double postAmount;
 	private Integer walletId;
 	private Integer orderId;
 	private String operationType;
@@ -23,7 +23,7 @@ public class UserAccountDetails implements java.io.Serializable {
 	public UserAccountDetails() {
 	}
 
-	public UserAccountDetails(Integer userId, Float amount, Float preAmount, Float postAmount, Integer walletId,
+	public UserAccountDetails(Integer userId, Float amount, Double preAmount, Double postAmount, Integer walletId,
 			Integer orderId, String operationType, int dataItemType, Date createTime,String remark) {
 		this.userId = userId;
 		this.amount = amount;
@@ -70,19 +70,19 @@ public class UserAccountDetails implements java.io.Serializable {
 		this.amount = amount;
 	}
 
-	public Float getPreAmount() {
+	public Double getPreAmount() {
 		return this.preAmount;
 	}
 
-	public void setPreAmount(Float preAmount) {
+	public void setPreAmount(Double preAmount) {
 		this.preAmount = preAmount;
 	}
 
-	public Float getPostAmount() {
+	public Double getPostAmount() {
 		return this.postAmount;
 	}
 
-	public void setPostAmount(Float postAmount) {
+	public void setPostAmount(Double postAmount) {
 		this.postAmount = postAmount;
 	}
 

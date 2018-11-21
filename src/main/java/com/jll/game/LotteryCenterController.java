@@ -198,6 +198,14 @@ public class LotteryCenterController {
 		int bettingBlockTimes = 3000;
 		int bettingBlockCounter = 0;
 		String keyLock = Constants.KEY_LOCK_BETTING;
+		
+		if(orders == null || orders.size() == 0) {
+			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+			return resp;
+		}
+		
 		keyLock = keyLock.replace("{userId}", String.valueOf(user.getId()));
 		keyLock = keyLock.replace("{issue}", String.valueOf(orders.get(0).getIssueId()));
 		
@@ -258,7 +266,7 @@ public class LotteryCenterController {
 					logger.debug(
 							String.format("Thread Id %s    loker   %s  exit", Thread.currentThread().getId(), keyLock));
 				}finally {
-					cacheServ.releaseLock(keyLock);
+					//cacheServ.releaseLock(keyLock);
 					break;
 				}
 			}

@@ -44,8 +44,8 @@ public class UserAccountDetailsServiceImpl implements UserAccountDetailsService
 		addRedDtl.setUserId(userId);
 		addRedDtl.setCreateTime(new Date());
 		addRedDtl.setAmount(Math.abs(Double.valueOf(addAmt).floatValue()));
-		addRedDtl.setPreAmount(Double.valueOf(beforAmt).floatValue());
-		addRedDtl.setPostAmount(Double.valueOf(BigDecimalUtil.add(addRedDtl.getPreAmount(),addAmt)).floatValue());
+		addRedDtl.setPreAmount(Double.valueOf(beforAmt));
+		addRedDtl.setPostAmount(Double.valueOf(BigDecimalUtil.add(addRedDtl.getPreAmount(),addAmt)));
 		addRedDtl.setWalletId(userAcc.getId());
 		addRedDtl.setOrderId(orderId);
 		addRedDtl.setOperationType(operType);

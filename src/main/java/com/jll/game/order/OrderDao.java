@@ -22,4 +22,6 @@ public interface OrderDao
 	List<OrderInfo> queryWinOrdersByIssue(Integer issueId);
 
 	PageBean<OrderInfo> queryOrdersByPage(PageBean<OrderInfo> page);
+
+	List<OrderInfo> queryZhOrder(String transactionNum);
 }

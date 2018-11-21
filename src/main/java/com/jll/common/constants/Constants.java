@@ -76,7 +76,7 @@ public class Constants {
 	
 	public final static String KEY_LOCK_PAY_OUT = "lock_pay_out_{lottoType}_{issue}";
 	
-	public final static Integer LOCK_BETTING_EXPIRED = 60;
+	public final static Integer LOCK_BETTING_EXPIRED = 5;
 	
 	public final static Integer LOCK_CACHE_STATISTIC_EXPIRED = 300;
 	
@@ -2305,70 +2305,20 @@ public class Constants {
 		}
 		
 	}
-//	/**
-//	 * 智慧付
-//	 */
-//	public static enum WisdomPayment{
-//		WEIXIN1("001","微信支付1"),
-//		WEIXIN2("002","微信支付2"),
-//		WEIXIN3("003","微信支付3"),
-//		WEIXIN4("004","微信支付4"),
-//		WEIXIN5("005","微信支付5");
-//		
-//		private String code;
-//		private String name;
-//		
-//		private WisdomPayment(String code,String name) {
-//			this.code = code;
-//			this.name = name;
-//		}
-//		
-//		public String getCode() {
-//			return this.code;
-//		}
-//		public String getName() {
-//			return this.name;
-//		}
-//		public static Map<String,String> getMap() {
-//			Map<String,String> map=new HashMap<String,String>();
-//			WisdomPayment[] names = WisdomPayment.values();
-//			for(WisdomPayment name: names) {
-//				map.put(name.getCode(), name.getName());
-//			}
-//			return map;
-//		}
-//	}
-//	/**
-//	 * 彩付
-//	 */
-//	public static enum CaiPay{
-//		WEIXIN1("001","微信支付1"),
-//		WEIXIN2("002","微信支付2"),
-//		WEIXIN3("003","微信支付3"),
-//		WEIXIN4("004","微信支付4"),
-//		WEIXIN5("005","微信支付5");
-//		
-//		private String code;
-//		private String name;
-//		
-//		private CaiPay(String code,String name) {
-//			this.code = code;
-//			this.name = name;
-//		}
-//		
-//		public String getCode() {
-//			return this.code;
-//		}
-//		public String getName() {
-//			return this.name;
-//		}
-//		public static Map<String,String> getMap() {
-//			Map<String,String> map=new HashMap<String,String>();
-//			CaiPay[] names = CaiPay.values();
-//			for(CaiPay name: names) {
-//				map.put(name.getCode(), name.getName());
-//			}
-//			return map;
-//		}
-//	}
+	
+	
+	public static enum ZhBlockState{
+		BLOCK(0),
+		NON_BLOCK(1);
+		
+		private int code;
+		
+		private ZhBlockState(int code) {
+			this.code = code;
+		}
+		
+		public int getCode() {
+			return code;
+		}
+	}
 }
