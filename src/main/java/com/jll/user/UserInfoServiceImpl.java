@@ -61,6 +61,7 @@ import com.jll.common.utils.PageQuery;
 import com.jll.common.utils.SecurityUtils;
 import com.jll.common.utils.StringUtils;
 import com.jll.common.utils.Utils;
+import com.jll.dao.PageBean;
 import com.jll.dao.PageQueryDao;
 import com.jll.dao.SupserDao;
 import com.jll.entity.DepositApplication;
@@ -1156,18 +1157,15 @@ public class UserInfoServiceImpl implements UserInfoService
 	}
 	//点击代理查询下一级代理
 	@Override
-	public Map<String,Object> queryAgentByAgent(Integer id,String startTime,String endTime) {
+	public Map<String,Object> queryAgentByAgent(Integer id,String startTime,String endTime,Integer pageIndex) {
+		Integer pageSize=Constants.Pagination.SUM_NUMBER.getCode();
 		boolean isOrNo=this.isOrNoUserInfo(id);
 		Map<String,Object> map=new HashMap<String,Object>();
 		if(isOrNo) {
-			List<UserInfo> list=userDao.queryAgentByAgent(id,startTime,endTime);
+			PageBean list=userDao.queryAgentByAgent(id,startTime,endTime,pageSize,pageIndex);
 			map.clear();
 			map.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-			if(list!=null&&list.size()>0) { 
-				map.put("data", list);
-			}else { 
-				map.put("data", null);
-			}
+			map.put("data", list);
 			return map;
 		}else {
 			map.clear();
@@ -1676,5 +1674,28 @@ public class UserInfoServiceImpl implements UserInfoService
 			return true;
 		}
 		return false;
+	}
+
+	@Override
+	public Map<String, Object> queryAgentByAgentHou(Integer id, String startTime, String endTime) {
+		boolean isOrNo=this.isOrNoUserInfo(id);
+		Map<String,Object> map=new HashMap<String,Object>();
+		if(isOrNo) {
+			List<UserInfo> list=userDao.queryAgentByAgentHou(id,startTime,endTime);
+			map.clear();
+			map.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+			if(list!=null&&list.size()>0) { 
+				map.put("data", list);
+			}else { 
+				map.put("data", null);
+			}
+			return map;
+		}else {
+			map.clear();
+			map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_NO_VALID_USER.getCode());
+			map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_NO_VALID_USER.getErrorMes());
+			return map;
+		}
 	}
 }

@@ -210,7 +210,8 @@ public class UserInfoDaoImpl extends DefaultGenericDaoImpl<UserInfo> implements 
 	}
 	//点击代理查询下一级代理
 	@Override
-	public List<UserInfo> queryAgentByAgent(Integer id,String startTime,String endTime) {
+	public PageBean queryAgentByAgent(Integer id,String startTime,String endTime,Integer pageSize,Integer pageIndex) {
+		Map<String,Object> map=new HashMap<String,Object>();
 		String timeSql="";
 		if(!StringUtils.isBlank(startTime)&&!StringUtils.isBlank(endTime)) {
 			timeSql=" and create_time >=:startTime and create_time <:endTime";
@@ -219,19 +220,21 @@ public class UserInfoDaoImpl extends DefaultGenericDaoImpl<UserInfo> implements 
 		Integer userTypea=Constants.UserType.DEMO_PLAYER.getCode();
 		Integer userTypeb=Constants.UserType.GENERAL_AGENCY.getCode();
 		String sql="select * from(select *,FIND_IN_SET(:id,superior) as aa from user_info where user_type !=:userType and user_type !=:userTypea and user_type !=:userTypeb "+timeSql+")a where a.aa=1";
-		Query<UserInfo> query1 = getSessionFactory().getCurrentSession().createNativeQuery(sql,UserInfo.class);
-	    query1.setParameter("id", id);
-	    query1.setParameter("userType", userType);
-	    query1.setParameter("userTypea", userTypea);
-	    query1.setParameter("userTypeb", userTypeb);
+		map.put("id", id);
+		map.put("userType", userType);
+		map.put("userTypea", userTypea);
+		map.put("userTypeb", userTypeb);
 	    if(!StringUtils.isBlank(startTime)&&!StringUtils.isBlank(endTime)) {
 	    	Date beginDate = java.sql.Date.valueOf(startTime);
 		    Date endDate = java.sql.Date.valueOf(endTime);
-		    query1.setParameter("startTime", beginDate,DateType.INSTANCE);
-		    query1.setParameter("endTime", endDate,DateType.INSTANCE);
+		    map.put("startTime", beginDate);
+		    map.put("endTime", endDate);
 		}
-	    List<UserInfo> list=query1.list();
-	    return list;
+	    PageBean page=new PageBean();
+		page.setPageIndex(pageIndex);
+		page.setPageSize(pageSize);
+		PageBean pageBean=queryBySqlPagination(page, sql,map);
+		return pageBean;
 	} 
 	//查询总代
 	@Override
@@ -315,6 +318,31 @@ public class UserInfoDaoImpl extends DefaultGenericDaoImpl<UserInfo> implements 
 			params.add(DateUtil.getDateDayEnd(user.getCreateTime()));
 		}
 	    return queryCount(hql, params,UserInfo.class);
+	}
+
+	@Override
+	public List<UserInfo> queryAgentByAgentHou(Integer id, String startTime, String endTime) {
+		String timeSql="";
+		if(!StringUtils.isBlank(startTime)&&!StringUtils.isBlank(endTime)) {
+			timeSql=" and create_time >=:startTime and create_time <:endTime";
+		}
+		Integer userType=Constants.UserType.SYS_ADMIN.getCode();
+		Integer userTypea=Constants.UserType.DEMO_PLAYER.getCode();
+		Integer userTypeb=Constants.UserType.GENERAL_AGENCY.getCode();
+		String sql="select * from(select *,FIND_IN_SET(:id,superior) as aa from user_info where user_type !=:userType and user_type !=:userTypea and user_type !=:userTypeb "+timeSql+")a where a.aa=1";
+		Query<UserInfo> query1 = getSessionFactory().getCurrentSession().createNativeQuery(sql,UserInfo.class);
+	    query1.setParameter("id", id);
+	    query1.setParameter("userType", userType);
+	    query1.setParameter("userTypea", userTypea);
+	    query1.setParameter("userTypeb", userTypeb);
+	    if(!StringUtils.isBlank(startTime)&&!StringUtils.isBlank(endTime)) {
+	    	Date beginDate = java.sql.Date.valueOf(startTime);
+		    Date endDate = java.sql.Date.valueOf(endTime);
+		    query1.setParameter("startTime", beginDate,DateType.INSTANCE);
+		    query1.setParameter("endTime", endDate,DateType.INSTANCE);
+		}
+	    List<UserInfo> list=query1.list();
+	    return list;
 	}
   
 }

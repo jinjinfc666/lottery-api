@@ -35,5 +35,9 @@ public class FlowDetailServiceImpl implements FlowDetailService {
 		Integer codeTypeNameId=sysCode.getId();
 		return flowDetailDao.queryUserAccountDetails(codeTypeNameId,userName,amountStart,amountEnd,operationType,startTime,endTime,pageIndex,pageSize);
 	}
-	
+	//代理的转账记录查询  
+	@Override
+	public Map<String, Object> queryAgentTransfer(Integer agentId, String startTime, String endTime) {
+		return flowDetailDao.queryAgentTransfer(agentId, startTime, endTime);
+	}
 }

@@ -1102,7 +1102,7 @@ public class UserController {
 			return ret;
 		}
 		try {
-			Map<String,Object> map=userInfoService.queryAgentByAgent(id,startTime,endTime);
+			Map<String,Object> map=userInfoService.queryAgentByAgentHou(id,startTime,endTime);
 			return map;
 		}catch(Exception e){
 			ret.clear();
@@ -1117,6 +1117,7 @@ public class UserController {
 	public Map<String, Object> queryQDAgentNextAgent(@RequestParam(name = "id", required = false) Integer id,
 			@RequestParam(name = "startTime", required = false) String startTime,
 			@RequestParam(name = "endTime", required = false) String endTime,
+			@RequestParam(name = "pageIndex", required = true) Integer pageIndex,
 			  HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
 		if((!StringUtils.isBlank(startTime)&&StringUtils.isBlank(endTime))||(StringUtils.isBlank(startTime)&&!StringUtils.isBlank(endTime))) {
@@ -1132,7 +1133,7 @@ public class UserController {
 			id=userInfo.getId();
 		}
 		try {
-			Map<String,Object> map=userInfoService.queryAgentByAgent(id,startTime,endTime);
+			Map<String,Object> map=userInfoService.queryAgentByAgent(id,startTime,endTime,pageIndex);
 			return map;
 		}catch(Exception e){
 			ret.clear();

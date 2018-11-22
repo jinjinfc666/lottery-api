@@ -88,6 +88,36 @@ public class FlowDetailDaoImpl extends DefaultGenericDaoImpl<UserAccountDetails>
 		map.put("data", pageBean);
 		return map;
 	}
-	
+	//代理的转账记录查询  
+	@Override
+	public Map<String, Object> queryAgentTransfer(Integer agentId, String startTime, String endTime) {
+		Map<String, Object> map=new HashMap<String, Object>();
+		List<?> list=queryAgentId(agentId);
+		List<?> listData=null;
+		if(list!=null&&list.size()>0) {
+			String sql="from UserAccountDetails a,UserInfo b where a.userId=b.id and a.operationType=:operationType and a.orderId in(:listId) and a.createTime>=:startTime and a.createTime<:endTime";
+			Query<?> query=getSessionFactory().getCurrentSession().createQuery(sql);
+			query.setParameterList("listId", list);
+			query.setParameter("operationType", Constants.AccOperationType.TRANSFER.getCode());
+		    Date beginDate = java.sql.Date.valueOf(startTime);
+		    Date endDate = java.sql.Date.valueOf(endTime);
+		    query.setParameter("startTime", beginDate,DateType.INSTANCE);
+		    query.setParameter("endTime", endDate,DateType.INSTANCE);
+		    listData=query.list();
+		    map.put("data", listData);
+			return map;
+		}
+		map.put("data", listData);
+		return map;
+	}
+	//查询
+	private List<?> queryAgentId(Integer agentId){
+		String sql1="select id from user_account_details where user_id=:agentId and operation_type=:operationType";
+	    Query<?> query1 = getSessionFactory().getCurrentSession().createNativeQuery(sql1);
+	    query1.setParameter("agentId", agentId);
+	    query1.setParameter("operationType", Constants.AccOperationType.TRANSFER.getCode());
+	    List<?> list=query1.list();
+		return list;
+	}
 }
 

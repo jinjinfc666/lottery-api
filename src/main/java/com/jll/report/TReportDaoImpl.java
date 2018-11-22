@@ -52,7 +52,7 @@ public class TReportDaoImpl extends DefaultGenericDaoImpl<TeamPlReport> implemen
 			map.put("endTime", endDate);
 		}
 		String sql=null;
-		sql="select user_name,SUM(deposit) as deposit,SUM(withdrawal) as withdrawal,SUM(deduction) as deduction,sum(consumption) as consumption,SUM(cancel_amount) as cancel_amount,SUM(return_prize) as return_prize,SUM(rebate) as rebate,SUM(recharge_member) AS recharge_member,SUM(new_members) as new_members,sum(profit) as profit from team_pl_report "+timeSql+userNameSql+" GROUP BY user_name";
+		sql="select user_name,SUM(deposit) as deposit,SUM(withdrawal) as withdrawal,SUM(deduction) as deduction,sum(consumption) as consumption,SUM(cancel_amount) as cancel_amount,SUM(return_prize) as return_prize,SUM(rebate) as rebate,SUM(recharge_member) AS recharge_member,SUM(new_members) as new_members,sum(profit) as profit,user_type from team_pl_report "+timeSql+userNameSql+" GROUP BY user_name,user_type";
 		PageBean page=new PageBean();
 		page.setPageIndex(pageIndex);
 		page.setPageSize(pageSize);
@@ -78,7 +78,7 @@ public class TReportDaoImpl extends DefaultGenericDaoImpl<TeamPlReport> implemen
 			map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_NO_AGENCY.getErrorMes());
 			return map;
 	    }
-	    String sql2="select user_name,SUM(deposit) as deposit,SUM(withdrawal) as withdrawal,SUM(deduction) as deduction,SUM(consumption) as consumption,SUM(cancel_amount) as cancel_amount,SUM(return_prize) as return_prize,SUM(rebate) as rebate,SUM(recharge_member) as recharge_member,SUM(new_members) as new_members,SUM(profit) as profit from team_pl_report where user_name in(:userNameList)  and create_time>=:startTime and create_time<:endTime GROUP BY user_name";
+	    String sql2="select user_name,SUM(deposit) as deposit,SUM(withdrawal) as withdrawal,SUM(deduction) as deduction,SUM(consumption) as consumption,SUM(cancel_amount) as cancel_amount,SUM(return_prize) as return_prize,SUM(rebate) as rebate,SUM(recharge_member) as recharge_member,SUM(new_members) as new_members,SUM(profit) as profit,user_type from team_pl_report where user_name in(:userNameList)  and create_time>=:startTime and create_time<:endTime GROUP BY user_name,user_type";
 	    Query<?> query2=getSessionFactory().getCurrentSession().createNativeQuery(sql2);
 	    query2.setParameterList("userNameList", userNameList);
 	    Date beginDate = java.sql.Date.valueOf(startTime);
@@ -113,6 +113,7 @@ public class TReportDaoImpl extends DefaultGenericDaoImpl<TeamPlReport> implemen
 			m.setNewMembers((Integer)bd9.intValue());
 			BigDecimal bd10 = (BigDecimal) obj[10];
 			m.setProfit(bd10);
+			m.setUserType((Integer)obj[11]);
 		    listRecord.add(m);
 		}
 		map.put("data", listRecord);

@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -872,5 +873,25 @@ public class ReportController {
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
 		}
 		return ret;
+	}
+	//代理的转账记录查询  
+	@RequestMapping(value={"/agent/transfer"}, method={RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> queryAgentTransfer(@RequestParam(name = "agentId", required = true) Integer agentId,
+			@RequestParam(name = "startTime", required = true) String startTime,
+			@RequestParam(name = "endTime", required = true) String endTime,
+			  HttpServletRequest request) {
+		Map<String, Object> ret = new HashMap<>();
+		try {
+			ret= flowDetailService.queryAgentTransfer(agentId,startTime,endTime);
+			logger.debug(ret+"------------------------------queryUserAccountDetails--------------------------------------");
+			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+			return ret;
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			return ret;
+		}
 	}
 }

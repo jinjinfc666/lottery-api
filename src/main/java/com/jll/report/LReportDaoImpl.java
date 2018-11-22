@@ -56,7 +56,7 @@ public class LReportDaoImpl extends DefaultGenericDaoImpl<LotteryPlReport> imple
 			map.put("endTime", endDate);
 		}
 		String sql=null;
-		sql = "select user_name,SUM(consumption) as consumption, SUM(cancel_amount) as cancel_amount,SUM(return_prize) as return_prize,SUM(rebate) as rebate,SUM(profit) as profit from lottery_pl_report where "+timeSql+userNameSql+codeNameSql+" GROUP BY user_name";
+		sql = "select user_name,SUM(consumption) as consumption, SUM(cancel_amount) as cancel_amount,SUM(return_prize) as return_prize,SUM(rebate) as rebate,SUM(profit) as profit,user_type from lottery_pl_report where "+timeSql+userNameSql+codeNameSql+" GROUP BY user_name,user_type";
 		PageBean page=new PageBean();
 		page.setPageIndex(pageIndex);
 		page.setPageSize(pageSize);
@@ -167,61 +167,64 @@ public class LReportDaoImpl extends DefaultGenericDaoImpl<LotteryPlReport> imple
 	    Query<?> query1 = getSessionFactory().getCurrentSession().createNativeQuery(sql1);
 	    query1.setParameter("id", id);
 	    List<?> userNameList=query1.list();
-	    String sql2="select user_name,SUM(consumption) as consumption,SUM(cancel_amount) as cancel_amount,SUM(return_prize) as return_prize,SUM(rebate) as rebate, SUM(profit) as profit from lottery_pl_report where create_time>=:startTime and create_time<:endTime and  user_name in(:userNameList) and code_name=:codeName GROUP BY user_name";
-	    Query<?> query2=getSessionFactory().getCurrentSession().createNativeQuery(sql2);
-	    query2.setParameterList("userNameList", userNameList);
-	    query2.setParameter("codeName",codeName);
-	    Date beginDate = java.sql.Date.valueOf(startTime);
-	    Date endDate = java.sql.Date.valueOf(endTime);
-	    query2.setParameter("startTime", beginDate,DateType.INSTANCE);
-	    query2.setParameter("endTime", endDate,DateType.INSTANCE);
-    	List<?> LReportList=null;
-    	LReportList=query2.list();    
-	    Iterator<?> it=LReportList.iterator();
 	    List<LotteryPlReport> listRecord=new ArrayList<LotteryPlReport>();
-		while(it.hasNext()) {
-		    LotteryPlReport l=new LotteryPlReport();
-			Object[] obj=(Object[]) it.next();
-			l.setUserName((String)obj[0]);
-			BigDecimal bd1 = (BigDecimal) obj[1];
-			l.setConsumption(bd1);
-			BigDecimal bd2 = (BigDecimal) obj[2];
-			l.setCancelAmount(bd2);
-			BigDecimal bd3 = (BigDecimal) obj[3];
-			l.setReturnPrize(bd3);
-			BigDecimal bd4 = (BigDecimal) obj[4];
-			l.setRebate(bd4);
-			BigDecimal bd5 = (BigDecimal) obj[5];
-			l.setProfit(bd5);
-		    listRecord.add(l);
-		}
-		map.put("data", listRecord);
-		
-		String sqlsum="select SUM(consumption) as consumption,SUM(cancel_amount) as cancel_amount,SUM(return_prize) as return_prize,SUM(rebate) as rebate, SUM(profit) as profit from lottery_pl_report where create_time>=:startTime and create_time<:endTime and  user_name in(:userNameList) and code_name=:codeName";
-		Query<?> querysum=getSessionFactory().getCurrentSession().createNativeQuery(sqlsum);
-		querysum.setParameterList("userNameList", userNameList);
-		querysum.setParameter("codeName",codeName);
-		querysum.setParameter("startTime", beginDate,DateType.INSTANCE);
-		querysum.setParameter("endTime", endDate,DateType.INSTANCE);
-    	List<?> ListSum=null;
-    	ListSum=querysum.list();
-	    Iterator<?> itSum=ListSum.iterator();
 	    List<LotteryPlReport> listRecordSum=new ArrayList<LotteryPlReport>();
-	    LotteryPlReport l=new LotteryPlReport();
-		Object[] obj=(Object[]) itSum.next();
-		if(obj[0]!=null) {
-			BigDecimal bd0 = (BigDecimal) obj[0];
-			l.setConsumption(bd0);
-			BigDecimal bd1 = (BigDecimal) obj[1];
-			l.setCancelAmount(bd1);
-			BigDecimal bd2 = (BigDecimal) obj[2];
-			l.setReturnPrize(bd2);
-			BigDecimal bd3 = (BigDecimal) obj[3];
-			l.setRebate(bd3);
-			BigDecimal bd4 = (BigDecimal) obj[4];
-			l.setProfit(bd4);
-			listRecordSum.add(l);
-		}
+	    if(userNameList!=null&&userNameList.size()>0) {
+	    	String sql2="select user_name,SUM(consumption) as consumption,SUM(cancel_amount) as cancel_amount,SUM(return_prize) as return_prize,SUM(rebate) as rebate, SUM(profit) as profit,user_type from lottery_pl_report where create_time>=:startTime and create_time<:endTime and  user_name in(:userNameList) and code_name=:codeName GROUP BY user_name,user_type";
+		    Query<?> query2=getSessionFactory().getCurrentSession().createNativeQuery(sql2);
+		    query2.setParameterList("userNameList", userNameList);
+		    query2.setParameter("codeName",codeName);
+		    Date beginDate = java.sql.Date.valueOf(startTime);
+		    Date endDate = java.sql.Date.valueOf(endTime);
+		    query2.setParameter("startTime", beginDate,DateType.INSTANCE);
+		    query2.setParameter("endTime", endDate,DateType.INSTANCE);
+	    	List<?> LReportList=null;
+	    	LReportList=query2.list();    
+		    Iterator<?> it=LReportList.iterator();
+			while(it.hasNext()) {
+			    LotteryPlReport l=new LotteryPlReport();
+				Object[] obj=(Object[]) it.next();
+				l.setUserName((String)obj[0]);
+				BigDecimal bd1 = (BigDecimal) obj[1];
+				l.setConsumption(bd1);
+				BigDecimal bd2 = (BigDecimal) obj[2];
+				l.setCancelAmount(bd2);
+				BigDecimal bd3 = (BigDecimal) obj[3];
+				l.setReturnPrize(bd3);
+				BigDecimal bd4 = (BigDecimal) obj[4];
+				l.setRebate(bd4);
+				BigDecimal bd5 = (BigDecimal) obj[5];
+				l.setProfit(bd5);
+				l.setUserType((Integer)obj[6]);
+			    listRecord.add(l);
+			}
+			
+			String sqlsum="select SUM(consumption) as consumption,SUM(cancel_amount) as cancel_amount,SUM(return_prize) as return_prize,SUM(rebate) as rebate, SUM(profit) as profit from lottery_pl_report where create_time>=:startTime and create_time<:endTime and  user_name in(:userNameList) and code_name=:codeName";
+			Query<?> querysum=getSessionFactory().getCurrentSession().createNativeQuery(sqlsum);
+			querysum.setParameterList("userNameList", userNameList);
+			querysum.setParameter("codeName",codeName);
+			querysum.setParameter("startTime", beginDate,DateType.INSTANCE);
+			querysum.setParameter("endTime", endDate,DateType.INSTANCE);
+	    	List<?> ListSum=null;
+	    	ListSum=querysum.list();
+		    Iterator<?> itSum=ListSum.iterator();
+		    LotteryPlReport l=new LotteryPlReport();
+			Object[] obj=(Object[]) itSum.next();
+			if(obj[0]!=null) {
+				BigDecimal bd0 = (BigDecimal) obj[0];
+				l.setConsumption(bd0);
+				BigDecimal bd1 = (BigDecimal) obj[1];
+				l.setCancelAmount(bd1);
+				BigDecimal bd2 = (BigDecimal) obj[2];
+				l.setReturnPrize(bd2);
+				BigDecimal bd3 = (BigDecimal) obj[3];
+				l.setRebate(bd3);
+				BigDecimal bd4 = (BigDecimal) obj[4];
+				l.setProfit(bd4);
+				listRecordSum.add(l);
+			}
+	    }
+		map.put("data", listRecord);
 	    map.put("sumData", listRecordSum);
 		return map;
 	}

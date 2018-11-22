@@ -117,7 +117,8 @@ public interface UserInfoService
 	//查询总代下面的所有一级代理
 	List<UserInfo> queryAllAgent();
 	//点击代理查询下一级代理
-	Map<String,Object> queryAgentByAgent(Integer id,String startTime,String endTime);
+	Map<String,Object> queryAgentByAgent(Integer id,String startTime,String endTime,Integer pageIndex);
+	Map<String,Object> queryAgentByAgentHou(Integer id,String startTime,String endTime);
 	//通过id查看这个用户是否存在
 	boolean isOrNoUserInfo(Integer id);
 	
