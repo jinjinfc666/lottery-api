@@ -1591,7 +1591,8 @@ public class Constants {
 		IMG_PATH(1,"图片地址"),//图片地址
 		JUMP_URL(2,"跳转地址"),//跳转地址
 		QR_CODE(3,"二维码地址"),//二维码地址
-		MESSAGE(4,"只显示消息");//只显示消息
+		MESSAGE(4,"只显示消息"),//只显示消息
+		BANK_ACC(5,"接收银行账户");
 		
 		private int code;
 		private String desc;
@@ -2321,4 +2322,30 @@ public class Constants {
 			return code;
 		}
 	}
+	
+	//支付方式
+	public static enum PayTypeClass {
+		WECHAT_PAY_SCAN(0, "wechat_pay_scan"), 
+		ALI_PAY_SCAN(1, "ali_pay_scan"),
+		ONLINE_BANKING_PAY(2, "online_banking_pay");
+
+		private int code;
+
+		private String desc;
+		
+		private PayTypeClass(int code, String desc) {
+			this.code = code;
+			this.desc = desc;
+		}
+
+		public int getCode() {
+			return code;
+		}
+
+		public String getDesc() {
+			return this.desc;
+		}
+		
+	}
+			
 }

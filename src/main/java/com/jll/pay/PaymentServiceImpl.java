@@ -145,7 +145,7 @@ public class PaymentServiceImpl  implements PaymentService
 				ret.put(Message.KEY_ERROR_CODE, retCode);
 				ret.put(Message.KEY_ERROR_MES, Message.Error.getErrorByCode(retCode).getErrorMes());
 			}
-			ret.put(Message.KEY_REMAKE, qrCode);
+			ret.put(Message.KEY_DATA_QR_CODE, qrCode);
 			//ret.put(Message.KEY_DATA_TYPE, "qrcode");
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		}else {
@@ -158,6 +158,7 @@ public class PaymentServiceImpl  implements PaymentService
 	public Map<String, Object> payOrderToSystem(int userId, DepositApplication info,Map<String, Object> pramsInfo) {
 		
 		Map<String, Object> ret = new HashMap<String, Object>();
+		Map<String, Object> data = new HashMap<String, Object>();
 		UserInfo dbInfo = (UserInfo) supserDao.get(UserInfo.class,userId);
 		
 		if(null == dbInfo
@@ -199,7 +200,7 @@ public class PaymentServiceImpl  implements PaymentService
 		
 		PayType pt = cacheRedisService.getPayTypeInfo(info.getPayType());
 		
-		ret.put(Message.KEY_DATA_TYPE, pcInfo.getShowType());
+		data.put(Message.KEY_DATA_TYPE, pcInfo.getShowType());
 		//写入订单
 		DepositApplication depositOrder = depositOrderDao.saveDepositOrder(info.getPayType(), info.getPayChannel(),userId, info.getAmount(), "",new Date(),"");
 		pramsInfo.put("depositOrder", depositOrder);
@@ -212,11 +213,27 @@ public class PaymentServiceImpl  implements PaymentService
 			pramsInfo.remove("payCardNumber");
 			if(!pcInfo.getPayCode().equals("00026")){
 				String retCode = caiPayService.processScanPay(pramsInfo);
-				getScanPayInfo(ret, retCode, StringUtils.getStringValue(pramsInfo.get("qrcode")));
+				//getScanPayInfo(ret, retCode, StringUtils.getStringValue(pramsInfo.get("qrcode")));
+				String qrCode = StringUtils.getStringValue(pramsInfo.get("qrcode"));
+				if(retCode.equals(String.valueOf(Message.status.SUCCESS.getCode()))) {
+					if(StringUtils.isBlank(qrCode)) {
+						ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+						ret.put(Message.KEY_ERROR_CODE, retCode);
+						ret.put(Message.KEY_ERROR_MES, Message.Error.getErrorByCode(retCode).getErrorMes());
+					}else {
+						data.put(Message.KEY_DATA_QR_CODE, qrCode);
+						ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());						
+					}
+				}else {
+					ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+					ret.put(Message.KEY_ERROR_CODE, retCode);
+					ret.put(Message.KEY_ERROR_MES, Message.Error.getErrorByCode(retCode).getErrorMes());
+				}
+				
 			}else{
 				caiPayService.processOnlineBankPay(pramsInfo);
-				ret.put("isRedirect",true);
-				ret.put(Message.KEY_DATA, pramsInfo.get("redirect"));
+				data.put("isRedirect",true);
+				data.put(Message.KEY_DATA_REDIRECT, pramsInfo.get("redirect"));
 				ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 			}
 		}else if(pt.getPlatId().equals(Constants.PayType.WISDOM_PAYMENT.getCode())){
@@ -224,12 +241,27 @@ public class PaymentServiceImpl  implements PaymentService
 			pramsInfo.remove("payCardNumber");
 			if(pcInfo.getPayCode().equals("b2c")){
 				zhihPayService.processOnlineBankPay(pramsInfo);
-				ret.put("isRedirect",true);
-				ret.put(Message.KEY_DATA, pramsInfo.get("redirect"));
+				data.put("isRedirect",true);
+				data.put(Message.KEY_DATA_REDIRECT, pramsInfo.get("redirect"));
 				ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 			}else{
 				String retCode = zhihPayService.processScanPay(pramsInfo);
-				getScanPayInfo(ret, retCode, StringUtils.getStringValue(pramsInfo.get("qrcode")));
+				//getScanPayInfo(ret, retCode, StringUtils.getStringValue(pramsInfo.get("qrcode")));
+				String qrCode = StringUtils.getStringValue(pramsInfo.get("qrcode"));
+				if(retCode.equals(String.valueOf(Message.status.SUCCESS.getCode()))) {
+					if(StringUtils.isBlank(qrCode)) {
+						ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+						ret.put(Message.KEY_ERROR_CODE, retCode);
+						ret.put(Message.KEY_ERROR_MES, Message.Error.getErrorByCode(retCode).getErrorMes());
+					}else {
+						data.put(Message.KEY_DATA_QR_CODE, qrCode);
+						ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());						
+					}
+				}else {
+					ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+					ret.put(Message.KEY_ERROR_CODE, retCode);
+					ret.put(Message.KEY_ERROR_MES, Message.Error.getErrorByCode(retCode).getErrorMes());
+				}
 			}
 		}else if(pt.getPlatId().equals(Constants.PayType.TLY_PAY.getCode())){
 			pramsInfo.put("card_number", pcInfo.getBankAcc());
@@ -237,7 +269,7 @@ public class PaymentServiceImpl  implements PaymentService
 			
 			if(retCode.equals(String.valueOf(Message.status.SUCCESS.getCode()))) {
 				ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-				ret.put(Message.KEY_REMAKE, "SUCCESS");
+				//ret.put(Message.KEY_REMAKE, "SUCCESS");
 			}else {
 				ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 				ret.put(Message.KEY_ERROR_CODE, retCode);
@@ -245,9 +277,16 @@ public class PaymentServiceImpl  implements PaymentService
 			}
 		//按照系统支付来处理
 		}else{
+			
+			if(pcInfo.getShowType().intValue() == Constants.PayChannelShowType.IMG_PATH.getCode()) {
+				data.put(Message.KEY_DATA_QR_CODE, pcInfo.getQrUrl());
+			}else if(pcInfo.getShowType().intValue() == Constants.PayChannelShowType.BANK_ACC.getCode()) {
+				data.put(Message.KEY_DATA_BANK_ACC, pcInfo.getBankAcc());
+			}
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-			ret.put(Message.KEY_REMAKE,pcInfo.getQrUrl());
 		}
+		
+		ret.put(Message.KEY_DATA,data);
 		return ret;
 	}
 

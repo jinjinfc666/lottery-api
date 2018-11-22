@@ -9,11 +9,12 @@ public class Message {
 	
 	public final static String KEY_DATA = "data";
 	public final static String KEY_DATA_TYPE = "data_type";
-	
-	public final static String KEY_REMAKE = "remake";
+	public final static String KEY_DATA_REDIRECT = "redirect";
+	public final static String KEY_DATA_QR_CODE = "qr_code";
+	public final static String KEY_DATA_BANK_ACC = "bank_acc";
 	public final static String KEY_EXPIRED_TIME = "expired_time";
 	public final static String KEY_DEFAULT_PASSWORD = "default_password";
-	
+	public final static String KEY_REMAKE = "remark";
 	
 	
 	public static enum status{
