@@ -105,10 +105,10 @@ public class PromoServiceImpl implements PromoService
 		}
 		
 		PromoClaim dbPci = null;
-		int calcTimes = 0;	
+		int calcTimes = 0;
 		//Date calcStartDate = dbPro.getCreateTime(),calcEndDate = dbPro.getExpiredTime();
 		 
-		DetachedCriteria criteria = DetachedCriteria.forClass(DepositApplication.class);
+		DetachedCriteria criteria = DetachedCriteria.forClass(PromoClaim.class);
 		criteria.add(Restrictions.ge("createTime",dbPro.getCreateTime()));
 		criteria.add(Restrictions.le("createTime",new Date()));
 		criteria.add(Restrictions.eq("userId",dbInfo.getId()));
