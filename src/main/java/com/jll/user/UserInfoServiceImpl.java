@@ -262,69 +262,69 @@ public class UserInfoServiceImpl implements UserInfoService
 	@Override
 	public Map<String, Object> updateUserInfo(UserInfo userInfo) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-//		UserInfo dbInfo = getCurLoginInfo();
-//		
-//		if(null == dbInfo
-//				|| !StringUtils.checkEmailFmtIsOK(userInfo.getEmail())
-//				|| !StringUtils.checkRealNameFmtIsOK(userInfo.getRealName())
-//				|| !StringUtils.checkQqFmtIsOK(userInfo.getQq())
-//				|| !StringUtils.checkWercharFmtIsOK(userInfo.getWechat())
-//				|| !StringUtils.checkPhoneFmtIsOK(userInfo.getPhoneNum())){
-//			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-//			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
-//			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
-//			return ret;
-//		}
-//		boolean isAdmin = SecurityUtils.checkPermissionIsOK(SecurityContextHolder.getContext().getAuthentication(), SecurityUtils.PERMISSION_ROLE_ADMIN);
-//		
-//		if(!isAdmin 
-//				&& !StringUtils.isEmpty(dbInfo.getRealName())
-//				&& !StringUtils.isEmpty(userInfo.getRealName())){
-//			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-//			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_MORE_UPDATE_REAL_NAME.getCode());
-//			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_MORE_UPDATE_REAL_NAME.getErrorMes());
-//			return ret;
-//		}else if((!isAdmin 
-//						&& StringUtils.isEmpty(dbInfo.getRealName())
-//						&& !StringUtils.isEmpty(userInfo.getRealName()))
-//				||(isAdmin && !StringUtils.isEmpty(userInfo.getRealName()))){
-//			dbInfo.setRealName(userInfo.getRealName());
-//		}
-//		
-//		
-//		if(!isAdmin 
-//				&& !StringUtils.isEmpty(dbInfo.getEmail())
-//				&& !StringUtils.isEmpty(userInfo.getEmail())){
-//			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-//			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_MORE_UPDATE_EMAIL.getCode());
-//			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_MORE_UPDATE_EMAIL.getErrorMes());
-//			return ret;
-//		}else if((!isAdmin 
-//						&& StringUtils.isEmpty(dbInfo.getEmail())
-//						&& !StringUtils.isEmpty(userInfo.getEmail()))
-//				||(isAdmin && !StringUtils.isEmpty(userInfo.getEmail()))){
-//			dbInfo.setEmail(userInfo.getEmail());
-//			dbInfo.setIsValidEmail(Constants.EmailValidState.UNVERIFIED.getCode());
-//		}
-//		
-//		if(!isAdmin 
-//				&& !StringUtils.isEmpty(dbInfo.getPhoneNum())
-//				&& !StringUtils.isEmpty(userInfo.getPhoneNum())){
-//			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-//			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_MORE_UPDATE_PHONE_NUM.getCode());
-//			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_MORE_UPDATE_PHONE_NUM.getErrorMes());
-//			return ret;
-//		}else if((!isAdmin 
-//						&& StringUtils.isEmpty(dbInfo.getEmail())
-//						&& !StringUtils.isEmpty(userInfo.getPhoneNum()))
-//				||(isAdmin && !StringUtils.isEmpty(userInfo.getPhoneNum()))){
-//			dbInfo.setPhoneNum(userInfo.getPhoneNum());
-//			dbInfo.setIsValidPhone(Constants.PhoneValidState.UNVERIFIED.getCode());
-//		}
-//		dbInfo.setUserId(userInfo.getUserId());
-//		dbInfo.setWechat(userInfo.getWechat());
-//		dbInfo.setQq(userInfo.getQq());
-//		supserDao.update(dbInfo);
+		UserInfo dbInfo = getCurLoginInfo();
+		
+		if(null == dbInfo
+				|| !StringUtils.checkEmailFmtIsOK(userInfo.getEmail())
+				|| !StringUtils.checkRealNameFmtIsOK(userInfo.getRealName())
+				|| !StringUtils.checkQqFmtIsOK(userInfo.getQq())
+				|| !StringUtils.checkWercharFmtIsOK(userInfo.getWechat())
+				|| !StringUtils.checkPhoneFmtIsOK(userInfo.getPhoneNum())){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+			return ret;
+		}
+		boolean isAdmin = SecurityUtils.checkPermissionIsOK(SecurityContextHolder.getContext().getAuthentication(), SecurityUtils.PERMISSION_ROLE_ADMIN);
+		
+		if(!isAdmin 
+				&& !StringUtils.isEmpty(dbInfo.getRealName())
+				&& !StringUtils.isEmpty(userInfo.getRealName())){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_MORE_UPDATE_REAL_NAME.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_MORE_UPDATE_REAL_NAME.getErrorMes());
+			return ret;
+		}else if((!isAdmin 
+						&& StringUtils.isEmpty(dbInfo.getRealName())
+						&& !StringUtils.isEmpty(userInfo.getRealName()))
+				||(isAdmin && !StringUtils.isEmpty(userInfo.getRealName()))){
+			dbInfo.setRealName(userInfo.getRealName());
+		}
+		
+		
+		if(!isAdmin 
+				&& !StringUtils.isEmpty(dbInfo.getEmail())
+				&& !StringUtils.isEmpty(userInfo.getEmail())){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_MORE_UPDATE_EMAIL.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_MORE_UPDATE_EMAIL.getErrorMes());
+			return ret;
+		}else if((!isAdmin 
+						&& StringUtils.isEmpty(dbInfo.getEmail())
+						&& !StringUtils.isEmpty(userInfo.getEmail()))
+				||(isAdmin && !StringUtils.isEmpty(userInfo.getEmail()))){
+			dbInfo.setEmail(userInfo.getEmail());
+			dbInfo.setIsValidEmail(Constants.EmailValidState.UNVERIFIED.getCode());
+		}
+		
+		if(!isAdmin 
+				&& !StringUtils.isEmpty(dbInfo.getPhoneNum())
+				&& !StringUtils.isEmpty(userInfo.getPhoneNum())){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_MORE_UPDATE_PHONE_NUM.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_MORE_UPDATE_PHONE_NUM.getErrorMes());
+			return ret;
+		}else if((!isAdmin 
+						&& StringUtils.isEmpty(dbInfo.getEmail())
+						&& !StringUtils.isEmpty(userInfo.getPhoneNum()))
+				||(isAdmin && !StringUtils.isEmpty(userInfo.getPhoneNum()))){
+			dbInfo.setPhoneNum(userInfo.getPhoneNum());
+			dbInfo.setIsValidPhone(Constants.PhoneValidState.UNVERIFIED.getCode());
+		}
+		dbInfo.setUserId(userInfo.getUserId());
+		dbInfo.setWechat(userInfo.getWechat());
+		dbInfo.setQq(userInfo.getQq());
+		supserDao.update(dbInfo);
 		
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		return ret;
@@ -589,26 +589,6 @@ public class UserInfoServiceImpl implements UserInfoService
 		}
 		
 	}
-
-	@Override
-	public Map<String, Object> getUserSiteMessageLists() {
-		Map<String, Object> ret = new HashMap<String, Object>();
-		UserInfo dbInfo = getCurLoginInfo();
-		if(null == dbInfo){
-			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
-			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
-			return ret;
-		}
-		DetachedCriteria dc = DetachedCriteria.forClass(SiteMessage.class);
-		dc.add(Restrictions.eq("userId",dbInfo.getId()));
-		dc.add(Restrictions.le("expireTime",new Date()));
-		dc.addOrder(Order.desc("expireTime"));
-		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-		ret.put(Message.KEY_DATA,supserDao.findByCriteria(dc));
-		return ret;
-		
-	}
 	
 	private void getAllSiteMessageFeedback(List<SiteMessFeedback> backList , int userId, int msgId){
 		DetachedCriteria dc = DetachedCriteria.forClass(SiteMessFeedback.class);
@@ -617,49 +597,6 @@ public class UserInfoServiceImpl implements UserInfoService
 		dc.addOrder(Order.desc("id"));
 		backList = supserDao.findByCriteria(dc);
 		
-	}
-
-	@Override
-	public Map<String, Object> showSiteMessageFeedback(int msgId) {
-		Map<String, Object> ret = new HashMap<String, Object>();
-		UserInfo dbInfo = getCurLoginInfo();
-		SiteMessage dbMsg = (SiteMessage) supserDao.get(SiteMessage.class,msgId);
-		if(null == dbInfo
-				|| null == dbMsg){
-			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
-			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
-			return ret;
-		}
-		
-		dbMsg.setIsRead(SiteMessageReadType.READING.getCode());
-		
-		
-		List<SiteMessFeedback> retList = new ArrayList<>();
-		getAllSiteMessageFeedback(retList, dbInfo.getId(), msgId);
-		
-		Collections.sort(retList, new Comparator<SiteMessFeedback>() {
-			@Override
-			public int compare(SiteMessFeedback b1, SiteMessFeedback b2) {
-				return b2.getId()-b1.getId();
-			}
-		});
-		
-		if(!retList.isEmpty()){
-			SiteMessFeedback lastBack = retList.get(retList.size()-1);
-			if(lastBack.getIsRead() == SiteMessageReadType.UN_READING.getCode()
-					&& dbMsg.getReceiver()>0){
-				lastBack.setIsRead(SiteMessageReadType.READING.getCode());
-				supserDao.update(lastBack);
-				dbMsg.setIsRead(SiteMessageReadType.READING.getCode());
-				supserDao.update(dbMsg);
-			}
-		}
-		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-		ret.put(Message.KEY_DATA,dbMsg);
-		ret.put(Message.KEY_REMAKE,retList);
-		return ret;
-	
 	}
 
 	@Override
@@ -1132,14 +1069,19 @@ public class UserInfoServiceImpl implements UserInfoService
 		
 		UserAccount subAcc = (UserAccount) supserDao.findByName(UserAccount.class, "userId", toUserInfo.getId(), "accType", WalletType.MAIN_WALLET.getCode()).get(0);
 		
-		UserAccountDetails mainDtl = userAccountDetailsService.initCreidrRecord(fromUserInfo.getId(), mainAcc, mainAcc.getBalance().doubleValue(), -amount, AccOperationType.TRANSFER.getCode(),0,"in");
+		UserAccountDetails mainDtl = userAccountDetailsService.initCreidrRecord(fromUserInfo.getId(), mainAcc, mainAcc.getBalance().doubleValue(), -amount, AccOperationType.TRANSFER.getCode(),0,"out");
 		mainAcc.setBalance(mainDtl.getPostAmount());
 		
-		UserAccountDetails subDtl = userAccountDetailsService.initCreidrRecord(toUserInfo.getId(), subAcc, subAcc.getBalance().doubleValue(), amount, AccOperationType.TRANSFER.getCode(),0,"out");
+		UserAccountDetails subDtl = userAccountDetailsService.initCreidrRecord(toUserInfo.getId(), subAcc, subAcc.getBalance().doubleValue(), amount, AccOperationType.TRANSFER.getCode(),0,"in");
 		subAcc.setBalance(subDtl.getPostAmount());
 		
 		supserDao.save(mainDtl);
 		supserDao.save(subDtl);
+		Integer id=mainDtl.getId();
+		mainDtl.setOrderId(id);
+		subDtl.setOrderId(id);
+		supserDao.saveOrUpdate(mainDtl);
+		supserDao.saveOrUpdate(subDtl);
 		supserDao.update(subAcc);
 		supserDao.update(mainAcc);
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());

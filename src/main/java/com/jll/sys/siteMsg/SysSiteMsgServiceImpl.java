@@ -22,8 +22,10 @@ import com.jll.dao.PageQueryDao;
 import com.jll.dao.SupserDao;
 import com.jll.entity.SiteMessFeedback;
 import com.jll.entity.SiteMessage;
+import com.jll.entity.UserInfo;
 import com.jll.sysSettings.syscode.SysCodeService;
 import com.jll.user.UserInfoDao;
+import com.jll.user.UserInfoService;
 import com.jll.user.wallet.WalletService;
 
 
@@ -44,6 +46,11 @@ public class SysSiteMsgServiceImpl implements SysSiteMsgService
 	
 	@Resource
 	SysCodeService sysCodeService;
+	
+	@Resource
+	UserInfoService userInfoService;
+	@Resource
+	SysSiteMsgDao sysSiteMsgDao;
 	
 	
 	private void getAllSiteMessageFeedback(List<SiteMessFeedback> backList , int userId, int msgId){
@@ -107,5 +114,45 @@ public class SysSiteMsgServiceImpl implements SysSiteMsgService
 		ret.put(Message.KEY_DATA,PageQuery.queryForPagenationByHql(supserDao, querySql.toString(),SiteMessage.class,parmsList,page.getPageIndex(), page.getPageSize()));
 		return ret;
 	}
-	
+
+	@Override
+	public Map<String, Object> getUserSiteMessageLists(Map<String, String> params) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+		UserInfo dbInfo = userInfoService.getCurLoginInfo();
+		if(null == dbInfo){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+			return ret;
+		}
+		params.put("id", dbInfo.getId().toString());
+		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		ret.put(Message.KEY_DATA,sysSiteMsgDao.querySiteMessage(params));
+		return ret;
+	}
+
+	@Override
+	public Map<String, Object> updateUserSiteMessageRead(Map<String, String> params) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+		ret=sysSiteMsgDao.updateUserSiteMessageRead(params);
+		return ret;
+	}
+	@Override
+	public Map<String, Object> showSiteMessageFeedbackTop(Integer msgId) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+		UserInfo dbInfo = userInfoService.getCurLoginInfo();
+		List<?> dbMsg = sysSiteMsgDao.querySiteMessageById(msgId);
+		if(null == dbInfo
+				|| null == dbMsg){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+			return ret;
+		}
+		List<?> retList=sysSiteMsgDao.querySiteMessFeedback(msgId);
+		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		ret.put(Message.KEY_DATA,dbMsg);
+		ret.put(Message.KEY_REMAKE,retList);
+		return ret;
+	}
 }

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.jll.dao.PageBean;
+import com.jll.entity.SiteMessage;
 import com.jll.entity.UserInfo;
 
 public interface UserInfoDao

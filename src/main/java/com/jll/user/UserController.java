@@ -40,6 +40,7 @@ import com.jll.entity.UserAccountDetails;
 import com.jll.entity.UserBankCard;
 import com.jll.entity.UserInfo;
 import com.jll.entity.WithdrawApplication;
+import com.jll.sys.siteMsg.SysSiteMsgService;
 import com.jll.tp.EmailService;
 import com.jll.tp.SMSService;
 import com.jll.user.bank.UserBankCardService;
@@ -76,6 +77,9 @@ public class UserController {
 	
 	@Resource
 	CacheRedisService cacheRedisService;
+	
+	@Resource
+	SysSiteMsgService sysSiteMsgService;
 	
 	@Value("${sys_captcha_code_expired_time}")
 	private int captchaCodeExpiredTime;
@@ -485,7 +489,7 @@ public class UserController {
 	public Map<String, Object> verifyPhone(@PathVariable(name="userName", required = true) String userName,
 			@RequestBody Map<String, String> params) {
 		Map<String, Object> resp = new HashMap<String, Object>();
-		Map<String,Object> data = new HashMap<>();
+//		Map<String,Object> data = new HashMap<>();
 		String sms = Utils.toString(params.get("sms"));
 		UserInfo user = userInfoService.getUserByUserName(userName);
 		
@@ -516,7 +520,7 @@ public class UserController {
 		}
 		
 		resp.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-		resp.put(Message.KEY_DATA, data);
+//		resp.put(Message.KEY_DATA, data);
 		return resp;
 	}
 	
@@ -573,7 +577,7 @@ public class UserController {
 			@RequestParam(name = "verifyCode", required = true) String verifyCode) {
 		
 		Map<String, Object> resp = new HashMap<String, Object>();
-		Map<String,Object> data = new HashMap<>();
+//		Map<String,Object> data = new HashMap<>();
 		
 		UserInfo user = userInfoService.getUserByUserName(userName);
 		
@@ -602,7 +606,7 @@ public class UserController {
 		}
 		
 		resp.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-		resp.put(Message.KEY_DATA, data);
+//		resp.put(Message.KEY_DATA, data);
 		return resp;
 	}	
 	
@@ -812,15 +816,20 @@ public class UserController {
 	}
 	
 	@ApiComment("Get User Site Message lists")
-	@RequestMapping(value="/site-msg/lists", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> getUserSiteMessageLists() {
-		return userInfoService.getUserSiteMessageLists();
+	@RequestMapping(value="/site-msg/lists", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> getUserSiteMessageLists(@RequestBody Map<String, String> params) {
+		return sysSiteMsgService.getUserSiteMessageLists(params);
+	}
+	@ApiComment("Update User Read Site Message")
+	@RequestMapping(value="/site-msg/read", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> UpdateUserSiteMessageRead(@RequestBody Map<String, String> params) {
+		return sysSiteMsgService.updateUserSiteMessageRead(params);
 	}
 	
 	@ApiComment("Show Site Message History Feedback")
 	@RequestMapping(value="/site-msg/{msgId}/history-feedback", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> showSiteMessageFeedback(@PathVariable("msgId") int msgId) {
-		return userInfoService.showSiteMessageFeedback(msgId);
+	public Map<String, Object> showSiteMessageFeedback(@PathVariable("msgId") Integer msgId) {
+		return sysSiteMsgService.showSiteMessageFeedbackTop(msgId);
 	}
 	
 	@ApiComment("Feedback Site Message ")

@@ -18,6 +18,7 @@ import com.jll.common.utils.DateUtil;
 import com.jll.common.utils.StringUtils;
 import com.jll.dao.DefaultGenericDaoImpl;
 import com.jll.dao.PageBean;
+import com.jll.entity.SiteMessage;
 import com.jll.entity.UserInfo;
 
 @Repository
@@ -230,10 +231,10 @@ public class UserInfoDaoImpl extends DefaultGenericDaoImpl<UserInfo> implements 
 		    map.put("startTime", beginDate);
 		    map.put("endTime", endDate);
 		}
-	    PageBean page=new PageBean();
+	    PageBean<UserInfo> page=new PageBean();
 		page.setPageIndex(pageIndex);
 		page.setPageSize(pageSize);
-		PageBean pageBean=queryBySqlPagination(page, sql,map);
+		PageBean<UserInfo> pageBean=queryBySqlClazzPagination(page,sql,map,UserInfo.class);
 		return pageBean;
 	} 
 	//查询总代

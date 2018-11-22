@@ -95,6 +95,7 @@ public class Message {
 		ERROR_USER_NO_BANKCARD("010042", "user no bankcard!!!!"),
 		ERROR_USER_NO_AGENCY("010043","user no agency!!!"),
 		ERROR_USER_PLATREBATE_WRONG("010044","platrebate wrong!!!"),
+		ERROR_USER_SIGNED_IN("010045","Signed in!!!"),
 		
 		
 		

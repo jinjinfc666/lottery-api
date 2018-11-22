@@ -142,7 +142,7 @@ public class DefaultGenericDaoImpl<T> extends HibernateDaoSupport implements Gen
 	    
 		return page;
 	}
-
+	
 	@Override
 	public PageBean queryByPagination(PageBean page, String HQL, Map<String,Object> params) {
 		PageBean ret = new PageBean();

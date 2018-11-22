@@ -2347,5 +2347,19 @@ public class Constants {
 		}
 		
 	}
-			
+	//每次签到领取多少积分
+	public static enum SignupRecClass {
+		SIGN_IN_INTEGRATION(10);
+
+		private int code;
+		
+		private SignupRecClass(int code) {
+			this.code = code;
+		}
+
+		public int getCode() {
+			return code;
+		}
+		
+	}
 }

@@ -87,8 +87,6 @@ public interface UserInfoService
 	Map<String, Object> getBankCodeList();
 	Map<String, Object> verifyUserBankInfo(int userId, UserBankCard bank);
 	Map<String, Object> getUserNotifyLists();
-	Map<String, Object> getUserSiteMessageLists();
-	Map<String, Object> showSiteMessageFeedback(int msgId);
 	Map<String, Object> saveSiteMessage(String sendIds, SiteMessage msg);
 	Map<String, Object> updateMessageFeedbackStatus(SiteMessFeedback back);
 	//重置登录密码
