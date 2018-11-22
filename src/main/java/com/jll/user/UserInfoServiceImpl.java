@@ -262,69 +262,109 @@ public class UserInfoServiceImpl implements UserInfoService
 	@Override
 	public Map<String, Object> updateUserInfo(UserInfo userInfo) {
 		Map<String, Object> ret = new HashMap<String, Object>();
-//		UserInfo dbInfo = getCurLoginInfo();
-//		
-//		if(null == dbInfo
-//				|| !StringUtils.checkEmailFmtIsOK(userInfo.getEmail())
-//				|| !StringUtils.checkRealNameFmtIsOK(userInfo.getRealName())
-//				|| !StringUtils.checkQqFmtIsOK(userInfo.getQq())
-//				|| !StringUtils.checkWercharFmtIsOK(userInfo.getWechat())
-//				|| !StringUtils.checkPhoneFmtIsOK(userInfo.getPhoneNum())){
-//			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-//			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
-//			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
-//			return ret;
-//		}
-//		boolean isAdmin = SecurityUtils.checkPermissionIsOK(SecurityContextHolder.getContext().getAuthentication(), SecurityUtils.PERMISSION_ROLE_ADMIN);
-//		
-//		if(!isAdmin 
-//				&& !StringUtils.isEmpty(dbInfo.getRealName())
-//				&& !StringUtils.isEmpty(userInfo.getRealName())){
-//			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-//			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_MORE_UPDATE_REAL_NAME.getCode());
-//			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_MORE_UPDATE_REAL_NAME.getErrorMes());
-//			return ret;
-//		}else if((!isAdmin 
-//						&& StringUtils.isEmpty(dbInfo.getRealName())
-//						&& !StringUtils.isEmpty(userInfo.getRealName()))
-//				||(isAdmin && !StringUtils.isEmpty(userInfo.getRealName()))){
-//			dbInfo.setRealName(userInfo.getRealName());
-//		}
-//		
-//		
-//		if(!isAdmin 
-//				&& !StringUtils.isEmpty(dbInfo.getEmail())
-//				&& !StringUtils.isEmpty(userInfo.getEmail())){
-//			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-//			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_MORE_UPDATE_EMAIL.getCode());
-//			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_MORE_UPDATE_EMAIL.getErrorMes());
-//			return ret;
-//		}else if((!isAdmin 
-//						&& StringUtils.isEmpty(dbInfo.getEmail())
-//						&& !StringUtils.isEmpty(userInfo.getEmail()))
-//				||(isAdmin && !StringUtils.isEmpty(userInfo.getEmail()))){
-//			dbInfo.setEmail(userInfo.getEmail());
-//			dbInfo.setIsValidEmail(Constants.EmailValidState.UNVERIFIED.getCode());
-//		}
-//		
-//		if(!isAdmin 
-//				&& !StringUtils.isEmpty(dbInfo.getPhoneNum())
-//				&& !StringUtils.isEmpty(userInfo.getPhoneNum())){
-//			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-//			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_MORE_UPDATE_PHONE_NUM.getCode());
-//			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_MORE_UPDATE_PHONE_NUM.getErrorMes());
-//			return ret;
-//		}else if((!isAdmin 
-//						&& StringUtils.isEmpty(dbInfo.getEmail())
-//						&& !StringUtils.isEmpty(userInfo.getPhoneNum()))
-//				||(isAdmin && !StringUtils.isEmpty(userInfo.getPhoneNum()))){
-//			dbInfo.setPhoneNum(userInfo.getPhoneNum());
-//			dbInfo.setIsValidPhone(Constants.PhoneValidState.UNVERIFIED.getCode());
-//		}
-//		dbInfo.setUserId(userInfo.getUserId());
-//		dbInfo.setWechat(userInfo.getWechat());
-//		dbInfo.setQq(userInfo.getQq());
-//		supserDao.update(dbInfo);
+		UserInfo dbInfo = getCurLoginInfo();
+		
+		if(null == dbInfo){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+			return ret;
+		}
+		
+		if(!StringUtils.isBlank(userInfo.getEmail()) 
+						&& !StringUtils.checkEmailFmtIsOK(userInfo.getEmail())){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+			return ret;
+		}
+		
+		if(!StringUtils.isBlank(userInfo.getRealName())
+				&& !StringUtils.checkRealNameFmtIsOK(userInfo.getRealName())){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+			return ret;
+		}
+		
+		if(!StringUtils.isBlank(userInfo.getQq())
+				&& !StringUtils.checkQqFmtIsOK(userInfo.getQq())){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+			return ret;
+		}
+		
+		if(!StringUtils.isBlank(userInfo.getWechat())
+				&& !StringUtils.checkWercharFmtIsOK(userInfo.getWechat())){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+			return ret;
+		}
+		
+		if(!StringUtils.isBlank(userInfo.getPhoneNum())
+				&& !StringUtils.checkPhoneFmtIsOK(userInfo.getPhoneNum())){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+			return ret;
+		}
+		
+		boolean isAdmin = SecurityUtils.checkPermissionIsOK(SecurityContextHolder.getContext().getAuthentication(), SecurityUtils.PERMISSION_ROLE_ADMIN);
+		
+		if(!isAdmin 
+				&& !StringUtils.isEmpty(dbInfo.getRealName())
+				&& !StringUtils.isEmpty(userInfo.getRealName())){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_MORE_UPDATE_REAL_NAME.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_MORE_UPDATE_REAL_NAME.getErrorMes());
+			return ret;
+		}else if((!isAdmin 
+						&& StringUtils.isEmpty(dbInfo.getRealName())
+						&& !StringUtils.isEmpty(userInfo.getRealName()))
+				||(isAdmin && !StringUtils.isEmpty(userInfo.getRealName()))){
+			dbInfo.setRealName(userInfo.getRealName());
+		}
+		
+		
+		if(!isAdmin 
+				&& !StringUtils.isEmpty(userInfo.getEmail())
+				&& (dbInfo.getIsValidEmail().intValue() 
+					== Constants.EmailValidState.VERIFIED.getCode())){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_MORE_UPDATE_EMAIL.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_MORE_UPDATE_EMAIL.getErrorMes());
+			return ret;
+		}else if((!isAdmin 
+						&& !StringUtils.isEmpty(userInfo.getEmail())
+						&& (dbInfo.getIsValidEmail().intValue() 
+								== Constants.EmailValidState.UNVERIFIED.getCode()))
+				||(isAdmin && !StringUtils.isEmpty(userInfo.getEmail()))){
+			dbInfo.setEmail(userInfo.getEmail());
+			dbInfo.setIsValidEmail(Constants.EmailValidState.UNVERIFIED.getCode());
+		}
+		
+		if(!isAdmin 
+				&& !StringUtils.isEmpty(userInfo.getPhoneNum())
+				&& (dbInfo.getIsValidPhone().intValue() 
+						== Constants.PhoneValidState.VERIFIED.getCode())){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_MORE_UPDATE_PHONE_NUM.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_MORE_UPDATE_PHONE_NUM.getErrorMes());
+			return ret;
+		}else if((!isAdmin 
+						&& !StringUtils.isEmpty(userInfo.getPhoneNum())
+						&& (dbInfo.getIsValidPhone().intValue() 
+								== Constants.PhoneValidState.UNVERIFIED.getCode()))
+				||(isAdmin && !StringUtils.isEmpty(userInfo.getPhoneNum()))){
+			dbInfo.setPhoneNum(userInfo.getPhoneNum());
+			dbInfo.setIsValidPhone(Constants.PhoneValidState.UNVERIFIED.getCode());
+		}
+		//dbInfo.setUserId(userInfo.getUserId());
+		dbInfo.setWechat(userInfo.getWechat());
+		dbInfo.setQq(userInfo.getQq());
+		supserDao.update(dbInfo);
 		
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		return ret;

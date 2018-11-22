@@ -6004,7 +6004,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 		int maxTimes = 6500;
 		int counter = 0;
 		String lottoType = "cqssc";
-		long maxWaittingTime = 50;
+		long maxWaittingTime = 50000;
 		
 		String userName = "test001";
 		String pwd = "test001";
@@ -6232,10 +6232,11 @@ public class CqsscBettingTest extends ControllerJunitBase{
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		
+		 
 	}
 	
 	
+		
 	
 	public void manualDrawResult(String lottoType, 
 			String issueNum, 
