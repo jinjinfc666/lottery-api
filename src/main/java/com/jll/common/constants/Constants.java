@@ -2325,17 +2325,19 @@ public class Constants {
 	
 	//支付方式
 	public static enum PayTypeClass {
-		WECHAT_PAY_SCAN(0, "wechat_pay_scan"), 
-		ALI_PAY_SCAN(1, "ali_pay_scan"),
-		ONLINE_BANKING_PAY(2, "online_banking_pay");
+		PAY_SCAN(1, "pay_scan","扫码"), 
+		ONLINE_BANKING_PAY(2, "online_banking_pay","网银");
 
 		private int code;
 
 		private String desc;
 		
-		private PayTypeClass(int code, String desc) {
+		private String remark;
+		
+		private PayTypeClass(int code, String desc,String remark) {
 			this.code = code;
 			this.desc = desc;
+			this.remark = remark;
 		}
 
 		public int getCode() {
@@ -2344,6 +2346,19 @@ public class Constants {
 
 		public String getDesc() {
 			return this.desc;
+		}
+		
+		public String getRemark() {
+			return this.remark;
+		}
+		
+		public static Map<Integer,String> getMap() {
+			Map<Integer,String> map=new HashMap<Integer,String>();
+			PayTypeClass[] names = PayTypeClass.values();
+			for(PayTypeClass name: names) {
+				map.put(name.getCode(), name.getRemark());
+			}
+			return map;
 		}
 		
 	}
