@@ -554,7 +554,7 @@ public class Constants {
 		CT_PLAY_TYPE_CLASSICFICATION("ct_play_type_classicfication"),//"玩法类型"
 		WITHDRAWAL_CFG("withdrawal_cfg"),
 		DEMO_USER_CFG("demo_user_cfg"),//试玩用户属性
-		PAY_TYPE("pay_type_class"),//充值方式
+		PAY_TYPE_CLASS("pay_type_class"),//充值方式
 		SYS_RUNTIME_ARGUMENT("sys_runtime_argument");
 		private String value;
 		
@@ -1865,7 +1865,7 @@ public class Constants {
 	 * payType配置缓存时需要的key名
 	 */
 	public static enum PayTypeName{
-		PAY_TYPE_CLASS("pay_type_class");
+		PAY_TYPE("pay_type");
 		
 		private String code;
 		

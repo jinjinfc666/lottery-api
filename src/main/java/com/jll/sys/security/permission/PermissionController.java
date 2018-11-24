@@ -87,7 +87,6 @@ public class PermissionController {
 			return ret;
 		}catch(Exception e){
 			ret.clear();
-			e.printStackTrace();
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
@@ -106,7 +105,6 @@ public class PermissionController {
 			return ret;
 		}catch(Exception e){
 			ret.clear();
-			e.printStackTrace();
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
@@ -125,7 +123,6 @@ public class PermissionController {
 			return ret;
 		}catch(Exception e){
 			ret.clear();
-			e.printStackTrace();
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());

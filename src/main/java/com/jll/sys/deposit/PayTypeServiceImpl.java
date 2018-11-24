@@ -36,6 +36,7 @@ public class PayTypeServiceImpl implements PayTypeService
 		String name=(String) ret.get("name");
 		String nickName=(String) ret.get("nickName");
 		Integer state=(Integer) ret.get("state");
+		String typeClass=(String) ret.get("typeClass");
 		Integer isTp=(Integer) ret.get("isTp");
 		String platId=(String) ret.get("platId");
 		boolean isNo=this.isOrNo(name, nickName, platId);
@@ -49,6 +50,7 @@ public class PayTypeServiceImpl implements PayTypeService
 		PayType payType=new PayType();
 		payType.setName(name);
 		payType.setNickName(nickName);
+		payType.setTypeClass(typeClass);
 		payType.setState(state);
 		payType.setIsTp(isTp);
 		payType.setPlatId(platId);
@@ -91,7 +93,7 @@ public class PayTypeServiceImpl implements PayTypeService
 		Integer id=payTypep.getId();
 		boolean isOrNo=this.isNull(id);
 		if(isOrNo) {
-			String payTypeName=Constants.PayTypeName.PAY_TYPE_CLASS.getCode();
+			String payTypeName=Constants.PayTypeName.PAY_TYPE.getCode();
 			List<PayType> playTypeList=cacheServ.getPayType(payTypeName);
 			PayType payType=payTypeDao.queryById(id).get(0);
 			if(!StringUtils.isBlank(name)) {
@@ -152,7 +154,7 @@ public class PayTypeServiceImpl implements PayTypeService
 	//修改排序
 	@Override
 	public Map<String, Object> updatePayTypeState(String allId) {
-		String payTypeName=Constants.PayTypeName.PAY_TYPE_CLASS.getCode();
+		String payTypeName=Constants.PayTypeName.PAY_TYPE.getCode();
 		Map<String,Object> map=new HashMap<String,Object>();
 		String[] strArray = null;   
 		strArray = allId.split(",");//把字符串转为String数组

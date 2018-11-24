@@ -11,8 +11,8 @@ public interface PayChannelService
 	Map<String,Object> addPayChannel(PayChannel payChannel);
 	//查询新增之后的最后条数据
 	PayChannel queryLast();
-//	//修改
-//	Map<String,Object> updatePayChannel(PayChannel payChannel);
+	//修改
+	Map<String,Object> updatePayChannel(PayChannel payChannel);
 	//通过id查询
 	PayChannel queryById(Integer id);
 	//判断id这条数据存不存在

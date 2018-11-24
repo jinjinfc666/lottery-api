@@ -225,7 +225,7 @@ public class SysInitLoader {
 	}
 	//加载充值方式类型   这是SysCode表里的Pay_Type(充值方式)的缓存
 	private void initSysCodePayType() {
-		String codeTypeName = Constants.SysCodeTypes.PAY_TYPE.getCode();
+		String codeTypeName = Constants.SysCodeTypes.PAY_TYPE_CLASS.getCode();
 		Map<String, SysCode> sysCodePayType = cacheServ.getSysCode(codeTypeName);
 		List<SysCode> sysCodes = null;
 		
@@ -344,7 +344,7 @@ public class SysInitLoader {
 
 	//加载充值方式  这是pay_type表的缓存
 	private void initPayType() {
-		String payTypeName=Constants.PayTypeName.PAY_TYPE_CLASS.getCode();
+		String payTypeName=Constants.PayTypeName.PAY_TYPE.getCode();
 		List<PayType> payTypeLists = cacheServ.getPayType(payTypeName);
 		
 		if(payTypeLists == null || payTypeLists.size() == 0) {

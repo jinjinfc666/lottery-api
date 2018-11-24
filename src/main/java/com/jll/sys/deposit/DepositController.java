@@ -12,6 +12,7 @@ import java.util.TreeMap;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.net.ftp.FTPClient;
@@ -53,7 +54,7 @@ public class DepositController {
 	/**
 	 * 充值平台
 	 * */
-	//选择支付平台需要的数据
+	//选择支付平台需要的数据SysCode表的支付平台
 	@RequestMapping(value={"/queryPayTypeName"}, method={RequestMethod.GET}, produces={"application/json"})
 	public Map<String, Object> queryPayTypeName() {
 		Map<String, Object> ret = new HashMap<>();
@@ -105,11 +106,29 @@ public class DepositController {
 		}
 		return ret;
 	}
+	//选择支付方式分类
+	@RequestMapping(value={"/queryTypeClasspay"}, method={RequestMethod.GET}, produces={"application/json"})
+	public Map<String, Object> queryTypeClasspay() {
+		Map<String, Object> ret = new HashMap<>();
+		try {
+			ret.clear();
+			Map<Integer,String> map=Constants.PayTypeClass.getMap();
+			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+			ret.put("data", map);
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+		}
+		return ret;
+	}
 	//添加
 	@RequestMapping(value={"/addPayTypeName"}, method={RequestMethod.POST}, produces={"application/json"})
 	public Map<String, Object> addPayTypeName(@RequestParam(name = "name", required = true) String name,
 			  @RequestParam(name = "nickName", required = true) String nickName,
 			  @RequestParam(name = "state", required = true) Integer state,
+			  @RequestParam(name = "typeClass", required = true) String typeClass,
 			  @RequestParam(name = "isTp", required = true) Integer isTp,
 			  @RequestParam(name = "codeName", required = true) String codeName,//就是platId也是 SysCode的codeName
 			  HttpServletRequest request) {
@@ -117,13 +136,14 @@ public class DepositController {
 		ret.put("name", name);
 		ret.put("nickName", nickName);
 		ret.put("state", state);
+		ret.put("typeClass", typeClass);
 		ret.put("isTp", isTp);
 		ret.put("platId", codeName);
 		try {
 			Map<String,Object> map=payTypeService.addPayType(ret);
 			int status=(int) map.get(Message.KEY_STATUS);	
 			if(status==Message.status.SUCCESS.getCode()) {
-				String payTypeName=Constants.PayTypeName.PAY_TYPE_CLASS.getCode();
+				String payTypeName=Constants.PayTypeName.PAY_TYPE.getCode();
 				List<PayType> payTypeLists=cacheServ.getPayType(payTypeName);
 				PayType payType=payTypeService.queryBy(name, nickName, codeName);
 				if(payType!=null) {
@@ -171,7 +191,7 @@ public class DepositController {
 			return ret;
 		}
 	}
-	//查询所有 
+	//查询所有(包括支付品台和支付方式)
 	@RequestMapping(value={"/queryAllPayType"}, method={RequestMethod.GET}, produces={"application/json"})
 	public Map<String, Object> queryAllPayType() {
 		Map<String, Object> ret = new HashMap<>();
@@ -179,6 +199,24 @@ public class DepositController {
 			String payTypeName=Constants.SysCodeTypes.PAYMENT_PLATFORM.getCode();
 			Integer bigCodeNameId=sysCodeService.queryByCodeName(payTypeName);
 			List<?> lists=payTypeService.queryAllPayType(bigCodeNameId);
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+			ret.put("data", lists);
+			return ret;
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			return ret;
+		}
+	}
+	//查询所有(支付方式)
+	@RequestMapping(value={"/queryPayType"}, method={RequestMethod.GET}, produces={"application/json"})
+	public Map<String, Object> queryPayType() {
+		Map<String, Object> ret = new HashMap<>();
+		try {
+			List<?> lists=payTypeService.queryAllPayType();
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 			ret.put("data", lists);
@@ -276,7 +314,7 @@ public class DepositController {
 	@RequestMapping(value={"/queryTypeClass"}, method={RequestMethod.GET}, produces={"application/json"})
 	public Map<String, Object> queryTypeClass() {
 		Map<String, Object> ret = new HashMap<>();
-		String payTypeName=Constants.SysCodeTypes.PAY_TYPE.getCode();
+		String payTypeName=Constants.SysCodeTypes.PAY_TYPE_CLASS.getCode();
 		try {
 			ret.clear();
 			Map<String,SysCode> map=cacheServ.getSysCode(payTypeName);
@@ -294,7 +332,7 @@ public class DepositController {
 	@RequestMapping(value={"/queryPayTypeId"}, method={RequestMethod.GET}, produces={"application/json"})
 	public Map<String, Object> queryPayTypeId() {
 		Map<String, Object> ret = new HashMap<>();
-		String payTypeName=Constants.PayTypeName.PAY_TYPE_CLASS.getCode();
+		String payTypeName=Constants.PayTypeName.PAY_TYPE.getCode();
 		try {
 			ret.clear();
 			List<PayType> map=cacheServ.getPayType(payTypeName);
@@ -402,21 +440,21 @@ public class DepositController {
 		}
 		return ret;
 	}
-//	//修改
-//	@RequestMapping(value={"/updatePayChannel"}, method={RequestMethod.PUT}, produces={"application/json"})
-//	public Map<String, Object> updatePayChannel(@RequestBody PayChannel payChannel) {
-//		Map<String, Object> ret = new HashMap<>();
-//		try {
-//			Map<String,Object> map=payChannelService.updatePayChannel(payChannel);
-//			return map;
-//		}catch(Exception e){
-//			ret.clear();
-//			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-//			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
-//			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
-//		}
-//		return ret;
-//	}
+	//修改
+	@RequestMapping(value={"/updatePayChannel"}, method={RequestMethod.PUT}, produces={"application/json"})
+	public Map<String, Object> updatePayChannel(@RequestBody PayChannel payChannel) {
+		Map<String, Object> ret = new HashMap<>();
+		try {
+			Map<String,Object> map=payChannelService.updatePayChannel(payChannel);
+			return map;
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+		}
+		return ret;
+	}
 	//查询所有
 	@RequestMapping(value={"/queryPayChannel"}, method={RequestMethod.GET}, produces={"application/json"})
 	public Map<String, Object> queryPayChannel() {
@@ -450,6 +488,12 @@ public class DepositController {
 		Map<String, Object> ret = new HashMap<>();
 		try {
 			List<PayChannel> map=payChannelService.queryByPayTypeIdPayChannel(payTypeId);
+			if(map==null||map.size()==0) {
+				ret.clear();
+				ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+				ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+				ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			}
 			Map<Integer,PayChannel> mapPayChannel=new HashMap<Integer, PayChannel>();
 			for(int i=0;i<map.size();i++) {
 				PayChannel payChannel=map.get(i);
@@ -524,11 +568,19 @@ public class DepositController {
 	 * 充值二维码上传
 	 * */
 	@RequestMapping(value={"/uploadQRCode"}, method={RequestMethod.POST}, produces={"application/json"})
-	public Map<String, Object> uploadQRCode(@RequestParam(name = "imgName", required = true) String imgName,
-			  HttpServletRequest request) {
+	public Map<String, Object> uploadQRCode(
+			  HttpServletRequest request,
+			  HttpServletResponse response) {
 		Map<String, Object> ret = new HashMap<>();
 		try {
-			Map<String,Object> map=fTPService.upload(imgName);
+			Map<String,Object> map=fTPService.springUpload(request,response);
+			if(map==null) {
+				ret.clear();
+				ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+				ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+				ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+				return ret;
+			}
 			return map;
 		}catch(Exception e){
 			e.printStackTrace();
@@ -546,7 +598,7 @@ public class DepositController {
 	public Map<String, Object> queryQDPayTypeName() {
 		Map<String, Object> ret = new HashMap<>();
 		try {
-			String payTypeName=Constants.PayTypeName.PAY_TYPE_CLASS.getCode();
+			String payTypeName=Constants.PayTypeName.PAY_TYPE.getCode();
 			List<PayType> payTypeList=cacheServ.getPayType(payTypeName);
 			List<PayType> payTypeLists=new ArrayList<PayType>();
 			for(int i=0; i<payTypeList.size();i++)    {   
@@ -556,7 +608,7 @@ public class DepositController {
 			    }else {
 			    	continue;
 			    }
-			 }
+			}
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 			ret.put("data", payTypeLists);

@@ -1241,7 +1241,7 @@ public class BackstageSysController {
 		if(!StringUtils.isBlank(remark)) {
 			sysCode.setRemark(remark);
 		}
-		String bigCodeName=Constants.SysCodeTypes.PAY_TYPE.getCode();
+		String bigCodeName=Constants.SysCodeTypes.PAY_TYPE_CLASS.getCode();
 		try {
 			Integer codeType=sysCodeService.queryByCodeName(bigCodeName);
 			sysCode.setCodeType(codeType);	
@@ -1263,7 +1263,7 @@ public class BackstageSysController {
 	@RequestMapping(value={"/querySmallPayType"}, method={RequestMethod.GET}, produces={"application/json"})
 	public Map<String, Object> querySmallPayType() {
 		Map<String, Object> ret = new HashMap<>();
-		String bigCodeName=Constants.SysCodeTypes.PAY_TYPE.getCode();
+		String bigCodeName=Constants.SysCodeTypes.PAY_TYPE_CLASS.getCode();
 		try {
 			Map<String,SysCode> sysCodeMaps=cacheRedisService.getSysCode(bigCodeName);
 			Map<Integer,SysCode> sysCodeMaps1=new HashMap<Integer, SysCode>();
@@ -1292,7 +1292,7 @@ public class BackstageSysController {
 			  @RequestParam(name = "state", required = true) Integer state,//1为有效0为无效
 			  HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
-		String bigCodeName=Constants.SysCodeTypes.PAY_TYPE.getCode();
+		String bigCodeName=Constants.SysCodeTypes.PAY_TYPE_CLASS.getCode();
 		try {
 			ret.put("id", id);
 			ret.put("state", state);
@@ -1327,7 +1327,7 @@ public class BackstageSysController {
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
 	    	return ret;
 		}
-		String bigCodeName=Constants.SysCodeTypes.PAY_TYPE.getCode();
+		String bigCodeName=Constants.SysCodeTypes.PAY_TYPE_CLASS.getCode();
 		ret.put("id", id);
 		ret.put("codeVal", codeVal);
 		ret.put("remark", remark);
@@ -1359,7 +1359,7 @@ public class BackstageSysController {
 	public Map<String, Object> updateSmallPayTypeSeq(@RequestParam(name = "allId", required = true) String allId,
 			  HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
-		String bigCodeName=Constants.SysCodeTypes.PAY_TYPE.getCode();
+		String bigCodeName=Constants.SysCodeTypes.PAY_TYPE_CLASS.getCode();
 		try {
 			Map<String,Object> map=sysCodeService.updateSmallTypeSeq(bigCodeName, allId);
 			return map;
@@ -1376,7 +1376,7 @@ public class BackstageSysController {
 	public Map<String, Object> queryPayTypeByCodeName(@RequestParam(name = "codeName", required = true) String codeName,
 			  HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
-		String bigCodeName=Constants.SysCodeTypes.PAY_TYPE.getCode();
+		String bigCodeName=Constants.SysCodeTypes.PAY_TYPE_CLASS.getCode();
 		try {
 			SysCode sysCodeMaps=cacheRedisService.getSysCode(bigCodeName, codeName);
 			

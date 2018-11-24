@@ -73,7 +73,7 @@ public class DepositOrderServiceImpl implements DepositOrderService
 	@Override
 	public boolean isOrderNotified(String orderId,com.jll.common.constants.Constants.PayType type) {
 		DepositApplication depositOrder = depositOrderDao.queryDepositOrderById(orderId);
-		List<PayType> payLists = cacheServ.getPayType(Constants.PayTypeName.PAY_TYPE_CLASS.getCode());
+		List<PayType> payLists = cacheServ.getPayType(Constants.PayTypeName.PAY_TYPE.getCode());
 		PayType curPay = null;
 		for (PayType payType : payLists) {
 			if(payType.getPlatId().equals(type.getCode())){

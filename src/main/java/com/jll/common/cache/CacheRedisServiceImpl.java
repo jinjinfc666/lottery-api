@@ -447,7 +447,7 @@ public class CacheRedisServiceImpl implements CacheRedisService
 	
 	@Override
 	public PayType getPayTypeInfo(int payId){
-		List<PayType> pcLists =  getPayType(Constants.PayTypeName.PAY_TYPE_CLASS.getCode());
+		List<PayType> pcLists =  getPayType(Constants.PayTypeName.PAY_TYPE.getCode());
 		for (PayType pt : pcLists) {
 			if(pt.getId() ==payId){
 				return pt;

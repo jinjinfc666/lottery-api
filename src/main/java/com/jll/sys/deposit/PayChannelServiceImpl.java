@@ -54,43 +54,43 @@ public class PayChannelServiceImpl implements PayChannelService
 			map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
 			return map;
 		}
-		PayType payType1=payTypeService.queryById(payType);
-		String qrUrl=payChannel.getQrUrl();
-		String bankAcc=payChannel.getBankAcc();
-		String bankName=payChannel.getBankName();
-		if(payType1!=null) {
-			if((int)payType1.getIsTp()==0) {
-				if(StringUtils.isBlank(qrUrl)||StringUtils.isBlank(bankAcc)||StringUtils.isBlank(bankName)) {
-					map.clear();
-					map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-					map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
-					map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
-					return map;
-				}
-			}else if((int)payType1.getIsTp()==1){
-				if(payType1.getPlatId().equals(Constants.PayType.TLY_PAY.getCode())) {
-					if(StringUtils.isBlank(bankAcc)||StringUtils.isBlank(bankName)) {
-						map.clear();
-						map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-						map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
-						map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
-						return map;
-					}
-				}else if(!StringUtils.isBlank(qrUrl)||!StringUtils.isBlank(bankAcc)||!StringUtils.isBlank(bankName)) {
-					map.clear();
-					map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-					map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
-					map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
-					return map;
-				}
-			}
-		}else {
-			map.clear();
-			map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_PAYTYPE_DOES_NOT_EXIST.getCode());
-			map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_PAYTYPE_DOES_NOT_EXIST.getErrorMes());
-			return map;
-		}
+//		PayType payType1=payTypeService.queryById(payType);
+//		String qrUrl=payChannel.getQrUrl();
+//		String bankAcc=payChannel.getBankAcc();
+//		String bankName=payChannel.getBankName();
+//		if(payType1!=null) {
+//			if((int)payType1.getIsTp()==0) {
+//				if(StringUtils.isBlank(qrUrl)||StringUtils.isBlank(bankAcc)||StringUtils.isBlank(bankName)) {
+//					map.clear();
+//					map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+//					map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+//					map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+//					return map;
+//				}
+//			}else if((int)payType1.getIsTp()==1){
+//				if(payType1.getPlatId().equals(Constants.PayType.TLY_PAY.getCode())) {
+//					if(StringUtils.isBlank(bankAcc)||StringUtils.isBlank(bankName)) {
+//						map.clear();
+//						map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+//						map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+//						map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+//						return map;
+//					}
+//				}else if(!StringUtils.isBlank(qrUrl)||!StringUtils.isBlank(bankAcc)||!StringUtils.isBlank(bankName)) {
+//					map.clear();
+//					map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+//					map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+//					map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+//					return map;
+//				}
+//			}
+//		}else {
+//			map.clear();
+//			map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+//			map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_PAYTYPE_DOES_NOT_EXIST.getCode());
+//			map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_PAYTYPE_DOES_NOT_EXIST.getErrorMes());
+//			return map;
+//		}
 		Integer seq=payChannelDao.quertPayChannelSeq()+1;
 		payChannel.setSeq(seq);
 		payChannelDao.addPayChannel(payChannel);
@@ -103,120 +103,69 @@ public class PayChannelServiceImpl implements PayChannelService
 	public PayChannel queryLast() {
 		return payChannelDao.queryLast().get(0);
 	}
-//	//修改
-//	@Override
-//	public Map<String, Object> updatePayChannel(PayChannel payChannel) {
-//		String channelName=payChannel.getChannelName();
-//		String nickName=payChannel.getNickName();
-//		String typeClass=payChannel.getTypeClass();
-//		Integer payType=payChannel.getPayType();
-//		Float maxAmount=payChannel.getMaxAmount();
-//		String remark=payChannel.getRemark();
-//		String payCode=payChannel.getPayCode();
-//		String qrUrl=payChannel.getQrUrl();
-//		String bankAcc=payChannel.getBankAcc();
-//		String bankName=payChannel.getBankName();
-//		Integer id=payChannel.getId();
-//		Map<String, Object> map=new HashMap<String,Object>();
-//		boolean isOrNo=this.isNull(id);
-//		if(isOrNo) {
-//			PayType payType1=payTypeService.queryById(payType);
-//			String payChannelName=Constants.PayChannel.PAY_CHANNEL.getCode();
-//			PayChannel payChannel1=payChannelDao.queryById(id).get(0);
-//			if(payType1!=null) {
-//				if((int)payType1.getIsTp()==0) {
-//					if(StringUtils.isBlank(qrUrl)||StringUtils.isBlank(bankAcc)||StringUtils.isBlank(bankName)) {
-//						map.clear();
-//						map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-//						map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
-//						map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
-//						return map;
-//					}else {
-//						if(!StringUtils.isBlank(qrUrl)) {
-//							payChannel1.setQrUrl(qrUrl);
-//						}
-//						if(!StringUtils.isBlank(bankAcc)) {
-//							payChannel1.setBankAcc(bankAcc);
-//						}
-//						if(!StringUtils.isBlank(bankName)) {
-//							payChannel1.setBankName(bankName);
-//						}
-//					}
-//				}else {
-//					if(!StringUtils.isBlank(qrUrl)||!StringUtils.isBlank(bankAcc)||!StringUtils.isBlank(bankName)) {
-//						map.clear();
-//						map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-//						map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
-//						map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
-//						return map;
-//					}
-//				}
-//			}else {
-//				payType=this.queryById(id).getPayType();
-//				PayType payType2=payTypeService.queryById(payType);
-//				if((int)payType2.getIsTp()==0) {
-//					if(StringUtils.isBlank(qrUrl)||StringUtils.isBlank(bankAcc)||StringUtils.isBlank(bankName)) {
-//						map.clear();
-//						map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-//						map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
-//						map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
-//						return map;
-//					}else {
-//						if(!StringUtils.isBlank(qrUrl)) {
-//							payChannel1.setQrUrl(qrUrl);
-//						}
-//						if(!StringUtils.isBlank(bankAcc)) {
-//							payChannel1.setBankAcc(bankAcc);
-//						}
-//						if(!StringUtils.isBlank(bankName)) {
-//							payChannel1.setBankName(bankName);
-//						}
-//					}
-//				}else {
-//					if(!StringUtils.isBlank(qrUrl)||!StringUtils.isBlank(bankAcc)||!StringUtils.isBlank(bankName)) {
-//						map.clear();
-//						map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-//						map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
-//						map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
-//						return map;
-//					}
-//				}
-//			}
-//			if(!StringUtils.isBlank(channelName)) {
-//				payChannel1.setChannelName(channelName);
-//			}
-//			if(!StringUtils.isBlank(nickName)) {
-//				payChannel1.setNickName(nickName);
-//			}
-//			if(!StringUtils.isBlank(typeClass)) {
-//				payChannel1.setTypeClass(typeClass);
-//			}
-//			if(payType!=null) {
-//				payChannel1.setPayType(payType);
-//			}
-//			if(maxAmount!=null) {
-//				payChannel1.setMaxAmount(maxAmount);
-//			}
-//			if(!StringUtils.isBlank(remark)) {
-//				payChannel1.setRemark(remark);
-//			}
-//			if(!StringUtils.isBlank(payCode)) {
-//				payChannel1.setPayCode(payCode);
-//			}
-//			
-//			payChannelDao.updatePayChannel(payChannel1);
-//			cacheServ.setPayChannel(payChannelName, payChannel1);
-//			map.clear();
-//			map.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-//			return map;
-//		}else {
-//			map.clear();
-//			map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-//			map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
-//			map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
-//			return map;
-//		}
-//	}
+	//修改
+	@Override
+	public Map<String, Object> updatePayChannel(PayChannel payChannel) {
+		String channelName=payChannel.getChannelName();
+		String nickName=payChannel.getNickName();
+		String typeClass=payChannel.getTypeClass();
+		Integer payType=payChannel.getPayType();
+		Float maxAmount=payChannel.getMaxAmount();
+		String remark=payChannel.getRemark();
+		String payCode=payChannel.getPayCode();
+		String qrUrl=payChannel.getQrUrl();
+		String bankAcc=payChannel.getBankAcc();
+		String bankName=payChannel.getBankName();
+		Integer id=payChannel.getId();
+		Map<String, Object> map=new HashMap<String,Object>();
+		boolean isOrNo=this.isNull(id);
+		if(isOrNo) {
+			String payChannelName=Constants.PayChannel.PAY_CHANNEL.getCode();
+			PayChannel payChannel1=payChannelDao.queryById(id).get(0);
+			if(!StringUtils.isBlank(qrUrl)) {
+				payChannel1.setQrUrl(qrUrl);
+			}
+			if(!StringUtils.isBlank(bankAcc)) {
+				payChannel1.setBankAcc(bankAcc);
+			}
+			if(!StringUtils.isBlank(bankName)) {
+				payChannel1.setBankName(bankName);
+			}
+			if(!StringUtils.isBlank(channelName)) {
+				payChannel1.setChannelName(channelName);
+			}
+			if(!StringUtils.isBlank(nickName)) {
+				payChannel1.setNickName(nickName);
+			}
+			if(!StringUtils.isBlank(typeClass)) {
+				payChannel1.setTypeClass(typeClass);
+			}
+			if(payType!=null) {
+				payChannel1.setPayType(payType);
+			}
+			if(maxAmount!=null) {
+				payChannel1.setMaxAmount(maxAmount);
+			}
+			if(!StringUtils.isBlank(remark)) {
+				payChannel1.setRemark(remark);
+			}
+			if(!StringUtils.isBlank(payCode)) {
+				payChannel1.setPayCode(payCode);
+			}
+			
+			payChannelDao.updatePayChannel(payChannel1);
+			cacheServ.setPayChannel(payChannelName, payChannel1);
+			map.clear();
+			map.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+			return map;
+		}else {
+			map.clear();
+			map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			return map;
+		}
+	}
 	//通过id查询
 	@Override
 	public PayChannel queryById(Integer id) {
