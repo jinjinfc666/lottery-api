@@ -4,14 +4,18 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.time.DateUtils;
 import org.hibernate.query.Query;
 import org.hibernate.type.DateType;
 import org.springframework.stereotype.Repository;
 
+import com.jll.common.constants.Constants;
 import com.jll.dao.DefaultGenericDaoImpl;
+import com.jll.dao.PageBean;
 import com.jll.entity.SignupRec;
 import com.jll.entity.UserAccount;
 
@@ -52,5 +56,26 @@ public class SignupRecDaoImpl extends DefaultGenericDaoImpl<SignupRec> implement
 	    	return list;
 	    }
 		return null;
+	}
+
+	@Override
+	public PageBean queryRecord(Integer userId, String startTime, String endTime,Integer pageIndex,Integer pageSize) {
+		Map<String,Object> map=new HashMap<String,Object>();
+		String userIdSql="";
+		if(userId!=null) {
+			userIdSql="and  a.userId=:userId";
+			map.put("userId", userId);
+		}
+		Date beginDate = java.sql.Date.valueOf(startTime);
+	    Date endDate = java.sql.Date.valueOf(endTime);
+		map.put("startTime", beginDate);
+		map.put("endTime", endDate);
+		String sql="";
+		sql="from SignupRec a,UserInfo b where a.userId=b.id "+userIdSql+" and a.createTime>=:startTime and a.createTime<:endTime ORDER BY a.id DESC";
+		PageBean page=new PageBean();
+		page.setPageIndex(pageIndex);
+		page.setPageSize(pageSize);
+		PageBean pageBean=queryByPagination(page,sql,map);
+		return pageBean;
 	}
 }

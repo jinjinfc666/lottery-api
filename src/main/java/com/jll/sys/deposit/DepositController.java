@@ -598,20 +598,10 @@ public class DepositController {
 	public Map<String, Object> queryQDPayTypeName() {
 		Map<String, Object> ret = new HashMap<>();
 		try {
-			String payTypeName=Constants.PayTypeName.PAY_TYPE.getCode();
-			List<PayType> payTypeList=cacheServ.getPayType(payTypeName);
-			List<PayType> payTypeLists=new ArrayList<PayType>();
-			for(int i=0; i<payTypeList.size();i++)    {   
-				PayType payType=payTypeList.get(i);
-			    if(payType.getState().intValue()==Constants.BankCardState.ENABLED.getCode()) {
-			    	payTypeLists.add(payType);
-			    }else {
-			    	continue;
-			    }
-			}
 			ret.clear();
+			Map<Integer,String> map=Constants.PayTypeClass.getMap();
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-			ret.put("data", payTypeLists);
+			ret.put("data", map);
 			return ret;
 		}catch(Exception e){
 			ret.clear();
@@ -625,7 +615,7 @@ public class DepositController {
 	 * 前端需要的充值渠道(全部为有效)
 	 * */
 	@RequestMapping(value={"/QDPayChannel"}, method={RequestMethod.GET}, produces={"application/json"})
-	public Map<String, Object> queryQDPayChannel(@RequestParam(name = "payType", required = true) Integer payType,
+	public Map<String, Object> queryQDPayChannel(@RequestParam(name = "payTypeClassId", required = true) Integer payTypeClassId,
 			  HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
 		try {
@@ -636,7 +626,7 @@ public class DepositController {
 	            Set<Integer> keySet = payChannelList.keySet();  
 	            for (Integer integer : keySet) {  
 	            	PayChannel payChannel = payChannelList.get(integer);  
-	            	if(payChannel.getPayType().intValue()==payType.intValue()&&payChannel.getState().intValue()==Constants.BankCardState.ENABLED.getCode()) {
+	            	if(Integer.parseInt(payChannel.getTypeClass())==payTypeClassId.intValue()&&payChannel.getState().intValue()==Constants.BankCardState.ENABLED.getCode()) {
 	            		payChannelLists.add(payChannel);
 	            	}else {
 	            		continue;

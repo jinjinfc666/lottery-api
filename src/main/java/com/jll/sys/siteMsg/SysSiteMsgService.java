@@ -16,4 +16,5 @@ public interface SysSiteMsgService
 	Map<String, Object> getUserSiteMessageLists(Map<String, String> params);
 	Map<String, Object> updateUserSiteMessageRead(Map<String, String> params);
 	Map<String, Object> showSiteMessageFeedbackTop(Integer msgId);
+	Map<String, Object> getUserSiteMessageListsB(Map<String, Object> params);
 }

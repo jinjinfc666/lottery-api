@@ -7,6 +7,7 @@ public class Message {
 	
 	public final static String KEY_STATUS = "status";
 	
+	public final static String WINNING_MOUNT = "winningAmount";
 	public final static String KEY_DATA = "data";
 	public final static String KEY_DATA_TYPE = "data_type";
 	public final static String KEY_DATA_REDIRECT = "redirect";

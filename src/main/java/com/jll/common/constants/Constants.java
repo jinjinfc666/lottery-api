@@ -1532,7 +1532,8 @@ public class Constants {
 		LOTTO_PRIZE_RATE("lotto_prize_rate"),//中奖赔率
 		BET_TIMES("bet_times"),
 		MONEY_UNIT("money_unit"),
-		UP_LIMIT_PROFIT_LOSS("up_limit_profit_loss");
+		UP_LIMIT_PROFIT_LOSS("up_limit_profit_loss"),
+		OFFICIAL_WEB_SITE("official_web_site");//官方网站
 		
 		private String code;
 		

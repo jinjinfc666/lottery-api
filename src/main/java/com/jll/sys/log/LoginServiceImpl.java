@@ -6,14 +6,20 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.jll.common.annotation.LogsInfo;
 import com.jll.common.cache.CacheRedisService;
 import com.jll.common.constants.Constants;
+import com.jll.common.constants.Message;
+import com.jll.common.utils.StringUtils;
+import com.jll.entity.SysLogin;
 import com.jll.entity.UserInfo;
 import com.jll.user.UserInfoDao;
 
@@ -22,17 +28,31 @@ import com.jll.user.UserInfoDao;
 public class LoginServiceImpl implements LoginService
 {
 	private Logger logger = Logger.getLogger(LoginServiceImpl.class);
-	
+	@Autowired 
+    HttpServletRequest request;
 	@Resource
 	LoginDao loginDao;
 	@Resource
 	UserInfoDao userInfoDao;
 	@Resource
+	SysLoginService sysLoginService;
+	@Resource
 	CacheRedisService cacheRedisService;
 	//登录失败后的操作
 	@Override
 	public void updateFailLogin(String userName) {
+		String ip=request.getRemoteHost();
 		UserInfo userInfo=userInfoDao.getUserByUserName(userName);
+		//登陆日志
+		SysLogin sysLogin=new SysLogin();
+		String logOpeType=StringUtils.OPE_LOG_USER_FAILURE;
+		String logData="{\"userName\":\""+userName+"\",\"ip\":\""+ip+"\"}";
+		sysLogin.setLogData(logData);
+		sysLogin.setLogOpeType(logOpeType);
+		sysLogin.setLogType(logOpeType);
+		sysLogin.setUserId(userInfo.getId());
+		sysLoginService.saveOrUpdate(sysLogin);
+		//登陆日志
 		Integer failLoginCount=userInfo.getFailLoginCount();
 		if(failLoginCount==null) {
 			failLoginCount=0;
@@ -61,8 +81,19 @@ public class LoginServiceImpl implements LoginService
 	//登录成功后的操作
 	@Override
 	public void updateSuccessLogin(String userName) {
+		String ip=request.getRemoteHost();
 		Integer state=0;
 		UserInfo userInfo=userInfoDao.getUserByUserName(userName);
+		//登陆日志StartTime
+		SysLogin sysLogin=new SysLogin();
+		String logOpeType=StringUtils.OPE_LOG_USER_SUCCESS;
+		String logData="{\"userName\":\""+userName+"\",\"ip\":\""+ip+"\"}";
+		sysLogin.setLogData(logData);
+		sysLogin.setLogOpeType(logOpeType);
+		sysLogin.setLogType(logOpeType);
+		sysLogin.setUserId(userInfo.getId());
+		sysLoginService.saveOrUpdate(sysLogin);
+		//登陆日志END
 		Integer failLoginCount=0;
 		Integer loginCount=userInfo.getLoginCount();
 		if(loginCount==null) {

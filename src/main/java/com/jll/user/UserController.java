@@ -1349,4 +1349,22 @@ public class UserController {
 	public Map<String, Object> cancelBetOrder(@RequestBody Map<String, String> params) {
 		return userInfoService.processCancelBetOrder(Utils.toString(params.get("orderNum")));
 	}
+	//查询当前登录用户的信息
+	@RequestMapping(value={"/queryNowUserInfo"}, method={RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> queryNowUserInfo() {
+		Map<String, Object> map=new HashMap<String,Object>();
+		UserInfo user=userInfoService.getCurLoginInfo();
+		map.put(Message.KEY_DATA, user);
+		map.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		return map;
+	}
+	//通过用户名查询用户信息
+	@RequestMapping(value={"/user-name/{userName}"}, method={RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> queryByNameUserInfo(@PathVariable("userName") String userName) {
+		Map<String, Object> map=new HashMap<String,Object>();
+		UserInfo user=userInfoService.getUserByUserName(userName);
+		map.put(Message.KEY_DATA, user);
+		map.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		return map;
+	}
 }

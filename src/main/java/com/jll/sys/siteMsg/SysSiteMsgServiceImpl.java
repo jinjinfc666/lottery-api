@@ -126,9 +126,7 @@ public class SysSiteMsgServiceImpl implements SysSiteMsgService
 			return ret;
 		}
 		params.put("id", dbInfo.getId().toString());
-		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-		ret.put(Message.KEY_DATA,sysSiteMsgDao.querySiteMessage(params));
-		return ret;
+		return sysSiteMsgDao.querySiteMessage(params);
 	}
 
 	@Override
@@ -154,5 +152,10 @@ public class SysSiteMsgServiceImpl implements SysSiteMsgService
 		ret.put(Message.KEY_DATA,dbMsg);
 		ret.put(Message.KEY_REMAKE,retList);
 		return ret;
+	}
+
+	@Override
+	public Map<String, Object> getUserSiteMessageListsB(Map<String, Object> params) {
+		return sysSiteMsgDao.querySiteMessageB(params);
 	}
 }

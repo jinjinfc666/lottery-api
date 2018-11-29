@@ -660,7 +660,7 @@ public class UserInfoServiceImpl implements UserInfoService
 		}
 		
 		back.setMesId(dbMsg.getId());
-		back.setFbUserId(dbMsg.getUserId());
+		back.setFbUserId(dbInfo.getId());
 		
 		int validDay = Integer.valueOf(cacheRedisService.getSysCode(SysCodeTypes.SYS_RUNTIME_ARGUMENT.getCode(),SysRuntimeArgument.SITE_MSG_VALID_DAY.getCode()).getCodeVal());
 		dbMsg.setExpireTime(DateUtils.addDays(new Date(), validDay));
@@ -752,8 +752,11 @@ public class UserInfoServiceImpl implements UserInfoService
 		criteria.setProjection(Projections.sum("amount"));
 		List<?> finds =  supserDao.findByCriteria(criteria);
 		if(null != finds && !finds.isEmpty()){
-			Object[] totalObj = (Object[]) finds.get(0);
-			return BigDecimalUtil.toDouble(totalObj[0]);
+//			Object[] totalObj = (Object[]) finds.get(0);
+//			return BigDecimalUtil.toDouble(totalObj[0]);
+			Object s=finds.get(0);
+			String ss=s.toString();
+			return new Double(ss);
 		}
 		return 0;
 	}
@@ -764,14 +767,15 @@ public class UserInfoServiceImpl implements UserInfoService
 		criteria.add(Restrictions.ge("createTime",startDate));
 		criteria.add(Restrictions.le("createTime",endDate));
 		
-		Object[] query = {State.HAS_WON.getCode(),State.NOT_WON.getCode()};
+		Object[] query = {Integer.parseInt(State.HAS_WON.getCode()),Integer.parseInt(State.NOT_WON.getCode())};
 		criteria.add(Restrictions.eq("userId",user.getId()));
 		criteria.add(Restrictions.in("state",query));
 		criteria.setProjection(Projections.sum("betAmount"));
 		List<?> finds =  supserDao.findByCriteria(criteria);
 		if(null != finds && !finds.isEmpty()){
-			Object[] totalObj = (Object[]) finds.get(0);
-			return BigDecimalUtil.toDouble(totalObj[0]);
+//			Object[] totalObj = (Object[]) finds.get(0);
+//			return BigDecimalUtil.toDouble(totalObj[0]);
+			return new Double(finds.get(0).toString());
 		}
 		return 0;
 	}

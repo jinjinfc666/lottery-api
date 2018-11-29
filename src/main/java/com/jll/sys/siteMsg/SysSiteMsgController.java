@@ -83,6 +83,9 @@ public class SysSiteMsgController {
 		msg.setTitle( Utils.toString(params.get("title")));
 		return userInfoService.saveSiteMessage(sendIds,msg);
 	}
-	
-
+	//给后台用的
+	@RequestMapping(value="/siteMessageListsB", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> getUserSiteMessageListsB(@RequestBody Map<String, Object> params) {
+		return sysSiteMsgService.getUserSiteMessageListsB(params);
+	}
 }

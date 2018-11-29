@@ -38,6 +38,7 @@ import com.jll.game.playtypefacade.PlayTypeFactory;
 import com.jll.sysSettings.syscode.SysCodeService;
 import com.jll.user.UserInfoService;
 import com.jll.user.wallet.WalletService;
+import com.sun.mail.handlers.message_rfc822;
 import com.terran4j.commons.api2doc.annotations.Api2Doc;
 import com.terran4j.commons.api2doc.annotations.ApiComment;
 
@@ -370,9 +371,27 @@ public class LotteryCenterController {
 		}else {
 			data.put("currIssue", null);
 		}
+		//官网------start----------
+		String officialWebSite=Constants.LotteryAttributes.OFFICIAL_WEB_SITE.getCode();
+		String lotteryConfig=Constants.KEY_LOTTO_ATTRI_PREFIX+lotteryType;
+		SysCode sysCode=cacheServ.getSysCode(lotteryConfig,officialWebSite);
+		String officialWebSiteValue=null;
+		if(sysCode!=null) {
+			officialWebSiteValue=sysCode.getCodeVal();
+		}
+		//官网------END----------
+		//官网------单笔最大中奖金额----------
+		String maxPrizeAmount=Constants.LotteryAttributes.MAX_PRIZE_AMOUNT.getCode();
+		SysCode sysCodeMax=cacheServ.getSysCode(lotteryConfig,maxPrizeAmount);
+		String maxPrizeAmountValue=null;
+		if(sysCodeMax!=null) {
+			maxPrizeAmountValue=sysCodeMax.getCodeVal();
+		}
+		data.put("maxPrizeAmount", maxPrizeAmountValue);
+		//官网------单笔最大中奖金额----------
+		data.put("officialWebSite", officialWebSiteValue);
 		data.put("lastIssue", lastIssue);
 		data.put("playType", playTypess);
-		
 		resp.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		resp.put(Message.KEY_DATA, data);
 		return resp;

@@ -17,4 +17,5 @@ public interface SysSiteMsgDao
 	//查询反馈
 	List<?> querySiteMessFeedback(Integer mesId);
 	List<?> querySiteMessageById(Integer id);
+	Map<String, Object> querySiteMessageB(Map<String, Object> params);
 }

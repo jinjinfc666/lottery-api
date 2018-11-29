@@ -14,4 +14,5 @@ public interface PromoService
 	Map<String, Object> processAccedeToLuckyDrwPromo(Promo dbPro,UserInfo userInfo);
 	Map<String, Object> processAccedeTodaySingInDayPromo(Promo dbPro,UserInfo userInfo);
 	Promo getPromoByCode(String pCode);
+	Map<String,Object> queryRecord(Integer userId,String startTime,String endTime,Integer pageIndex,Integer pageSize);
 }

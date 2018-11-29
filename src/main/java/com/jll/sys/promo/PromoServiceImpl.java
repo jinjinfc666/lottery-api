@@ -1,6 +1,7 @@
 package com.jll.sys.promo;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -20,12 +21,14 @@ import com.jll.common.cache.CacheRedisService;
 import com.jll.common.constants.Constants.AccOperationType;
 import com.jll.common.constants.Constants.PromoMultipleType;
 import com.jll.common.constants.Constants.PromoValueType;
+import com.jll.common.constants.Constants.State;
 import com.jll.common.constants.Constants.SysCodeTypes;
 import com.jll.common.constants.Constants.WalletType;
 import com.jll.common.constants.Message;
 import com.jll.common.utils.BigDecimalUtil;
 import com.jll.common.utils.PageQuery;
 import com.jll.common.utils.StringUtils;
+import com.jll.dao.PageBean;
 import com.jll.dao.PageQueryDao;
 import com.jll.dao.SupserDao;
 import com.jll.entity.DepositApplication;
@@ -53,6 +56,9 @@ public class PromoServiceImpl implements PromoService
 	
 	@Resource
 	SupserDao  supserDao; 
+	
+	@Resource
+	PromoDao  promoDao; 
 	
 	@Resource
 	UserInfoDao userDao;
@@ -109,8 +115,8 @@ public class PromoServiceImpl implements PromoService
 		//Date calcStartDate = dbPro.getCreateTime(),calcEndDate = dbPro.getExpiredTime();
 		 
 		DetachedCriteria criteria = DetachedCriteria.forClass(PromoClaim.class);
-		criteria.add(Restrictions.ge("createTime",dbPro.getCreateTime()));
-		criteria.add(Restrictions.le("createTime",new Date()));
+		criteria.add(Restrictions.ge("claimTime",dbPro.getCreateTime()));
+		criteria.add(Restrictions.le("claimTime",new Date()));
 		criteria.add(Restrictions.eq("userId",dbInfo.getId()));
 		criteria.add(Restrictions.eq("promoId", dbPro.getId()));
 		List<?>	dbPcis = supserDao.findByCriteria(criteria);
@@ -195,7 +201,7 @@ public class PromoServiceImpl implements PromoService
 	@Override
 	public Map<String, Object> processAccedeToLuckyDrwPromo(Promo dbPro,UserInfo userInfo) {
 		Map<String, Object> ret = new HashMap<String, Object>(); 
-		Map<String,SysCode> maps =  cacheRedisService.getSysCode(SysCodeTypes.LOTTERY_TYPES.getCode());
+		Map<String,SysCode> maps =  cacheRedisService.getSysCode(SysCodeTypes.LUCKY_DRAW.getCode());
 		double curDepAmt = userInfoService.getUserTotalDepostAmt(dbPro.getCreateTime(),new Date(),userInfo),
 				checkDepAmt = Double.valueOf(maps.get("minimum_recharge").getCodeVal());
 		
@@ -219,7 +225,11 @@ public class PromoServiceImpl implements PromoService
 		int prizeSize = (int) (totalRate*Double.valueOf(maps.get("winning_probability").getCodeVal()));
 		int unPrizeSize = totalRate-prizeSize;
 		String checkPrize = StringUtils.generateStingByLength(unPrizeStr,unPrizeSize,prizeStr,prizeSize);
-
+		PromoClaim addCla= new PromoClaim();
+		addCla.setUserId(userInfo.getId());
+		addCla.setPromoId(dbPro.getId());
+		addCla.setClaimTime(new Date());
+		supserDao.save(addCla);
 		//send prize amt
 		if(prizeStr.equals(String.valueOf(checkPrize.toCharArray()[checkIndex]))){
 			String[] prizeAmtStr = maps.get("winning_range").getCodeVal().split(StringUtils.COMMA);
@@ -238,16 +248,14 @@ public class PromoServiceImpl implements PromoService
 			supserDao.save(addDtl);
 			dbAcc.setBalance(addDtl.getPostAmount());
 			supserDao.update(dbAcc);
+			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+			ret.put(Message.KEY_DATA, Message.status.SUCCESS.getCode()); 
+			ret.put(Message.WINNING_MOUNT,new DecimalFormat("#.00").format(prizeAmt));
+			return ret;
 		}
-		PromoClaim addCla= new PromoClaim();
-		addCla.setUserId(userInfo.getId());
-		addCla.setPromoId(dbPro.getId());
-		addCla.setClaimTime(new Date());
-		supserDao.save(addCla);
 		
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-		ret.put(Message.KEY_DATA, Message.status.SUCCESS.getCode());
-		
+		ret.put(Message.KEY_DATA, Message.status.FAILED.getCode());
 		return ret;
 	}
 
@@ -293,6 +301,16 @@ public class PromoServiceImpl implements PromoService
 			ret = (Promo) dbPcis.get(0);
 		}
 		return ret;
+	}
+
+	@Override
+	public Map<String, Object> queryRecord(Integer userId, String startTime, String endTime, Integer pageIndex,
+			Integer pageSize) {
+		Map<String,Object> map=new HashMap<String,Object>();
+		PageBean pageBean=promoDao.queryRecord(userId, startTime, endTime, pageIndex, pageSize);
+		map.put(Message.KEY_DATA, pageBean);
+		map.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		return map;
 	}
 
 }

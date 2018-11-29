@@ -42,7 +42,8 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
 	public  final static String OPE_LOG_ORDER_MANUAL_PAYOUT = "ope_log_order_manual_payout";
 	public  final static String OPE_LOG_CANCEL_ORDER = "ope_log_cancel_order";
 	public  final static String OPE_LOG_OPER_USER_AMT = "ope_log_oper_user_amt";
-	
+	public  final static String OPE_LOG_USER_SUCCESS = "ope_log_user_success";
+	public  final static String OPE_LOG_USER_FAILURE = "ope_log_user_failure";
 	/**
      * 正则表达式：验证手机号
      */

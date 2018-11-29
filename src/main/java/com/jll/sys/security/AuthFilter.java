@@ -17,7 +17,9 @@ import com.jll.common.cache.CacheRedisService;
 import com.jll.common.constants.Constants;
 import com.jll.common.constants.Message;
 import com.jll.common.utils.StringUtils;
+import com.jll.entity.SysLogin;
 import com.jll.entity.UserInfo;
+import com.jll.sys.log.SysLoginService;
 import com.jll.user.UserInfoService;
 
 public class AuthFilter extends ClientCredentialsTokenEndpointFilter {
@@ -28,6 +30,10 @@ public class AuthFilter extends ClientCredentialsTokenEndpointFilter {
 	
 	@Resource
 	UserInfoService userServ;
+	@Resource
+	SysLoginService sysLoginService;
+	
+	
 	
 //	@Override
 //	public void afterPropertiesSet() {
@@ -56,6 +62,16 @@ public class AuthFilter extends ClientCredentialsTokenEndpointFilter {
 			user = userServ.getUserByUserName(username);
 			
 			if(user == null) {
+				String ip=request.getRemoteHost();
+				//登陆日志
+				SysLogin sysLogin=new SysLogin();
+				String logOpeType=StringUtils.OPE_LOG_USER_FAILURE;
+				String logData="{\"userName\":\""+username+"\",\"ip\":\""+ip+"\"}";
+				sysLogin.setLogData(logData);
+				sysLogin.setLogOpeType(logOpeType);
+				sysLogin.setLogType(logOpeType);
+				sysLoginService.saveOrUpdate(sysLogin);
+				//登陆日志
 				throw new CusAuthenticationException(Message.Error.ERROR_COMMON_NO_PERMISSION.getCode());  
 			}
 			
