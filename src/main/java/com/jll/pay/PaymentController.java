@@ -103,7 +103,7 @@ public class PaymentController
 		  Map<String,Object> ret =null;
 		  if(userInfo!=null) {
 			  DepositApplication info  = new DepositApplication();
-			  info.setPayType(Utils.toInteger(repParams.get("payType")));
+			  //info.setPayType(Utils.toInteger(repParams.get("payType")));
 			  info.setPayChannel(Utils.toInteger(repParams.get("payChannel")));
 			  info.setAmount(Utils.toDouble(repParams.get("amount")).floatValue());
 			  ret= paymentService.payOrderToSystem(userInfo.getId(),info,params);
