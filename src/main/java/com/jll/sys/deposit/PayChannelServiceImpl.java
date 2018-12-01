@@ -43,10 +43,11 @@ public class PayChannelServiceImpl implements PayChannelService
 		Integer state=payChannel.getState();
 		String remark=payChannel.getRemark();
 		String payCode=payChannel.getPayCode();
+		Integer showType=payChannel.getShowType();
 		if(StringUtils.isBlank(channelName)
 				||StringUtils.isBlank(nickName)
 				||StringUtils.isBlank(typeClass)
-				||payType==null||maxAmount==null||enableMaxAmount==null ||state==null ||StringUtils.isBlank(remark)||StringUtils.isBlank(payCode))
+				||payType==null||maxAmount==null||enableMaxAmount==null ||state==null ||showType==null)
 		{
 			map.clear();
 			map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());

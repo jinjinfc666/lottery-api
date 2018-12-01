@@ -17,6 +17,7 @@ import org.hibernate.query.Query;
 import org.hibernate.type.DateType;
 import org.springframework.stereotype.Repository;
 
+import com.jll.common.constants.Constants;
 import com.jll.dao.DefaultGenericDaoImpl;
 import com.jll.dao.PageBean;
 import com.jll.entity.UserAccount;
@@ -63,20 +64,22 @@ public class WalletDaoImpl extends DefaultGenericDaoImpl<UserAccount> implements
 	}
 	//通过用户名(false)或时间去查询(true)
 	@Override
-	public Map<String,Object> queryUserAccount(String userName, String startTime, String endTime,Integer pageIndex,Integer pageSize) {
+	public Map<String,Object> queryUserAccount(String userName,Integer pageIndex,Integer pageSize) {
 		Map<String,Object> map=new HashMap<String,Object>();
 		String userNameSql="";
 		if(!StringUtils.isBlank(userName)) {
 			userNameSql=" and a.userName=:userName";
 			map.put("userName", userName);
 		}
-		if(!StringUtils.isBlank(startTime)&&!StringUtils.isBlank(endTime)) {
-			Date beginDate = java.sql.Date.valueOf(startTime);
-		    Date endDate = java.sql.Date.valueOf(endTime);
-			map.put("startTime", beginDate);
-			map.put("endTime", endDate);
-		}
-		String sql="from UserInfo a,UserAccount b where a.id=b.userId and a.createTime >=:startTime and a.createTime <:endTime"+userNameSql+" order by b.userId";
+//		if(!StringUtils.isBlank(startTime)&&!StringUtils.isBlank(endTime)) {
+//			Date beginDate = java.sql.Date.valueOf(startTime);
+//		    Date endDate = java.sql.Date.valueOf(endTime);
+//			map.put("startTime", beginDate);
+//			map.put("endTime", endDate);
+//		}
+		map.put("userType", Constants.UserType.SYS_ADMIN.getCode());
+		map.put("userTypea", Constants.UserType.DEMO_PLAYER.getCode());
+		String sql="from UserInfo a,UserAccount b where a.id=b.userId and a.userType!=:userType and a.userType!=:userTypea "+userNameSql+" order by b.userId";
 		PageBean page=new PageBean();
 		page.setPageIndex(pageIndex);
 		page.setPageSize(pageSize);

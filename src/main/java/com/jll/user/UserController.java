@@ -692,7 +692,7 @@ public class UserController {
 		}
 		
 		try {
-			userInfoService.resetLoginPwd(user);			
+			userInfoService.saveOrUpdateLoginPwd(user);			
 		}catch(Exception ex) {
 			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_FAILED_RESET_LOGIN_PWD_SMS.getCode());
@@ -795,7 +795,7 @@ public class UserController {
 		}
 		
 		try {
-			userInfoService.resetLoginPwd(user);			
+			userInfoService.saveOrUpdateLoginPwd(user);			
 		}catch(Exception ex) {
 			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_FAILED_RESET_LOGIN_PWD_EMAIL.getCode());
@@ -868,7 +868,7 @@ public class UserController {
 		Map<String, Object> ret = new HashMap<>();
 		try {
 			UserInfo user = userInfoService.getUserById(userId);
-			userInfoService.resetLoginPwd(user);
+			userInfoService.saveOrUpdateLoginPwd(user);
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		}catch(Exception e){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
@@ -884,7 +884,7 @@ public class UserController {
 		Map<String, Object> ret = new HashMap<>();
 		try {
 			UserInfo user = userInfoService.getUserById(userId);
-			userInfoService.resetFundPwd(user);
+			userInfoService.saveOrUpdateFundPwd(user);
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		}catch(Exception e){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
@@ -912,12 +912,12 @@ public class UserController {
 			}
 			if(platRebate!=null) {
 				user.setPlatRebate(platRebate);
-			}
-			if(!userInfoService.verifRebate(user)) {
-				ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-				ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_PLATREBATE_WRONG.getCode());
-				ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_PLATREBATE_WRONG.getErrorMes());
-				return ret; 
+				if(!userInfoService.verifRebate(user)) {
+					ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+					ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_PLATREBATE_WRONG.getCode());
+					ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_PLATREBATE_WRONG.getErrorMes());
+					return ret; 
+				}
 			}
 			ret.clear();
 			userInfoService.updateUserType(user);
@@ -951,8 +951,8 @@ public class UserController {
 	public Map<String, Object> queryAllUserInfo(@RequestParam(name = "id", required = false) Integer id,
 			  @RequestParam(name = "userName", required = false) String userName,
 			  @RequestParam(name = "proxyName", required = false) String proxyName,//代理的名字
-			  @RequestParam(name = "startTime", required = true) String startTime,
-			  @RequestParam(name = "endTime", required = true) String endTime,
+			  @RequestParam(name = "startTime", required = false) String startTime,
+			  @RequestParam(name = "endTime", required = false) String endTime,
 			  @RequestParam(name = "pageIndex", required = true) Integer pageIndex,//当前请求页
 			  HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
@@ -988,6 +988,8 @@ public class UserController {
 	//查询所有代理
 	@RequestMapping(value={"/queryAllUserAgent"}, method={RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> queryAllUserAgent(@RequestParam(name = "userName", required = false) String userName,
+			  @RequestParam(name = "startTime", required = false) String startTime,
+			  @RequestParam(name = "endTime", required = false) String endTime,
 			  @RequestParam(name = "pageIndex", required = true) Integer pageIndex,//当前请求页
 			  HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
@@ -996,6 +998,8 @@ public class UserController {
 		ret.put("pageSize", pageSize);
 		ret.put("pageIndex", pageIndex);
 		ret.put("userName", userName);
+		ret.put("startTime", startTime);
+		ret.put("endTime", endTime);
 		try {
 			map=userInfoService.queryAllAgent(ret);
 			map.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
@@ -1293,7 +1297,7 @@ public class UserController {
 	public Map<String, Object> addBank(@RequestBody UserBankCard bank) {
 		Map<String, Object> ret = new HashMap<>();
 		try {
-			return userInfoService.addUserBank(bank);
+			return userInfoService.saveOrUserBank(bank);
 		}catch(Exception e){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
@@ -1301,13 +1305,13 @@ public class UserController {
 		}
 		return ret;
 	}
-	//前台用户自己删除银行卡
-	@RequestMapping(value={"/deleteBank"}, method={RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> deleteBank(@RequestParam(name = "bankId", required = true) Integer bankId,
-			  HttpServletRequest request) {
+	//前台用户自己软删除银行卡
+	@RequestMapping(value={"/updateBankstate"}, method={RequestMethod.PUT}, produces=MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> updateBankstate(@RequestBody Map<String, Object> params) {
 		Map<String, Object> ret = new HashMap<>();
 		try {
-			return userBankCardService.deleteBank(bankId);
+			Integer bankId=(Integer)params.get("bankId");
+			return userBankCardService.updateBankstate(bankId);
 		}catch(Exception e){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());

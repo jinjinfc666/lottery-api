@@ -27,4 +27,5 @@ public interface PayTypeService
 	List<PayType> queryAllPayType();
 	//通过id查询某一条数据
 	List<?> queryPayTypeById(Integer id,Integer bigCodeNameId);
+	List<PayType> queryByPlatId(String platId);
 }

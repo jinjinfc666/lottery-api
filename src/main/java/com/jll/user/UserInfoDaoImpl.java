@@ -160,16 +160,20 @@ public class UserInfoDaoImpl extends DefaultGenericDaoImpl<UserInfo> implements 
 		Map<String,Object> map=new HashMap<String,Object>();
 		Integer userType=Constants.UserType.SYS_ADMIN.getCode();
 		Integer userTypea=Constants.UserType.DEMO_PLAYER.getCode();
-		map.put("startTime", startTime);
-		map.put("endTime", endTime);
 		map.put("userType", userType);
 		map.put("userTypea", userTypea);
 		String hql="";
 		if(proxyId!=null) {
-			hql=("select a.* from (select *,FIND_IN_SET(:proxyId,superior) as aa from user_info)a where a.aa=1 and a.user_type !=:userType and a.user_type!=:userTypea and a.create_time>=:startTime and a.create_time<:endTime");
+			String timeSql="";
+			if(!StringUtils.isBlank(startTime)&&!StringUtils.isBlank(endTime)) {
+				timeSql=" and a.create_time>=:startTime and a.create_time<:endTime";
+				Date beginDate = java.sql.Date.valueOf(startTime);
+			    Date endDate = java.sql.Date.valueOf(endTime);
+				map.put("startTime", beginDate);
+				map.put("endTime", endDate);
+			}
+			hql=("select a.* from (select *,FIND_IN_SET(:proxyId,superior) as aa from user_info)a where a.aa=1 and a.user_type !=:userType and a.user_type!=:userTypea"+timeSql);
 			map.put("proxyId", proxyId);
-			map.put("startTime", startTime);
-			map.put("endTime", endTime);
 			PageBean<UserInfo> page=new PageBean<>();
 			page.setPageIndex(pageIndex);
 			page.setPageSize(pageSize);
@@ -188,8 +192,15 @@ public class UserInfoDaoImpl extends DefaultGenericDaoImpl<UserInfo> implements 
 				userNameSql=" and userName=:userName";
 				map.put("userName", userName);
 			}
-			String timeSql=" where user_type !=:userType and user_type !=:userTypea and create_time >=:startTime and create_time <:endTime";
-			hql=("from UserInfo"+timeSql+idSql+userNameSql);
+			String timeSql="";
+			if(!StringUtils.isBlank(startTime)&&!StringUtils.isBlank(endTime)) {
+				timeSql=" and create_time >=:startTime and create_time <:endTime";
+				Date beginDate = java.sql.Date.valueOf(startTime);
+			    Date endDate = java.sql.Date.valueOf(endTime);
+				map.put("startTime", beginDate);
+				map.put("endTime", endDate);
+			}
+			hql=("from UserInfo where user_type !=:userType and user_type !=:userTypea"+timeSql+idSql+userNameSql);
 			PageBean page=new PageBean();
 			page.setPageIndex(pageIndex);
 			page.setPageSize(pageSize);
@@ -269,7 +280,7 @@ public class UserInfoDaoImpl extends DefaultGenericDaoImpl<UserInfo> implements 
 	}
 	//查询所有的代理
 	@Override
-	public Map<String, Object> queryAllAgent(String userName, Integer pageIndex, Integer pageSize) {
+	public Map<String, Object> queryAllAgent(String userName,String startTime,String endTime, Integer pageIndex, Integer pageSize) {
 		Map<String,Object> map=new HashMap<String,Object>();
 		Integer userType=Constants.UserType.SYS_ADMIN.getCode();
 		Integer userTypea=Constants.UserType.PLAYER.getCode();
@@ -283,7 +294,15 @@ public class UserInfoDaoImpl extends DefaultGenericDaoImpl<UserInfo> implements 
 			userNameSql=" and userName=:userName";
 			map.put("userName", userName);
 		}
-		hql=("from UserInfo where userType !=:userType and userType !=:userTypea AND userType!=:userTypeb "+userNameSql);
+		String timeSql="";
+		if(!StringUtils.isBlank(startTime)&&!StringUtils.isBlank(endTime)) {
+			timeSql=" and createTime>=:startTime and createTime < :endTime";
+			Date beginDate = java.sql.Date.valueOf(startTime);
+		    Date endDate = java.sql.Date.valueOf(endTime);
+			map.put("startTime", beginDate);
+			map.put("endTime", endDate);
+		}
+		hql=("from UserInfo where userType !=:userType and userType !=:userTypea AND userType!=:userTypeb "+userNameSql+timeSql);
 		PageBean page=new PageBean();
 		page.setPageIndex(pageIndex);
 		page.setPageSize(pageSize);
@@ -295,9 +314,10 @@ public class UserInfoDaoImpl extends DefaultGenericDaoImpl<UserInfo> implements 
 	//通过用户Id查询用户银行卡数量
 	@Override
 	public long queryUserBankCount(Integer userId) {
-		String sql="select count(*) from UserBankCard where userId=:userId";
+		String sql="select count(*) from UserBankCard where userId=:userId and state=:state";
 		Query query = getSessionFactory().getCurrentSession().createQuery(sql);
 	    query.setParameter("userId", userId);
+	    query.setParameter("state", Constants.BankCardState.ENABLED.getCode());
 	    long count = ((Number)query.iterate().next()).longValue();
 	    return count;
 	}

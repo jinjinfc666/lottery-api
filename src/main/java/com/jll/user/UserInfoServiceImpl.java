@@ -504,7 +504,7 @@ public class UserInfoServiceImpl implements UserInfoService
 		bank.setCreateTime(new Date());
 		bank.setCreator(userId);
 		bank.setState(Constants.BankCardState.ENABLED.getCode());
-		userBankCardService.addUserBankCard(bank);
+		userBankCardService.saveOrUserBank(bank);
 		bankInfo.clear();
 		bankInfo.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		return bankInfo; 
@@ -538,18 +538,18 @@ public class UserInfoServiceImpl implements UserInfoService
 			ret.put(Message.KEY_ERROR_MES, String.format(Message.Error.ERROR_USER_MORE_BIND_BANK_CARD.getErrorMes(),maxCardNum));
 			return ret;
 		}
-		List<?> checkList = supserDao.findByName(UserBankCard.class,"cardNum",bank.getCardNum());
-		if(!checkList.isEmpty()){
-			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_BANK_CARD_HAS_BIND.getCode());
-			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_BANK_CARD_HAS_BIND.getErrorMes());
-			return ret;
-		}
+//		List<?> checkList = supserDao.findByName(UserBankCard.class,"cardNum",bank.getCardNum());
+//		if(!checkList.isEmpty()){
+//			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+//			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_BANK_CARD_HAS_BIND.getCode());
+//			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_BANK_CARD_HAS_BIND.getErrorMes());
+//			return ret;
+//		}
 		ret =  Utils.validBankInfo(bank.getCardNum());
 		return ret;
 	}
 	@Override
-	public void resetLoginPwd(UserInfo user) {
+	public void saveOrUpdateLoginPwd(UserInfo user) {
 		Integer loginCount=0;
 		user.setLoginCount(loginCount);
 		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();		
@@ -557,7 +557,7 @@ public class UserInfoServiceImpl implements UserInfoService
 		userDao.saveUser(user);
 	}
 	@Override
-	public void resetFundPwd(UserInfo user) {
+	public void saveOrUpdateFundPwd(UserInfo user) {
 		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();		
 		user.setFundPwd(encoder.encode(defaultPwd));
 		userDao.saveUser(user);
@@ -822,9 +822,11 @@ public class UserInfoServiceImpl implements UserInfoService
 	@Override
 	public Map<String,Object> queryAllAgent(Map<String, Object> map) {
 		String userName=(String) map.get("userName");
+		String startTime=(String) map.get("startTime");
+		String endTime=(String) map.get("endTime");
 		Integer pageIndex=(Integer) map.get("pageIndex");
 		Integer pageSize=(Integer) map.get("pageSize");
-		Map<String,Object> userInfoList=userDao.queryAllAgent( userName,pageIndex,pageSize);
+		Map<String,Object> userInfoList=userDao.queryAllAgent( userName,startTime,endTime,pageIndex,pageSize);
 		return userInfoList;
 	}
 	
@@ -1428,6 +1430,7 @@ public class UserInfoServiceImpl implements UserInfoService
 		Map<String, Object> ret = new HashMap<String, Object>();
 		DetachedCriteria dc = DetachedCriteria.forClass(UserBankCard.class);
 		dc.add(Restrictions.eq("userId",userInfo.getId()));
+		dc.add(Restrictions.eq("state",Constants.BankCardState.ENABLED.getCode()));
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		ret.put(Message.KEY_DATA,supserDao.findByCriteria(dc));
 		return ret;
@@ -1457,7 +1460,7 @@ public class UserInfoServiceImpl implements UserInfoService
 	}
 	//前台用户自己添加银行卡
 	@Override
-	public Map<String, Object> addUserBank(UserBankCard bank) {
+	public Map<String, Object> saveOrUserBank(UserBankCard bank) {
 		Map<String,Object> map=new HashMap<String,Object>();
 		if(bank.getCardNum()==null||bank.getBankBranch()==null) {
 			map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
@@ -1472,12 +1475,27 @@ public class UserInfoServiceImpl implements UserInfoService
 		if(null == bankInfo.get(Message.KEY_DATA)){
 			return bankInfo;
 		}
-		bank.setUserId(userInfo.getId());
-		bank.setBankCode(bankInfo.get(Message.KEY_DATA).toString());
-		bank.setCreateTime(new Date());
-		bank.setCreator(userInfo.getId());
-		bank.setState(Constants.BankCardState.ENABLED.getCode());
-		userBankCardService.addUserBankCard(bank);
+		UserBankCard userBankCard=userBankCardService.queryBankCard(bank.getCardNum());
+		if(userBankCard==null) {
+			bank.setUserId(userInfo.getId());
+			bank.setBankCode(bankInfo.get(Message.KEY_DATA).toString());
+			bank.setCreateTime(new Date());
+			bank.setCreator(userInfo.getId());
+			bank.setState(Constants.BankCardState.ENABLED.getCode());
+			userBankCardService.saveOrUserBank(bank);
+		}else {
+			if(userBankCard.getState()==Constants.BankCardState.ENABLED.getCode()) {
+				map.clear();
+				map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+				map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_BANK_CARD_HAS_BIND.getCode());
+				map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_BANK_CARD_HAS_BIND.getErrorMes());
+				return map;
+			}
+			userBankCard.setBankBranch(bank.getBankBranch());
+			userBankCard.setRemark(bank.getRemark());
+			userBankCard.setState(Constants.BankCardState.ENABLED.getCode());
+			userBankCardService.saveOrUserBank(userBankCard);
+		}
 		bankInfo.clear();
 		bankInfo.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		return bankInfo; 

@@ -49,7 +49,7 @@ public interface UserInfoDao
 	//查询所有的用户
 	Map<String,Object>  queryAllUserInfo(Integer id,String userName,Integer proxyId,String startTime,String endTime,Integer pageIndex,Integer pageSize);
 	//查询所有的代理
-	Map<String,Object>  queryAllAgent(String userName,Integer pageIndex,Integer pageSize);
+	Map<String,Object>  queryAllAgent(String userName,String startTime,String endTime,Integer pageIndex,Integer pageSize);
 	//查询总代下面的所有一级代理
 	List<UserInfo> queryAllAgent(Integer id);
 	//点击代理查询下一级代理

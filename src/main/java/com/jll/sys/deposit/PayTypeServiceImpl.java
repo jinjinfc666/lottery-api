@@ -211,5 +211,13 @@ public class PayTypeServiceImpl implements PayTypeService
 	public List<?> queryPayTypeById(Integer id,Integer bigCodeNameId) {
 		return payTypeDao.queryPayTypeById(id,bigCodeNameId);
 	}
+	@Override
+	public List<PayType> queryByPlatId(String platId) {
+		List<PayType> list=payTypeDao.queryByPlatId(platId);
+		if(list!=null&&list.size()>0){
+			return list;
+		}
+		return null;
+	}
 }
 
