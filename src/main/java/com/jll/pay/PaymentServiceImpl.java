@@ -211,7 +211,8 @@ public class PaymentServiceImpl  implements PaymentService
 			pramsInfo.remove("reqIP");
 			pramsInfo.remove("payerName");
 			pramsInfo.remove("payCardNumber");
-			if(!pcInfo.getPayCode().equals("00026")){
+			//00026  --> 表示网银
+			if(!pcInfo.getPayCode().equals("00026")){//扫码
 				String retCode = caiPayService.processScanPay(pramsInfo);
 				//getScanPayInfo(ret, retCode, StringUtils.getStringValue(pramsInfo.get("qrcode")));
 				String qrCode = StringUtils.getStringValue(pramsInfo.get("qrcode"));

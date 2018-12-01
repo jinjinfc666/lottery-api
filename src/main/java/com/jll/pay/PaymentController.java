@@ -96,8 +96,9 @@ public class PaymentController
 		  params.put("reqHost", request.getServerName() +":"+ request.getServerPort());
 		  params.put("reqContext", request.getServletContext().getContextPath());
 		  params.put("reqIP", request.getRemoteAddr());
-		  params.put("payerName",Utils.toString(repParams.get("payerName")));
-		  params.put("payCardNumber",Utils.toString(repParams.get("payCardNumber")));
+		  /*params.put("payerName",Utils.toString(repParams.get("payerName")));
+		  params.put("payCardNumber",Utils.toString(repParams.get("payCardNumber")));*/
+		  params.putAll(repParams);
 		  UserInfo userInfo=userInfoService.getCurLoginInfo();
 		  Map<String,Object> ret =null;
 		  if(userInfo!=null) {
@@ -107,9 +108,9 @@ public class PaymentController
 			  info.setAmount(Utils.toDouble(repParams.get("amount")).floatValue());
 			  ret= paymentService.payOrderToSystem(userInfo.getId(),info,params);
 		  }
-		  if(null != ret.get("isRedirect")){
+		  if(null != ((Map<String, Object>)ret.get("data")).get("isRedirect")){
 			  try {
-				response.sendRedirect(ret.get("isRedirect").toString());
+				response.sendRedirect(((Map<String, Object>)ret.get("data")).get("redirect").toString());
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

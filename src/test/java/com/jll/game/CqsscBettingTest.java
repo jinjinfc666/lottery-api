@@ -6004,26 +6004,19 @@ public class CqsscBettingTest extends ControllerJunitBase{
 		int maxTimes = 6500;
 		int counter = 0;
 		String lottoType = "cqssc";
-		long maxWaittingTime = 50000;
+		long maxWaittingTime = 1000;
 		
 		String userName = "test001";
 		String pwd = "test001";
 		String clientId = "lottery-client";
-		//String token ;
-		//String winningNum = null;
 		StringBuffer winningNumBuffer = new StringBuffer();
 		Map<String, Integer> currIndx = new HashMap<>();
 		Map<String, PlayTypeFacade> betNumbers = new HashMap<>();
 		Map<String, String> tokens = new HashMap<>();
 		Map<String, Boolean> isPerforming = new HashMap<>();
+		Map<String, Integer> counterMap = new HashMap<>();
 		isPerforming.put("isPerforming", false);
-		/*try {
-			Thread.sleep(60*1000);
-		} catch (InterruptedException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}*/
-		
+		counterMap.put("counter", counter);
 		
 		while(counter < maxTimes) {
 			
@@ -6167,10 +6160,13 @@ public class CqsscBettingTest extends ControllerJunitBase{
 							node.putPOJO("betNum", betNum.toString());
 							node.putPOJO("times", "1");
 							node.putPOJO("pattern", "1");
-							node.putPOJO("isZh", "0");
+							node.putPOJO("isZh", String.valueOf(Constants.ZhState.NON_ZH.getCode()));
 							node.putPOJO("terminalType", "0");
 							
-							System.out.println(mapper.writeValueAsString(node));
+							System.out.println(String.format("counter   %s    current request   %s",
+									counterMap.get("counter"),
+									mapper.writeValueAsString(node)));
+							
 							bis = new ByteArrayInputStream(mapper.writeValueAsBytes(array));
 							WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/" +lottoType+ "/bet/zh/1/wallet/15",
 									bis,
@@ -6217,10 +6213,11 @@ public class CqsscBettingTest extends ControllerJunitBase{
 				});
 				
 				exe.start();
-				
+				counter++;
+				counterMap.put("counter", counter);
 			}
 			
-			counter++;
+			
 			
 		}
 		

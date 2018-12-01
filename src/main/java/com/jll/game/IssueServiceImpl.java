@@ -552,6 +552,7 @@ public class IssueServiceImpl implements IssueService
 		Integer walletId = order.getWalletId();
 		UserAccount wallet = walletServ.queryById(walletId);
 		List<OrderInfo> zhOrders = null;
+		BigDecimal maxWinningAmount = null;
 		
 		//被取消的订单 或者延迟开奖的订单,或者已经开奖 跳过开奖
 		if(order.getState() == Constants.OrderState.SYS_CANCEL.getCode()
@@ -577,6 +578,17 @@ public class IssueServiceImpl implements IssueService
 			//TODO 发奖金
 			Map<String, Object> ret = calPrize(issue, order, user);
 			BigDecimal prize = new BigDecimal((Float)ret.get(Constants.KEY_WIN_AMOUNT));
+			
+			String codeTypeName = Constants.KEY_LOTTO_ATTRI_PREFIX + issue.getLotteryType();
+			String codeName = Constants.LotteryAttributes.MAX_PRIZE_AMOUNT.getCode();
+			SysCode sysCode = cacheServ.getSysCode(codeTypeName, codeName);
+			if(sysCode != null) {
+				maxWinningAmount = new BigDecimal(sysCode.getCodeVal());
+				if(prize.compareTo(maxWinningAmount) == 1) {
+					prize = maxWinningAmount;
+				}
+				
+			}
 			//试玩用户跳过派奖
 			if(UserType.DEMO_PLAYER.getCode() != user.getUserType()){
 				//TODO 增加账户流水

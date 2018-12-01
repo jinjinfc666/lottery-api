@@ -335,6 +335,7 @@ public class CaiPayServiceImpl implements CaiPayService
 			pushParams.put("accNoType", params.get("accNoType"));
 		}
 		pushParams.put("accountType", params.get("accountType"));
+		//0,借记卡   1,贷记卡
 		pushParams.put("transType", transType);
 		pushParams.put("asynNotifyUrl", params.get("asynNotifyURL"));
 		pushParams.put("synNotifyUrl", params.get("synNotifyURL"));
@@ -405,17 +406,20 @@ public class CaiPayServiceImpl implements CaiPayService
 		 } catch (URISyntaxException e) {
 		 	return Message.Error.ERROR_PAYMENT_CAIPAY_FAILED_CANCEL_ORDER.getCode();
 		 }
-
-		 Map<String, Object> response = HttpRemoteStub.synPost(url, reqHeaders, pushParams);
+		 //TODO 由於api 接口暫時調不通，所以暫時注销掉
+		 /*Map<String, Object> response = HttpRemoteStub.synPost(url, reqHeaders, pushParams);
 		 isSuccess = isResponseSuccess(response);
-		 logger.debug("If request successful::::" + isSuccess);
+		 logger.debug("If request successful::::" + isSuccess);*/
+		 isSuccess = true;
 		// depositOrder.setOrderNumber(String.valueOf(depositOrder.getRecordID()));
 		 if(isSuccess) {
 			// depositOrderDao.updateDepositOrder(depositOrder);
 			 String qrcode = null;
 			 String qrCodeKey = "qrcode";
-			 String jsonStr = (String)response.get("responseBody");
-			 qrcode = readJSON(qrCodeKey, jsonStr);
+			 //TODO 暂时注销
+			 /*String jsonStr = (String)response.get("responseBody");
+			 qrcode = readJSON(qrCodeKey, jsonStr);*/
+			 qrcode = "http://www.baidu.com";
 			 params.put("qrcode", qrcode);
 		 	return String.valueOf(Message.status.SUCCESS.getCode());
 		 }else {
@@ -469,12 +473,13 @@ public class CaiPayServiceImpl implements CaiPayService
 		 	return Message.Error.ERROR_PAYMENT_CAIPAY_FAILED_CANCEL_ORDER.getCode();
 		 }
 
-		 Map<String, Object> response = HttpRemoteStub.synPost(url, reqHeaders, pushParams);
+		 //TODO 接口调不通，暂时屏蔽
+		 /*Map<String, Object> response = HttpRemoteStub.synPost(url, reqHeaders, pushParams);
 		    
 		 isSuccess = isOnlineBankResponseSuccess(response);
 		 
-		 String redirect = (String)response.get("responseBody");
-		 
+		 String redirect = (String)response.get("responseBody");*/
+		 String redirect = "http://www.baidu.com";
 		 params.put("redirect", redirect);
 		 
 		 if(isSuccess) {
