@@ -1588,12 +1588,11 @@ public class Constants {
 	
 	
 	public static enum PayChannelShowType{
-		REDIRECT(0,"重定向"),//重定向
-		IMG_PATH(1,"图片地址"),//图片地址
-		JUMP_URL(2,"跳转地址"),//跳转地址
-		QR_CODE(3,"二维码地址"),//二维码地址
+		IMG_PATH(1,"扫码图片"),//图片地址
+		REDIRECT(2,"跳转支付"),//跳转地址
+		QR_CODE(3,"支付地址"),//二维码地址
 		MESSAGE(4,"只显示消息"),//只显示消息
-		BANK_ACC(5,"接收银行账户");
+		BANK_ACC(0,"网银支付");
 		
 		private int code;
 		private String desc;

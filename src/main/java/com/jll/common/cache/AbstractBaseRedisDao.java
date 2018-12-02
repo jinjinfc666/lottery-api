@@ -221,7 +221,7 @@ public abstract class AbstractBaseRedisDao implements GenericDaoIf<CacheObject>{
 	}
 
 	@Override
-	public long queryCount(String HQL, List<Object> params, Class<CacheObject> clazz) {
+	public long queryCount(String HQL, List<Object> params) {
 		// TODO Auto-generated method stub
 		return 0;
 	}

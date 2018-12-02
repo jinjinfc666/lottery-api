@@ -51,7 +51,7 @@ public class WithdrawApplicationDaoImpl extends DefaultGenericDaoImpl<WithdrawAp
 		sql.append(" and  createTime <=  ? ");
 		params.add(end);
 		
-		return queryCount(sql.toString(), params, WithdrawApplication.class);
+		return queryCount(sql.toString(), params);
 	}
 	@Override
 	public void updateState(Integer id, Integer state,String remark) {

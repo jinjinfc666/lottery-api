@@ -57,7 +57,7 @@ public class DefaultGenericDaoImpl<T> extends HibernateDaoSupport implements Gen
 	}
 
 	@Override
-	public long queryCount(String HQL, List<Object> params, Class<T> clazz) {
+	public long queryCount(String HQL, List<Object> params) {
 		String sql = HQL;
 		
 	    Query<Long> query = getSessionFactory().getCurrentSession().createQuery(sql, Long.class);
@@ -111,7 +111,7 @@ public class DefaultGenericDaoImpl<T> extends HibernateDaoSupport implements Gen
 	    }
 	    
 	    sqlCount.append(HQL.substring(entityNameStartInd));
-	    totalPages =  queryCount(sqlCount.toString(), params, clazz);
+	    totalPages =  queryCount(sqlCount.toString(), params);
 	    
 	    if(totalPages % pageSize == 0) {
 	    	totalPages = totalPages / pageSize;

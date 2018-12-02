@@ -60,7 +60,7 @@ public interface GenericDaoIf<T> {
 	 * @param params
 	 * @return
 	 */
-	long queryCount(String HQL, List<Object> params, Class<T> clazz);
+	long queryCount(String HQL, List<Object> params);
 	
 	PageBean queryByPagination(PageBean page, String HQL, Map<String,Object> params);
 	
