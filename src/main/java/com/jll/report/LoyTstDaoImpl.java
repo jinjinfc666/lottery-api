@@ -70,7 +70,7 @@ public class LoyTstDaoImpl extends DefaultGenericDaoImpl<OrderInfo> implements L
 			map.put("endTime", endDate);
 		}
 		if(!StringUtils.isBlank(issueNum)) {
-			issueNumSql=" and d.issueNum=:issueNum";		
+			issueNumSql=" and c.issueNum=:issueNum";		
 			map.put("issueNum", issueNum);
 		}
 		if(!StringUtils.isBlank(userName)) {

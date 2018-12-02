@@ -23,7 +23,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.jll.common.cache.CacheRedisService;
 import com.jll.common.constants.Constants;
 import com.jll.common.constants.Message;
+import com.jll.entity.PayChannel;
+import com.jll.entity.PayType;
 import com.jll.entity.SysCode;
+import com.jll.sys.deposit.PayChannelService;
+import com.jll.sys.deposit.PayTypeService;
 import com.terran4j.commons.api2doc.annotations.Api2Doc;
 import com.terran4j.commons.api2doc.annotations.ApiComment;
 
@@ -38,6 +42,10 @@ public class BackstageSysController {
 	SysCodeService sysCodeService;
 	@Resource
 	CacheRedisService cacheRedisService;
+	@Resource
+	PayTypeService payTypeService;
+	@Resource
+	PayChannelService payChannelService;
 	/**
 	 *大类
 	 */
@@ -685,6 +693,27 @@ public class BackstageSysController {
 			if(sysCode!=null) {
 				sysCode.setState(state);
 				cacheRedisService.setSysCode(bigCodeName, sysCode);	
+			}
+			//修改充值平台下面的充值方式状态
+			List<PayType> listPayTypes=payTypeService.queryByPlatId(codeName);
+			if(listPayTypes!=null&&listPayTypes.size()>0) {
+				for(int a=0;a<listPayTypes.size();a++) {
+					PayType payType=listPayTypes.get(a);
+					Integer payTypeId=payType.getId();
+					PayType payTypeNew=new PayType();
+					payTypeNew.setId(payTypeId);
+					payTypeNew.setState(state);
+					payTypeService.updatePayType(payTypeNew);
+					//修改充值渠道的状态
+					List<PayChannel> payChannelLists=payChannelService.queryByPayTypeIdPayChannel(payTypeId);
+					if(payChannelLists!=null&&payChannelLists.size()>0) {
+						for(int b=0;b<payChannelLists.size();b++) {
+							PayChannel payChannel=payChannelLists.get(b);
+							Integer payChannelId=payChannel.getId();
+							payChannelService.updatePayChannelState(payChannelId,state);
+						}
+					}
+				}
 			}
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());

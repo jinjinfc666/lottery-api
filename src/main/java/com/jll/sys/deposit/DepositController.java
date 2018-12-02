@@ -211,6 +211,32 @@ public class DepositController {
 			return ret;
 		}
 	}
+	//查询所有(包括支付品台和支付方式)
+	@RequestMapping(value={"/queryAllPayTypeSeq"}, method={RequestMethod.GET}, produces={"application/json"})
+	public Map<String, Object> queryAllPayTypeSeq() {
+		Map<String, Object> ret = new HashMap<>();
+		try {
+			List<PayType> lists=payTypeService.queryAllPayType();
+			Map<Integer,PayType> payTypeMaps=new HashMap<Integer, PayType>();
+			for(int a=0;a<lists.size();a++) {
+				PayType payType=lists.get(a);
+				if(payType.getSeq()!=null) {
+					payTypeMaps.put(payType.getSeq(), payType);
+				}
+			}
+			TreeMap treemap = new TreeMap(payTypeMaps);
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+			ret.put("data", treemap);
+			return ret;
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			return ret;
+		}
+	}
 	//查询所有(支付方式)
 	@RequestMapping(value={"/queryPayType"}, method={RequestMethod.GET}, produces={"application/json"})
 	public Map<String, Object> queryPayType() {
@@ -335,7 +361,18 @@ public class DepositController {
 		String payTypeName=Constants.PayTypeName.PAY_TYPE.getCode();
 		try {
 			ret.clear();
-			List<PayType> map=cacheServ.getPayType(payTypeName);
+			List<PayType> payTypeLists=cacheServ.getPayType(payTypeName);
+			List<PayType> map=new ArrayList<PayType>();
+			if (payTypeLists != null) {  
+	            for (int a =0 ;a<payTypeLists.size();a++) {  
+	            	PayType payType = payTypeLists.get(a);  
+	            	if(payType.getState().intValue()==Constants.BankCardState.ENABLED.getCode()) {
+	            		map.add(payType);
+	            	}else {
+	            		continue;
+	            	}
+	            }  
+	        }
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 			ret.put("data", map);
 		}catch(Exception e){
@@ -490,9 +527,9 @@ public class DepositController {
 			List<PayChannel> map=payChannelService.queryByPayTypeIdPayChannel(payTypeId);
 			if(map==null||map.size()==0) {
 				ret.clear();
-				ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-				ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
-				ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+				ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+				ret.put("data", map);
+				return ret;
 			}
 			Map<Integer,PayChannel> mapPayChannel=new HashMap<Integer, PayChannel>();
 			for(int i=0;i<map.size();i++) {
@@ -600,8 +637,16 @@ public class DepositController {
 		try {
 			ret.clear();
 			Map<Integer,String> map=Constants.PayTypeClass.getMap();
+			List<Map<String,String>> list=new ArrayList<Map<String,String>>();
+			Set<Integer> keys = map.keySet();   //此行可省略，直接将map.keySet()写在for-each循环的条件中
+			for(Integer key:keys){
+				Map<String,String> map1=new HashMap<String,String>();
+				map1.put("id",key.toString());
+				map1.put("name", map.get(key));
+				list.add(map1);
+			}
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-			ret.put("data", map);
+			ret.put("data", list);
 			return ret;
 		}catch(Exception e){
 			ret.clear();

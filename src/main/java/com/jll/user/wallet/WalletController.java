@@ -30,8 +30,8 @@ public class WalletController {
 	//通过用户名(false)或时间去查询(true)
 	@RequestMapping(value={"/queryUserAccount"}, method={RequestMethod.GET}, produces={"application/json"})
 	public Map<String, Object> queryUserAccount(@RequestParam(name = "userName", required = false) String userName,
-			@RequestParam(name = "startTime", required = true) String startTime,
-			  @RequestParam(name = "endTime", required = true) String endTime,
+//			@RequestParam(name = "startTime", required = true) String startTime,
+//			  @RequestParam(name = "endTime", required = true) String endTime,
 			  @RequestParam(name = "pageIndex", required = true) Integer pageIndex,//当前请求页
 			  HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
@@ -39,8 +39,8 @@ public class WalletController {
 		ret.put("pageSize", pageSize);
 		ret.put("pageIndex", pageIndex);
 		ret.put("userName", userName);
-		ret.put("startTime", startTime);
-		ret.put("endTime", endTime);
+//		ret.put("startTime", startTime);
+//		ret.put("endTime", endTime);
 		try {
 			Map<String,Object> map=walletService.queryUserAccount(ret);
 			return map;

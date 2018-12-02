@@ -90,9 +90,9 @@ public interface UserInfoService
 	Map<String, Object> saveSiteMessage(String sendIds, SiteMessage msg);
 	Map<String, Object> updateMessageFeedbackStatus(SiteMessFeedback back);
 	//重置登录密码
-	void resetLoginPwd(UserInfo user);
+	void saveOrUpdateLoginPwd(UserInfo user);
 	//重置支付密码
-	void resetFundPwd(UserInfo user);
+	void saveOrUpdateFundPwd(UserInfo user);
 	//用户状态修改
 	void updateUserType(UserInfo user);
 	
@@ -131,7 +131,7 @@ public interface UserInfoService
 	//判断用户是否可以添加银行卡
 	Map<String,Object> isOrAddBank();
 	//前台用户自己添加银行卡
-	Map<String, Object> addUserBank(UserBankCard bank);
+	Map<String, Object> saveOrUserBank(UserBankCard bank);
 	//通过用ID查询用户银行卡   给后台管理页面用的
 	Map<String, Object> queryByUserIdBankList(Integer id);
 	

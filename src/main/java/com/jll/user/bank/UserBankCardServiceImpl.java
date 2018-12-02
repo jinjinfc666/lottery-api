@@ -24,20 +24,22 @@ public class UserBankCardServiceImpl implements UserBankCardService
 	@Resource
 	UserBankCardDao userBankCardDao;
 	@Override
-	public void addUserBankCard(UserBankCard userBankCard) {
+	public void saveOrUserBank(UserBankCard userBankCard) {
 		userBankCardDao.save(userBankCard);
 	}
 	//通过ID删除银行卡
 	@Override
-	public Map<String,Object> deleteBank(Integer id) {
+	public Map<String,Object> updateBankstate(Integer id) {
 		Map<String,Object> map=new HashMap<String,Object>();
-		boolean isOrNull=this.isOrNo(id);
-		if(!isOrNull) {
+		UserBankCard userBankCard=userBankCardDao.queryById(id);
+		if(userBankCard==null) {
 			map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USERBANK_DOES_NOT_EXIST.getCode());
 			map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USERBANK_DOES_NOT_EXIST.getErrorMes());
 		}
-		userBankCardDao.deleteBank(id);
+		Integer state=Constants.BankCardState.DISABLE.getCode();
+		userBankCard.setState(state);
+		userBankCardDao.save(userBankCard);
 		map.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		return map;
 	}
@@ -63,5 +65,9 @@ public class UserBankCardServiceImpl implements UserBankCardService
 			return true;
 		}
 		return false;
+	}
+	@Override
+	public UserBankCard queryBankCard(String cardNum) {
+		return userBankCardDao.queryBankCard(cardNum);
 	}
 }

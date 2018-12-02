@@ -18,14 +18,19 @@ public class UserBankCardDaoImpl extends DefaultGenericDaoImpl<UserBankCard> imp
 	public void save(UserBankCard userBankCard) {
 		this.saveOrUpdate(userBankCard);
 	}
-	//通过ID删除银行卡
-	@Override
-	public void deleteBank(Integer id) {
-		String sql="delete from UserBankCard where id=:id";
-		Query<UserBankCard> query = getSessionFactory().getCurrentSession().createQuery(sql,UserBankCard.class);
-		query.setParameter("id", id);
-		query.executeUpdate();
-	}
+//	//通过ID删除银行卡
+//	@Override
+//	public void deleteBank(Integer id) {
+//		String sql="delete from UserBankCard where id=:id";
+//		Query<UserBankCard> query =null;
+//		try {
+//			query=getSessionFactory().getCurrentSession().createQuery(sql,UserBankCard.class);
+//		}catch(Exception e) {
+//			e.printStackTrace();
+//		}
+//		query.setParameter("id", id);
+//		query.executeUpdate();
+//	}
 	//通过ID查询银行卡
 	@Override
 	public UserBankCard queryById(Integer id) {
@@ -60,6 +65,17 @@ public class UserBankCardDaoImpl extends DefaultGenericDaoImpl<UserBankCard> imp
 	    List<UserBankCard> list= query.list();
 	    if(list!=null&&list.size()>0) {
 	    	return list;
+	    }
+		return null;
+	}
+	@Override
+	public UserBankCard queryBankCard(String cardNum) {
+		String sql="from UserBankCard where cardNum=:cardNum";
+		Query<UserBankCard> query = getSessionFactory().getCurrentSession().createQuery(sql,UserBankCard.class);
+	    query.setParameter("cardNum", cardNum);
+	    List<UserBankCard> list= query.list();
+	    if(list!=null&&list.size()>0) {
+	    	return list.get(0);
 	    }
 		return null;
 	}

@@ -39,9 +39,9 @@ public class SysRoleDaoImpl extends DefaultGenericDaoImpl<SysRole> implements Sy
 	//只查询当前表
 	@Override
 	public List<SysRole> querySysRole() {
-		String sql="from SysRole";
+		String sql="from SysRole where state=:state";
 		Query<SysRole> query = getSessionFactory().getCurrentSession().createQuery(sql,SysRole.class);
-//		query.setParameter("state", Constants.BankCardState.ENABLED.getCode());
+		query.setParameter("state", Constants.BankCardState.ENABLED.getCode());
 		List<SysRole> list = query.list();
 		return list;
 	}

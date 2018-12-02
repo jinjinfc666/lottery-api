@@ -69,8 +69,8 @@ public class WalletServiceImpl implements WalletService
 	@Override
 	public Map<String,Object> queryUserAccount(Map<String, Object> ret) {
 		String userName=(String) ret.get("userName");
-		String startTime=(String) ret.get("startTime");
-		String endTime=(String) ret.get("endTime");
+//		String startTime=(String) ret.get("startTime");
+//		String endTime=(String) ret.get("endTime");
 		Integer pageIndex=(Integer) ret.get("pageIndex");
 		Integer pageSize=(Integer) ret.get("pageSize");
 		Map<String,Object> map=new HashMap<String,Object>();
@@ -84,7 +84,7 @@ public class WalletServiceImpl implements WalletService
 				return map;
 			}
 		}
-		Map<String,Object> userAccountLists=walletDao.queryUserAccount(userName, startTime, endTime,pageIndex,pageSize);
+		Map<String,Object> userAccountLists=walletDao.queryUserAccount(userName,pageIndex,pageSize);
 		userAccountLists.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		return userAccountLists;
 	}
