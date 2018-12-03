@@ -679,6 +679,14 @@ public class Constants {
 			}
 			return null;
 		}
+		public static Map<Integer,String> getMap() {
+			Map<Integer,String> map=new HashMap<Integer,String>();
+			SysNotifyType[] descs = SysNotifyType.values();
+			for(SysNotifyType desc: descs) {
+				map.put(desc.getCode(), desc.getDesc());
+			}
+			return map;
+		}
 	}
 	
 	/**
@@ -713,6 +721,14 @@ public class Constants {
 				}
 			}
 			return null;
+		}
+		public static Map<Integer,String> getMap() {
+			Map<Integer,String> map=new HashMap<Integer,String>();
+			SysNotifyReceiverType[] descs = SysNotifyReceiverType.values();
+			for(SysNotifyReceiverType desc: descs) {
+				map.put(desc.getCode(), desc.getDesc());
+			}
+			return map;
 		}
 	}
 	/**
@@ -2374,6 +2390,22 @@ public class Constants {
 		}
 
 		public int getCode() {
+			return code;
+		}
+		
+	}
+	//转账要用的remark
+	public static enum Transfer {
+		IN("in"),
+		OUT("out");
+
+		private String code;
+		
+		private Transfer(String code) {
+			this.code = code;
+		}
+
+		public String getCode() {
 			return code;
 		}
 		

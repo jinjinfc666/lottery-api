@@ -30,6 +30,15 @@
                 <comment>�û�ȡ��</comment>
             </column>
         </property>
+        <property generated="never" lazy="false" name="transfer" optimistic-lock="true" type="big_decimal" unique="false">
+            <column name="transfer">
+                <comment>�û�ȡ��</comment>
+            </column>
+        </property><property generated="never" lazy="false" name="transferOut" optimistic-lock="true" type="big_decimal" unique="false">
+            <column name="transfer_out">
+                <comment>�û�ȡ��</comment>
+            </column>
+        </property>
         <property generated="never" lazy="false" name="deduction" optimistic-lock="true" type="big_decimal" unique="false">
             <column name="deduction">
                 <comment>�۳�</comment>

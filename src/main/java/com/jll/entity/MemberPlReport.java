@@ -15,6 +15,8 @@ public class MemberPlReport implements java.io.Serializable {
 	private String userName;
 	private BigDecimal deposit;    
 	private BigDecimal withdrawal;
+	private BigDecimal transfer;    
+	private BigDecimal transferOut;
 	private BigDecimal deduction;
 	private BigDecimal consumption;
 	private BigDecimal cancelAmount;
@@ -31,13 +33,15 @@ public class MemberPlReport implements java.io.Serializable {
 	}
 
 	public MemberPlReport(Date createTime,Integer userId, String userName, BigDecimal deposit,
-			BigDecimal withdrawal, BigDecimal deduction, BigDecimal consumption, BigDecimal cancelAmount,
+			BigDecimal withdrawal,BigDecimal transfer,BigDecimal transferOut, BigDecimal deduction, BigDecimal consumption, BigDecimal cancelAmount,
 			BigDecimal returnPrize, BigDecimal rebate, BigDecimal profit, Integer userType) {
 		this.createTime = createTime;
 		this.userId = userId;
 		this.userName = userName;
 		this.deposit = deposit;
 		this.withdrawal = withdrawal;
+		this.transfer = transfer;
+		this.transferOut = transferOut;
 		this.deduction = deduction;
 		this.consumption = consumption;
 		this.cancelAmount = cancelAmount;
@@ -48,6 +52,22 @@ public class MemberPlReport implements java.io.Serializable {
 	}
 	
 	
+	public BigDecimal getTransfer() {
+		return transfer;
+	}
+
+	public void setTransfer(BigDecimal transfer) {
+		this.transfer = transfer;
+	}
+
+	public BigDecimal getTransferOut() {
+		return transferOut;
+	}
+
+	public void setTransferOut(BigDecimal transferOut) {
+		this.transferOut = transferOut;
+	}
+
 	public Integer getUserId() {
 		return userId;
 	}

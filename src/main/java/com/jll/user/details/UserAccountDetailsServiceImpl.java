@@ -52,5 +52,4 @@ public class UserAccountDetailsServiceImpl implements UserAccountDetailsService
 		addRedDtl.setRemark(remark);
 		return addRedDtl;
 	}
-	
 }

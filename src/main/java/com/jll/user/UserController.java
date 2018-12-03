@@ -901,11 +901,37 @@ public class UserController {
 			Integer userId=userInfo.getId();
 			Integer state=userInfo.getState();
 			Integer userType=userInfo.getUserType();
+			String phoneNum=userInfo.getPhoneNum();
+			String email=userInfo.getEmail();
 			BigDecimal platRebate=userInfo.getPlatRebate();
 			UserInfo user = userInfoService.getUserById(userId);
-			user.setId(userId);
 			if(userType!=null) {
 				user.setUserType(userType);
+			}
+			
+			if(!StringUtils.isBlank(user.getEmail())
+					&& !Utils.validEmail(user.getEmail())) {
+				ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+				ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_INVALID_EMAIL.getCode());
+				ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_INVALID_EMAIL.getErrorMes());
+				return ret; 
+			}
+			
+			if(!StringUtils.isBlank(user.getPhoneNum())
+					&& !Utils.validPhone(user.getPhoneNum())) {
+				ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+				ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_INVALID_PHONE_NUMBER.getCode());
+				ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_INVALID_PHONE_NUMBER.getErrorMes());
+				return ret; 
+			}
+			
+			if(!phoneNum.equals(user.getPhoneNum())) {
+				user.setPhoneNum(phoneNum);
+				user.setIsValidPhone(Constants.PhoneValidState.UNVERIFIED.getCode());
+			}
+			if(!email.equals(user.getEmail())) {
+				user.setEmail(email);
+				user.setIsValidEmail(Constants.EmailValidState.UNVERIFIED.getCode());
 			}
 			if(state!=null) {
 				user.setState(state);

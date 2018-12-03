@@ -1114,10 +1114,10 @@ public class UserInfoServiceImpl implements UserInfoService
 		
 		UserAccount subAcc = (UserAccount) supserDao.findByName(UserAccount.class, "userId", toUserInfo.getId(), "accType", WalletType.MAIN_WALLET.getCode()).get(0);
 		
-		UserAccountDetails mainDtl = userAccountDetailsService.initCreidrRecord(fromUserInfo.getId(), mainAcc, mainAcc.getBalance().doubleValue(), -amount, AccOperationType.TRANSFER.getCode(),0,"out");
+		UserAccountDetails mainDtl = userAccountDetailsService.initCreidrRecord(fromUserInfo.getId(), mainAcc, mainAcc.getBalance().doubleValue(), -amount, AccOperationType.TRANSFER.getCode(),0,Constants.Transfer.OUT.getCode());
 		mainAcc.setBalance(mainDtl.getPostAmount());
 		
-		UserAccountDetails subDtl = userAccountDetailsService.initCreidrRecord(toUserInfo.getId(), subAcc, subAcc.getBalance().doubleValue(), amount, AccOperationType.TRANSFER.getCode(),0,"in");
+		UserAccountDetails subDtl = userAccountDetailsService.initCreidrRecord(toUserInfo.getId(), subAcc, subAcc.getBalance().doubleValue(), amount, AccOperationType.TRANSFER.getCode(),0,Constants.Transfer.IN.getCode());
 		subAcc.setBalance(subDtl.getPostAmount());
 		
 		supserDao.save(mainDtl);
@@ -1529,6 +1529,18 @@ public class UserInfoServiceImpl implements UserInfoService
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_NO_VALID_USER.getErrorMes());
 			return ret;
 		}
+		//需要加上权限设置
+		if(!SecurityUtils.checkPermissionIsOK(SecurityContextHolder.getContext().getAuthentication(), SecurityUtils.PERMISSION_ROLE_USER_INFO)){
+			//真实姓名只显示第一个字，电话号码只显示后面三位，电子邮件只显示头三个字母以及邮箱地址，微信和qq都只显示后面三位字母
+			userInfo.setPhoneNum(StringUtils.abbreviate(userInfo.getPhoneNum(),3,StringUtils.MORE_ASTERISK));
+			if(!StringUtils.isEmpty(userInfo.getEmail())){
+				String[] emails = userInfo.getEmail().split("@");
+				userInfo.setEmail(StringUtils.abbreviate(emails[0],3,StringUtils.MORE_ASTERISK)+"@"+emails[1]);
+			}
+			userInfo.setWechat(StringUtils.abbreviate(userInfo.getWechat(),3,StringUtils.MORE_ASTERISK));
+			userInfo.setQq(StringUtils.abbreviate(userInfo.getQq(),3,StringUtils.MORE_ASTERISK));
+			
+		}
 		String superior=userInfo.getSuperior();
 		if(!StringUtils.isBlank(superior)) {
 			String[] stringArr=superior.split(",");
@@ -1545,18 +1557,7 @@ public class UserInfoServiceImpl implements UserInfoService
 			}
 			String str2 = StringUtils.join(stringSuperior, ",");
 			userInfo.setSuperior(str2);
-			//需要加上权限设置
-			if(!SecurityUtils.checkPermissionIsOK(SecurityContextHolder.getContext().getAuthentication(), SecurityUtils.PERMISSION_ROLE_USER_INFO)){
-				//真实姓名只显示第一个字，电话号码只显示后面三位，电子邮件只显示头三个字母以及邮箱地址，微信和qq都只显示后面三位字母
-				userInfo.setPhoneNum(StringUtils.abbreviate(userInfo.getPhoneNum(),3,StringUtils.MORE_ASTERISK));
-				if(!StringUtils.isEmpty(userInfo.getEmail())){
-					String[] emails = userInfo.getEmail().split("@");
-					userInfo.setEmail(StringUtils.abbreviate(emails[0],3,StringUtils.MORE_ASTERISK)+"@"+emails[1]);
-				}
-				userInfo.setWechat(StringUtils.abbreviate(userInfo.getWechat(),3,StringUtils.MORE_ASTERISK));
-				userInfo.setQq(StringUtils.abbreviate(userInfo.getQq(),3,StringUtils.MORE_ASTERISK));
-				
-			}
+			
 			
 			userInfo.setLoginPwd(StringUtils.MORE_ASTERISK);
 			userInfo.setFundPwd(StringUtils.MORE_ASTERISK);

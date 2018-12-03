@@ -68,7 +68,7 @@ public class WalletDaoImpl extends DefaultGenericDaoImpl<UserAccount> implements
 		Map<String,Object> map=new HashMap<String,Object>();
 		String userNameSql="";
 		if(!StringUtils.isBlank(userName)) {
-			userNameSql=" and a.userName=:userName";
+			userNameSql=" and LOCATE(:userName, a.userName)>0 ";
 			map.put("userName", userName);
 		}
 //		if(!StringUtils.isBlank(startTime)&&!StringUtils.isBlank(endTime)) {

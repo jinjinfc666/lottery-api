@@ -189,18 +189,18 @@ public class UserInfoDaoImpl extends DefaultGenericDaoImpl<UserInfo> implements 
 				map.put("id", id);
 			}
 			if(!StringUtils.isBlank(userName)) {
-				userNameSql=" and userName=:userName";
+				userNameSql=" and LOCATE(:userName, userName)>0";
 				map.put("userName", userName);
 			}
 			String timeSql="";
 			if(!StringUtils.isBlank(startTime)&&!StringUtils.isBlank(endTime)) {
-				timeSql=" and create_time >=:startTime and create_time <:endTime";
+				timeSql=" and createTime >=:startTime and createTime <:endTime";
 				Date beginDate = java.sql.Date.valueOf(startTime);
 			    Date endDate = java.sql.Date.valueOf(endTime);
 				map.put("startTime", beginDate);
 				map.put("endTime", endDate);
 			}
-			hql=("from UserInfo where user_type !=:userType and user_type !=:userTypea"+timeSql+idSql+userNameSql);
+			hql=("from UserInfo where userType !=:userType and userType !=:userTypea"+timeSql+idSql+userNameSql);
 			PageBean page=new PageBean();
 			page.setPageIndex(pageIndex);
 			page.setPageSize(pageSize);
@@ -291,7 +291,7 @@ public class UserInfoDaoImpl extends DefaultGenericDaoImpl<UserInfo> implements 
 		String hql="";
 		String userNameSql="";
 		if(!StringUtils.isBlank(userName)) {
-			userNameSql=" and userName=:userName";
+			userNameSql=" and LOCATE(:userName, userName)>0 ";
 			map.put("userName", userName);
 		}
 		String timeSql="";

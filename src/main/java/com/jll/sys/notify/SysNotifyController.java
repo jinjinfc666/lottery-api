@@ -1,5 +1,6 @@
 package com.jll.sys.notify;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -10,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.jll.common.constants.Constants;
+import com.jll.common.constants.Message;
 import com.jll.common.utils.Utils;
 import com.jll.dao.PageQueryDao;
 import com.jll.entity.SysNotification;
@@ -61,5 +64,22 @@ public class SysNotifyController {
 	public Map<String, Object> setSysNotifyExpire(@RequestBody Map<String, String> params) {
 		return sysNotifyService.updateSetSysNotifyExpire( Utils.toInteger(params.get("notifyId")));
 	}
-	
+	@RequestMapping(value="/queryReceiverType", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> queryReceiverType() {
+		Map<String,Object> map=new HashMap<String,Object>();
+		map.put(Message.KEY_DATA, Constants.SysNotifyReceiverType.getMap());
+		map.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		return map;
+	} 
+	@RequestMapping(value="/queryReceiver", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> queryReceiver() {
+		Map<String,Object> map=new HashMap<String,Object>();
+		map.put(Message.KEY_DATA, Constants.SysNotifyType.getMap());
+		map.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		return map;
+	}
+	@RequestMapping(value="/queryNotificationLists", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> queryNotificationLists(@RequestBody Map<String, String> params) {
+		return sysNotifyService.queryNotificationLists(params);
+	}
 }

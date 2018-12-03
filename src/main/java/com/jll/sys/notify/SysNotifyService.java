@@ -11,4 +11,5 @@ public interface SysNotifyService
 	Map<String, Object> saveSysNotify(String sendIds,SysNotification notify);
 	Map<String, Object> getSysNotifyLists(String userName, PageQueryDao page);
 	Map<String, Object> updateSetSysNotifyExpire(int notifyId);
+	Map<String,Object> queryNotificationLists(Map<String, String> params);
 }

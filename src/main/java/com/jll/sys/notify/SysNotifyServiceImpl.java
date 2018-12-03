@@ -22,9 +22,11 @@ import com.jll.common.constants.Constants.SysCodeTypes;
 import com.jll.common.constants.Constants.SysNotifyReceiverType;
 import com.jll.common.constants.Constants.SysNotifyType;
 import com.jll.common.constants.Constants.SysRuntimeArgument;
+import com.jll.common.constants.Constants;
 import com.jll.common.constants.Message;
 import com.jll.common.utils.PageQuery;
 import com.jll.common.utils.StringUtils;
+import com.jll.dao.PageBean;
 import com.jll.dao.PageQueryDao;
 import com.jll.dao.SupserDao;
 import com.jll.entity.SysNotification;
@@ -50,6 +52,9 @@ public class SysNotifyServiceImpl implements SysNotifyService
 	
 	@Resource
 	UserInfoDao userDao;
+	
+	@Resource
+	SysNotifyDao sysNotifyDao;
 
 	@Override
 	public Map<String, Object> getSysNotifyLists(String userName, PageQueryDao page) {
@@ -173,6 +178,25 @@ public class SysNotifyServiceImpl implements SysNotifyService
 		}
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		return ret;
+	}
+
+	@Override
+	public Map<String, Object> queryNotificationLists(Map<String, String> params) {
+		Map<String,Object> map=new HashMap<String,Object>();
+//		String userName=params.get("userName");
+		String startTime=params.get("startTime");
+		String endTime=params.get("endTime");
+		Integer pageIndex=Integer.parseInt(params.get("pageIndex"));
+		Integer pageSize=Constants.Pagination.SUM_NUMBER.getCode();
+//		UserInfo user=userInfoService.getUserByUserName(userName);
+//		Integer userId=null;
+//		if(user!=null) {
+//			userId=user.getId();
+//		}
+		PageBean pageBean=sysNotifyDao.queryNotificationLists(startTime, endTime, pageIndex, pageSize);
+		map.put(Message.KEY_DATA, pageBean);
+		map.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		return map;
 	}
 
 	
