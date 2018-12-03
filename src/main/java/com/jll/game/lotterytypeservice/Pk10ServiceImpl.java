@@ -268,6 +268,46 @@ public class Pk10ServiceImpl extends DefaultLottoTypeServiceImpl
 		Map responseMap = null;
 		Map resultMap = null;
 		Map dataMap = null;
+		Map retItems = null;
+		try {
+			responseMap = mapper.readValue(response, Map.class);
+			resultMap = (Map)responseMap.get("result");
+			retItems = (Map)resultMap.get("data");
+			if(retItems == null || retItems.size() == 0) {
+				return null;
+			}
+			
+			//for(Object temp : retItems) {
+				winningNumMap = retItems;
+				String winningNumber = (String)winningNumMap.get("preDrawCode");
+				Integer winningIssueNum = (Integer)winningNumMap.get("preDrawIssue");
+				
+				if(issueNum.equals(String.valueOf(winningIssueNum))) {
+					return winningNumber;
+				}
+			//}
+			
+		} catch (JsonParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JsonMappingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
+	
+	private String parse168(String response, String issueNum) {
+		ObjectMapper mapper = new ObjectMapper();
+		Map  winningNumMap = null;
+		Map responseMap = null;
+		Map resultMap = null;
+		Map dataMap = null;
 		List retItems = null;
 		try {
 			responseMap = mapper.readValue(response, Map.class);

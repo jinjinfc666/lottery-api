@@ -174,7 +174,7 @@ public class SignupRecControllerTest extends ControllerJunitBase {
 		token = queryToken(userName, pwd, clientId);
 		request.setHeaderField("Authorization", "bearer " + token);
 
-		WebResponse response = wc.sendRequest(request);
+		WebResponse response = wc.sendRequest(request); 
 
 		int status = response.getResponseCode();
 
