@@ -75,16 +75,25 @@ public class SignupRecController {
 			return ret;
 		}
 	}
+	
+	/*
+	 * 
+	 */
 	@RequestMapping(value={"/sgnupRecRecord"}, method={RequestMethod.GET}, produces={"application/json"})
 	public Map<String, Object> sgnupRecRecord(@RequestParam(name = "userName", required = false) String userName,
 			@RequestParam(name = "startTime", required = true) String startTime,
 			@RequestParam(name = "endTime", required = true) String endTime,
 			@RequestParam(name = "pageIndex", required = true) Integer pageIndex,
+			@RequestParam(name = "pageSize", required = false) Integer pageSize,
+			@RequestParam(name = "sourceFlag", required = false) Integer sourceFlag,
 			  HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
+		Integer pageSize_ = pageSize;
+		Integer userId = null;
+		
 		try {
 			UserInfo user=null;
-			if(StringUtils.isBlank(userName)) {
+			if(sourceFlag == null || sourceFlag.intValue() == 0) {
 				user=userInfoService.getCurLoginInfo();
 				if(null == user){
 					ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
@@ -92,18 +101,27 @@ public class SignupRecController {
 					ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_NO_VALID_USER.getErrorMes());
 					return ret;
 				}
+				
+				userId=user.getId();
 			}else {
 				user=userInfoService.getUserByUserName(userName);
-				if(null == user){
+				/*if(null == user){
 					ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 					ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_NO_VALID_USER.getCode());
 					ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_NO_VALID_USER.getErrorMes());
 					return ret;
+				}*/
+				
+				if(user != null) {
+					userId=user.getId();					
 				}
 			}
-			Integer userId=user.getId();
-			Integer pageSize=Constants.Pagination.SUM_NUMBER.getCode();
-			ret=signupRecService.queryRecord(userId, startTime, endTime,pageIndex,pageSize);
+			
+			if(pageSize_ == null || pageSize_.intValue() == 0) {
+				pageSize_ = Constants.Pagination.SUM_NUMBER.getCode();				
+			}
+			
+			ret=signupRecService.queryRecord(userId, startTime, endTime,pageIndex, pageSize_);
 			return ret;
 		}catch(Exception e){
 			ret.clear();
@@ -112,35 +130,5 @@ public class SignupRecController {
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
 			return ret;
 		}
-	}
-	@RequestMapping(value={"/sgnupRecBRecord"}, method={RequestMethod.GET}, produces={"application/json"})
-	public Map<String, Object> sgnupRecBRecord(@RequestParam(name = "userName", required = false) String userName,
-			@RequestParam(name = "startTime", required = true) String startTime,
-			@RequestParam(name = "endTime", required = true) String endTime,
-			@RequestParam(name = "pageIndex", required = true) Integer pageIndex,
-			  HttpServletRequest request) {
-		Map<String, Object> ret = new HashMap<>();
-		try {
-			Integer userId=null;
-			if(!StringUtils.isBlank(userName)) {
-				UserInfo user=userInfoService.getUserByUserName(userName);
-				if(null == user){
-					ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-					ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_NO_VALID_USER.getCode());
-					ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_NO_VALID_USER.getErrorMes());
-					return ret;
-				}
-				userId=user.getId();
-			}
-			Integer pageSize=Constants.Pagination.SUM_NUMBER.getCode();
-			ret=signupRecService.queryRecord(userId, startTime, endTime,pageIndex,pageSize);
-			return ret;
-		}catch(Exception e){
-			ret.clear();
-			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
-			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
-			return ret;
-		}
-	}
+	}	
 }

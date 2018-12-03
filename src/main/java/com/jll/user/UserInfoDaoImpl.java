@@ -107,7 +107,7 @@ public class UserInfoDaoImpl extends DefaultGenericDaoImpl<UserInfo> implements 
 			sql.append(condition.toString());
 		}
 		
-		long count = queryCount(sql.toString(), params, UserInfo.class);
+		long count = queryCount(sql.toString(), params);
 		return count > 0;
 	}
 
@@ -338,7 +338,7 @@ public class UserInfoDaoImpl extends DefaultGenericDaoImpl<UserInfo> implements 
 			params.add(DateUtil.getDateDayStart(user.getCreateTime()));
 			params.add(DateUtil.getDateDayEnd(user.getCreateTime()));
 		}
-	    return queryCount(hql, params,UserInfo.class);
+	    return queryCount(hql, params);
 	}
 
 	@Override
