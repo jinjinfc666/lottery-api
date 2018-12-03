@@ -67,6 +67,11 @@ public class TReportDaoImpl extends DefaultGenericDaoImpl<TeamPlReport> implemen
 	    Query<UserInfo> query = getSessionFactory().getCurrentSession().createQuery(sql,UserInfo.class);
 	    query.setParameter("userName", userName);
 	    List<UserInfo> list = query.list();
+	    
+	    if(list == null || list.size() == 0) {
+	    	return map;
+	    }
+	    
 	    Integer id=list.get(0).getId();
 	    String sql1="select a.user_name from(select *,FIND_IN_SET(:id,superior) as aa from user_info)a where a.aa=1";
 	    Query<?> query1 = getSessionFactory().getCurrentSession().createNativeQuery(sql1);

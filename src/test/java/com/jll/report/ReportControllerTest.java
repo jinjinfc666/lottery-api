@@ -7,15 +7,13 @@ import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 
 import org.junit.Assert;
-import org.springframework.http.MediaType;
 
 import com.ehome.test.ControllerJunitBase;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.jll.common.constants.Message;
 import com.meterware.httpunit.GetMethodWebRequest;
-import com.meterware.httpunit.HttpUnitOptions;
-import com.meterware.httpunit.PostMethodWebRequest;
+import com.meterware.httpunit.HttpException;
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
@@ -32,7 +30,7 @@ public class ReportControllerTest extends ControllerJunitBase {
 	 * 
 	 * @throws Exception
 	 */
-	public void testPayOrderToSystem() throws Exception {
+	public void ItestPayOrderToSystem() throws Exception {
 		String userName = "test001";
 		String pwd = "test001";
 		String clientId = "lottery-client";
@@ -75,6 +73,193 @@ public class ReportControllerTest extends ControllerJunitBase {
 	}
 	
 
+	public void ItestMReportNextTeam_non_agent() throws Exception {
+		String userName = "test001";
+		String pwd = "test001";
+		String clientId = "lottery-client";
+		String token = null;
+		ObjectMapper mapper = new ObjectMapper();
+		ByteArrayInputStream bis = null;
+
+		ObjectNode node = mapper.createObjectNode();
+		node.putPOJO("payerName", "test001");
+		node.putPOJO("payCardNumber", "222222222222");
+		node.putPOJO("payType", "2");
+		node.putPOJO("payChannel", "1");
+		node.putPOJO("amount", "10");
+		
+		
+		System.out.println(mapper.writeValueAsString(node));
+		bis = new ByteArrayInputStream(mapper.writeValueAsBytes(node));
+		
+		try {
+			WebRequest request = new GetMethodWebRequest("http://localhost:8080/report/MReportNextTeam?userName=zhaowei&startTime=2018-11-02&endTime=2018-11-02&pageIndex=1");
+			WebConversation wc = new WebConversation();
+			
+			token = queryToken(userName, pwd, clientId);
+			request.setHeaderField("Authorization", "bearer " + token);
+			
+			WebResponse response = wc.sendRequest(request);
+			
+			int status = response.getResponseCode();
+			
+			Assert.assertEquals(HttpServletResponse.SC_OK, status);
+			String result = response.getText();
+			
+			Map<String, Object> retItems = null;
+			
+			retItems = mapper.readValue(result, HashMap.class);
+			
+			Assert.assertNotNull(retItems);
+			
+			Assert.assertEquals(Message.status.SUCCESS.getCode(), retItems.get(Message.KEY_STATUS));
+			
+			Thread.sleep(20000);
+			
+		}catch(HttpException ex) {
+			Assert.assertEquals(403, ex.getResponseCode());
+		}
+	}
+	
+	public void ItestMReportNextTeam_agent() throws Exception {
+		String userName = "agent001";
+		String pwd = "test001";
+		String clientId = "lottery-client";
+		String token = null;
+		ObjectMapper mapper = new ObjectMapper();
+		ByteArrayInputStream bis = null;
+
+		ObjectNode node = mapper.createObjectNode();
+		node.putPOJO("payerName", "test001");
+		node.putPOJO("payCardNumber", "222222222222");
+		node.putPOJO("payType", "2");
+		node.putPOJO("payChannel", "1");
+		node.putPOJO("amount", "10");
+		
+		
+		System.out.println(mapper.writeValueAsString(node));
+		bis = new ByteArrayInputStream(mapper.writeValueAsBytes(node));
+		WebRequest request = new GetMethodWebRequest("http://localhost:8080/report/MReportNextTeam?userName=zhaowei&startTime=2018-11-02&endTime=2018-11-02&pageIndex=1");
+		WebConversation wc = new WebConversation();
+
+		token = queryToken(userName, pwd, clientId);
+		request.setHeaderField("Authorization", "bearer " + token);
+
+		WebResponse response = wc.sendRequest(request);
+
+		int status = response.getResponseCode();
+
+		Assert.assertEquals(HttpServletResponse.SC_OK, status);
+		String result = response.getText();
+
+		Map<String, Object> retItems = null;
+
+		retItems = mapper.readValue(result, HashMap.class);
+
+		Assert.assertNotNull(retItems);
+
+		//Assert.assertEquals(Message.status.SUCCESS.getCode(), retItems.get(Message.KEY_STATUS));
+
+		//Thread.sleep(20000);
+	}
+	
+	
+	public void testAgentTransfer_non_agent() throws Exception {
+		String userName = "test001";
+		String pwd = "test001";
+		String clientId = "lottery-client";
+		String token = null;
+		ObjectMapper mapper = new ObjectMapper();
+		ByteArrayInputStream bis = null;
+
+		ObjectNode node = mapper.createObjectNode();
+		node.putPOJO("payerName", "test001");
+		node.putPOJO("payCardNumber", "222222222222");
+		node.putPOJO("payType", "2");
+		node.putPOJO("payChannel", "1");
+		node.putPOJO("amount", "10");
+		
+		
+		System.out.println(mapper.writeValueAsString(node));
+		bis = new ByteArrayInputStream(mapper.writeValueAsBytes(node));
+		
+		try {
+			WebRequest request = new GetMethodWebRequest("http://localhost:8080/report/agent/transfer?agentId=2&startTime=2018-11-03&endTime=2018-11-03");
+			WebConversation wc = new WebConversation();
+			
+			token = queryToken(userName, pwd, clientId);
+			request.setHeaderField("Authorization", "bearer " + token);
+			
+			WebResponse response = wc.sendRequest(request);
+			
+			int status = response.getResponseCode();
+			
+			Assert.assertEquals(HttpServletResponse.SC_OK, status);
+			String result = response.getText();
+			
+			Map<String, Object> retItems = null;
+			
+			retItems = mapper.readValue(result, HashMap.class);
+			
+			Assert.assertNotNull(retItems);
+			
+			Assert.assertEquals(Message.status.SUCCESS.getCode(), retItems.get(Message.KEY_STATUS));
+			
+			Thread.sleep(20000);
+			
+		}catch(HttpException ex) {
+			Assert.assertEquals(403, ex.getResponseCode());
+		}
+	}
+	
+	public void testAgentTransfer_agent() throws Exception {
+		String userName = "agent001";
+		String pwd = "test001";
+		String clientId = "lottery-client";
+		String token = null;
+		ObjectMapper mapper = new ObjectMapper();
+		ByteArrayInputStream bis = null;
+
+		ObjectNode node = mapper.createObjectNode();
+		node.putPOJO("payerName", "test001");
+		node.putPOJO("payCardNumber", "222222222222");
+		node.putPOJO("payType", "2");
+		node.putPOJO("payChannel", "1");
+		node.putPOJO("amount", "10");
+		
+		
+		System.out.println(mapper.writeValueAsString(node));
+		bis = new ByteArrayInputStream(mapper.writeValueAsBytes(node));
+		
+		try {
+			WebRequest request = new GetMethodWebRequest("http://localhost:8080/report/agent/transfer?agentId=2&startTime=2018-11-03&endTime=2018-11-03");
+			WebConversation wc = new WebConversation();
+			
+			token = queryToken(userName, pwd, clientId);
+			request.setHeaderField("Authorization", "bearer " + token);
+			
+			WebResponse response = wc.sendRequest(request);
+			
+			int status = response.getResponseCode();
+			
+			Assert.assertEquals(HttpServletResponse.SC_OK, status);
+			String result = response.getText();
+			
+			Map<String, Object> retItems = null;
+			
+			retItems = mapper.readValue(result, HashMap.class);
+			
+			Assert.assertNotNull(retItems);
+			
+			Assert.assertEquals(Message.status.SUCCESS.getCode(), retItems.get(Message.KEY_STATUS));
+			
+			Thread.sleep(20000);
+			
+		}catch(HttpException ex) {
+			Assert.assertEquals(403, ex.getResponseCode());
+		}
+	}
+	
 	
 	
 	public void logout(String token) throws Exception {
