@@ -162,7 +162,6 @@ public class PaymentServiceImpl  implements PaymentService
 		UserInfo dbInfo = (UserInfo) supserDao.get(UserInfo.class,userId);
 		
 		if(null == dbInfo
-				|| null == info.getPayType()
 				|| null == info.getPayChannel()
 				|| (null == info.getAmount()|| info.getAmount() < 0)
 				){
@@ -198,11 +197,11 @@ public class PaymentServiceImpl  implements PaymentService
 			return ret;
 		}
 		
-		PayType pt = cacheRedisService.getPayTypeInfo(info.getPayType());
+		PayType pt = cacheRedisService.getPayTypeInfo(pcInfo.getPayType());
 		
 		data.put(Message.KEY_DATA_TYPE, pcInfo.getShowType());
 		//写入订单
-		DepositApplication depositOrder = depositOrderDao.saveDepositOrder(info.getPayType(), info.getPayChannel(),userId, info.getAmount(), "",new Date(),"");
+		DepositApplication depositOrder = depositOrderDao.saveDepositOrder(pcInfo.getPayType(), info.getPayChannel(),userId, info.getAmount(), "",new Date(),"");
 		pramsInfo.put("depositOrder", depositOrder);
 		pramsInfo.put("userId", userId);
 		pramsInfo.put("rechargeType", pcInfo.getPayCode());
@@ -232,10 +231,16 @@ public class PaymentServiceImpl  implements PaymentService
 				}
 				
 			}else{
-				caiPayService.processOnlineBankPay(pramsInfo);
-				data.put("isRedirect",true);
-				data.put(Message.KEY_DATA_REDIRECT, pramsInfo.get("redirect"));
-				ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+				String retCode = caiPayService.processOnlineBankPay(pramsInfo);
+				if(retCode.equals(String.valueOf(Message.status.SUCCESS.getCode()))) {
+					data.put("isRedirect",true);
+					data.put(Message.KEY_DATA_REDIRECT, pramsInfo.get("redirect"));
+					ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());					
+				}else {
+					ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+					ret.put(Message.KEY_ERROR_CODE, retCode);
+					ret.put(Message.KEY_ERROR_MES, Message.Error.getErrorByCode(retCode).getErrorMes());
+				}
 			}
 		}else if(pt.getPlatId().equals(Constants.PayType.WISDOM_PAYMENT.getCode())){
 			pramsInfo.remove("payerName");
@@ -283,6 +288,7 @@ public class PaymentServiceImpl  implements PaymentService
 				data.put(Message.KEY_DATA_QR_CODE, pcInfo.getQrUrl());
 			}else if(pcInfo.getShowType().intValue() == Constants.PayChannelShowType.BANK_ACC.getCode()) {
 				data.put(Message.KEY_DATA_BANK_ACC, pcInfo.getBankAcc());
+				data.put(Message.KEY_REMAKE, Utils.produce6DigitsCaptchaCode());
 			}
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		}

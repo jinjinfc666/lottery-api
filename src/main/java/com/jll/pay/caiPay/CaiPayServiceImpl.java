@@ -323,6 +323,7 @@ public class CaiPayServiceImpl implements CaiPayService
 		DepositApplication depositOrder = (DepositApplication)params.get("depositOrder");
 		SortedMap<String, Object> pushParams = new TreeMap<>();
 		Merchant merchant = queryCurrMerchant((String)params.get("rechargeType"));
+		String sign = null;
 		
 		if(merchant == null) {
 			return null;
@@ -367,7 +368,11 @@ public class CaiPayServiceImpl implements CaiPayService
 		pushParams.put("prdName", "lottery");
 		pushParams.put("prdDesc", "lottery");
 		pushParams.put("pnum", "1");
-		String sign = MD5Signature.createSign(pushParams, merchant.getKey());
+		try {
+			sign = MD5Signature.createSign(pushParams, merchant.getKey());			
+		}catch(Exception ex) {
+			sign = null;
+		}
 		if(sign == null || sign.length() == 0) {
 			return null;
 		}
