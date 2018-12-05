@@ -69,8 +69,10 @@ import com.jll.entity.MemberPlReport;
 import com.jll.entity.OrderInfo;
 import com.jll.entity.SiteMessFeedback;
 import com.jll.entity.SiteMessage;
+import com.jll.entity.SysAuthority;
 import com.jll.entity.SysCode;
 import com.jll.entity.SysNotification;
+import com.jll.entity.SysRole;
 import com.jll.entity.UserAccount;
 import com.jll.entity.UserAccountDetails;
 import com.jll.entity.UserBankCard;
@@ -80,6 +82,9 @@ import com.jll.game.IssueService;
 import com.jll.game.order.OrderDao;
 import com.jll.game.order.OrderService;
 import com.jll.report.WithdrawApplicationService;
+import com.jll.sys.security.permission.SysRoleService;
+import com.jll.sys.security.user.SysAuthorityDao;
+import com.jll.sys.security.user.SysAuthorityService;
 import com.jll.sysSettings.syscode.SysCodeService;
 import com.jll.user.bank.UserBankCardService;
 import com.jll.user.details.UserAccountDetailsService;
@@ -128,6 +133,15 @@ public class UserInfoServiceImpl implements UserInfoService
 	
 	@Resource
 	UserBankCardService userBankCardService;
+	
+	@Resource
+	SysAuthorityService sysAuthorityService;
+	
+	@Resource
+	SysRoleService sysRoleService;
+	
+	@Resource
+	SysAuthorityDao sysAuthorityDao;
 	
 	@Resource
 	//HttpServletRequest request;
@@ -240,8 +254,9 @@ public class UserInfoServiceImpl implements UserInfoService
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
 			return ret;
 		}
-		
-		if(!SecurityUtils.checkPermissionIsOK(SecurityContextHolder.getContext().getAuthentication(), SecurityUtils.PERMISSION_ROLE_USER_INFO)){
+
+		List<String> list=sysAuthorityService.queryGetByUserId(dbInfo.getId());
+		if(!SecurityUtils.checkViewPermissionIsOK(list)){
 			//真实姓名只显示第一个字，电话号码只显示后面三位，电子邮件只显示头三个字母以及邮箱地址，微信和qq都只显示后面三位字母
 			dbInfo.setPhoneNum(StringUtils.abbreviate(dbInfo.getPhoneNum(),3,StringUtils.MORE_ASTERISK));
 			if(!StringUtils.isEmpty(dbInfo.getEmail())){
@@ -309,8 +324,8 @@ public class UserInfoServiceImpl implements UserInfoService
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
 			return ret;
 		}
-		
-		boolean isAdmin = SecurityUtils.checkPermissionIsOK(SecurityContextHolder.getContext().getAuthentication(), SecurityUtils.PERMISSION_ROLE_ADMIN);
+		List<String> list=sysAuthorityService.queryGetByUserId(dbInfo.getId());
+		boolean isAdmin = SecurityUtils.checkPermissionIsOK(list, SecurityUtils.PERMISSION_ROLE_ADMIN);
 		
 		if(!isAdmin 
 				&& !StringUtils.isEmpty(dbInfo.getRealName())
@@ -474,7 +489,27 @@ public class UserInfoServiceImpl implements UserInfoService
 		
 		user.setCreator(1);
 		user.setRegIp(request.getRemoteHost());
+		
 		userDao.saveUser(user);
+		Integer userId=user.getId();
+		if(user.getUserType()!=null) {
+			String roleName="";
+			if(user.getUserType()==0) {
+				roleName=Constants.Permission.ROLE_USER.getCode();
+			}else if(user.getUserType()==1) {
+				roleName=Constants.Permission.ROLE_AGENT.getCode();
+			}
+			SysRole sysRole=sysRoleService.queryByRoleName(roleName);
+			if(sysRole==null) {
+				throw new RuntimeException(Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			}
+			SysAuthority sysAuthority=new SysAuthority();
+			sysAuthority.setUserId(userId);
+			sysAuthority.setRoleId(sysRole.getId());
+			sysAuthorityDao.saveOrUpdateSysAuthority(sysAuthority);
+		}else {
+			throw new RuntimeException(Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+		}
 		walletServ.createWallet(user);
 	}
 
@@ -1530,7 +1565,9 @@ public class UserInfoServiceImpl implements UserInfoService
 			return ret;
 		}
 		//需要加上权限设置
-		if(!SecurityUtils.checkPermissionIsOK(SecurityContextHolder.getContext().getAuthentication(), SecurityUtils.PERMISSION_ROLE_USER_INFO)){
+		UserInfo dbInfo = getCurLoginInfo();
+		List<String> list=sysAuthorityService.queryGetByUserId(dbInfo.getId());
+		if(!SecurityUtils.checkViewPermissionIsOK(list)){
 			//真实姓名只显示第一个字，电话号码只显示后面三位，电子邮件只显示头三个字母以及邮箱地址，微信和qq都只显示后面三位字母
 			userInfo.setPhoneNum(StringUtils.abbreviate(userInfo.getPhoneNum(),3,StringUtils.MORE_ASTERISK));
 			if(!StringUtils.isEmpty(userInfo.getEmail())){

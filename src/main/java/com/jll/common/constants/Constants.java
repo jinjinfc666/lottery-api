@@ -2409,4 +2409,25 @@ public class Constants {
 		}
 		
 	}
+	//权限
+	public static enum Permission {
+		ROLE_USER("ROLE_USER"),
+		ROLE_AGENT("ROLE_AGENT"),
+		ROLE_ADMIN("ROLE_ADMIN"),
+		ROLE_MANAGER("ROLE_MANAGER"),
+		ROLE_CUSTOMER_SERVICE("ROLE_CUSTOMER_SERVICE"),
+		ROLE_FINANCE("ROLE_FINANCE"),
+		ROLE_RISK_MANAGEMENT("ROLE_RISK_MANAGEMENT");
+
+		private String code;
+		
+		private Permission(String code) {
+			this.code = code;
+		}
+
+		public String getCode() {
+			return code;
+		}
+		
+	}
 }

@@ -61,5 +61,16 @@ public class SysRoleDaoImpl extends DefaultGenericDaoImpl<SysRole> implements Sy
 		List<SysRole> list = query.list();
 		return list;
 	}
-	
+	//通过roleName查询id
+	@Override
+	public SysRole queryByRoleName(String roleName) {
+		String sql="from SysRole where roleName=:roleName";
+		Query<SysRole> query = getSessionFactory().getCurrentSession().createQuery(sql,SysRole.class);
+		query.setParameter("roleName",roleName);
+		List<SysRole> list = query.list();
+		if(list!=null&&list.size()>0) {
+			return list.get(0);
+		}
+		return null;
+	}
 }

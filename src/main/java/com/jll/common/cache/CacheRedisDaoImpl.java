@@ -11,6 +11,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Repository;
 
+import com.jll.common.constants.Constants;
 import com.jll.common.utils.DateUtil;
 import com.jll.dao.PageBean;
 import com.jll.entity.IpBlackList;
@@ -331,16 +332,23 @@ public class CacheRedisDaoImpl  extends AbstractBaseRedisDao implements CacheRed
 	//删除缓存中的图片验证码
 	@Override
 	public void deleteSessionIdCaptcha(String key,String keyCaptcha) {
-		CacheObject<Map<String, String>> cacheObject=get(key);
+		CacheObject<Map<String,String>> cacheObject=getSessionIdCaptcha(key);
 		Map<String,String> map=null;
 		if(cacheObject!=null) {
 			map=cacheObject.getContent();
-			String value=null;
 			if(map!=null) {
-				value=map.get(keyCaptcha);
-				if(value!=null) {
-					map.remove(keyCaptcha);
-				}
+				Integer b=map.size();
+				Iterator<String> iterator = map.keySet().iterator();// map中key（键）的迭代器对象
+		        while (iterator.hasNext()){// 循环取键值进行判断
+		            String keyCode = iterator.next();// 键
+		            if(keyCode.startsWith(keyCaptcha)){
+		                iterator.remove();// 移除map中以a字符开头的键对应的键值对
+		            }
+		        }
+		        Integer a=map.size();
+				cacheObject.setContent(map);
+				cacheObject.setKey(key);
+				this.setSessionIdCaptcha(cacheObject);
 			}
 		}
 	}

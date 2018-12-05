@@ -84,7 +84,7 @@ public class RandomValidateCodeUtil{
         String sessionId=session.getId();
         String key=sessionId;
         cacheRedisService.setSessionIdCaptcha(key, randomString);
-        cacheRedisService.deleteSessionIdCaptcha(key);
+//        cacheRedisService.deleteSessionIdCaptcha(key);
         logger.debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"+randomString+"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
 //        session.setAttribute(key, randomString);
         g.dispose();

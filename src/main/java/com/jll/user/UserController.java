@@ -1332,7 +1332,7 @@ public class UserController {
 		return ret;
 	}
 	//前台用户自己软删除银行卡
-	@RequestMapping(value={"/updateBankstate"}, method={RequestMethod.PUT}, produces=MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value={"/deleteBank"}, method={RequestMethod.DELETE}, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> updateBankstate(@RequestBody Map<String, Object> params) {
 		Map<String, Object> ret = new HashMap<>();
 		try {

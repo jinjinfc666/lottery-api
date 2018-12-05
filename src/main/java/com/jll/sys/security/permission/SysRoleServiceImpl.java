@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.jll.common.constants.Message;
 import com.jll.common.utils.StringUtils;
 import com.jll.entity.SysRole;
+import com.jll.sys.security.user.SysAuthorityService;
 import com.jll.sys.security.user.SysUserService;
 @Service
 @Transactional
@@ -26,6 +27,8 @@ public class SysRoleServiceImpl implements SysRoleService
 	SysRoleDao sysRoleDao;
 	@Resource
 	SysUserService  sysUserService;
+	@Resource
+	SysAuthorityService  sysAuthorityService;
 	//添加
 	@Override
 	public Map<String,Object> addSysRole(Map<String,Object> ret) {
@@ -81,6 +84,9 @@ public class SysRoleServiceImpl implements SysRoleService
 		if(state!=null) {
 			sysRoleNew.setState(state);
 		}
+		if(state==0) {
+			sysAuthorityService.deleteByRoleId(id);
+		}
 		sysRoleDao.saveOrUpdateSysRole(sysRoleNew);
 		map.clear();
 		map.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
@@ -116,6 +122,10 @@ public class SysRoleServiceImpl implements SysRoleService
 			return true;
 		}
 		return false;
+	}
+	@Override
+	public SysRole queryByRoleName(String roleName) {
+		return sysRoleDao.queryByRoleName(roleName);
 	}
 	
 }

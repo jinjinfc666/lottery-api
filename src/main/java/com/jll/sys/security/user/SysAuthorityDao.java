@@ -12,4 +12,8 @@ public interface SysAuthorityDao
 	List<SysAuthority> queryByUserId(Integer userId);
 	//通过userId删除授权
 	void deleteByUserId(Integer userId);
+	//通过roleId删除授权
+	public void deleteByRoleId(Integer roleId);
+	//通过userId获得用户的权限列表
+	List<?> queryGetByUserId(Integer userId);
 } 
