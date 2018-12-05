@@ -20,4 +20,5 @@ public interface SysRoleService
 	List<SysRole> querySysRole();
 	//判断这条数据存不存在
 	boolean queryBySysRole(SysRole sysRole);
+	SysRole queryByRoleName(String roleName);
 }

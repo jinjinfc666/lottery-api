@@ -27,6 +27,7 @@ import com.jll.entity.SysAuthority;
 import com.jll.entity.SysRole;
 import com.jll.entity.UserAccountDetails;
 import com.jll.entity.UserInfo;
+import com.jll.user.UserInfoService;
 import com.terran4j.commons.api2doc.annotations.Api2Doc;
 import com.terran4j.commons.api2doc.annotations.ApiComment;
 
@@ -43,6 +44,8 @@ public class SysUserController {
 	SysUserService sysUserService;
 	@Resource
 	SysAuthorityService sysAuthorityService;
+	@Resource
+	UserInfoService userInfoService;
 	//添加后台管理员
 	@RequestMapping(value={"/addSysRole"}, method={RequestMethod.POST}, produces={"application/json"})
 	public Map<String, Object> addSysUser(@RequestParam(name = "userName", required = true) String userName,
@@ -145,6 +148,32 @@ public class SysUserController {
 		Map<String, Object> ret = new HashMap<String, Object>();
 		try {
 			List<SysAuthority> list=sysAuthorityService.queryByUserId(userId);
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+			ret.put("data", list);
+			return ret;
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			return ret;
+		}
+	}
+	//通过userId查询这个用户的权限
+	@RequestMapping(value={"/queryGetByUserId"}, method={RequestMethod.GET}, produces={"application/json"})
+	public Map<String, Object> queryGetByUserId() {
+		Map<String, Object> ret = new HashMap<String, Object>();
+		try {
+			UserInfo user=userInfoService.getCurLoginInfo();
+			if(null == user){
+				ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+				ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+				ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+				return ret;
+			}
+			Integer userId=user.getId();
+			List<String> list=sysAuthorityService.queryGetByUserId(userId);
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 			ret.put("data", list);

@@ -50,5 +50,18 @@ public class SysAuthorityServiceImpl implements SysAuthorityService
 		}
 		return null;
 	}
+	//通过roleId删除授权
+	@Override
+	public void deleteByRoleId(Integer roleId){
+		sysAuthorityDao.deleteByRoleId(roleId);
+	}
+	@Override
+	public List<String> queryGetByUserId(Integer userId) {
+		List<?> list=sysAuthorityDao.queryGetByUserId(userId);
+		if(list!=null&&list.size()>0) {
+			return (List<String>)list;
+		}
+		return null;
+	}
 }
 
