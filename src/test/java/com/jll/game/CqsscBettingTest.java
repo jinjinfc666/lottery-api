@@ -150,6 +150,147 @@ public class CqsscBettingTest extends ControllerJunitBase{
 	}
 	
 	
+	
+	public void ItestBetting_qcssc_test_expired_issue() throws Exception{
+		String lottoType = "cqssc";
+		int currIssueId = 1;
+		String userName = "test001";
+		String pwd = "test001";
+		String clientId = "lottery-client";
+		
+		ObjectMapper mapper = new ObjectMapper();
+		ByteArrayInputStream bis = null;
+		try {
+			
+			//Thread.sleep(120000);
+			
+			String token = queryToken(userName, pwd, clientId);
+			ArrayNode array = mapper.createArrayNode();
+			
+			
+			ObjectNode node = array.addObject();
+			node.putPOJO("issueId", currIssueId);
+			node.putPOJO("playType", 1);
+			node.putPOJO("betNum", "0123456789,0123456789,0123456789");
+			node.putPOJO("times", "1");
+			node.putPOJO("pattern", "1");
+			node.putPOJO("isZh", "0");
+			node.putPOJO("terminalType", "0");
+			
+			bis = new ByteArrayInputStream(mapper.writeValueAsBytes(array));
+			WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/" +lottoType+ "/bet/zh/1/wallet/15",
+					bis,
+					MediaType.APPLICATION_JSON_VALUE);
+			WebConversation wc = new WebConversation();
+			
+			request.setHeaderField("Authorization", "bearer " + token);
+			
+			WebResponse response = wc.sendRequest(request);
+			
+			int  status = response.getResponseCode();
+			
+			Assert.assertEquals(HttpServletResponse.SC_OK, status);
+			String result = response.getText();
+			
+			Map<String, Object> retItems = null;
+			
+			retItems = mapper.readValue(result, HashMap.class);
+			
+			Assert.assertNotNull(retItems);
+			
+			Assert.assertEquals(Message.status.SUCCESS.getCode(), retItems.get(Message.KEY_STATUS));
+			
+			//Thread.sleep(60000);
+		} catch (Exception e) {
+			e.printStackTrace();
+			//throw e;
+		}finally {
+			if(bis != null) {
+				try {
+					bis.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+	
+	
+	
+	
+	
+	public void testBetting_qcssc_test_too_long_betNum() throws Exception{
+		String lottoType = "cqssc";
+		int currIssueId = 198;
+		String userName = "test001";
+		String pwd = "test001";
+		String clientId = "lottery-client";
+		
+		ObjectMapper mapper = new ObjectMapper();
+		ByteArrayInputStream bis = null;
+		try {
+			
+			//Thread.sleep(120000);
+			
+			String token = queryToken(userName, pwd, clientId);
+			ArrayNode array = mapper.createArrayNode();
+			
+			
+			ObjectNode node = array.addObject();
+			node.putPOJO("issueId", currIssueId);
+			node.putPOJO("playType", 2);
+			node.putPOJO("betNum", "123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123;123");
+			node.putPOJO("times", "1");
+			node.putPOJO("pattern", "1");
+			node.putPOJO("isZh", "0");
+			node.putPOJO("terminalType", "0");
+			
+			bis = new ByteArrayInputStream(mapper.writeValueAsBytes(array));
+			WebRequest request = new PostMethodWebRequest("http://localhost:8080/lotteries/" +lottoType+ "/bet/zh/1/wallet/15",
+					bis,
+					MediaType.APPLICATION_JSON_VALUE);
+			WebConversation wc = new WebConversation();
+			
+			request.setHeaderField("Authorization", "bearer " + token);
+			
+			WebResponse response = wc.sendRequest(request);
+			
+			int  status = response.getResponseCode();
+			
+			Assert.assertEquals(HttpServletResponse.SC_OK, status);
+			String result = response.getText();
+			
+			Map<String, Object> retItems = null;
+			
+			retItems = mapper.readValue(result, HashMap.class);
+			
+			Assert.assertNotNull(retItems);
+			
+			Assert.assertEquals(Message.status.FAILED.getCode(), retItems.get(Message.KEY_STATUS));
+			
+			Assert.assertEquals(Message.Error.ERROR_COMMON_OTHERS.getCode(), retItems.get(Message.KEY_ERROR_CODE));
+			//Thread.sleep(60000);
+		} catch (Exception e) {
+			e.printStackTrace();
+			//throw e;
+		}finally {
+			if(bis != null) {
+				try {
+					bis.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+	
+	
+	
+	
+	
+	
 	public void ItestBetting_qcssc_zszx() throws Exception{
 		int maxTimes = 10000;
 		int counter = 0;
@@ -6000,7 +6141,7 @@ public class CqsscBettingTest extends ControllerJunitBase{
 	}
 	
 	
-	public void testBetting_qcssc_statistic() throws Exception{
+	public void ItestBetting_qcssc_statistic() throws Exception{
 		int maxTimes = 6500;
 		int counter = 0;
 		String lottoType = "cqssc";

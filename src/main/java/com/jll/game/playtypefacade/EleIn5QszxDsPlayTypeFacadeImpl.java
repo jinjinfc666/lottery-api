@@ -163,7 +163,7 @@ public class EleIn5QszxDsPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 				}
 			}
 			
-			betTotal = calBetTotal(betNum);
+			betTotal = calBetTotal(betNumMulTemp);
 			if(betTotal == 0) {
 				return false;
 			}

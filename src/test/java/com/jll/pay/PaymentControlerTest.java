@@ -32,7 +32,7 @@ public class PaymentControlerTest extends ControllerJunitBase {
 	 * 
 	 * @throws Exception
 	 */
-	public void testPayOrderToSystem() throws Exception {
+	public void ItestPayOrderToSystem() throws Exception {
 		String userName = "test001";
 		String pwd = "test001";
 		String clientId = "lottery-client";
@@ -78,7 +78,7 @@ public class PaymentControlerTest extends ControllerJunitBase {
 	
 
 	
-	public void testPayOrderToSystem_online_bank() throws Exception {
+	public void ItestPayOrderToSystem_online_bank() throws Exception {
 		String userName = "test001";
 		String pwd = "test001";
 		String clientId = "lottery-client";
@@ -123,7 +123,7 @@ public class PaymentControlerTest extends ControllerJunitBase {
 	}
 	
 	
-	public void testPayOrderToSystem_caipay_online_bank_redirect_fail() throws Exception {
+	public void ItestPayOrderToSystem_caipay_online_bank_redirect_fail() throws Exception {
 		String userName = "test001";
 		String pwd = "test001";
 		String clientId = "lottery-client";
@@ -194,7 +194,7 @@ public class PaymentControlerTest extends ControllerJunitBase {
 	}
 	
 	
-	public void testPayOrderToSystem_caipay_online_bank_redirect_success() throws Exception {
+	public void ItestPayOrderToSystem_caipay_online_bank_redirect_success() throws Exception {
 		String userName = "test001";
 		String pwd = "test001";
 		String clientId = "lottery-client";
@@ -265,7 +265,7 @@ public class PaymentControlerTest extends ControllerJunitBase {
 	}
 	
 	
-	public void testPayOrderToSystem_caipay_alipay_payment_url() throws Exception {
+	public void ItestPayOrderToSystem_caipay_alipay_payment_url() throws Exception {
 		String userName = "test001";
 		String pwd = "test001";
 		String clientId = "lottery-client";
@@ -309,7 +309,7 @@ public class PaymentControlerTest extends ControllerJunitBase {
 	}
 	
 	
-	public void testPayOrderToSystem_caipay_wechatPay_payment_url() throws Exception {
+	public void ItestPayOrderToSystem_caipay_wechatPay_payment_url() throws Exception {
 		String userName = "test001";
 		String pwd = "test001";
 		String clientId = "lottery-client";
@@ -353,7 +353,7 @@ public class PaymentControlerTest extends ControllerJunitBase {
 	}
 	
 	
-	public void testPayOrderToSystem_ui_test() throws Exception {
+	public void ItestPayOrderToSystem_ui_test() throws Exception {
 		String userName = "test001";
 		String pwd = "test001";
 		String clientId = "lottery-client";
@@ -408,7 +408,7 @@ public class PaymentControlerTest extends ControllerJunitBase {
 
 		ObjectNode node = mapper.createObjectNode();
 		node.putPOJO("bankId", "1");
-		node.putPOJO("passoword", "test001");
+		node.putPOJO("password", "test001");
 		node.putPOJO("amount", "81478930.00");
 		
 									
@@ -442,7 +442,7 @@ public class PaymentControlerTest extends ControllerJunitBase {
 	}
 	
 	
-	public void ItestWithdraw_success() throws Exception {
+	public void testWithdraw_success() throws Exception {
 		String userName = "test001";
 		String pwd = "test001";
 		String clientId = "lottery-client";
@@ -452,7 +452,7 @@ public class PaymentControlerTest extends ControllerJunitBase {
 
 		ObjectNode node = mapper.createObjectNode();
 		node.putPOJO("bankId", "1");
-		node.putPOJO("passoword", "test001");
+		node.putPOJO("password", "test001");
 		node.putPOJO("amount", "105.00");
 		
 									
@@ -485,6 +485,50 @@ public class PaymentControlerTest extends ControllerJunitBase {
 		Thread.sleep(20000);
 	}
 	
+	
+	public void ItestWithdraw_success_110_server() throws Exception {
+		String userName = "zhaowei";
+		String pwd = "111111";
+		String clientId = "lottery-client";
+		String server = "http://110.92.64.70/lottery-api";
+		String token = null;
+		ObjectMapper mapper = new ObjectMapper();
+		ByteArrayInputStream bis = null;
+
+		ObjectNode node = mapper.createObjectNode();
+		node.putPOJO("bankId", "1");
+		node.putPOJO("password", "111111");
+		//node.putPOJO("amount", "105.00");
+		node.putPOJO("amount", "105");
+									
+		System.out.println(mapper.writeValueAsString(node));
+		bis = new ByteArrayInputStream(mapper.writeValueAsBytes(node));
+		WebRequest request = new PostMethodWebRequest("http://110.92.64.70/lottery-api/users/withdraw/apply", 
+				bis,
+				MediaType.APPLICATION_JSON_VALUE);
+		WebConversation wc = new WebConversation();
+		HttpUnitOptions.setScriptingEnabled(false);
+		
+		token = queryToken(userName, pwd, clientId);
+		request.setHeaderField("Authorization", "bearer " + token);
+
+		WebResponse response = wc.getResponse(request);
+
+		int status = response.getResponseCode();
+
+		Assert.assertEquals(HttpServletResponse.SC_OK, status);
+		String result = response.getText();
+
+		Map<String, Object> retItems = null;
+
+		retItems = mapper.readValue(result, HashMap.class);
+
+		Assert.assertNotNull(retItems);
+
+		Assert.assertEquals(Message.status.SUCCESS.getCode(), retItems.get(Message.KEY_STATUS));
+
+		Thread.sleep(20000);
+	}
 	
 	
 	public void logout(String token) throws Exception {

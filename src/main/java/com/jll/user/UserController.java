@@ -1067,7 +1067,7 @@ public class UserController {
 	@RequestMapping(value="/withdraw/apply", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> userWithdrawApply(@RequestBody Map<String, String> params) {
 		int bankId = Utils.toInteger(params.get("bankId"));
-		String passoword = Utils.toString(params.get("passoword"));
+		String passoword = Utils.toString(params.get("password"));
 		double amount = Utils.toDouble(params.get("amount"));
 		return userInfoService.saveUpdateUserWithdrawApply(bankId, amount,passoword);
 	}

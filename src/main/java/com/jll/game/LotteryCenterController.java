@@ -266,6 +266,11 @@ public class LotteryCenterController {
 					
 					logger.debug(
 							String.format("Thread Id %s    loker   %s  exit", Thread.currentThread().getId(), keyLock));
+				}catch(Exception ex){
+					resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+					resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+					resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+					return resp;
 				}finally {
 					//cacheServ.releaseLock(keyLock);
 					break;
