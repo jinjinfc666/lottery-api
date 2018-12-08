@@ -116,6 +116,7 @@ public class EleIn5Q2zxDsPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 		String betNum = null;
 		String[] betNumMul= null;
 		Map<String, String> allBetNumBit = new HashMap<>();
+		int betTotal = 0;
 		
 		betNum = order.getBetNum();
 		if(StringUtils.isBlank(betNum)) {
@@ -163,6 +164,11 @@ public class EleIn5Q2zxDsPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 					
 					allBetNumBit.put(key, key);
 				}
+			}
+			
+			betTotal = calBetTotal(betNumMulTemp);
+			if(betTotal == 0) {
+				return false;
 			}
 			
 		}
@@ -337,7 +343,7 @@ public class EleIn5Q2zxDsPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 		int excludingCounter = 2;*/
 		/*List<Map<String, String>> betNumCombinations = new ArrayList<>();
 		Map<String, String> betNumCombination = new HashMap<>();*/
-		Map<String, String> first3Bits = null;
+		//Map<String, String> first3Bits = null;
 		int result = 0;
 		for(String singleBetNumArray : betNumArray) {
 			singleBetNumArray = singleBetNumArray.replaceAll(" ", ",");
@@ -353,8 +359,10 @@ public class EleIn5Q2zxDsPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 					if(aa.equals(a)) {
 						continue;
 					}
+										
+					result++;
 					
-					for(int iii = 0; iii < betNumBits[2].length();) {
+					/*for(int iii = 0; iii < betNumBits[2].length();) {
 						String aaa = betNumBits[2].substring(iii, iii + 2);
 						StringBuffer buffer = new StringBuffer();
 						buffer.append(a).append(aa).append(aaa);
@@ -371,7 +379,7 @@ public class EleIn5Q2zxDsPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 						
 						result++;
 											
-					}
+					}*/
 					
 					 
 				}
