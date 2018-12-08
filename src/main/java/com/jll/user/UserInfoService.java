@@ -98,6 +98,7 @@ public interface UserInfoService
 	
 	double getUserTotalDepostAmt(Date startDate,Date endDate,UserInfo user);
 	double getUserTotalBetAmt(Date startDate,Date endDate,UserInfo user);
+	double getUserTotalWithdrawAmt(Date startDate,Date endDate,UserInfo user);
 	//查询所有的用户
 	Map<String,Object> queryAllUserInfo(Map<String,Object> map);
 	//查询所有的代理

@@ -16,6 +16,7 @@ public class Promo implements java.io.Serializable {
 	private Integer flowTimes;
 	private Integer valueType;
 	private Float value;
+	private Integer walletType;
 	private Date expiredTime;
 	private Integer withdrawFlowTimes;
 	private Date createTime;
@@ -26,7 +27,7 @@ public class Promo implements java.io.Serializable {
 	}
 
 	public Promo(String promoName, String promoType, Integer isMultiple, Float minDepositAmount, Integer flowTimes,
-			Integer valueType, Float value, Date expiredTime, Integer withdrawFlowTimes, Date createTime, Integer creator,
+			Integer valueType, Float value,Integer walletType, Date expiredTime, Integer withdrawFlowTimes, Date createTime, Integer creator,
 			Date updateTime) {
 		this.promoName = promoName;
 		this.promoType = promoType;
@@ -35,11 +36,20 @@ public class Promo implements java.io.Serializable {
 		this.flowTimes = flowTimes;
 		this.valueType = valueType;
 		this.value = value;
+		this.walletType = walletType;
 		this.expiredTime = expiredTime;
 		this.withdrawFlowTimes = withdrawFlowTimes;
 		this.createTime = createTime;
 		this.creator = creator;
 		this.updateTime = updateTime;
+	}
+	
+	public Integer getWalletType() {
+		return walletType;
+	}
+
+	public void setWalletType(Integer walletType) {
+		this.walletType = walletType;
 	}
 
 	public Integer getId() {

@@ -786,16 +786,41 @@ public class UserInfoServiceImpl implements UserInfoService
 		criteria.add(Restrictions.eq("state",DepositOrderState.END_ORDER.getCode()));
 		criteria.setProjection(Projections.sum("amount"));
 		List<?> finds =  supserDao.findByCriteria(criteria);
-		if(null != finds && !finds.isEmpty()){
+		if(null != finds && !finds.isEmpty()&&finds.size()>0){
 //			Object[] totalObj = (Object[]) finds.get(0);
 //			return BigDecimalUtil.toDouble(totalObj[0]);
 			Object s=finds.get(0);
-			String ss=s.toString();
-			return new Double(ss);
+			if(s!=null) {
+				String ss=s.toString();
+				return new Double(ss);
+			}
 		}
 		return 0;
 	}
-
+	
+	@Override
+	public double getUserTotalWithdrawAmt(Date startDate,Date endDate,UserInfo user) {
+		DetachedCriteria criteria = DetachedCriteria.forClass(WithdrawApplication.class);
+		criteria.add(Restrictions.ge("createTime",startDate));
+		criteria.add(Restrictions.le("createTime",endDate));
+		
+		criteria.add(Restrictions.eq("userId",user.getId()));
+		criteria.add(Restrictions.eq("state",WithdrawOrderState.ORDER_END.getCode()));
+		criteria.setProjection(Projections.sum("amount"));
+		List<?> finds =  supserDao.findByCriteria(criteria);
+		if(null != finds && !finds.isEmpty()&&finds.size()>0){
+//			Object[] totalObj = (Object[]) finds.get(0);
+//			return BigDecimalUtil.toDouble(totalObj[0]);
+			Object s=finds.get(0);
+			if(s!=null) {
+				String ss=s.toString();
+				return new Double(ss);
+			}
+		}
+		return 0;
+	}
+	
+	
 	@Override
 	public double getUserTotalBetAmt(Date startDate,Date endDate,UserInfo user) {
 		DetachedCriteria criteria = DetachedCriteria.forClass(OrderInfo.class);
@@ -810,7 +835,9 @@ public class UserInfoServiceImpl implements UserInfoService
 		if(null != finds && !finds.isEmpty()){
 //			Object[] totalObj = (Object[]) finds.get(0);
 //			return BigDecimalUtil.toDouble(totalObj[0]);
-			return new Double(finds.get(0).toString());
+			if(finds.get(0)!=null) {
+				return new Double(finds.get(0).toString());
+			}
 		}
 		return 0;
 	}

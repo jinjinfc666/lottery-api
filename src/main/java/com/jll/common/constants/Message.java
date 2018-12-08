@@ -97,7 +97,8 @@ public class Message {
 		ERROR_USER_NO_AGENCY("010043","user no agency!!!"),
 		ERROR_USER_PLATREBATE_WRONG("010044","platrebate wrong!!!"),
 		ERROR_USER_SIGNED_IN("010045","Signed in!!!"),
-		
+		ERROR_PROMS_OTHER_CONDITION_WITHDRAW_DISSATISFY("010046", "The maximum amount of cash to participate in the event is %s, Your cash withdrawal is %s, You have exceeded the maximum amount of cash !!"),
+		ERROR_USER_ACTIVITY_OVER("010047","The activity is over!!!"),
 		
 		
 		/**************third party*************************/
@@ -163,6 +164,9 @@ public class Message {
 		ERROR_CODE_VALUE_ALREADY_EXISTS("160002","Code value already exists!!!"),
 		/**************userBank module*************************/
 		ERROR_USERBANK_DOES_NOT_EXIST("170001","userBank does not exist!!!"),
+		/*************************Login module******************************/
+		ERROR_LOGIN_ILLEGAL_USER_NO_LOGIN("180001","Illegal user, no login!!!"),
+		ERROR_LOGIN_FAILED_TO_GET_VERIFICATION_CODE("180002","Failed to get verification code!!!"),
 		;
 		
 		private String code;

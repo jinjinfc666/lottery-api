@@ -13,4 +13,6 @@ public interface SysLoginDao
 	public PageBean queryLoginlog(Integer type,Integer userId,String startTime,String endTime,Integer pageIndex,Integer pageSize);
 	//查询不存在用户登录日志
 	public PageBean queryLoginlog(String startTime,String endTime,Integer pageIndex,Integer pageSize);
+	//通过ip查询用户失败登录此时
+	public List<SysLogin> queryFailLoginCount(String ip);
 }

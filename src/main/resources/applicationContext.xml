@@ -131,6 +131,8 @@
             
             <tx:method name="payOut*" propagation="REQUIRED"/>
             
+            <tx:method name="delete*" propagation="REQUIRED"/>
+            
             <!-- <tx:method name="make*" propagation="REQUIRED"/>
                         
             <tx:method name="change*" propagation="REQUIRED"/>

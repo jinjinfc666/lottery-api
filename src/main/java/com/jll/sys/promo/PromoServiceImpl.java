@@ -93,73 +93,58 @@ public class PromoServiceImpl implements PromoService
 		Integer userId=userInfo.getId();
 		Map<String, Object> ret = new HashMap<String, Object>(); 
 		UserInfo dbInfo = (UserInfo) supserDao.get(UserInfo.class,userId);
-		
-		if(null == dbInfo){
-			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
-			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
-			return ret;
-		}
-		
-		Promo dbPro = (Promo) supserDao.get(Promo.class, po.getId());
-		if(null == dbPro
-				|| dbPro.getExpiredTime().after(new Date())){
-			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
-			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
-			return ret;
-		}
-		
-		PromoClaim dbPci = null;
-		int calcTimes = 0;
-		//Date calcStartDate = dbPro.getCreateTime(),calcEndDate = dbPro.getExpiredTime();
-		 
-		DetachedCriteria criteria = DetachedCriteria.forClass(PromoClaim.class);
-		criteria.add(Restrictions.ge("claimTime",dbPro.getCreateTime()));
-		criteria.add(Restrictions.le("claimTime",new Date()));
-		criteria.add(Restrictions.eq("userId",dbInfo.getId()));
-		criteria.add(Restrictions.eq("promoId", dbPro.getId()));
-		List<?>	dbPcis = supserDao.findByCriteria(criteria);
-		if(null != dbPcis && !dbPcis.isEmpty()){
-			dbPci = (PromoClaim) dbPcis.get(dbPcis.size() -1);
-			calcTimes = dbPcis.size();
-			//calcStartDate = dbPci.getClaimTime();
-		}
-		
-		if(PromoMultipleType.ONCE.getCode() ==
-				dbPro.getIsMultiple()){
-			if(null != dbPci){
-				ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-				ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_PROMS_ONLY_ONCE_DISSATISFY.getCode());
-				ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_PROMS_ONLY_ONCE_DISSATISFY.getErrorMes());
-				return ret;
-			}
+	
+		Promo dbPro = (Promo) supserDao.get(Promo.class, po.getId());	
+//		PromoClaim dbPci = null;
+//		int calcTimes = 0;
+//		//Date calcStartDate = dbPro.getCreateTime(),calcEndDate = dbPro.getExpiredTime();
+//		 
+//		DetachedCriteria criteria = DetachedCriteria.forClass(PromoClaim.class);
+//		criteria.add(Restrictions.ge("claimTime",dbPro.getCreateTime()));
+//		criteria.add(Restrictions.le("claimTime",new Date()));
+//		criteria.add(Restrictions.eq("userId",dbInfo.getId()));
+//		criteria.add(Restrictions.eq("promoId", dbPro.getId()));
+//		List<?>	dbPcis = supserDao.findByCriteria(criteria);
+//		if(null != dbPcis && !dbPcis.isEmpty()){
+//			dbPci = (PromoClaim) dbPcis.get(dbPcis.size() -1);
+//			calcTimes = dbPcis.size();
+//			//calcStartDate = dbPci.getClaimTime();
+//		}
+//		
+//		if(PromoMultipleType.ONCE.getCode() ==
+//				dbPro.getIsMultiple()){
+//			if(null != dbPci){
+//				ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+//				ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_PROMS_ONLY_ONCE_DISSATISFY.getCode());
+//				ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_PROMS_ONLY_ONCE_DISSATISFY.getErrorMes());
+//				return ret;
+//			}
 			if(SysCodeTypes.LUCKY_DRAW.getCode().equals(dbPro.getPromoType())){
 				return processAccedeToLuckyDrwPromo(dbPro,dbInfo);
 			}else if(SysCodeTypes.SIGN_IN_DAY.getCode().equals(dbPro.getPromoType())){
 				return processAccedeTodaySingInDayPromo(dbPro,dbInfo);
 			}
-		}
-		
-		//判断流水
-		double curDepAmt = userInfoService.getUserTotalDepostAmt(dbPro.getCreateTime(),dbPro.getExpiredTime(),dbInfo);
-		curDepAmt = curDepAmt - dbPro.getMinDepositAmount()*calcTimes;
-		if(dbPro.getMinDepositAmount() > curDepAmt){
-			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_PROMS_OTHER_CONDITION_DEPOSIT_DISSATISFY.getCode());
-			ret.put(Message.KEY_ERROR_MES,String.format(Message.Error.ERROR_PROMS_OTHER_CONDITION_DEPOSIT_DISSATISFY.getErrorMes(), ""+dbPro.getMinDepositAmount(),""+curDepAmt) );
-			return ret;
-		}
-		double curBetAmt = userInfoService.getUserTotalBetAmt(dbPro.getCreateTime(),dbPro.getExpiredTime(),dbInfo);
-		curBetAmt = curBetAmt - dbPro.getFlowTimes()*calcTimes;
-		int curMrate =(int)(curBetAmt/curDepAmt);
-		if(dbPro.getFlowTimes() > curMrate){
-			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_PROMS_OTHER_CONDITION_FLOWING_DISSATISFY.getCode());
-			ret.put(Message.KEY_ERROR_MES,String.format(Message.Error.ERROR_PROMS_OTHER_CONDITION_FLOWING_DISSATISFY.getErrorMes(),""+dbPro.getFlowTimes(),""+curMrate) );
-			return ret;
-		}
-		UserAccount dbAcc = (UserAccount) supserDao.findByName(UserAccount.class, "userId", dbInfo.getId(), "accType", WalletType.MAIN_WALLET.getCode()).get(0);
+//		}
+//		
+//		//判断流水
+//		double curDepAmt = userInfoService.getUserTotalDepostAmt(dbPro.getCreateTime(),dbPro.getExpiredTime(),dbInfo);
+//		curDepAmt = curDepAmt - dbPro.getMinDepositAmount()*calcTimes;
+//		if(dbPro.getMinDepositAmount() > curDepAmt){
+//			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+//			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_PROMS_OTHER_CONDITION_DEPOSIT_DISSATISFY.getCode());
+//			ret.put(Message.KEY_ERROR_MES,String.format(Message.Error.ERROR_PROMS_OTHER_CONDITION_DEPOSIT_DISSATISFY.getErrorMes(), ""+dbPro.getMinDepositAmount(),""+curDepAmt) );
+//			return ret;
+//		}
+//		double curBetAmt = userInfoService.getUserTotalBetAmt(dbPro.getCreateTime(),dbPro.getExpiredTime(),dbInfo);
+//		curBetAmt = curBetAmt - dbPro.getFlowTimes()*calcTimes;
+//		int curMrate =(int)(curBetAmt/curDepAmt);
+//		if(dbPro.getFlowTimes() > curMrate){
+//			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+//			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_PROMS_OTHER_CONDITION_FLOWING_DISSATISFY.getCode());
+//			ret.put(Message.KEY_ERROR_MES,String.format(Message.Error.ERROR_PROMS_OTHER_CONDITION_FLOWING_DISSATISFY.getErrorMes(),""+dbPro.getFlowTimes(),""+curMrate) );
+//			return ret;
+//		}
+		UserAccount dbAcc = (UserAccount) supserDao.findByName(UserAccount.class, "userId", dbInfo.getId(), "accType", dbPro.getWalletType()).get(0);
 		UserAccountDetails addDtl = new UserAccountDetails();
 		addDtl.setOrderId(dbPro.getId());
 		addDtl.setUserId(dbInfo.getId());
@@ -187,6 +172,128 @@ public class PromoServiceImpl implements PromoService
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		return ret;
 	}
+	
+	@Override
+	public Map<String, Object> processUserQualification(Promo po) {
+		String userName=SecurityContextHolder.getContext().getAuthentication().getName();//当前登录的用户
+		UserInfo userInfo=userDao.getUserByUserName(userName);
+		Integer userId=userInfo.getId();
+		Map<String, Object> ret = new HashMap<String, Object>(); 
+		UserInfo dbInfo = (UserInfo) supserDao.get(UserInfo.class,userId);
+		
+		if(null == dbInfo){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+			return ret;
+		}
+		
+		Promo dbPro = (Promo) supserDao.get(Promo.class, po.getId());
+		if(null == dbPro){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+			return ret;
+		}
+		if(dbPro.getExpiredTime().before(new Date())) {
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_ACTIVITY_OVER.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_ACTIVITY_OVER.getErrorMes());
+			return ret;
+		}
+		PromoClaim dbPci = null;
+		int calcTimes = 0;
+		//Date calcStartDate = dbPro.getCreateTime(),calcEndDate = dbPro.getExpiredTime();
+		 
+		DetachedCriteria criteria = DetachedCriteria.forClass(PromoClaim.class);
+		criteria.add(Restrictions.ge("claimTime",dbPro.getCreateTime()));
+		criteria.add(Restrictions.le("claimTime",new Date()));
+		criteria.add(Restrictions.eq("userId",dbInfo.getId()));
+		criteria.add(Restrictions.eq("promoId", dbPro.getId()));
+		List<?>	dbPcis = supserDao.findByCriteria(criteria);
+		if(null != dbPcis && !dbPcis.isEmpty()){
+			dbPci = (PromoClaim) dbPcis.get(dbPcis.size() -1);
+			calcTimes = dbPcis.size();
+			//calcStartDate = dbPci.getClaimTime();
+		}
+		if(dbPro.getIsMultiple()==PromoMultipleType.ONCE.getCode()&&calcTimes>0) {
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_PROMS_ONLY_ONCE_DISSATISFY.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_PROMS_ONLY_ONCE_DISSATISFY.getErrorMes());
+			return ret;
+		}
+		
+//		if(PromoMultipleType.ONCE.getCode() ==
+//				dbPro.getIsMultiple()){
+//			if(null != dbPci){
+//				ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+//				ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_PROMS_ONLY_ONCE_DISSATISFY.getCode());
+//				ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_PROMS_ONLY_ONCE_DISSATISFY.getErrorMes());
+//				return ret;
+//			}
+//			if(SysCodeTypes.LUCKY_DRAW.getCode().equals(dbPro.getPromoType())){
+//				return processAccedeToLuckyDrwPromo(dbPro,dbInfo);
+//			}else if(SysCodeTypes.SIGN_IN_DAY.getCode().equals(dbPro.getPromoType())){
+//				return processAccedeTodaySingInDayPromo(dbPro,dbInfo);
+//			}
+//		}
+		
+		//判断充值限制
+		double curDepAmt = userInfoService.getUserTotalDepostAmt(dbPro.getCreateTime(),dbPro.getExpiredTime(),dbInfo);
+		curDepAmt = curDepAmt - dbPro.getMinDepositAmount()*calcTimes;
+		if(dbPro.getMinDepositAmount() > curDepAmt){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_PROMS_OTHER_CONDITION_DEPOSIT_DISSATISFY.getCode());
+			ret.put(Message.KEY_ERROR_MES,String.format(Message.Error.ERROR_PROMS_OTHER_CONDITION_DEPOSIT_DISSATISFY.getErrorMes(), ""+dbPro.getMinDepositAmount(),""+curDepAmt) );
+			return ret;
+		}
+		//判断投注限制
+		double curBetAmt = userInfoService.getUserTotalBetAmt(dbPro.getCreateTime(),dbPro.getExpiredTime(),dbInfo);
+		curBetAmt = curBetAmt - dbPro.getFlowTimes()*calcTimes;
+		int curMrate =(int)(curBetAmt/curDepAmt);
+		if(dbPro.getFlowTimes() > curMrate){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_PROMS_OTHER_CONDITION_FLOWING_DISSATISFY.getCode());
+			ret.put(Message.KEY_ERROR_MES,String.format(Message.Error.ERROR_PROMS_OTHER_CONDITION_FLOWING_DISSATISFY.getErrorMes(),""+dbPro.getFlowTimes(),""+curMrate) );
+			return ret;
+		}
+		//判断提现流水限制
+		double curWidAmt = userInfoService.getUserTotalWithdrawAmt(dbPro.getCreateTime(),dbPro.getExpiredTime(),dbInfo);
+		curWidAmt = curWidAmt - dbPro.getWithdrawFlowTimes()*calcTimes;
+		if(dbPro.getWithdrawFlowTimes() > curWidAmt){
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_PROMS_OTHER_CONDITION_WITHDRAW_DISSATISFY.getCode());
+			ret.put(Message.KEY_ERROR_MES,String.format(Message.Error.ERROR_PROMS_OTHER_CONDITION_WITHDRAW_DISSATISFY.getErrorMes(), ""+dbPro.getWithdrawFlowTimes(),""+curDepAmt) );
+			return ret;
+		}
+//		UserAccount dbAcc = (UserAccount) supserDao.findByName(UserAccount.class, "userId", dbInfo.getId(), "accType", WalletType.MAIN_WALLET.getCode()).get(0);
+//		UserAccountDetails addDtl = new UserAccountDetails();
+//		addDtl.setOrderId(dbPro.getId());
+//		addDtl.setUserId(dbInfo.getId());
+//		addDtl.setCreateTime(new Date());
+//		addDtl.setAmount(Double.valueOf(dbPro.getValue()).floatValue());
+//		if(PromoValueType.CASH.getCode() == dbPro.getValueType()){
+//			addDtl.setPreAmount(dbAcc.getBalance());
+//			addDtl.setWalletId(dbAcc.getId());
+//			addDtl.setOperationType(AccOperationType.PROMO_CASH.getCode());
+//			dbAcc.setBalance(addDtl.getPostAmount());
+//		}else{
+//			addDtl.setPreAmount(dbAcc.getRewardPoints().doubleValue());
+//			addDtl.setWalletId(dbAcc.getId());
+//			addDtl.setOperationType(AccOperationType.PROMO_POINTS.getCode());
+//			dbAcc.setBalance(addDtl.getPostAmount());
+//		}
+//		addDtl.setPostAmount(Double.valueOf(BigDecimalUtil.add(addDtl.getAmount(),addDtl.getPreAmount())));
+//		supserDao.save(addDtl);
+//		supserDao.update(dbAcc);
+//		PromoClaim addCla= new PromoClaim();
+//		addCla.setUserId(dbInfo.getId());
+//		addCla.setPromoId(dbPro.getId());
+//		addCla.setClaimTime(new Date());
+//		supserDao.save(addCla);
+		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		return ret;
+	}
 
 	@Override
 	public Map<String, Object> getUserPromoLists(PageQueryDao page) {
@@ -202,23 +309,23 @@ public class PromoServiceImpl implements PromoService
 	public Map<String, Object> processAccedeToLuckyDrwPromo(Promo dbPro,UserInfo userInfo) {
 		Map<String, Object> ret = new HashMap<String, Object>(); 
 		Map<String,SysCode> maps =  cacheRedisService.getSysCode(SysCodeTypes.LUCKY_DRAW.getCode());
-		double curDepAmt = userInfoService.getUserTotalDepostAmt(dbPro.getCreateTime(),new Date(),userInfo),
-				checkDepAmt = Double.valueOf(maps.get("minimum_recharge").getCodeVal());
-		
-		if(curDepAmt< checkDepAmt){
-			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_PROMS_OTHER_CONDITION_DEPOSIT_DISSATISFY.getCode());
-			ret.put(Message.KEY_ERROR_MES,String.format(Message.Error.ERROR_PROMS_OTHER_CONDITION_DEPOSIT_DISSATISFY.getErrorMes(), ""+checkDepAmt,""+curDepAmt) );
-			return ret;
-		}
+		double curDepAmt = userInfoService.getUserTotalDepostAmt(dbPro.getCreateTime(),new Date(),userInfo);
+//		double checkDepAmt = Double.valueOf(maps.get("minimum_recharge").getCodeVal());
+//		
+//		if(curDepAmt< checkDepAmt){
+//			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+//			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_PROMS_OTHER_CONDITION_DEPOSIT_DISSATISFY.getCode());
+//			ret.put(Message.KEY_ERROR_MES,String.format(Message.Error.ERROR_PROMS_OTHER_CONDITION_DEPOSIT_DISSATISFY.getErrorMes(), ""+checkDepAmt,""+curDepAmt) );
+//			return ret;
+//		}
 		double curBetAmt = userInfoService.getUserTotalBetAmt(dbPro.getCreateTime(),new Date(),userInfo);
-		double checkBetAmt = Double.valueOf(maps.get("minimum_amount_of_water").getCodeVal());
-		if(curBetAmt < checkBetAmt){
-			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_PROMS_OTHER_CONDITION_BET_AMT_DISSATISFY.getCode());
-			ret.put(Message.KEY_ERROR_MES,String.format(Message.Error.ERROR_PROMS_OTHER_CONDITION_BET_AMT_DISSATISFY.getErrorMes(),""+checkBetAmt,""+curBetAmt) );
-			return ret;
-		}
+//		double checkBetAmt = Double.valueOf(maps.get("minimum_amount_of_water").getCodeVal());
+//		if(curBetAmt < checkBetAmt){
+//			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+//			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_PROMS_OTHER_CONDITION_BET_AMT_DISSATISFY.getCode());
+//			ret.put(Message.KEY_ERROR_MES,String.format(Message.Error.ERROR_PROMS_OTHER_CONDITION_BET_AMT_DISSATISFY.getErrorMes(),""+checkBetAmt,""+curBetAmt) );
+//			return ret;
+//		}
 		Random random = new Random();
 		String unPrizeStr="A",prizeStr="B";
 		int totalRate = 10000,checkIndex = random.nextInt(10000);
@@ -231,11 +338,12 @@ public class PromoServiceImpl implements PromoService
 		addCla.setClaimTime(new Date());
 		supserDao.save(addCla);
 		//send prize amt
+		Map<String,Object> map=new HashMap<String,Object>();
 		if(prizeStr.equals(String.valueOf(checkPrize.toCharArray()[checkIndex]))){
 			String[] prizeAmtStr = maps.get("winning_range").getCodeVal().split(StringUtils.COMMA);
 			int prizeIndex = random.nextInt(prizeAmtStr.length);
 			double prizeAmt = BigDecimalUtil.mul(BigDecimalUtil.div(curBetAmt, curDepAmt), Double.valueOf(prizeAmtStr[prizeIndex]));
-			UserAccount dbAcc = (UserAccount) supserDao.findByName(UserAccount.class, "userId", userInfo.getId(), "accType", WalletType.RED_PACKET_WALLET.getCode()).get(0);
+			UserAccount dbAcc = (UserAccount) supserDao.findByName(UserAccount.class, "userId", userInfo.getId(), "accType", dbPro.getWalletType()).get(0);
 			UserAccountDetails addDtl = new UserAccountDetails();
 			addDtl.setOrderId(dbPro.getId());
 			addDtl.setUserId(userInfo.getId());
@@ -249,13 +357,13 @@ public class PromoServiceImpl implements PromoService
 			dbAcc.setBalance(addDtl.getPostAmount());
 			supserDao.update(dbAcc);
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-			ret.put(Message.KEY_DATA, Message.status.SUCCESS.getCode()); 
-			ret.put(Message.WINNING_MOUNT,new DecimalFormat("#.00").format(prizeAmt));
+			map.put(Message.WINNING_MOUNT,new DecimalFormat("#.00").format(prizeAmt));
+			ret.put(Message.KEY_DATA, map); 
 			return ret;
 		}
-		
+		map.put(Message.WINNING_MOUNT,0);
+		ret.put(Message.KEY_DATA, map); 
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-		ret.put(Message.KEY_DATA, Message.status.FAILED.getCode());
 		return ret;
 	}
 
@@ -268,7 +376,7 @@ public class PromoServiceImpl implements PromoService
 		int prizeIndex = random.nextInt(prizeAmtStr.length);
 		double prizeAmt = BigDecimalUtil.toDouble(prizeAmtStr[prizeIndex]);
 		
-		UserAccount dbAcc = (UserAccount) supserDao.findByName(UserAccount.class, "userId", userInfo.getId(), "accType", WalletType.MAIN_WALLET.getCode()).get(0);
+		UserAccount dbAcc = (UserAccount) supserDao.findByName(UserAccount.class, "userId", userInfo.getId(), "accType", dbPro.getWalletType()).get(0);
 		UserAccountDetails addDtl = new UserAccountDetails();
 		addDtl.setOrderId(dbPro.getId());
 		addDtl.setUserId(userInfo.getId());

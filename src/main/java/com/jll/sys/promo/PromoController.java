@@ -61,13 +61,23 @@ public class PromoController {
 		isMultiple*/
 		return promoService.getPromoLists(po, page);
 	}
-	
+	//参加活动
 	@ApiComment("User accede promo")
 	@RequestMapping(value="/accede-promo", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> accedeToPromo(
 			@RequestBody Promo po) {
 		return promoService.processAccedeToPromo(po);
 	}
+	//判断用户是否有参加活动的资格
+	@ApiComment("User isOrOk accede promo")
+	@RequestMapping(value="/qualification-Screening", method = { RequestMethod.POST}, produces=MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> qualificationScreening(
+			@RequestBody Promo po) {
+		return promoService.processUserQualification(po);
+	}
+	
+	
+	
 	
 	@RequestMapping(value="/listBRecord", method = { RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> queryListRecord(@RequestParam(name = "userName", required = false) String userName,

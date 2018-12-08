@@ -16,9 +16,12 @@ import org.springframework.security.oauth2.provider.client.ClientCredentialsToke
 import com.jll.common.cache.CacheRedisService;
 import com.jll.common.constants.Constants;
 import com.jll.common.constants.Message;
+import com.jll.common.utils.IpUtils;
 import com.jll.common.utils.StringUtils;
+import com.jll.entity.IpBlackList;
 import com.jll.entity.SysLogin;
 import com.jll.entity.UserInfo;
+import com.jll.sys.blacklist.IpBlackListService;
 import com.jll.sys.log.SysLoginService;
 import com.jll.user.UserInfoService;
 
@@ -30,10 +33,12 @@ public class AuthFilter extends ClientCredentialsTokenEndpointFilter {
 	
 	@Resource
 	UserInfoService userServ;
+	
 	@Resource
 	SysLoginService sysLoginService;
 	
-	
+	@Resource
+	IpBlackListService ipBlackListService;
 	
 //	@Override
 //	public void afterPropertiesSet() {
@@ -50,6 +55,21 @@ public class AuthFilter extends ClientCredentialsTokenEndpointFilter {
 		String username = request.getParameter("username");
 		String grantType = request.getParameter("grant_type");
 		UserInfo user = null;
+		String ip=request.getRemoteHost();
+		String ipLong="";
+		Integer type=null;
+		if(ip.indexOf(":")!=-1) {
+			type=1;
+			ipLong=IpUtils.ipv6toInt(ip).toString();
+		}else {
+			type=0;
+			ipLong=Long.toString(IpUtils.ipToLong(ip));
+		}
+		long count=ipBlackListService.queryByIp(ipLong,type);
+		if(count>0) {
+			throw new CusAuthenticationException(Message.Error.ERROR_LOGIN_ILLEGAL_USER_NO_LOGIN.getCode());
+		}
+		
 		if(StringUtils.isBlank(grantType)) {
 			throw new CusAuthenticationException(Message.Error.ERROR_COMMON_NO_PERMISSION.getCode());
 		}
@@ -62,7 +82,21 @@ public class AuthFilter extends ClientCredentialsTokenEndpointFilter {
 			user = userServ.getUserByUserName(username);
 			
 			if(user == null) {
-				String ip=request.getRemoteHost();
+				long countFail=sysLoginService.queryFailLoginCount(ip);
+				if(countFail>=4) {
+					if(ip.indexOf(":")!=-1) {
+						type=1;
+						ipLong=IpUtils.ipv6toInt(ip).toString();
+					}else {
+						type=0;
+						ipLong=Long.toString(IpUtils.ipToLong(ip));
+					}
+					IpBlackList ipBlackList=new IpBlackList();
+					ipBlackList.setIp(ip);
+					ipBlackList.setIpLong(ipLong);
+					ipBlackList.setType(type);
+					ipBlackListService.saveIp(ipBlackList);
+				}
 				//登陆日志
 				SysLogin sysLogin=new SysLogin();
 				String logOpeType=StringUtils.OPE_LOG_USER_FAILURE;
@@ -96,7 +130,7 @@ public class AuthFilter extends ClientCredentialsTokenEndpointFilter {
 			String saveCaptcha = cacheRedisService.getSessionIdCaptcha(key);
 			cacheRedisService.deleteSessionIdCaptcha(key);
 			if(recCaptcha == null || saveCaptcha == null)
-	            throw new CusAuthenticationException(Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());  
+	            throw new CusAuthenticationException(Message.Error.ERROR_LOGIN_INVALID_CAPTCHA.getCode());  
 	        if(!saveCaptcha.equalsIgnoreCase(recCaptcha)){   
 	        	
 	            throw new CusAuthenticationException(Message.Error.ERROR_LOGIN_INVALID_CAPTCHA.getCode());  

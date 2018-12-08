@@ -10,5 +10,14 @@
             <column length="200" name="ip">
             </column>
         </property>
+        <property generated="never" lazy="false" name="ipLong" optimistic-lock="true" type="string" unique="false">
+            <column length="200" name="ip_long">
+            </column>
+        </property>
+        <property generated="never" lazy="false" name="type" optimistic-lock="true" type="java.lang.Integer" unique="false">
+            <column name="type">
+                <comment>�û�״̬:0,����;1,����;2,����</comment>
+            </column>
+        </property>
     </class>
 </hibernate-mapping>

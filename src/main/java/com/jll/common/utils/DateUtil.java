@@ -1,5 +1,6 @@
 package com.jll.common.utils;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -104,5 +105,14 @@ public class DateUtil extends DateUtils {
 		
 		 milliSeconds = milliSeconds/(1000*60*60*24);
 		return milliSeconds;
+	}
+	public static boolean isValidDate(String str){
+		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); //这里的时间格式根据自己需求更改（注意：格式区分大小写、格式区分大小写、格式区分大小写） 
+		try{ 
+			Date date = (Date)formatter.parse(str); 
+			return str.equals(formatter.format(date)); 
+		}catch(Exception e){ 
+			return false; 
+		} 
 	}
 }

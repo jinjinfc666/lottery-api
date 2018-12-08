@@ -6,9 +6,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.hibernate.query.Query;
 import org.springframework.stereotype.Repository;
 
 import com.jll.common.constants.Constants;
+import com.jll.common.constants.Message;
+import com.jll.common.utils.StringUtils;
 import com.jll.dao.DefaultGenericDaoImpl;//失败后添加登录失败次数和修改锁定时间
 import com.jll.dao.PageBean;
 import com.jll.entity.SysLogin;
@@ -63,6 +66,16 @@ public class SysLoginDaoImpl extends DefaultGenericDaoImpl<SysLogin> implements 
 		page.setPageSize(pageSize);
 		PageBean pageBean=queryByPagination(page,sql,map);
 		return pageBean;
+	}
+	//通过ip查询用户失败登录此时
+	@Override
+	public List<SysLogin> queryFailLoginCount(String ip) {
+		String sql="from SysLogin where LOCATE(:ip, logData)>0 and logType=:logType";
+		Query<SysLogin> query = getSessionFactory().getCurrentSession().createQuery(sql,SysLogin.class);
+	    query.setParameter("ip", ip);
+	    query.setParameter("logType",StringUtils.OPE_LOG_USER_FAILURE);
+	    List<SysLogin> list=query.list();
+	    return list;
 	}
   
 }

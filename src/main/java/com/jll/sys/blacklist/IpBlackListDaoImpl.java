@@ -10,6 +10,8 @@ import org.apache.log4j.Logger;
 import org.hibernate.query.Query;
 import org.springframework.stereotype.Repository;
 
+import com.jll.common.constants.Message;
+import com.jll.common.utils.StringUtils;
 import com.jll.dao.DefaultGenericDaoImpl;
 import com.jll.dao.PageBean;
 import com.jll.entity.IpBlackList;
@@ -20,21 +22,8 @@ public class IpBlackListDaoImpl extends DefaultGenericDaoImpl<IpBlackList> imple
 	
 	//添加
 	@Override
-	public void addIp(IpBlackList ipRestrictions) {
+	public void saveIp(IpBlackList ipRestrictions) {
 		this.saveOrUpdate(ipRestrictions);
-	}
-	//查询
-	@Override
-	public IpBlackList query(String ip) {
-		String sql = "from IpBlackList where ip=:ip";
-	    Query<IpBlackList> query = getSessionFactory().getCurrentSession().createQuery(sql,IpBlackList.class);
-	    query.setParameter("ip", ip);
-	    List<IpBlackList> list = query.list();
-	    IpBlackList ipBlackList=null;
-	    if(list!=null&&list.size()>0) {
-	    	ipBlackList=list.get(0);
-	    }
-	    return ipBlackList;
 	}
 	//查询通过id
 	@Override
@@ -49,31 +38,15 @@ public class IpBlackListDaoImpl extends DefaultGenericDaoImpl<IpBlackList> imple
 	    }
 	    return ipBlackList;
 	}
-	//查询所有
-	@Override
-	public Map<String,Object> queryByPageIndex(Integer pageIndex,Integer pageSize) {
-		Map<String,Object> map=new HashMap<String,Object>();
-		String sql = "from IpBlackList";
-		PageBean page=new PageBean();
-		page.setPageIndex(pageIndex);
-		page.setPageSize(pageSize);
-		PageBean pageBean=queryByPagination(page,sql,map);
-		map.clear();
-		map.put("data",pageBean);
-	    return map;
-	}
-	//修改
-	@Override
-	public void updateIp(IpBlackList ipBlackList) {
-		this.saveOrUpdate(ipBlackList);
-	}
+//	//修改
+//	@Override
+//	public void updateIp(IpBlackList ipBlackList) {
+//		this.saveOrUpdate(ipBlackList);
+//	}
 	//删除
 	@Override
-	public void deleteIpBlackList(Integer id) {
-		String sql="delete from IpBlackList where id=:id";
-		Query query = getSessionFactory().getCurrentSession().createQuery(sql);
-		query.setParameter("id", id);
-		query.executeUpdate();
+	public void deleteIpBlackList(IpBlackList ipBlackList) {
+		delete(ipBlackList);
 	}
 	@Override
 	public List<IpBlackList> query() {
@@ -83,17 +56,29 @@ public class IpBlackListDaoImpl extends DefaultGenericDaoImpl<IpBlackList> imple
 	    return list;
 	}
 	@Override
-	public Map<String,Object> query(Integer pageIndex, Integer pageSize, String ip) {
+	public List<IpBlackList> queryByIp(String ipLong,Integer type) {
+		String sql="from IpBlackList ab where ab.type=:type and SUBSTRING_INDEX(ab.ipLong, ',', 1)<=:ipLong and SUBSTRING_INDEX(ab.ipLong, ',', -1)>=:ipLong";
+		Query<IpBlackList> query = getSessionFactory().getCurrentSession().createQuery(sql,IpBlackList.class);
+		query.setParameter("ipLong", ipLong);
+		query.setParameter("type", type);
+	    List<IpBlackList> list = query.list();
+	    return list;
+	}
+	@Override
+	public PageBean queryByIp(Integer pageIndex, Integer pageSize, String ipLong,Integer type) {
 		Map<String,Object> map=new HashMap<String,Object>();
-		String sql = "from IpBlackList where ip=:ip";
+		String ipSql="";
+		if(!StringUtils.isBlank(ipLong)) {
+			ipSql=" ab where ab.type=:type and SUBSTRING_INDEX(ab.ipLong, ',', 1)<=:ipLong and SUBSTRING_INDEX(ab.ipLong, ',', -1)>=:ipLong";
+		    map.put("ipLong", ipLong);
+		    map.put("type", type);
+		}
+		String sql = "from IpBlackList "+ipSql;
 		PageBean page=new PageBean();
 		page.setPageIndex(pageIndex);
 		page.setPageSize(pageSize);
-	    map.put("ip", ip);
 		PageBean pageBean=queryByPagination(page,sql,map);
-		map.clear();
-		map.put("data",pageBean);
-	    return map;
+		return pageBean;
 	}
 	
 }

@@ -40,6 +40,11 @@
                 <comment>��ֵ</comment>
             </column>
         </property>
+        <property generated="never" lazy="false" name="walletType" optimistic-lock="true" type="java.lang.Integer" unique="false">
+            <column name="wallet_type">
+                <comment>0,�ֽ�;1,����</comment>
+            </column>
+        </property>
         <property generated="never" lazy="false" name="expiredTime" optimistic-lock="true" type="timestamp" unique="false">
             <column length="19" name="expired_time">
                 <comment>����ʱ��</comment>

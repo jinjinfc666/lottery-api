@@ -65,5 +65,14 @@ public class SysLoginServiceImpl implements SysLoginService
 		map.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		return map;
 	}
+	//通过ip查询用户失败登录此时
+	@Override
+	public long queryFailLoginCount(String ip) {
+		List<SysLogin> list=sysLoginDao.queryFailLoginCount(ip);
+		if(list!=null&&list.size()>0) {
+			return list.size();
+		}
+		return 0;
+	}
 	
 }

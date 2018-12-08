@@ -13,7 +13,27 @@ public class IpBlackList implements java.io.Serializable {
 	private Integer id;
 
 	private String ip;
+
+	private String ipLong;
 	
+	private Integer type;
+	
+	public Integer getType() {
+		return type;
+	}
+
+	public void setType(Integer type) {
+		this.type = type;
+	}
+
+	public String getIpLong() {
+		return ipLong;
+	}
+
+	public void setIpLong(String ipLong) {
+		this.ipLong = ipLong;
+	}
+
 	public String getIp() {
 		return ip;
 	}
