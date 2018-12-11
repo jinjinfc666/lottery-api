@@ -57,6 +57,10 @@
 		<custom-filter ref="resourceServer" before="PRE_AUTH_FILTER" />
     	<http-basic entry-point-ref="oauth2AuthenticationEntryPoint" />
     	
+    	<intercept-url method="GET" pattern="/report/agent/transfer" access="hasRole('ROLE_AGENT')" />
+    	<intercept-url method="POST" pattern="/users/players" access="hasRole('ROLE_AGENT')" />
+    	<intercept-url method="GET" pattern="/report/MReportNextTeam" access="hasRole('ROLE_AGENT')" />
+    	<intercept-url method="GET" pattern="/users/QDAgentNextAgent" access="hasRole('ROLE_AGENT')" />
     	<intercept-url pattern="/users/attrs/user-name/**" access="hasRole('ROLE_USER')" />
     	<intercept-url pattern="/*/bet/zh/*/wallet/*" access="hasRole('ROLE_USER')" />
 		<intercept-url pattern="/*/betting-issue" access="hasRole('ROLE_USER')" />
