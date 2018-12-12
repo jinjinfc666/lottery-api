@@ -475,7 +475,7 @@ public class UserControllerTest extends ControllerJunitBase{
 	}
 	
 	
-	public void testCreateUser_non_agent() throws Exception{
+	public void ItestCreateUser_non_agent() throws Exception{
 		String userName = "test001";
 		String pwd = "test001";
 		String clientId = "lottery-client";
@@ -520,7 +520,7 @@ public class UserControllerTest extends ControllerJunitBase{
 	}
 	
 	
-	public void testCreateUser_agent() throws Exception{
+	public void ItestCreateUser_agent() throws Exception{
 		String userName = "agent001";
 		String pwd = "test001";
 		String clientId = "lottery-client";
@@ -563,4 +563,166 @@ public class UserControllerTest extends ControllerJunitBase{
 			}
 		}
 	}
+	
+	public void testQuerySiteMsgRec_player_noUserName() throws Exception{
+		String userName = "test001";
+		String pwd = "test001";
+		String clientId = "lottery-client";
+		String token = queryToken(userName, pwd, clientId);
+		ObjectMapper mapper = new ObjectMapper();
+		ByteArrayInputStream bis = null;
+		try {
+			WebRequest request = new GetMethodWebRequest("http://localhost:8080/users/site-msg-rec");
+			/*request.setParameter("userName", "test001");
+			request.setParameter("pageIndex", Integer.toString(0));
+			request.setParameter("pageSize", Integer.toString(2));*/
+			
+			WebConversation wc = new WebConversation();
+			
+			request.setHeaderField("Authorization", "Bearer " + token);
+			
+			WebResponse response = wc.sendRequest(request);
+			
+			int  status = response.getResponseCode();
+			
+			Assert.assertEquals(HttpServletResponse.SC_OK, status);
+			String result = response.getText();
+			
+			Map<String, Object> retItems = null;
+			
+			retItems = mapper.readValue(result, HashMap.class);
+			
+			Assert.assertNotNull(retItems);
+
+			Assert.assertEquals(Message.status.SUCCESS.getCode(), retItems.get(Message.KEY_STATUS));
+		} catch (HttpException e) {
+			Assert.assertEquals(403, e.getResponseCode());
+		}finally {
+			if(bis != null) {
+				bis.close();
+			}
+		}
+	}
+	
+	public void testQuerySiteMsgRec_player_withUserName() throws Exception{
+		String userName = "test001";
+		String pwd = "test001";
+		String clientId = "lottery-client";
+		String token = queryToken(userName, pwd, clientId);
+		ObjectMapper mapper = new ObjectMapper();
+		ByteArrayInputStream bis = null;
+		try {
+			WebRequest request = new GetMethodWebRequest("http://localhost:8080/users/site-msg-rec");
+			request.setParameter("userName", "admin");
+			request.setParameter("pageIndex", Integer.toString(0));
+			request.setParameter("pageSize", Integer.toString(2));
+			
+			WebConversation wc = new WebConversation();
+			
+			request.setHeaderField("Authorization", "Bearer " + token);
+			
+			WebResponse response = wc.sendRequest(request);
+			
+			int  status = response.getResponseCode();
+			
+			Assert.assertEquals(HttpServletResponse.SC_OK, status);
+			String result = response.getText();
+			
+			Map<String, Object> retItems = null;
+			
+			retItems = mapper.readValue(result, HashMap.class);
+			
+			Assert.assertNotNull(retItems);
+
+			Assert.assertEquals(Message.status.SUCCESS.getCode(), retItems.get(Message.KEY_STATUS));
+		} catch (HttpException e) {
+			Assert.assertEquals(403, e.getResponseCode());
+		}finally {
+			if(bis != null) {
+				bis.close();
+			}
+		}
+	}
+	
+	public void testQuerySiteMsgRec_agent() throws Exception{
+		String userName = "agent001";
+		String pwd = "test001";
+		String clientId = "lottery-client";
+		String token = queryToken(userName, pwd, clientId);
+		ObjectMapper mapper = new ObjectMapper();
+		ByteArrayInputStream bis = null;
+		try {
+			WebRequest request = new GetMethodWebRequest("http://localhost:8080/users/site-msg-rec");
+			//request.setParameter("userName", "admin");
+			request.setParameter("pageIndex", Integer.toString(0));
+			request.setParameter("pageSize", Integer.toString(2));
+			
+			WebConversation wc = new WebConversation();
+			
+			request.setHeaderField("Authorization", "Bearer " + token);
+			
+			WebResponse response = wc.sendRequest(request);
+			
+			int  status = response.getResponseCode();
+			
+			Assert.assertEquals(HttpServletResponse.SC_OK, status);
+			String result = response.getText();
+			
+			Map<String, Object> retItems = null;
+			
+			retItems = mapper.readValue(result, HashMap.class);
+			
+			Assert.assertNotNull(retItems);
+
+			Assert.assertEquals(Message.status.SUCCESS.getCode(), retItems.get(Message.KEY_STATUS));
+		} catch (HttpException e) {
+			Assert.assertEquals(403, e.getResponseCode());
+		}finally {
+			if(bis != null) {
+				bis.close();
+			}
+		}
+	}
+	
+	public void testQuerySiteMsgRec_sysAdmin_admin() throws Exception{
+		String userName = "admin";
+		String pwd = "test001";
+		String clientId = "lottery-admin";
+		String token = queryToken(userName, pwd, clientId);
+		ObjectMapper mapper = new ObjectMapper();
+		ByteArrayInputStream bis = null;
+		try {
+			WebRequest request = new GetMethodWebRequest("http://localhost:8080/users/site-msg-rec");
+			//request.setParameter("userName", "admin");
+			request.setParameter("pageIndex", Integer.toString(0));
+			request.setParameter("pageSize", Integer.toString(2));
+			
+			WebConversation wc = new WebConversation();
+			
+			request.setHeaderField("Authorization", "Bearer " + token);
+			
+			WebResponse response = wc.sendRequest(request);
+			
+			int  status = response.getResponseCode();
+			
+			Assert.assertEquals(HttpServletResponse.SC_OK, status);
+			String result = response.getText();
+			
+			Map<String, Object> retItems = null;
+			
+			retItems = mapper.readValue(result, HashMap.class);
+			
+			Assert.assertNotNull(retItems);
+
+			Assert.assertEquals(Message.status.SUCCESS.getCode(), retItems.get(Message.KEY_STATUS));
+		} catch (HttpException e) {
+			Assert.assertEquals(403, e.getResponseCode());
+		}finally {
+			if(bis != null) {
+				bis.close();
+			}
+		}
+	}
+	
+	
 }

@@ -63,4 +63,13 @@ public interface UserInfoDao
 	List<?> queryByAll();
 	//通过用户Id查询用户银行卡数量
 	long queryUserBankCount(Integer userId);
+	
+	/**
+	 * query the receiver of site msg
+	 * @param sql
+	 * @param page
+	 * @return
+	 */
+	PageBean<UserInfo> querySiteMsgRec(String sql, 
+			PageBean<UserInfo> page);
 }

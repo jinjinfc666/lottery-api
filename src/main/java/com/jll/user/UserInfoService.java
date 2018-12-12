@@ -143,5 +143,18 @@ public interface UserInfoService
 	Map<String, Object> updateDemoUserDisableLogin();
 	
 	//判断返点
-	boolean verifRebate(UserInfo userInfo);
+	boolean verifRebate(UserInfo userInfo);	
+	
+	/**
+	 * query the receiver of site msg
+	 * @param pageIndex
+	 * @param pageSize
+	 * @param sender    sender of site msg
+	 * @param params
+	 * @return
+	 */
+	PageBean<UserInfo> querySiteMsgRec(Integer pageIndex, 
+			Integer pageSize, 
+			UserInfo sender, 
+			Map<String, Object> params);
 }

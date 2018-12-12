@@ -365,5 +365,11 @@ public class UserInfoDaoImpl extends DefaultGenericDaoImpl<UserInfo> implements 
 	    List<UserInfo> list=query1.list();
 	    return list;
 	}
+
+	@Override
+	public PageBean<UserInfo> querySiteMsgRec(String sql, 
+			PageBean<UserInfo> page) {
+		return queryByPagination(page, sql, page.getParams(), UserInfo.class);
+	}
   
 }

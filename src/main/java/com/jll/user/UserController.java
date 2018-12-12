@@ -32,6 +32,7 @@ import com.jll.common.constants.Constants.UserType;
 import com.jll.common.constants.Message;
 import com.jll.common.utils.StringUtils;
 import com.jll.common.utils.Utils;
+import com.jll.dao.PageBean;
 import com.jll.entity.SiteMessFeedback;
 import com.jll.entity.SiteMessage;
 import com.jll.entity.SysCode;
@@ -1394,6 +1395,25 @@ public class UserController {
 		Map<String, Object> map=new HashMap<String,Object>();
 		UserInfo user=userInfoService.getUserByUserName(userName);
 		map.put(Message.KEY_DATA, user);
+		map.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		return map;
+	}
+	
+	//query the receivers of site msg
+	@RequestMapping(value = { "/site-msg-rec" }, method = {
+			RequestMethod.GET }, produces = MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> querySiteMsgRec(@RequestParam(name = "userName", required = false) String userName,
+			@RequestParam(name = "pageIndex", required = false) Integer pageIndex,
+			@RequestParam(name = "pageSize", required = false) Integer pageSize) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		UserInfo sender = null;
+		Map<String, Object> params = new HashMap<>();
+		params.put("receiver", userName);
+		sender = userInfoService.getCurLoginInfo();
+		
+		
+		PageBean<UserInfo> users = userInfoService.querySiteMsgRec(pageIndex, pageSize, sender, params);
+		map.put(Message.KEY_DATA, users);
 		map.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		return map;
 	}
