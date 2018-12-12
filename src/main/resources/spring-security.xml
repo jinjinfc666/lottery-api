@@ -68,9 +68,12 @@
 		<intercept-url method="POST" pattern="/users/agents" access="hasRole('ROLE_ADMIN')" />
 		<intercept-url method="POST" pattern="/users/sys-users" access="hasRole('ROLE_ADMIN')" />
 		<intercept-url method="GET" pattern="/*/attrs/login-pwd/reset/sms" access="hasRole('ROLE_ANONYMOUS')" />
+		<intercept-url method="GET" pattern="/users/user-name/by/*" access="hasRole('ROLE_ANONYMOUS')" />
 		<intercept-url method="PUT" pattern="/*/attrs/login-pwd/reset/sms" access="hasRole('ROLE_ANONYMOUS')" />
 		<intercept-url method="GET" pattern="/captcha/VerificationCodeImg" access="hasRole('ROLE_ANONYMOUS')" />
 		<intercept-url method="PUT" pattern="/**/issue/*/manual-draw-result" access="hasRole('ROLE_ADMIN')" />
+		<intercept-url method="GET" pattern="/report/userFlowDetail" access="hasRole('ROLE_CUSTOMER_SERVICE') or hasRole('ROLE_ADMIN')" />
+<!-- 		<intercept-url method="GET" pattern="/report/loyTstRecord" access="hasRole('ROLE_MANAGER','ROLE_CUSTOMER_SERVICE')" /> -->
 	</http>
 	
 	
