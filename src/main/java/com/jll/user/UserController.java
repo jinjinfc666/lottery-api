@@ -33,6 +33,7 @@ import com.jll.common.constants.Message;
 import com.jll.common.utils.DateUtil;
 import com.jll.common.utils.StringUtils;
 import com.jll.common.utils.Utils;
+import com.jll.dao.PageBean;
 import com.jll.entity.SiteMessFeedback;
 import com.jll.entity.SiteMessage;
 import com.jll.entity.SysCode;
@@ -1457,5 +1458,22 @@ public class UserController {
 			map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_INVALID_USER_NAME.getErrorMes());
 			return map;
 		}
+	}
+	//query the receivers of site msg
+	@RequestMapping(value = { "/site-msg-rec" }, method = {RequestMethod.GET }, produces = MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> querySiteMsgRec(@RequestParam(name = "userName", required = false) String userName,
+			@RequestParam(name = "pageIndex", required = false) Integer pageIndex,
+			@RequestParam(name = "pageSize", required = false) Integer pageSize) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		UserInfo sender = null;
+		Map<String, Object> params = new HashMap<>();
+		params.put("receiver", userName);
+		sender = userInfoService.getCurLoginInfo();
+		
+		
+		PageBean<UserInfo> users = userInfoService.querySiteMsgRec(pageIndex, pageSize, sender, params);
+		map.put(Message.KEY_DATA, users);
+		map.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		return map;
 	}
 }

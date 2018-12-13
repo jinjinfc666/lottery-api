@@ -100,8 +100,18 @@ public class DefaultGenericDaoImpl<T> extends HibernateDaoSupport implements Gen
 		String sql = HQL;
 		StringBuffer sqlCount = new StringBuffer("select count(*) ");
 		Long totalPages =  null;
+		Long totalNum = null;
 		Integer pageIndex = page.getPageIndex();
 		Integer pageSize = page.getPageSize();
+		
+		if(pageIndex == null || pageIndex.intValue() < 0) {
+			pageIndex = 0;
+		}
+		
+		if(pageSize == null || pageSize <= 0) {
+			pageSize = 20;
+		}
+		
 		Integer startPosition = pageIndex * pageSize;
 	    Query<T> query = getSessionFactory().getCurrentSession().createQuery(sql, clazz);
 
@@ -111,12 +121,12 @@ public class DefaultGenericDaoImpl<T> extends HibernateDaoSupport implements Gen
 	    }
 	    
 	    sqlCount.append(HQL.substring(entityNameStartInd));
-	    totalPages =  queryCount(sqlCount.toString(), params);
+	    totalNum =  queryCount(sqlCount.toString(), params);
 	    
-	    if(totalPages % pageSize == 0) {
-	    	totalPages = totalPages / pageSize;
+	    if(totalNum % pageSize == 0) {
+	    	totalPages = totalNum / pageSize;
 	    }else {
-	    	totalPages = totalPages / pageSize + 1; 
+	    	totalPages = totalNum / pageSize + 1; 
 	    }
 	    if(pageIndex.intValue() > (totalPages.intValue() - 1)) {
 			return page;
@@ -136,10 +146,10 @@ public class DefaultGenericDaoImpl<T> extends HibernateDaoSupport implements Gen
 	    content = query.list();
 	    
 	    page.setContent(content);
-	    //ret.setPageIndex(pageIndex);
 	    page.setPageSize(pageSize);
 	    page.setTotalPages(totalPages);
-	    
+	    page.setPageIndex(pageIndex);
+	    page.setTotalNumber(totalNum);
 		return page;
 	}
 	

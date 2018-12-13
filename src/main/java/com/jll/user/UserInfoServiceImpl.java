@@ -1787,4 +1787,40 @@ public class UserInfoServiceImpl implements UserInfoService
 			return map;
 		}
 	}
+
+	@Override
+	public PageBean<UserInfo> querySiteMsgRec(Integer pageIndex, 
+			Integer pageSize, 
+			UserInfo sender, 
+			Map<String, Object> params) {
+		
+ 		PageBean<UserInfo> page = new PageBean<>();
+		StringBuffer sql = new StringBuffer();
+		List<Object> params_ = new ArrayList<>();
+		
+		String receiverName = params.get(Constants.KEY_SITE_MSG_RECEIVER) == null?
+				null:(String)params.get(Constants.KEY_SITE_MSG_RECEIVER);
+		
+		page.setPageIndex(pageIndex);
+		page.setPageSize(pageSize);
+		page.setParams(params_);
+		
+		if(sender.getUserType().intValue() == Constants.UserType.AGENCY.getCode()
+				|| sender.getUserType().intValue() == Constants.UserType.PLAYER.getCode()) {
+			sql.append("from UserInfo t where t.userType =?");
+			
+			params_.add(Constants.UserType.SYS_ADMIN.getCode());
+		}else if(sender.getUserType().intValue() == Constants.UserType.SYS_ADMIN.getCode()) {
+			sql.append("from UserInfo t where t.userType =? or t.userType =?");
+			params_.add(Constants.UserType.AGENCY.getCode());
+			params_.add(Constants.UserType.PLAYER.getCode());			
+		}
+		
+		if(!StringUtils.isBlank(receiverName)) {
+			sql.append(" and t.userName =?");
+			params_.add(receiverName);			
+		}
+		
+		return userDao.querySiteMsgRec(sql.toString(), page);
+	}
 }

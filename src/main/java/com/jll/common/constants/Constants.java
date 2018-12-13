@@ -92,7 +92,7 @@ public class Constants {
 	//再给总代添加下级代理时需要填写的superior
 	public final static Integer VAL_SUPERIOR = 0;
 	
-	
+	public final static String KEY_SITE_MSG_RECEIVER = "receiver";
 	
 	public static enum DepositOrderState{
 		
