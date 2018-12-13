@@ -99,7 +99,10 @@ public class Message {
 		ERROR_USER_SIGNED_IN("010045","Signed in!!!"),
 		ERROR_PROMS_OTHER_CONDITION_WITHDRAW_DISSATISFY("010046", "The maximum amount of cash to participate in the event is %s, Your cash withdrawal is %s, You have exceeded the maximum amount of cash !!"),
 		ERROR_USER_ACTIVITY_OVER("010047","The activity is over!!!"),
-		
+		ERROR_USER_HAS_BEEN_LOCKED("010048","Your account has been locked. Please try to log in again after 5 minutes! ! !"),
+		ERROR_USER_HAS_BEEN_LOCKED_SERVICE("010049","Your account has been locked, please contact customer service! ! !"),
+		ERROR_USER_HAS_BEEN_DESTROY_SERVICE("010050","please contact customer service! ! !"),
+		ERROR_USER_FAILED_TO_GET_VERIFICATION_CODE("010051","Failed to get verification code, please re-acquire! ! !"),
 		
 		/**************third party*************************/
 		ERROR_TP_INVALID_SMS("020001", "Invalid SMS!!"),
@@ -121,6 +124,10 @@ public class Message {
 		ERROR_GAME_INVALID_PLAY_TYPE("030011", "Invalid Play Type!!"),
 		ERROR_GAME_INVALID_BET_NUM("030012", "Invalid Play Bet number!!"),
 		ERROR_GAME_FAILED_PROCESS_BETTING_NUM("030013", "Failed to process beting number!!"),
+		ERROR_GAME_NO_ORDERS_TO_DELAY_THE_AWARD("030014", "There are no orders to delay the award.!!"),
+		ERROR_GAME_ORDER_IS_ALREADY_NON_DELAYED_AWARD("030015", "This order is already a non-delayed award.!!!"),
+		ERROR_GAME_ORDER_NO_DRAW("030016", "The order corresponding to this order has not yet been awarded, so it is impossible to make a manual award!!!"),
+		ERROR_GAME_ORDER_DOES_NOT_EXIST("030017", "Order does not exist!!!"),
 		
 		/*** system model****/
 		ERROR_MESSAGE_TITLE_IS_EMPTY("040001", "Message title is empty!!"),
@@ -156,6 +163,7 @@ public class Message {
 		ERROR_PAYTYPE_DOES_NOT_EXIST("130002","payType does not exist!!!"),
 		/**************payChannel module*************************/
 		ERROR_PAYCHANNEL_DOES_NOT_EXIST("140001","payChannel does not exist!!!"),
+		ERROR_PAYCHANNEL_ALREADY_EXISTS("140002","payChannel already exists!!!"),
 		/**************payChannel module*************************/
 		ERROR_SYSROLE_ALREADY_EXISTS("150001","SysRole already exists!!!"),
 		ERROR_SYSROLE_DOES_NOT_EXIST("150002","SysRole does not exist!!!"),
