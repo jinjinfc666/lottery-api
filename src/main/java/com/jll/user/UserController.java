@@ -30,6 +30,7 @@ import com.jll.common.constants.Constants.EmailValidState;
 import com.jll.common.constants.Constants.PhoneValidState;
 import com.jll.common.constants.Constants.UserType;
 import com.jll.common.constants.Message;
+import com.jll.common.utils.DateUtil;
 import com.jll.common.utils.StringUtils;
 import com.jll.common.utils.Utils;
 import com.jll.entity.SiteMessFeedback;
@@ -643,8 +644,8 @@ public class UserController {
 		String ret = smsServ.sending6digitsNumbers(user.getPhoneNum());
 		if(!Integer.toString(Message.status.SUCCESS.getCode()).equals(ret)) {
 			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-			resp.put(Message.KEY_ERROR_CODE, ret);
-			resp.put(Message.KEY_ERROR_MES, Message.Error.getErrorByCode(ret).getErrorMes());
+			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_FAILED_TO_GET_VERIFICATION_CODE.getCode());
+			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_FAILED_TO_GET_VERIFICATION_CODE.getErrorMes());
 			return resp;
 		}
 		
@@ -745,6 +746,7 @@ public class UserController {
 				return resp;
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_TP_SENDING_EMAIL.getCode());
 			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_TP_SENDING_EMAIL.getErrorMes());
@@ -925,11 +927,11 @@ public class UserController {
 				return ret; 
 			}
 			
-			if(!phoneNum.equals(user.getPhoneNum())) {
+			if(!StringUtils.isBlank(phoneNum)&&!phoneNum.equals(user.getPhoneNum())) {
 				user.setPhoneNum(phoneNum);
 				user.setIsValidPhone(Constants.PhoneValidState.UNVERIFIED.getCode());
 			}
-			if(!email.equals(user.getEmail())) {
+			if(!StringUtils.isBlank(email)&&!email.equals(user.getEmail())) {
 				user.setEmail(email);
 				user.setIsValidEmail(Constants.EmailValidState.UNVERIFIED.getCode());
 			}
@@ -991,6 +993,14 @@ public class UserController {
 		    	return ret;
 			}
 		}
+		if(!StringUtils.isBlank(startTime)||!StringUtils.isBlank(endTime)) {
+			if(!DateUtil.isValidDate(startTime)||!DateUtil.isValidDate(endTime)) {
+				ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+				ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+				ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+		    	return ret;
+			}
+		}
 		Integer pageSize=Constants.Pagination.SUM_NUMBER.getCode();
 		ret.put("pageSize", pageSize);
 		ret.put("pageIndex", pageIndex);
@@ -1020,6 +1030,14 @@ public class UserController {
 			  HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
 		Map<String, Object> map = new HashMap<>();
+		if(!StringUtils.isBlank(startTime)||!StringUtils.isBlank(endTime)) {
+			if(!DateUtil.isValidDate(startTime)||!DateUtil.isValidDate(endTime)) {
+				ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+				ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+				ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+		    	return ret;
+			}
+		}
 		Integer pageSize=Constants.Pagination.SUM_NUMBER.getCode();
 		ret.put("pageSize", pageSize);
 		ret.put("pageIndex", pageIndex);
@@ -1165,6 +1183,14 @@ public class UserController {
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
 			return ret;
+		}
+		if(!StringUtils.isBlank(startTime)&&!StringUtils.isBlank(endTime)) {
+			if(!DateUtil.isValidDate(startTime)||!DateUtil.isValidDate(endTime)) {
+				ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+				ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+				ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+		    	return ret;
+			}
 		}
 		if(id==null) {
 			String userName=SecurityContextHolder.getContext().getAuthentication().getName();//当前登录的用户
@@ -1396,5 +1422,40 @@ public class UserController {
 		map.put(Message.KEY_DATA, user);
 		map.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		return map;
+	}
+	//前端用户在没有登录的情况下通过用户名查询用户信息
+	@RequestMapping(value={"/user-name/by/{userName}"}, method={RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> queryByUserNameUserInfo(@PathVariable("userName") String userName) {
+		Map<String, Object> map=new HashMap<String,Object>();
+		UserInfo userInfo=userInfoService.getUserByUserName(userName);
+		if(userInfo!=null) {
+			//真实姓名只显示第一个字，电话号码只显示后面三位，电子邮件只显示头三个字母以及邮箱地址，微信和qq都只显示后面三位字母
+			if(!StringUtils.isEmpty(userInfo.getRealName())) {
+				userInfo.setRealName(userInfo.getRealName().substring(0, 1)+StringUtils.MORE_ASTERISK);
+			}
+			if(!StringUtils.isEmpty(userInfo.getPhoneNum())) {
+				String userNameNew=userInfo.getPhoneNum();
+				Integer length=userNameNew.length();
+				userInfo.setPhoneNum( userNameNew.substring(0, length-4)+StringUtils.MORE_ASTERISK);
+			}
+			if(!StringUtils.isEmpty(userInfo.getEmail())){
+				String emailStr=userInfo.getEmail().substring(0, userInfo.getEmail().indexOf('@'));
+				userInfo.setEmail(emailStr.substring(0,5)+StringUtils.MORE_ASTERISK+userInfo.getEmail().substring(userInfo.getEmail().indexOf('@')));
+			}
+			if(!StringUtils.isEmpty(userInfo.getWechat())) {
+				userInfo.setWechat(userInfo.getWechat().substring(0, 5)+StringUtils.MORE_ASTERISK);
+			}
+			if(!StringUtils.isEmpty(userInfo.getQq())) {
+				userInfo.setQq(userInfo.getQq().substring(0, 5)+StringUtils.MORE_ASTERISK);
+			}
+			map.put(Message.KEY_DATA, userInfo);
+			map.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+			return map;
+		}else {
+			map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_INVALID_USER_NAME.getCode());
+			map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_INVALID_USER_NAME.getErrorMes());
+			return map;
+		}
 	}
 }

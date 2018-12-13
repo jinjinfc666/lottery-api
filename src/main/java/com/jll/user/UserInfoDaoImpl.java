@@ -167,8 +167,8 @@ public class UserInfoDaoImpl extends DefaultGenericDaoImpl<UserInfo> implements 
 			String timeSql="";
 			if(!StringUtils.isBlank(startTime)&&!StringUtils.isBlank(endTime)) {
 				timeSql=" and a.create_time>=:startTime and a.create_time<:endTime";
-				Date beginDate = java.sql.Date.valueOf(startTime);
-			    Date endDate = java.sql.Date.valueOf(endTime);
+				Date beginDate = DateUtil.fmtYmdHisToDate(startTime);
+			    Date endDate = DateUtil.fmtYmdHisToDate(endTime);
 				map.put("startTime", beginDate);
 				map.put("endTime", endDate);
 			}
@@ -195,8 +195,8 @@ public class UserInfoDaoImpl extends DefaultGenericDaoImpl<UserInfo> implements 
 			String timeSql="";
 			if(!StringUtils.isBlank(startTime)&&!StringUtils.isBlank(endTime)) {
 				timeSql=" and createTime >=:startTime and createTime <:endTime";
-				Date beginDate = java.sql.Date.valueOf(startTime);
-			    Date endDate = java.sql.Date.valueOf(endTime);
+				Date beginDate = DateUtil.fmtYmdHisToDate(startTime);
+			    Date endDate = DateUtil.fmtYmdHisToDate(endTime);
 				map.put("startTime", beginDate);
 				map.put("endTime", endDate);
 			}
@@ -226,7 +226,7 @@ public class UserInfoDaoImpl extends DefaultGenericDaoImpl<UserInfo> implements 
 		Map<String,Object> map=new HashMap<String,Object>();
 		String timeSql="";
 		if(!StringUtils.isBlank(startTime)&&!StringUtils.isBlank(endTime)) {
-			timeSql=" and create_time >=:startTime and create_time <:endTime";
+			timeSql=" and create_time >=:startTime and create_time <=:endTime";
 		}
 		Integer userType=Constants.UserType.SYS_ADMIN.getCode();
 		Integer userTypea=Constants.UserType.DEMO_PLAYER.getCode();
@@ -237,10 +237,10 @@ public class UserInfoDaoImpl extends DefaultGenericDaoImpl<UserInfo> implements 
 		map.put("userTypea", userTypea);
 		map.put("userTypeb", userTypeb);
 	    if(!StringUtils.isBlank(startTime)&&!StringUtils.isBlank(endTime)) {
-	    	Date beginDate = java.sql.Date.valueOf(startTime);
-		    Date endDate = java.sql.Date.valueOf(endTime);
-		    map.put("startTime", beginDate);
-		    map.put("endTime", endDate);
+			Date beginDate = DateUtil.fmtYmdHisToDate(startTime);
+		    Date endDate = DateUtil.fmtYmdHisToDate(endTime);
+			map.put("startTime", beginDate);
+			map.put("endTime", endDate);
 		}
 	    PageBean<UserInfo> page=new PageBean();
 		page.setPageIndex(pageIndex);
@@ -297,8 +297,8 @@ public class UserInfoDaoImpl extends DefaultGenericDaoImpl<UserInfo> implements 
 		String timeSql="";
 		if(!StringUtils.isBlank(startTime)&&!StringUtils.isBlank(endTime)) {
 			timeSql=" and createTime>=:startTime and createTime < :endTime";
-			Date beginDate = java.sql.Date.valueOf(startTime);
-		    Date endDate = java.sql.Date.valueOf(endTime);
+			Date beginDate = DateUtil.fmtYmdHisToDate(startTime);
+		    Date endDate = DateUtil.fmtYmdHisToDate(endTime);
 			map.put("startTime", beginDate);
 			map.put("endTime", endDate);
 		}

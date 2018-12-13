@@ -258,14 +258,24 @@ public class UserInfoServiceImpl implements UserInfoService
 		List<String> list=sysAuthorityService.queryGetByUserId(dbInfo.getId());
 		if(!SecurityUtils.checkViewPermissionIsOK(list)){
 			//真实姓名只显示第一个字，电话号码只显示后面三位，电子邮件只显示头三个字母以及邮箱地址，微信和qq都只显示后面三位字母
-			dbInfo.setPhoneNum(StringUtils.abbreviate(dbInfo.getPhoneNum(),3,StringUtils.MORE_ASTERISK));
-			if(!StringUtils.isEmpty(dbInfo.getEmail())){
-				String[] emails = dbInfo.getEmail().split("@");
-				dbInfo.setEmail(StringUtils.abbreviate(emails[0],3,StringUtils.MORE_ASTERISK)+"@"+emails[1]);
+			if(!StringUtils.isEmpty(dbInfo.getRealName())) {
+				dbInfo.setRealName(dbInfo.getRealName().substring(0, 1)+StringUtils.MORE_ASTERISK);
 			}
-			dbInfo.setWechat(StringUtils.abbreviate(dbInfo.getWechat(),3,StringUtils.MORE_ASTERISK));
-			dbInfo.setQq(StringUtils.abbreviate(dbInfo.getQq(),3,StringUtils.MORE_ASTERISK));
-			
+			if(!StringUtils.isEmpty(dbInfo.getPhoneNum())) {
+				String userNameNew=dbInfo.getPhoneNum();
+				Integer length=userNameNew.length();
+				dbInfo.setPhoneNum( userNameNew.substring(0, length-4)+StringUtils.MORE_ASTERISK);
+			}
+			if(!StringUtils.isEmpty(dbInfo.getEmail())){
+				String emailStr=dbInfo.getEmail().substring(0, dbInfo.getEmail().indexOf('@'));
+				dbInfo.setEmail(emailStr.substring(0,5)+StringUtils.MORE_ASTERISK+dbInfo.getEmail().substring(dbInfo.getEmail().indexOf('@')));
+			}
+			if(!StringUtils.isEmpty(dbInfo.getWechat())) {
+				dbInfo.setWechat(dbInfo.getWechat().substring(0, 5)+StringUtils.MORE_ASTERISK);
+			}
+			if(!StringUtils.isEmpty(dbInfo.getQq())) {
+				dbInfo.setQq(dbInfo.getQq().substring(0, 5)+StringUtils.MORE_ASTERISK);
+			}
 		}
 		dbInfo.setLoginPwd(StringUtils.MORE_ASTERISK);
 		dbInfo.setFundPwd(StringUtils.MORE_ASTERISK);
@@ -563,11 +573,11 @@ public class UserInfoServiceImpl implements UserInfoService
 			ret.put(Message.KEY_ERROR_MES,Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
 			return ret;
 		}
-		Map<String, Object> bankInfo =  getUserBankLists(userId);
-		List<?> bankList = (List<?>) bankInfo.get(Message.KEY_DATA);
+		long count=userDao.queryUserBankCount(userId);
+		Integer countNew=Integer.valueOf((int)count);
 		SysCode sysCode=cacheServ.getSysCode(Constants.SysCodeTypes.SYS_RUNTIME_ARGUMENT.getCode(),Constants.SysRuntimeArgument.NUMBER_OF_BANK_CARDS.getCode());
 		int maxCardNum = Integer.valueOf(sysCode.getCodeVal());
-		if(bankList.size() == maxCardNum){
+		if(countNew >= maxCardNum){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_MORE_BIND_BANK_CARD.getCode());
 			ret.put(Message.KEY_ERROR_MES, String.format(Message.Error.ERROR_USER_MORE_BIND_BANK_CARD.getErrorMes(),maxCardNum));
@@ -848,12 +858,13 @@ public class UserInfoServiceImpl implements UserInfoService
 		Calendar calendar = new GregorianCalendar();
 		Date date = new Date();
 		if(state==0) {
+			user.setFailLoginCount(0);
 			user.setUnlockTime(date);
 		}else if(state==1){
-			calendar.setTime(date);
-			calendar.add(calendar.YEAR, 10);//把日期往后增加一年.整数往后推,负数往前移动
-			date=calendar.getTime();
-			user.setUnlockTime(date);
+//			calendar.setTime(date);
+//			calendar.add(calendar.YEAR, 10);//把日期往后增加一年.整数往后推,负数往前移动
+//			date=calendar.getTime();
+			user.setUnlockTime(null);
 		}else if(state==2) {
 			calendar.setTime(date);
 			calendar.add(calendar.YEAR, 10);//把日期往后增加一年.整数往后推,负数往前移动
@@ -1596,14 +1607,24 @@ public class UserInfoServiceImpl implements UserInfoService
 		List<String> list=sysAuthorityService.queryGetByUserId(dbInfo.getId());
 		if(!SecurityUtils.checkViewPermissionIsOK(list)){
 			//真实姓名只显示第一个字，电话号码只显示后面三位，电子邮件只显示头三个字母以及邮箱地址，微信和qq都只显示后面三位字母
-			userInfo.setPhoneNum(StringUtils.abbreviate(userInfo.getPhoneNum(),3,StringUtils.MORE_ASTERISK));
-			if(!StringUtils.isEmpty(userInfo.getEmail())){
-				String[] emails = userInfo.getEmail().split("@");
-				userInfo.setEmail(StringUtils.abbreviate(emails[0],3,StringUtils.MORE_ASTERISK)+"@"+emails[1]);
+			if(!StringUtils.isEmpty(userInfo.getRealName())) {
+				userInfo.setRealName(userInfo.getRealName().substring(0, 1)+StringUtils.MORE_ASTERISK);
 			}
-			userInfo.setWechat(StringUtils.abbreviate(userInfo.getWechat(),3,StringUtils.MORE_ASTERISK));
-			userInfo.setQq(StringUtils.abbreviate(userInfo.getQq(),3,StringUtils.MORE_ASTERISK));
-			
+			if(!StringUtils.isEmpty(userInfo.getPhoneNum())) {
+				String userNameNew=userInfo.getPhoneNum();
+				Integer length=userNameNew.length();
+				userInfo.setPhoneNum(userNameNew.substring(0, length-4)+StringUtils.MORE_ASTERISK);
+			}
+			if(!StringUtils.isEmpty(userInfo.getEmail())){
+				String emailStr=userInfo.getEmail().substring(0, userInfo.getEmail().indexOf('@'));
+				userInfo.setEmail(emailStr.substring(0,5)+StringUtils.MORE_ASTERISK+userInfo.getEmail().substring(userInfo.getEmail().indexOf('@')));
+			}
+			if(!StringUtils.isEmpty(userInfo.getWechat())) {
+				userInfo.setWechat(userInfo.getWechat().substring(0, 5)+StringUtils.MORE_ASTERISK);
+			}
+			if(!StringUtils.isEmpty(userInfo.getQq())) {
+				userInfo.setQq(userInfo.getQq().substring(0, 5)+StringUtils.MORE_ASTERISK);
+			}
 		}
 		String superior=userInfo.getSuperior();
 		if(!StringUtils.isBlank(superior)) {
