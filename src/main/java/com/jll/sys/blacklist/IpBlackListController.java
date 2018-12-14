@@ -78,10 +78,10 @@ public class IpBlackListController {
 		try {
 			ret.clear();
 			ipBlackListService.saveIp(ipBlackList);
-			Integer id=ipBlackList.getId();
-			IpBlackList list=ipBlackListService.query(id);
-			String codeTypeName=Constants.IpBlackList.IP_BLACK_LIST.getCode();
-			cacheServ.setIpBlackList(codeTypeName, list);
+//			Integer id=ipBlackList.getId();
+//			IpBlackList list=ipBlackListService.query(id);
+//			String codeTypeName=Constants.IpBlackList.IP_BLACK_LIST.getCode();
+//			cacheServ.setIpBlackList(codeTypeName, list);
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 			return ret;
 		}catch(Exception e){
@@ -164,14 +164,13 @@ public class IpBlackListController {
 	public Map<String, Object> deleteIpBlackList(@PathVariable(name = "id", required = true) Integer id,
 			  HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
-		String codeTypeName=Constants.IpBlackList.IP_BLACK_LIST.getCode();
 		try {
 			ret.clear();
 			ret=ipBlackListService.deleteIpBlackList(id);
-			int status=(int) ret.get(Message.KEY_STATUS);
-			if(status==Message.status.SUCCESS.getCode()) {
-				cacheServ.deleteIpBlackList(codeTypeName, id);
-			}
+//			int status=(int) ret.get(Message.KEY_STATUS);
+//			if(status==Message.status.SUCCESS.getCode()) {
+//				cacheServ.deleteIpBlackList(codeTypeName, id);
+//			}
 			return ret;
 		}catch(Exception e){
 			ret.clear();

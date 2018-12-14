@@ -20,6 +20,7 @@ import org.springframework.stereotype.Repository;
 
 import com.jll.common.constants.Constants;
 import com.jll.common.constants.Message;
+import com.jll.common.utils.DateUtil;
 import com.jll.dao.DefaultGenericDaoImpl;
 import com.jll.dao.PageBean;
 import com.jll.entity.IpBlackList;
@@ -117,31 +118,34 @@ public class IssueDaoImpl extends DefaultGenericDaoImpl<Issue> implements IssueD
 		if(!StringUtils.isBlank(startTime)&&!StringUtils.isBlank(endTime)) {
 			timeSql=" where startTime>=:startTime and startTime<:endTime ";
 		    String startTime1=startTime+" 00:00:00";//开始时间
-		    //结束时间
-		    Calendar ca = Calendar.getInstance();// 得到一个Calendar的实例  
-		    SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");  
-		    ca.setTime(new Date()); // 设置时间为当前时间  
-		    Date resultDate = ca.getTime(); // 结果   
-		    String nowTime=sdf1.format(resultDate); 
-		    Date nowTime1 = java.sql.Date.valueOf(nowTime);//当前时间
-		    Date oldTime = java.sql.Date.valueOf(endTime);//前端传过来的时间
-		    boolean b=DateUtils.isSameDay(nowTime1, oldTime);
-		    SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  
-		    String nowTime2=sdf2.format(resultDate);//当前时间  时分秒
-		    Date beginDate =null;
-			Date endDate=null;
-			String endTime1=null;
-		    if(b) {
-		    	endTime1=nowTime2;
-		    }else {
-		    	endTime1=endTime+" 00:00:00";
-		    }
-		    try {
-				beginDate = (Date) sdf2.parse(startTime1);
-				endDate = (Date) sdf2.parse(endTime1); 
-			}catch(ParseException  ex) {
-				
-			}
+		    String endTime1=endTime+" 23:59:59";
+//		    //结束时间
+//		    Calendar ca = Calendar.getInstance();// 得到一个Calendar的实例  
+//		    SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");  
+//		    ca.setTime(new Date()); // 设置时间为当前时间  
+//		    Date resultDate = ca.getTime(); // 结果   
+//		    String nowTime=sdf1.format(resultDate); 
+//		    Date nowTime1 = java.sql.Date.valueOf(nowTime);//当前时间
+//		    Date oldTime = java.sql.Date.valueOf(endTime);//前端传过来的时间
+//		    boolean b=DateUtils.isSameDay(nowTime1, oldTime);
+//		    SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  
+//		    String nowTime2=sdf2.format(resultDate);//当前时间  时分秒
+//		    Date beginDate =null;
+//			Date endDate=null;
+//			String endTime1=null;
+//		    if(b) {
+//		    	endTime1=nowTime2;
+//		    }else {
+//		    	endTime1=endTime+" 00:00:00";
+//		    }
+//		    try {
+//				beginDate = (Date) sdf2.parse(startTime1);
+//				endDate = (Date) sdf2.parse(endTime1); 
+//			}catch(ParseException  ex) {
+//				
+//			}
+			Date beginDate = DateUtil.fmtYmdHisToDate(startTime1);
+		    Date endDate = DateUtil.fmtYmdHisToDate(endTime1);
 			map.put("startTime", beginDate);
 			map.put("endTime", endDate);
 		}
@@ -169,7 +173,7 @@ public class IssueDaoImpl extends DefaultGenericDaoImpl<Issue> implements IssueD
 	//追号需要的期号信息
 	@Override
 	public List<Issue> queryIsZhIssue(String lotteryType, Date startTime, Date endTime) {
-		String sql="From Issue where lotteryType=:lotteryType and startTime>:startTime and startTime<=:endTime";
+		String sql="From Issue where (lotteryType=:lotteryType and startTime>:startTime and startTime<=:endTime) OR (startTime<=:startTime and endTime>=:startTime and lotteryType=:lotteryType)";
 		Query<Issue> query = getSessionFactory().getCurrentSession().createQuery(sql,Issue.class);
 		query.setParameter("lotteryType", lotteryType);
 	    query.setParameter("startTime", startTime,TimestampType.INSTANCE);

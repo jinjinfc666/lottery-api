@@ -10,6 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.jll.dao.PageBean;
 import com.jll.entity.SysNotification;
+import com.jll.common.constants.Message;
+import com.jll.common.utils.DateUtil;
 import com.jll.common.utils.StringUtils;
 import com.jll.dao.DefaultGenericDaoImpl;
 
@@ -32,8 +34,8 @@ public class SysNotifyDaoImpl extends DefaultGenericDaoImpl<SysNotification> imp
 		String timeSql="";
 		if(!StringUtils.isBlank(startTime)&&!StringUtils.isBlank(endTime)) {
 			timeSql="and a.createTime>=:startTime and a.createTime<:endTime";
-			Date beginDate = java.sql.Date.valueOf(startTime);
-		    Date endDate = java.sql.Date.valueOf(endTime);
+			Date beginDate = DateUtil.fmtYmdHisToDate(startTime);
+		    Date endDate = DateUtil.fmtYmdHisToDate(endTime);
 			map.put("startTime", beginDate);
 			map.put("endTime", endDate);
 		}

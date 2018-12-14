@@ -21,6 +21,7 @@ import com.jll.sysSettings.syscode.SysCodeService;
 import com.jll.common.cache.CacheRedisService;
 import com.jll.common.constants.Constants;
 import com.jll.common.constants.Constants.SysCodeTypes;
+import com.jll.common.utils.DateUtil;
 import com.jll.common.constants.Message;
 import com.jll.dao.PageBean;
 import com.jll.entity.SysCode;
@@ -79,6 +80,12 @@ public class ReportController {
 		Map<String, Object> ret = new HashMap<>();
 		Map<String, Object> map = new HashMap<>();
 		if(StringUtils.isBlank(startTime)||StringUtils.isBlank(endTime)) {
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+	    	return ret;
+		}
+		if(!DateUtil.isValidDate(startTime)||!DateUtil.isValidDate(endTime)) {
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
@@ -152,6 +159,7 @@ public class ReportController {
 	@RequestMapping(value={"/loyTstRecord"}, method={RequestMethod.GET}, produces={"application/json"})
 	public Map<String, Object> queryLoyTst(@RequestParam(name = "lotteryType", required = false) String lotteryType,//彩种 String
 			  @RequestParam(name = "isZh", required = false) Integer isZh,//是否追号 :0,非追号;1,追号
+			  @RequestParam(name = "zhTrasactionNum", required = false) String zhTrasactionNum,//追号编号
 			  @RequestParam(name = "state", required = false) Integer state,//0,等待派奖;1,赢;2,输;3,用户取消订单;4,系统取消订单
 			  @RequestParam(name = "terminalType", required = false) Integer terminalType,//来源   0,pc端;1,手机端
 			  @RequestParam(name = "startTime", required = true) String startTime,//时间 String
@@ -168,11 +176,18 @@ public class ReportController {
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
 	    	return ret;
 		}
+		if(!DateUtil.isValidDate(startTime)||!DateUtil.isValidDate(endTime)) {
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+	    	return ret;
+		}
 		Integer pageSize=Constants.Pagination.SUM_NUMBER.getCode();
 		ret.put("pageSize", pageSize);
 		ret.put("pageIndex", pageIndex);
 		ret.put("lotteryType", lotteryType);
 		ret.put("isZh", isZh);
+		ret.put("zhTrasactionNum", zhTrasactionNum);
 		ret.put("state", state);
 		ret.put("terminalType", terminalType);
 		ret.put("startTime", startTime);
@@ -205,6 +220,12 @@ public class ReportController {
 			  HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
 		if(StringUtils.isBlank(startTime)||StringUtils.isBlank(endTime)) {
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+	    	return ret;
+		}
+		if(!DateUtil.isValidDate(startTime)||!DateUtil.isValidDate(endTime)) {
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
@@ -315,6 +336,12 @@ public class ReportController {
 		Map<String, Object> ret = new HashMap<>();
 		Map<String, Object> map = new HashMap<>();
 		if(StringUtils.isBlank(startTime)||StringUtils.isBlank(endTime)||StringUtils.isBlank(type)) {
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+	    	return ret;
+		}
+		if(!DateUtil.isValidDate(startTime)||!DateUtil.isValidDate(endTime)) {
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
@@ -530,6 +557,12 @@ public class ReportController {
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
 	    	return ret;
 		}
+		if(!DateUtil.isValidYmdDate(startTime)||!DateUtil.isValidYmdDate(endTime)) {
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+	    	return ret;
+		}
 		Integer pageSize=Constants.Pagination.SUM_NUMBER.getCode();
 		ret.put("pageSize", pageSize);
 		ret.put("pageIndex", pageIndex);
@@ -608,6 +641,12 @@ public class ReportController {
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
 	    	return ret;
 		}
+		if(!DateUtil.isValidYmdDate(startTime)||!DateUtil.isValidYmdDate(endTime)) {
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+	    	return ret;
+		}
 		Integer pageSize=Constants.Pagination.SUM_NUMBER.getCode();
 		ret.put("pageSize", pageSize);
 		ret.put("pageIndex", pageIndex);
@@ -637,6 +676,12 @@ public class ReportController {
 			  HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
 		if(StringUtils.isBlank(startTime)||StringUtils.isBlank(endTime)||StringUtils.isBlank(userName)) {
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+	    	return ret;
+		}
+		if(!DateUtil.isValidYmdDate(startTime)||!DateUtil.isValidYmdDate(endTime)) {
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
@@ -685,6 +730,12 @@ public class ReportController {
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
 	    	return ret;
 		}
+		if(!DateUtil.isValidYmdDate(startTime)||!DateUtil.isValidYmdDate(endTime)) {
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+	    	return ret;
+		}
 		Integer pageSize=Constants.Pagination.SUM_NUMBER.getCode();
 		ret.put("pageSize", pageSize);
 		ret.put("pageIndex", pageIndex);
@@ -716,6 +767,12 @@ public class ReportController {
 			HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
 		if(StringUtils.isBlank(startTime)||StringUtils.isBlank(endTime)||StringUtils.isBlank(codeName)) {
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+	    	return ret;
+		}
+		if(!DateUtil.isValidYmdDate(startTime)||!DateUtil.isValidYmdDate(endTime)) {
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
@@ -758,6 +815,12 @@ public class ReportController {
 			HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
 		if(StringUtils.isBlank(startTime)||StringUtils.isBlank(endTime)||StringUtils.isBlank(codeName)||StringUtils.isBlank(userName)) {
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+	    	return ret;
+		}
+		if(!DateUtil.isValidYmdDate(startTime)||!DateUtil.isValidYmdDate(endTime)) {
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
@@ -806,6 +869,12 @@ public class ReportController {
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
 	    	return ret;
 		}
+		if(!DateUtil.isValidYmdDate(startTime)||!DateUtil.isValidYmdDate(endTime)) {
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+	    	return ret;
+		}
 		ret.put("codeName", codeName);
 		ret.put("startTime", startTime);
 		ret.put("endTime", endTime);
@@ -837,6 +906,12 @@ public class ReportController {
 			HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
 		if(StringUtils.isBlank(startTime)||StringUtils.isBlank(endTime)) {
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+	    	return ret;
+		}
+		if(!DateUtil.isValidYmdDate(startTime)||!DateUtil.isValidYmdDate(endTime)) {
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
@@ -881,6 +956,18 @@ public class ReportController {
 			@RequestParam(name = "endTime", required = true) String endTime,
 			  HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
+		if(StringUtils.isBlank(startTime)||StringUtils.isBlank(endTime)) {
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+	    	return ret;
+		}
+		if(!DateUtil.isValidDate(startTime)||!DateUtil.isValidDate(endTime)) {
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+	    	return ret;
+		}
 		try {
 			ret= flowDetailService.queryAgentTransfer(agentId,startTime,endTime);
 			logger.debug(ret+"------------------------------queryUserAccountDetails--------------------------------------");

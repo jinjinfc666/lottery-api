@@ -43,4 +43,12 @@ public class SignupRecServiceImpl implements SignupRecService
 		map.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		return map;
 	}
+	@Override
+	public List<SignupRec> queryNowMonthRecord(Integer userId) {
+		List<SignupRec> list=signupRecDao.queryNowMonthRecord(userId);
+		if(list!=null&&list.size()>0) {
+			return list;
+		}
+		return null;
+	}
 }

@@ -139,6 +139,14 @@ public class DepositController {
 		ret.put("typeClass", typeClass);
 		ret.put("isTp", isTp);
 		ret.put("platId", codeName);
+		List<PayType> list=payTypeService.queryByName(name);
+		if(list!=null&&list.size()>0) {
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_PAYTYPE_ALREADY_EXISTS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_PAYTYPE_ALREADY_EXISTS.getErrorMes());
+			return ret;
+		}
 		try {
 			Map<String,Object> map=payTypeService.addPayType(ret);
 			int status=(int) map.get(Message.KEY_STATUS);	
@@ -157,8 +165,8 @@ public class DepositController {
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			return ret;
 		}
-		return ret;
 	}
 	//修改
 	@RequestMapping(value={"/updatePayType"}, method={RequestMethod.PUT}, produces={"application/json"})
@@ -474,8 +482,8 @@ public class DepositController {
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			return ret;
 		}
-		return ret;
 	}
 	//修改
 	@RequestMapping(value={"/updatePayChannel"}, method={RequestMethod.PUT}, produces={"application/json"})

@@ -106,4 +106,12 @@ public class PayTypeDaoImpl extends DefaultGenericDaoImpl<PayType> implements Pa
 	    List<PayType> list = query.list();
 	    return list;
 	}
+	@Override
+	public List<PayType> queryByName(String name) {
+		String sql="from PayType where name=:name";
+	    Query<PayType> query = getSessionFactory().getCurrentSession().createQuery(sql,PayType.class);
+	    query.setParameter("name", name);
+	    List<PayType> list = query.list();
+	    return list;
+	}
 }

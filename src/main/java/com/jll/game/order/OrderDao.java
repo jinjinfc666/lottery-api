@@ -24,4 +24,6 @@ public interface OrderDao
 	PageBean<OrderInfo> queryOrdersByPage(PageBean<OrderInfo> page);
 
 	List<OrderInfo> queryZhOrder(String transactionNum);
+	//通过id查询订单
+	List<OrderInfo> queryById(Integer id);
 }

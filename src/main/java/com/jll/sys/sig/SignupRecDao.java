@@ -14,4 +14,6 @@ public interface SignupRecDao
 	List<SignupRec> getCount(Integer userId);
 	//查询用户的签到记录
 	PageBean queryRecord(Integer userId,String startTime,String endTime,Integer pageIndex,Integer pageSize);
+	//查询当月的签到记录
+	List<SignupRec> queryNowMonthRecord(Integer userId);
 }

@@ -88,11 +88,11 @@ public class SMSServiceImpl implements SMSService
 		ret = HttpRemoteStub.synPost(uri, headers, params);
 		String jsonStr = (String)ret.get("responseBody");
 		valStatusCode = readJSON(keyStatusCode, jsonStr);
-		/*if(ret == null || ret.size() == 0 
+		if(ret == null || ret.size() == 0 
 				|| valStatusCode == null 
 				|| !VAL_STATUS_SUCESS.equals(valStatusCode)) {
 			return Integer.toString(Message.status.FAILED.getCode());
-		}*/
+		}
 		
 		logger.debug("captchaCode::::::::::::::::" + captchaCode);
 		cacheService.setCaptchaCode(captchaCode, captchaCodeExpiredTime);

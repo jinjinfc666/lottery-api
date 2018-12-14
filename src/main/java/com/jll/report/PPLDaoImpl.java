@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.support.HibernateDaoSupport;
 import org.springframework.stereotype.Repository;
 
+import com.jll.common.utils.DateUtil;
 import com.jll.entity.display.PlatformSummary;
 
 @Repository
@@ -37,8 +38,8 @@ public class PPLDaoImpl extends HibernateDaoSupport implements PPLDao {
 	    Date resultDate = ca.getTime(); // 结果  
 	    SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd");  
 	    String startTime1=sdf2.format(resultDate); 
-	    Date today = java.sql.Date.valueOf(startTime1);
-	    Date endDate1 = java.sql.Date.valueOf(endTime);
+	    Date today = DateUtil.fmtYmdToDate(startTime1);
+	    Date endDate1 = DateUtil.fmtYmdToDate(endTime);
 	    int compareToBefore=endDate1.compareTo(today);
 	    Date queryTime=today;
 	    if(compareToBefore>0||compareToBefore==0) {
@@ -101,13 +102,13 @@ public class PPLDaoImpl extends HibernateDaoSupport implements PPLDao {
 		
 		
 		Map<String,Object> map=new HashMap<String,Object>();
-		String timeSql=" where create_time >=:startTime and create_time <:endTime";
-		Date beginDate = java.sql.Date.valueOf(startTime);
-	    Date endDate = java.sql.Date.valueOf(endTime);
+		String timeSql=" where create_time >=:startTime and create_time <=:endTime";
+		Date beginDate = DateUtil.fmtYmdToDate(startTime);
+	    Date endDate = DateUtil.fmtYmdToDate(endTime);
 		map.put("startTime", beginDate);
 		map.put("endTime", endDate);
 		
-		String sqlRecharge="select sum(recharge) as recharge,sum(withdraw) as withdraw from platform_fund_summary where create_time >=:startTime and create_time <:endTime";
+		String sqlRecharge="select sum(recharge) as recharge,sum(withdraw) as withdraw from platform_fund_summary where create_time >=:startTime and create_time <=:endTime";
 		Query<?> queryRecharge = getSessionFactory().getCurrentSession().createNativeQuery(sqlRecharge);
 		queryRecharge.setParameter("startTime", beginDate,DateType.INSTANCE);
 		queryRecharge.setParameter("endTime", endDate,DateType.INSTANCE);

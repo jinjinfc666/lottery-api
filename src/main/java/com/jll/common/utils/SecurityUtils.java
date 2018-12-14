@@ -22,9 +22,6 @@ public class SecurityUtils {
 	}
 	public static boolean checkViewPermissionIsOK(List<String> auth){
 		for(String s : auth) {  
-            if(PERMISSION_ROLE_ADMIN.toUpperCase().equals(s.toUpperCase())) {  
-                return true;  
-            }  
             if(PERMISSION_ROLE_AGENT.toUpperCase().equals(s.toUpperCase())) {  
                 return true;  
             }

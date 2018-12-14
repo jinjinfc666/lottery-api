@@ -1,5 +1,6 @@
 package com.jll.sys.promo;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -15,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jll.common.constants.Constants;
+import com.jll.common.constants.Message;
+import com.jll.common.utils.DateUtil;
 import com.jll.common.utils.StringUtils;
 import com.jll.common.utils.Utils;
 import com.jll.dao.PageQueryDao;
@@ -85,7 +88,14 @@ public class PromoController {
 			@RequestParam(name = "endTime", required = true) String endTime,
 			@RequestParam(name = "pageIndex", required = true) Integer pageIndex,
 			  HttpServletRequest request) {
+		Map<String,Object> map=new HashMap<String,Object>();
 		Integer userId=null;
+		if(!DateUtil.isValidDate(startTime)||!DateUtil.isValidDate(endTime)) {
+			map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+	    	return map;
+		}
 		if(!StringUtils.isBlank(userName)) {
 			UserInfo user=userInfoService.getUserByUserName(userName);
 			userId=user.getId();

@@ -4,13 +4,20 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.alibaba.druid.util.Base64;
 import com.jll.common.cache.CacheRedisService;
+import com.jll.common.constants.Message;
 
 import javax.annotation.Resource;
 import javax.imageio.ImageIO;
@@ -21,7 +28,7 @@ import javax.servlet.http.HttpSession;
 public class RandomValidateCodeUtil{
 
 	CacheRedisService cacheRedisService;
-
+	private static Validate validate = null;  
     public static final String RANDOMCODEKEY= "RANDOMVALIDATECODEKEY";//放到session中的key
 //    private String randString = "0123456789";//随机产生只有数字的字符串 private String
     //private String randString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";//随机产生只有字母的字符串
@@ -62,7 +69,9 @@ public class RandomValidateCodeUtil{
     /**
      * 生成随机图片
      */
-    public void getRandcode(HttpServletRequest request, HttpServletResponse response) {
+    public Validate  getRandcode(HttpServletRequest request, HttpServletResponse response) {
+    	Map<String,Object> map=new HashMap<String,Object>();
+    	validate = validate==null?new Validate():validate;
         HttpSession session = request.getSession();
         // BufferedImage类是具有缓冲区的Image类,Image类是用于描述图像信息的类
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_BGR);
@@ -88,13 +97,27 @@ public class RandomValidateCodeUtil{
         logger.debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"+randomString+"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
 //        session.setAttribute(key, randomString);
         g.dispose();
+        ByteArrayOutputStream bs = null;
         try {
+        	bs = new ByteArrayOutputStream();
             // 将内存中的图片通过流动形式输出到客户端
-            ImageIO.write(image, "JPEG", response.getOutputStream());
+            ImageIO.write(image, "jpg", bs);
+        	String imgsrc = Base64.byteArrayToBase64(bs.toByteArray());
+            validate.setBase64Str(imgsrc);
         } catch (Exception e) {
             logger.error("将内存中的图片通过流动形式输出到客户端失败>>>>   ", e);
+            throw new RuntimeException(Message.Error.ERROR_LOGIN_FAILED_TO_GET_VERIFICATION_CODE.getErrorMes());
+        }finally{
+        	try {
+				bs.close();
+			} catch (IOException e) {
+				logger.error("将内存中的图片通过流动形式输出到客户端失败>>>>   ", e);
+	            throw new RuntimeException(Message.Error.ERROR_LOGIN_FAILED_TO_GET_VERIFICATION_CODE.getErrorMes());
+			}finally{
+				bs = null;
+			}
         }
-
+        return validate;
     }
 
     /**
@@ -128,5 +151,23 @@ public class RandomValidateCodeUtil{
      */
     public String getRandomString(int num) {
         return String.valueOf(randString.charAt(num));
+    }
+    public static class Validate implements Serializable{
+    	private static final long serialVersionUID = 1L;
+    	private String Base64Str;		//Base64 值
+    	private String value;			//验证码值
+    	
+    	public String getBase64Str() {
+    		return Base64Str;
+    	}
+    	public void setBase64Str(String base64Str) {
+    		Base64Str = base64Str;
+    	}
+    	public String getValue() {
+    		return value;
+    	}
+    	public void setValue(String value) {
+    		this.value = value;
+    	}
     }
 }

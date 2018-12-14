@@ -24,6 +24,7 @@ import com.jll.common.constants.Constants.SysNotifyType;
 import com.jll.common.constants.Constants.SysRuntimeArgument;
 import com.jll.common.constants.Constants;
 import com.jll.common.constants.Message;
+import com.jll.common.utils.DateUtil;
 import com.jll.common.utils.PageQuery;
 import com.jll.common.utils.StringUtils;
 import com.jll.dao.PageBean;
@@ -186,6 +187,14 @@ public class SysNotifyServiceImpl implements SysNotifyService
 //		String userName=params.get("userName");
 		String startTime=params.get("startTime");
 		String endTime=params.get("endTime");
+		if(!StringUtils.isBlank(startTime)&&!StringUtils.isBlank(endTime)) {
+			if(!DateUtil.isValidDate(startTime)||!DateUtil.isValidDate(endTime)) {
+				map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+				map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+				map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+		    	return map;
+			}
+		}
 		Integer pageIndex=Integer.parseInt(params.get("pageIndex"));
 		Integer pageSize=Constants.Pagination.SUM_NUMBER.getCode();
 //		UserInfo user=userInfoService.getUserByUserName(userName);

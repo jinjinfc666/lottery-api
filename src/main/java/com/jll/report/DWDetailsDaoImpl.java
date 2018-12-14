@@ -1,6 +1,6 @@
 package com.jll.report;
 
-import java.sql.Date;
+import java.util.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,6 +19,7 @@ import org.springframework.orm.hibernate5.support.HibernateDaoSupport;
 import org.springframework.stereotype.Repository;
 
 import com.jll.common.constants.Constants;
+import com.jll.common.utils.DateUtil;
 import com.jll.dao.DefaultGenericDaoImpl;
 import com.jll.dao.PageBean;
 import com.jll.entity.DepositApplication;
@@ -60,9 +61,9 @@ public class DWDetailsDaoImpl extends DefaultGenericDaoImpl<DepositApplication> 
 			map.put("amountEnd", amountEnd);
 		}
 		if(!StringUtils.isBlank(startTime)&&!StringUtils.isBlank(endTime)) {
-			timeSql=" and a.createTime >=:startTime and a.createTime <:endTime ";
-			Date beginDate = java.sql.Date.valueOf(startTime);
-		    Date endDate = java.sql.Date.valueOf(endTime);
+			timeSql=" and a.createTime >=:startTime and a.createTime <=:endTime ";
+			Date beginDate = DateUtil.fmtYmdHisToDate(startTime);
+		    Date endDate = DateUtil.fmtYmdHisToDate(endTime);
 			map.put("startTime", beginDate);
 			map.put("endTime", endDate);
 		}

@@ -219,5 +219,13 @@ public class PayTypeServiceImpl implements PayTypeService
 		}
 		return null;
 	}
+	@Override
+	public List<PayType> queryByName(String name) {
+		List<PayType> list=payTypeDao.queryByName(name);
+		if(list!=null&&list.size()>0){
+			return list;
+		}
+		return null;
+	}
 }
 

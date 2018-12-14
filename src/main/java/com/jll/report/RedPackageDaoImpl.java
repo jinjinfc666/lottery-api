@@ -41,7 +41,7 @@ public class RedPackageDaoImpl extends HibernateDaoSupport implements RedPackage
 			map.put("userName", userName);
 		}
 		if(!StringUtils.isBlank(startTime)&&!StringUtils.isBlank(endTime)) {
-			timeSql=" and a.createTime >=:startTime and a.createTime <:endTime";
+			timeSql=" and a.createTime >=:startTime and a.createTime <=:endTime";
 			Date beginDate = java.sql.Date.valueOf(startTime);
 		    Date endDate = java.sql.Date.valueOf(endTime);
 			map.put("startTime", beginDate);

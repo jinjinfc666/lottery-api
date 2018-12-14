@@ -1,6 +1,6 @@
 package com.jll.report;
 
-import java.sql.Date;
+import java.util.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,9 +12,11 @@ import javax.persistence.NoResultException;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.query.Query;
 import org.hibernate.type.DateType;
+import org.hibernate.type.TimestampType;
 import org.springframework.stereotype.Repository;
 
 import com.jll.common.constants.Constants;
+import com.jll.common.utils.DateUtil;
 import com.jll.dao.DefaultGenericDaoImpl;
 import com.jll.dao.PageBean;
 import com.jll.entity.UserAccountDetails;
@@ -52,9 +54,9 @@ public class FlowDetailDaoImpl extends DefaultGenericDaoImpl<UserAccountDetails>
 			map.put("operationType", list);
 		}
 		if(!StringUtils.isBlank(startTime)&&!StringUtils.isBlank(endTime)) {
-			timeSql=" and a.createTime >=:startTime and a.createTime <:endTime";
-			Date beginDate = java.sql.Date.valueOf(startTime);
-		    Date endDate = java.sql.Date.valueOf(endTime);
+			timeSql=" and a.createTime >=:startTime and a.createTime <=:endTime";
+			Date beginDate = DateUtil.fmtYmdHisToDate(startTime);
+		    Date endDate = DateUtil.fmtYmdHisToDate(endTime);
 			map.put("startTime", beginDate);
 			map.put("endTime", endDate);
 		}
@@ -73,7 +75,7 @@ public class FlowDetailDaoImpl extends DefaultGenericDaoImpl<UserAccountDetails>
             for (String string : keySet) {  
                 Object obj = map.get(string);  
             	if(obj instanceof Date){  
-                	query1.setParameter(string, (Date)obj,DateType.INSTANCE);//query.setParameter(string, (Date)obj,DateType.INSTANCE);   此方法为setDate的替代方法 
+                	query1.setParameter(string, (Date)obj,TimestampType.INSTANCE);//query.setParameter(string, (Date)obj,DateType.INSTANCE);   此方法为setDate的替代方法 
                 }else if(obj instanceof Object[]){  
                     query1.setParameterList(string, (Object[])obj);
                 }else{  
@@ -95,12 +97,12 @@ public class FlowDetailDaoImpl extends DefaultGenericDaoImpl<UserAccountDetails>
 		List<?> list=queryAgentId(agentId);
 		List<?> listData=null;
 		if(list!=null&&list.size()>0) {
-			String sql="from UserAccountDetails a,UserInfo b where a.userId=b.id and a.operationType=:operationType and a.orderId in(:listId) and a.createTime>=:startTime and a.createTime<:endTime";
+			String sql="from UserAccountDetails a,UserInfo b where a.userId=b.id and a.operationType=:operationType and a.orderId in(:listId) and a.createTime>=:startTime and a.createTime<=:endTime";
 			Query<?> query=getSessionFactory().getCurrentSession().createQuery(sql);
 			query.setParameterList("listId", list);
 			query.setParameter("operationType", Constants.AccOperationType.TRANSFER.getCode());
-		    Date beginDate = java.sql.Date.valueOf(startTime);
-		    Date endDate = java.sql.Date.valueOf(endTime);
+		    Date beginDate = DateUtil.fmtYmdHisToDate(startTime);
+		    Date endDate = DateUtil.fmtYmdHisToDate(endTime);
 		    query.setParameter("startTime", beginDate,DateType.INSTANCE);
 		    query.setParameter("endTime", endDate,DateType.INSTANCE);
 		    listData=query.list();

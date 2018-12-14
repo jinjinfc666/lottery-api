@@ -55,6 +55,14 @@ public class DateUtil extends DateUtils {
 		}
 		return null;
 	}
+	public static Date fmtYmdToDate(String dateStr) {
+		try {
+			return  fmtYmd.parse(dateStr);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 	
 	public static String fmtYmdHisEmp(Date date) {
 		String str = null;
@@ -107,12 +115,31 @@ public class DateUtil extends DateUtils {
 		return milliSeconds;
 	}
 	public static boolean isValidDate(String str){
-		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); //这里的时间格式根据自己需求更改（注意：格式区分大小写、格式区分大小写、格式区分大小写） 
+//		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); //这里的时间格式根据自己需求更改（注意：格式区分大小写、格式区分大小写、格式区分大小写） 
+//		DateFormat formatter1 = new SimpleDateFormat("yyyy-M-d HH:mm:ss"); //这里的时间格式根据自己需求更改（注意：格式区分大小写、格式区分大小写、格式区分大小写） 
 		try{ 
-			Date date = (Date)formatter.parse(str); 
-			return str.equals(formatter.format(date)); 
+//			Date date = (Date)formatter.parse(str); 
+			fmtYmdHis.parse(str);
+//			aa=str.equals(formatter.format(date)); 
+			return true;
 		}catch(Exception e){ 
-			return false; 
+			return false;
+		} 
+//		if(!aa) {
+//			try{ 
+//				Date date = (Date)formatter1.parse(str); 
+//				aa=str.equals(formatter1.format(date)); 
+//			}catch(Exception e){ 
+//				aa=false;
+//			} 
+//		}
+	}
+	public static boolean isValidYmdDate(String str){
+		try{ 
+			fmtYmd.parse(str);
+			return true;
+		}catch(Exception e){ 
+			return false;
 		} 
 	}
 }

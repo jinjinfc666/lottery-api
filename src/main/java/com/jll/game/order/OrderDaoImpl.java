@@ -10,11 +10,13 @@ import org.hibernate.query.Query;
 import org.springframework.stereotype.Repository;
 
 import com.alibaba.druid.util.StringUtils;
+import com.jll.common.constants.Constants;
 import com.jll.common.constants.Constants.OrderState;
 import com.jll.common.utils.Utils;
 import com.jll.dao.DefaultGenericDaoImpl;
 import com.jll.dao.PageBean;
 import com.jll.entity.OrderInfo;
+import com.jll.entity.UserBankCard;
 
 @Repository
 public class OrderDaoImpl extends DefaultGenericDaoImpl<OrderInfo> implements OrderDao
@@ -123,6 +125,17 @@ public class OrderDaoImpl extends DefaultGenericDaoImpl<OrderInfo> implements Or
 		params.add(transactionNum);		
 		
 		return this.query(sql, params, OrderInfo.class);
+	}
+
+	@Override
+	public List<OrderInfo> queryById(Integer id) {
+		Integer delayPayoutFlag=Constants.OrderDelayState.DEPLAY.getCode();
+		String sql="from OrderInfo where id=:id and delayPayoutFlag=:delayPayoutFlag";
+		Query<OrderInfo> query = getSessionFactory().getCurrentSession().createQuery(sql,OrderInfo.class);
+	    query.setParameter("id", id);
+	    query.setParameter("delayPayoutFlag", delayPayoutFlag);
+	    List<OrderInfo> list= query.list();
+	    return list;
 	}
 	
 }

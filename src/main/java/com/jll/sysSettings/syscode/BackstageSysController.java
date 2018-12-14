@@ -1433,7 +1433,7 @@ public class BackstageSysController {
 			Map<String,SysCode> sysCodeMaps1=new HashMap<String, SysCode>();
 			for(String key:sysCodeMaps.keySet()) {
 				SysCode sysCode=sysCodeMaps.get(key);
-				if(sysCode.getState()==1) {
+				if(sysCode.getState()==1&&sysCode.getCodeType()!=null) {
 					sysCodeMaps1.put(key, sysCode);
 				}
 			}

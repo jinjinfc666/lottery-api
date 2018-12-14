@@ -17,6 +17,7 @@ import org.springframework.stereotype.Repository;
 import com.jll.common.constants.Constants;
 import com.jll.common.constants.Message;
 import com.jll.common.constants.Constants.UserType;
+import com.jll.common.utils.DateUtil;
 import com.jll.common.utils.PageQuery;
 import com.jll.common.utils.PagenationUtil;
 import com.jll.common.utils.StringUtils;
@@ -189,11 +190,17 @@ public class SysSiteMsgDaoImpl extends DefaultGenericDaoImpl<SiteMessage> implem
 		String endTime=(String)params.get("endTime");
 		String timeSql="";
 		if(!StringUtils.isBlank(startTime)&&!StringUtils.isBlank(endTime)) {
+			if(!DateUtil.isValidDate(startTime)||!DateUtil.isValidDate(endTime)) {
+				map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+				map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+				map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+		    	return map;
+			}
 			timeSql=" and a.createTime>=:startTime and a.createTime<:endTime ";
-			Date beginDate = java.sql.Date.valueOf(startTime);
-		    Date endDate = java.sql.Date.valueOf(endTime);
-		    map.put("startTime", beginDate);
-		    map.put("endTime", endDate);
+			Date beginDate = DateUtil.fmtYmdHisToDate(startTime);
+		    Date endDate = DateUtil.fmtYmdHisToDate(endTime);
+			map.put("startTime", beginDate);
+			map.put("endTime", endDate);
 		}
 		String sql="";
 		sql="from SiteMessage a,UserInfo b where a.receiver=b.id  "+receiverSql+isReadSql+timeSql+" ORDER BY a.id DESC";

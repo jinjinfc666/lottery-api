@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.jll.common.cache.CacheRedisService;
 import com.jll.common.constants.Constants;
 import com.jll.common.constants.Message;
+import com.jll.common.utils.DateUtil;
 import com.terran4j.commons.api2doc.annotations.Api2Doc;
 import com.terran4j.commons.api2doc.annotations.ApiComment;
 
@@ -36,6 +37,12 @@ public class OperationLogController {
 			@RequestParam(name = "type", required = true) Integer type,
 			  HttpServletRequest request) {
 		Map<String, Object> ret = new HashMap<>();
+		if(!DateUtil.isValidDate(startTime)||!DateUtil.isValidDate(endTime)) {
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+	    	return ret;
+		}
 		try {
 			Integer pageSize=Constants.Pagination.SUM_NUMBER.getCode();
 			ret=sysLoService.queryOperationlog(type,userName, startTime, endTime, pageIndex, pageSize);

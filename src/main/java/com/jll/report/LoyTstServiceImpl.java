@@ -28,6 +28,7 @@ public class LoyTstServiceImpl implements LoyTstService {
 	public PageBean queryLoyTst(Map<String, Object> ret) {
 		String lotteryType=(String)ret.get("lotteryType");
 		Integer isZh=(Integer) ret.get("isZh");
+		String zhTrasactionNum=(String) ret.get("zhTrasactionNum");
 		Integer state=(Integer) ret.get("state");
 		Integer terminalType=(Integer)ret.get("terminalType");
 		String startTime=(String) ret.get("startTime");
@@ -40,6 +41,6 @@ public class LoyTstServiceImpl implements LoyTstService {
 		String codeTypeName=Constants.SysCodeTypes.LOTTERY_TYPES.getCode();
 		SysCode sysCode=cacheRedisService.getSysCode(codeTypeName,codeTypeName);
 		Integer codeTypeNameId=sysCode.getId();
-		return loyTstDao.queryLoyTst(codeTypeNameId,lotteryType,isZh,state,terminalType,startTime,endTime,issueNum,userName,orderNum,pageIndex,pageSize);
+		return loyTstDao.queryLoyTst(codeTypeNameId,lotteryType,isZh,zhTrasactionNum,state,terminalType,startTime,endTime,issueNum,userName,orderNum,pageIndex,pageSize);
 	}
 }

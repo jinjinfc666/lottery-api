@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.springframework.stereotype.Repository;
 
+import com.jll.common.utils.DateUtil;
 import com.jll.dao.DefaultGenericDaoImpl;
 import com.jll.dao.PageBean;
 import com.jll.entity.PromoClaim;
@@ -21,8 +22,8 @@ public class PromoDaoImpl extends DefaultGenericDaoImpl<PromoClaim> implements P
 			userIdSql="and  a.userId=:userId";
 			map.put("userId", userId);
 		}
-		Date beginDate = java.sql.Date.valueOf(startTime);
-	    Date endDate = java.sql.Date.valueOf(endTime);
+		Date beginDate = DateUtil.fmtYmdHisToDate(startTime);
+	    Date endDate = DateUtil.fmtYmdHisToDate(endTime);
 		map.put("startTime", beginDate);
 		map.put("endTime", endDate);
 		String sql="";
