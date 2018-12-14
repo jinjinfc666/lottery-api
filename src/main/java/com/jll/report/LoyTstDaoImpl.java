@@ -1,6 +1,6 @@
 package com.jll.report;
 
-import java.sql.Date;
+import java.util.Date;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -23,6 +23,7 @@ import org.springframework.orm.hibernate5.support.HibernateDaoSupport;
 import org.springframework.stereotype.Repository;
 
 import com.jll.common.constants.Constants;
+import com.jll.common.utils.DateUtil;
 import com.jll.dao.DefaultGenericDaoImpl;
 import com.jll.dao.PageBean;
 import com.jll.entity.OrderInfo;
@@ -36,9 +37,10 @@ import com.jll.entity.UserAccountDetails;
 public class LoyTstDaoImpl extends DefaultGenericDaoImpl<OrderInfo> implements LoyTstDao {
 	private Logger logger = Logger.getLogger(LoyTstDaoImpl.class);
 	@Override
-	public PageBean queryLoyTst(Integer codeTypeNameId,String lotteryType,Integer isZh,Integer state,Integer terminalType,String startTime,String endTime,String issueNum,String userName,String orderNum,Integer pageIndex,Integer pageSize) {
+	public PageBean queryLoyTst(Integer codeTypeNameId,String lotteryType,Integer isZh,String zhTrasactionNum,Integer state,Integer terminalType,String startTime,String endTime,String issueNum,String userName,String orderNum,Integer pageIndex,Integer pageSize) {
 		String lotteryTypeSql="";
 		String isZhSql="";
+		String zhTrasactionNumSql="";
 		String stateSql="";
 		String terminalTypeSql="";
 		String timeSql="";
@@ -54,6 +56,10 @@ public class LoyTstDaoImpl extends DefaultGenericDaoImpl<OrderInfo> implements L
 			isZhSql=" and a.isZh=:isZh";
 			map.put("isZh", isZh);
 		}
+		if(!StringUtils.isBlank(zhTrasactionNum)) {
+			zhTrasactionNumSql=" and a.zhTrasactionNum=:zhTrasactionNum ";
+			map.put("zhTrasactionNum", zhTrasactionNum);
+		}
 		if(state!=null) {
 			stateSql=" and a.state=:state";
 			map.put("state", state);
@@ -63,9 +69,9 @@ public class LoyTstDaoImpl extends DefaultGenericDaoImpl<OrderInfo> implements L
 			map.put("terminalType", terminalType);
 		}
 		if(!StringUtils.isBlank(startTime)&&!StringUtils.isBlank(endTime)) {
-			timeSql=" and a.createTime >=:startTime and a.createTime <:endTime";
-			Date beginDate = java.sql.Date.valueOf(startTime);
-		    Date endDate = java.sql.Date.valueOf(endTime);
+			timeSql=" and a.createTime >=:startTime and a.createTime <=:endTime";
+			Date beginDate = DateUtil.fmtYmdHisToDate(startTime);
+		    Date endDate = DateUtil.fmtYmdHisToDate(endTime);
 			map.put("startTime", beginDate);
 			map.put("endTime", endDate);
 		}
@@ -83,7 +89,7 @@ public class LoyTstDaoImpl extends DefaultGenericDaoImpl<OrderInfo> implements L
 		}
 		String betting=Constants.AccOperationType.BETTING.getCode();
 //		String sql="from OrderInfo a,UserInfo b,UserAccountDetails c,Issue d,SysCode e,PlayType f where a.userId=b.id and a.issueId=d.id and a.id=c.orderId and d.lotteryType=e.codeName and e.codeType=:codeTypeNameId and a.playType=f.id and c.operationType=:betting "+lotteryTypeSql+isZhSql+stateSql+terminalTypeSql+timeSql+issueNumSql+userNameSql+orderNumSql+" group by a.id order by a.id desc";
-		String sql="from OrderInfo a,UserInfo b,Issue c,SysCode d,PlayType e,UserAccount f where a.userId=b.id and a.issueId=c.id and a.playType=e.id and a.walletId=f.id and c.lotteryType=d.codeName and d.codeType=:codeTypeNameId and b.userType!=:userType "+lotteryTypeSql+isZhSql+stateSql+terminalTypeSql+timeSql+issueNumSql+userNameSql+orderNumSql+" order by a.id desc";
+		String sql="from OrderInfo a,UserInfo b,Issue c,SysCode d,PlayType e,UserAccount f where a.userId=b.id and a.issueId=c.id and a.playType=e.id and a.walletId=f.id and c.lotteryType=d.codeName and d.codeType=:codeTypeNameId and b.userType!=:userType "+lotteryTypeSql+isZhSql+zhTrasactionNumSql+stateSql+terminalTypeSql+timeSql+issueNumSql+userNameSql+orderNumSql+" order by a.id desc";
 		logger.debug(sql+"-----------------------------queryLoyTst----SQL--------------------------------");
 		map.put("codeTypeNameId", codeTypeNameId);
 		map.put("userType", Constants.UserType.DEMO_PLAYER.getCode());

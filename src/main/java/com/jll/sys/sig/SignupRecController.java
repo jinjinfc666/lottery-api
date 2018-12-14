@@ -2,6 +2,7 @@ package com.jll.sys.sig;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.jll.common.constants.Constants;
 import com.jll.common.constants.Message;
+import com.jll.common.utils.DateUtil;
 import com.jll.common.utils.StringUtils;
 import com.jll.entity.SignupRec;
 import com.jll.entity.UserAccount;
@@ -38,7 +40,7 @@ public class SignupRecController {
 	@Resource
 	UserAccountService userAccountService;
 	//通过用户名(false)或时间去查询(true)
-	@RequestMapping(value={"/sgnupRecSave"}, method={RequestMethod.POST}, produces={"application/json"})
+	@RequestMapping(value={"/sgnupRecSave"}, method={RequestMethod.GET}, produces={"application/json"})
 	public Map<String, Object> sgnupRecSave() {
 		Map<String, Object> ret = new HashMap<>();
 		try {
@@ -90,7 +92,12 @@ public class SignupRecController {
 		Map<String, Object> ret = new HashMap<>();
 		Integer pageSize_ = pageSize;
 		Integer userId = null;
-		
+		if(!DateUtil.isValidDate(startTime)||!DateUtil.isValidDate(endTime)) {
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+	    	return ret;
+		}
 		try {
 			UserInfo user=null;
 			if(sourceFlag == null || sourceFlag.intValue() == 0) {
@@ -122,6 +129,30 @@ public class SignupRecController {
 			}
 			
 			ret=signupRecService.queryRecord(userId, startTime, endTime,pageIndex, pageSize_);
+			return ret;
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			return ret;
+		}
+	}	
+	@RequestMapping(value={"/sgnupRecNowMonthRecord"}, method={RequestMethod.GET}, produces={"application/json"})
+	public Map<String, Object> sgnupRecNowMonthRecord() {
+		Map<String, Object> ret = new HashMap<>();
+		try {
+			UserInfo user=userInfoService.getCurLoginInfo();
+			if(null == user){
+				ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+				ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_NO_VALID_USER.getCode());
+				ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_NO_VALID_USER.getErrorMes());
+				return ret;
+			}
+			Integer userId=user.getId();
+			List<SignupRec> list=signupRecService.queryNowMonthRecord(userId);
+			ret.put(Message.KEY_DATA, list);
+			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 			return ret;
 		}catch(Exception e){
 			ret.clear();

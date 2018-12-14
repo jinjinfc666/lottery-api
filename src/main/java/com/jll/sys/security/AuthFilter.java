@@ -1,6 +1,7 @@
 package com.jll.sys.security;
 
 import java.io.IOException;
+import java.util.Date;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletException;
@@ -108,7 +109,13 @@ public class AuthFilter extends ClientCredentialsTokenEndpointFilter {
 				//登陆日志
 				throw new CusAuthenticationException(Message.Error.ERROR_COMMON_NO_PERMISSION.getCode());  
 			}
-			
+			if(user.getState()==Constants.UserState.LOCKING.getCode()&&user.getUnlockTime()!=null&&new Date().before(user.getUnlockTime())) {
+				throw new CusAuthenticationException(Message.Error.ERROR_USER_HAS_BEEN_LOCKED.getCode());  
+			}else if(user.getState()==Constants.UserState.LOCKING.getCode()&&user.getUnlockTime()==null){
+				throw new CusAuthenticationException(Message.Error.ERROR_USER_HAS_BEEN_LOCKED_SERVICE.getCode());
+			}else if(user.getState()==Constants.UserState.REVOKED.getCode()) {
+				throw new CusAuthenticationException(Message.Error.ERROR_USER_HAS_BEEN_DESTROY_SERVICE.getCode());
+			}
 			if(Constants.KEY_CLIENT_ID_ADMIN.equals(clientId)) {
 				Integer userType = user.getUserType();
 				if(userType == null 

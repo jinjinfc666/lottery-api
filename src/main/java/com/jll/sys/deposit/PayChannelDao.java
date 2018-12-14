@@ -24,4 +24,7 @@ public interface PayChannelDao
 	void updatePayChannelEnableMaxAmount(Integer id, Integer enableMaxAmount);
 	//通过充值方式Id查询这个充值方式下的所有充值渠道
 	List<PayChannel> queryByPayTypeIdPayChannel(Integer payTypeId);
+	//通过channelName查询
+	List<PayChannel> queryByChannelName(String channelName);
+	
 }

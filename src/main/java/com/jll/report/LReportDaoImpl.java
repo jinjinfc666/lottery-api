@@ -1,7 +1,7 @@
 package com.jll.report;
 
 import java.math.BigDecimal;
-import java.sql.Date;
+import java.util.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -17,6 +17,7 @@ import org.hibernate.type.DateType;
 import org.springframework.stereotype.Repository;
 
 import com.jll.common.constants.Constants;
+import com.jll.common.utils.DateUtil;
 import com.jll.dao.DefaultGenericDaoImpl;
 import com.jll.dao.PageBean;
 import com.jll.entity.LotteryPlReport;
@@ -49,9 +50,9 @@ public class LReportDaoImpl extends DefaultGenericDaoImpl<LotteryPlReport> imple
 			map.put("userName", Constants.UserType.AGENCY.getCode());
 		}
 		if(!StringUtils.isBlank(startTime)&&!StringUtils.isBlank(endTime)) {
-			timeSql=" create_time >=:startTime and create_time <:endTime";
-			Date beginDate = java.sql.Date.valueOf(startTime);
-		    Date endDate = java.sql.Date.valueOf(endTime);
+			timeSql=" create_time >=:startTime and create_time <=:endTime";
+			Date beginDate = DateUtil.fmtYmdToDate(startTime);
+		    Date endDate = DateUtil.fmtYmdToDate(endTime);
 			map.put("startTime", beginDate);
 			map.put("endTime", endDate);
 		}
@@ -105,9 +106,9 @@ public class LReportDaoImpl extends DefaultGenericDaoImpl<LotteryPlReport> imple
 			map.put("userName", Constants.UserType.AGENCY.getCode());
 		}
 		if(!StringUtils.isBlank(startTime)&&!StringUtils.isBlank(endTime)) {
-			timeSql=" create_time >=:startTime and create_time <:endTime";
-			Date beginDate = java.sql.Date.valueOf(startTime);
-		    Date endDate = java.sql.Date.valueOf(endTime);
+			timeSql=" create_time >=:startTime and create_time <=:endTime";
+			Date beginDate = DateUtil.fmtYmdToDate(startTime);
+		    Date endDate = DateUtil.fmtYmdToDate(endTime);
 			map.put("startTime", beginDate);
 			map.put("endTime", endDate);
 		}
@@ -170,12 +171,12 @@ public class LReportDaoImpl extends DefaultGenericDaoImpl<LotteryPlReport> imple
 	    List<LotteryPlReport> listRecord=new ArrayList<LotteryPlReport>();
 	    List<LotteryPlReport> listRecordSum=new ArrayList<LotteryPlReport>();
 	    if(userNameList!=null&&userNameList.size()>0) {
-	    	String sql2="select user_name,SUM(consumption) as consumption,SUM(cancel_amount) as cancel_amount,SUM(return_prize) as return_prize,SUM(rebate) as rebate, SUM(profit) as profit,user_type from lottery_pl_report where create_time>=:startTime and create_time<:endTime and  user_name in(:userNameList) and code_name=:codeName GROUP BY user_name,user_type";
+	    	String sql2="select user_name,SUM(consumption) as consumption,SUM(cancel_amount) as cancel_amount,SUM(return_prize) as return_prize,SUM(rebate) as rebate, SUM(profit) as profit,user_type from lottery_pl_report where create_time>=:startTime and create_time<=:endTime and  user_name in(:userNameList) and code_name=:codeName GROUP BY user_name,user_type";
 		    Query<?> query2=getSessionFactory().getCurrentSession().createNativeQuery(sql2);
 		    query2.setParameterList("userNameList", userNameList);
 		    query2.setParameter("codeName",codeName);
-		    Date beginDate = java.sql.Date.valueOf(startTime);
-		    Date endDate = java.sql.Date.valueOf(endTime);
+		    Date beginDate = DateUtil.fmtYmdToDate(startTime);
+		    Date endDate = DateUtil.fmtYmdToDate(endTime);
 		    query2.setParameter("startTime", beginDate,DateType.INSTANCE);
 		    query2.setParameter("endTime", endDate,DateType.INSTANCE);
 	    	List<?> LReportList=null;
@@ -199,7 +200,7 @@ public class LReportDaoImpl extends DefaultGenericDaoImpl<LotteryPlReport> imple
 			    listRecord.add(l);
 			}
 			
-			String sqlsum="select SUM(consumption) as consumption,SUM(cancel_amount) as cancel_amount,SUM(return_prize) as return_prize,SUM(rebate) as rebate, SUM(profit) as profit from lottery_pl_report where create_time>=:startTime and create_time<:endTime and  user_name in(:userNameList) and code_name=:codeName";
+			String sqlsum="select SUM(consumption) as consumption,SUM(cancel_amount) as cancel_amount,SUM(return_prize) as return_prize,SUM(rebate) as rebate, SUM(profit) as profit from lottery_pl_report where create_time>=:startTime and create_time<=:endTime and  user_name in(:userNameList) and code_name=:codeName";
 			Query<?> querysum=getSessionFactory().getCurrentSession().createNativeQuery(sqlsum);
 			querysum.setParameterList("userNameList", userNameList);
 			querysum.setParameter("codeName",codeName);

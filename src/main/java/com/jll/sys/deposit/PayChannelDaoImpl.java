@@ -93,4 +93,13 @@ public class PayChannelDaoImpl extends DefaultGenericDaoImpl<PayChannel> impleme
 	    List<PayChannel> list = query.list();
 		return list;
 	}
+	//通过channelName查询
+	@Override
+	public List<PayChannel> queryByChannelName(String channelName) {
+		String sql = "from PayChannel where channelName=:channelName";
+	    Query<PayChannel> query = getSessionFactory().getCurrentSession().createQuery(sql,PayChannel.class);
+	    query.setParameter("channelName", channelName);
+	    List<PayChannel> list = query.list();
+		return list;
+	}
 }

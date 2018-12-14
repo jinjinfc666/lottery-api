@@ -1,6 +1,6 @@
 package com.jll.report;
 
-import java.sql.Date;
+import java.util.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -15,6 +15,8 @@ import org.hibernate.type.DateType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.support.HibernateDaoSupport;
 import org.springframework.stereotype.Repository;
+
+import com.jll.common.utils.DateUtil;
 
 
 
@@ -38,9 +40,9 @@ public class OrderSourceDaoImpl extends HibernateDaoSupport implements OrderSour
 			map.put("codeName", codeName);
 		}
 		if(!StringUtils.isBlank(startTime)&&!StringUtils.isBlank(endTime)) {
-			timeSql="create_time >=:startTime and create_time <:endTime";
-			Date beginDate = java.sql.Date.valueOf(startTime);
-		    Date endDate = java.sql.Date.valueOf(endTime);
+			timeSql="create_time >=:startTime and create_time <=:endTime";
+			Date beginDate = DateUtil.fmtYmdToDate(startTime);
+		    Date endDate = DateUtil.fmtYmdToDate(endTime);
 			map.put("startTime", beginDate);
 			map.put("endTime", endDate);
 		}

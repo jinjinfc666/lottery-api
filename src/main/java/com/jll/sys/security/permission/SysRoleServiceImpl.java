@@ -83,9 +83,9 @@ public class SysRoleServiceImpl implements SysRoleService
 		}
 		if(state!=null) {
 			sysRoleNew.setState(state);
-		}
-		if(state==0) {
-			sysAuthorityService.deleteByRoleId(id);
+			if(state==0) {
+				sysAuthorityService.deleteByRoleId(id);
+			}
 		}
 		sysRoleDao.saveOrUpdateSysRole(sysRoleNew);
 		map.clear();

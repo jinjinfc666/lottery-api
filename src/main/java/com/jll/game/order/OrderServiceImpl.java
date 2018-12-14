@@ -437,4 +437,13 @@ public class OrderServiceImpl implements OrderService
 	public List<OrderInfo> queryZhOrder(String transactionNum) {
 		return orderDao.queryZhOrder(transactionNum);
 	}
+
+	@Override
+	public OrderInfo queryById(Integer id) {
+		List<OrderInfo> list=orderDao.queryById(id);
+		if(list!=null&&list.size()>0) {
+			return list.get(0);
+		}
+		return null;
+	}
 }

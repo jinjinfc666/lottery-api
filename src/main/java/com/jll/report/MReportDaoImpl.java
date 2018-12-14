@@ -1,7 +1,7 @@
 package com.jll.report;
 
 import java.math.BigDecimal;
-import java.sql.Date;
+import java.util.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -21,6 +21,7 @@ import org.springframework.orm.hibernate5.support.HibernateDaoSupport;
 import org.springframework.stereotype.Repository;
 
 import com.jll.common.constants.Constants;
+import com.jll.common.utils.DateUtil;
 import com.jll.dao.DefaultGenericDaoImpl;
 import com.jll.dao.PageBean;
 import com.jll.entity.MemberPlReport;
@@ -41,9 +42,9 @@ public class MReportDaoImpl extends DefaultGenericDaoImpl<MemberPlReport> implem
 			map.put("userName", userName);
 		}
 		if(!StringUtils.isBlank(startTime)&&!StringUtils.isBlank(endTime)) {
-			timeSql=" where create_time >=:startTime and create_time <:endTime";
-			Date beginDate = java.sql.Date.valueOf(startTime);
-		    Date endDate = java.sql.Date.valueOf(endTime);
+			timeSql=" where create_time >=:startTime and create_time <=:endTime";
+			Date beginDate = DateUtil.fmtYmdToDate(startTime);
+		    Date endDate = DateUtil.fmtYmdToDate(endTime);
 			map.put("startTime", beginDate);
 			map.put("endTime", endDate);
 		}

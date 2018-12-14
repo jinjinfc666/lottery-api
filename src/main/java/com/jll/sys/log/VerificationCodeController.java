@@ -26,18 +26,27 @@ public class VerificationCodeController {
 	@Resource
 	CacheRedisService cacheRedisService;
 	//只查询当前表
-	@RequestMapping(value={"/verification-code-Img"}, method={RequestMethod.GET}, produces={"image/jpeg"})
-	public void getVerificationCodeImg(HttpServletRequest request, HttpServletResponse response) {
+	@RequestMapping(value={"/verification-code-Img"}, method={RequestMethod.GET}, produces={"application/json"})
+	public Map<String, Object> getVerificationCodeImg(HttpServletRequest request, HttpServletResponse response) {
+		RandomValidateCodeUtil.Validate v=null;
+		Map<String,Object> map=new HashMap<String,Object>();
 		try {
 //	        response.setContentType("image/jpeg");//设置相应类型,告诉浏览器输出的内容为图片
 	        response.setHeader("Pragma", "No-cache");//设置响应头信息，告诉浏览器不要缓存此内容
 	        response.setHeader("Cache-Control", "no-cache");
 	        response.setDateHeader("Expire", 0);
+//	        Validate v = RandomValidateCodeUtil.getRandomCode(); 
 	        RandomValidateCodeUtil randomValidateCode = new RandomValidateCodeUtil(cacheRedisService);
-	        randomValidateCode.getRandcode(request, response);//输出验证码图片方法
+	        v=randomValidateCode.getRandcode(request, response);//输出验证码图片方法
+	        map.put(Message.KEY_DATA, v.getBase64Str());
+	        map.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 	    } catch (Exception e) {
-	        logger.error("获取验证码失败>>>>   ", e);
+	    	map.clear();
+	    	map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+	    	map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_LOGIN_FAILED_TO_GET_VERIFICATION_CODE.getCode());
+	    	map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_LOGIN_FAILED_TO_GET_VERIFICATION_CODE.getErrorMes());
 	    }
+        return map;
 	}
 	@RequestMapping(value={"/query-sesionid"}, method={RequestMethod.GET}, produces={"application/json"})
 	public Map<String, Object> getSesionid(HttpServletRequest request, HttpServletResponse response) {

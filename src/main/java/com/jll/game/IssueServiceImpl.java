@@ -34,6 +34,7 @@ import com.jll.common.constants.Constants.PrizeMode;
 import com.jll.common.constants.Constants.SysCodeTypes;
 import com.jll.common.constants.Constants.UserType;
 import com.jll.common.constants.Message;
+import com.jll.common.utils.DateUtil;
 import com.jll.common.utils.Utils;
 import com.jll.dao.PageBean;
 import com.jll.dao.SupserDao;
@@ -343,8 +344,15 @@ public class IssueServiceImpl implements IssueService
 		String orderNum = Utils.toString(params.get("orderNum"));
 		
 		List<OrderInfo> orders = orderDao.getOrderInfoByPrams(curIssue.getId(), userName, orderNum,0);
-		for (OrderInfo orderInfo : orders) {
-			orderInfo.setDelayPayoutFlag(OrderDelayState.DEPLAY.getCode());
+		if(orders!=null&&orders.size()>0) {
+			for (OrderInfo orderInfo : orders) {
+				orderInfo.setDelayPayoutFlag(OrderDelayState.DEPLAY.getCode());
+			}
+		}else {
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_GAME_NO_ORDERS_TO_DELAY_THE_AWARD.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_GAME_NO_ORDERS_TO_DELAY_THE_AWARD.getErrorMes());
+			return ret;
 		}
 		
 		supserDao.updateList(orders);
@@ -385,6 +393,21 @@ public class IssueServiceImpl implements IssueService
 		Map<String, Object> ret = new HashMap<String, Object>();
 		
 		List<OrderInfo> orders = orderDao.getOrderInfoByPrams(-1, null, orderNum,-1);
+		if(orders!=null&&orders.size()>0) {
+			Integer issueId=orders.get(0).getIssueId();
+			Issue issue=issueDao.getIssueById(issueId);
+			if(issue.getRetNum()==null) {
+				ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+				ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_GAME_ORDER_NO_DRAW.getCode());
+				ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_GAME_ORDER_NO_DRAW.getErrorMes());
+				return ret;
+			}
+		}else {
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_GAME_ORDER_DOES_NOT_EXIST.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_GAME_ORDER_DOES_NOT_EXIST.getErrorMes());
+			return ret;
+		}
 		Map<String,LotteryTypeService> curSer = new HashMap<>();
 		String[] impls = lotteryTypeImpl.split(",");
 		for(String impl : impls) {
@@ -489,14 +512,8 @@ public class IssueServiceImpl implements IssueService
 	    
 	    SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  
 	    String startTime=sdf2.format(resultDate);//当前时间  时分秒
-	    Date beginDate =null;
-		Date endDate=null;
-		try {
-			beginDate = (Date) sdf2.parse(startTime);
-			endDate = (Date) sdf2.parse(endTime); 
-		}catch(ParseException  ex) {
-			
-		}
+		Date beginDate = DateUtil.fmtYmdHisToDate(startTime);
+	    Date endDate = DateUtil.fmtYmdHisToDate(endTime);
 	    List<Issue> issueList=issueDao.queryIsZhIssue(lotteryType, beginDate, endDate);
 	    map.put(Message.KEY_DATA, issueList);
 		return map;
@@ -796,6 +813,22 @@ public class IssueServiceImpl implements IssueService
 			map=issueDao.queryUnsettlement(lotteryType,codeTypeNameId,userId);
 		}
 		return map;
+	}
+	//针对单笔订单取消延迟派奖
+	@Override
+	public Map<String, Object> updateOrderDelayPayoutFlag(Integer id) {
+		Map<String, Object> ret = new HashMap<String, Object>();
+		OrderInfo orderInfo=orderInfoServ.queryById(id);
+		if(orderInfo==null) {
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_GAME_ORDER_IS_ALREADY_NON_DELAYED_AWARD.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_GAME_ORDER_IS_ALREADY_NON_DELAYED_AWARD.getErrorMes());
+			return ret;
+		}
+		orderInfo.setDelayPayoutFlag(Constants.OrderDelayState.NON_DEPLAY.getCode());
+		orderInfoServ.saveOrder(orderInfo);
+		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		return ret;
 	}
 	
 }

@@ -16,6 +16,8 @@ import com.jll.common.constants.Constants;
 import com.jll.common.constants.Message;
 import com.jll.dao.PageBean;
 import com.jll.entity.IpBlackList;
+import com.jll.entity.SysLogin;
+import com.jll.sys.log.SysLoginDao;
 
 @Service
 @Transactional
@@ -25,6 +27,9 @@ public class IpBlackListServiceImpl implements IpBlackListService
 
 	@Resource
 	IpBlackListDao iPRestrictionsDao;
+	
+	@Resource
+	SysLoginDao sysLoginDao;
 
 	@Resource
 	CacheRedisService cacheServ;
@@ -77,6 +82,15 @@ public class IpBlackListServiceImpl implements IpBlackListService
 		IpBlackList ipBlackList=this.query(id);
 		if(ipBlackList!=null) {
 			iPRestrictionsDao.deleteIpBlackList(ipBlackList);
+			String ip=ipBlackList.getIp();
+			if(ip.indexOf(',')==-1) {
+				List<SysLogin> list=sysLoginDao.queryFailLoginCount(ip);
+				if(list!=null&&list.size()>0) {
+					for(SysLogin sysLogin:list) {
+						sysLoginDao.deleteSysLogin(sysLogin);
+					}
+				}
+			}
 			map.clear();
 			map.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		}else {

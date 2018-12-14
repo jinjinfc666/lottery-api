@@ -80,4 +80,6 @@ public interface IssueService
 	
 	//未结算的注单 --------------会查询出近30个订单
 	Map<String,Object> queryUnsettlement(String lotteryType,String userName);
+	//针对单笔订单取消延迟派奖
+	Map<String,Object> updateOrderDelayPayoutFlag(Integer id);
 }

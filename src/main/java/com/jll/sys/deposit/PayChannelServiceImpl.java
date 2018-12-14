@@ -55,6 +55,14 @@ public class PayChannelServiceImpl implements PayChannelService
 			map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
 			return map;
 		}
+		List<PayChannel> list=payChannelDao.queryByChannelName(channelName);
+		if(list!=null&&list.size()>0) {
+			map.clear();
+			map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_PAYCHANNEL_ALREADY_EXISTS.getCode());
+			map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_PAYCHANNEL_ALREADY_EXISTS.getErrorMes());
+			return map;
+		}
 //		PayType payType1=payTypeService.queryById(payType);
 //		String qrUrl=payChannel.getQrUrl();
 //		String bankAcc=payChannel.getBankAcc();

@@ -118,6 +118,12 @@ public class SysOperationController{
 			  @RequestBody Map<String, String> params){
 		  return issueService.processIssueDelayePayout(issueNum,params);
 	  }
+	  //针对单笔订单取消延迟派奖
+	  @RequestMapping(value={"/issue/order/{id}/delay-payout"}, method={org.springframework.web.bind.annotation.RequestMethod.GET}, produces={"application/json"})
+	  public Map<String, Object> updateOrderDelayPayoutFlag(@PathVariable("id") Integer id){
+		  return issueService.updateOrderDelayPayoutFlag(id);
+	  }
+	  
 	  
 	  @ApiComment("order manual payout")
 	  @RequestMapping(value={"/order/{orderNum}/manual-payout"}, method={org.springframework.web.bind.annotation.RequestMethod.POST}, produces={"application/json"})

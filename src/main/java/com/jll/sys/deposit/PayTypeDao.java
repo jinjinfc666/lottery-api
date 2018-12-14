@@ -25,4 +25,6 @@ public interface PayTypeDao
 	//通过id查询某一条数据
 	List<?> queryPayTypeById(Integer id,Integer bigCodeNameId);
 	List<PayType> queryByPlatId(String platId);
+	//通过name查询
+	List<PayType> queryByName(String name);
 }

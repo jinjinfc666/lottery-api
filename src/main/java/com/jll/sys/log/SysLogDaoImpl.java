@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Repository;
 
 import com.jll.common.constants.Constants;
+import com.jll.common.utils.DateUtil;
 import com.jll.dao.DefaultGenericDaoImpl;//失败后添加登录失败次数和修改锁定时间
 import com.jll.dao.PageBean;
 import com.jll.entity.SysLog;
@@ -30,8 +31,8 @@ public class SysLogDaoImpl extends DefaultGenericDaoImpl<SysLog> implements SysL
 			userIdSql="and  a.userId=:userId";
 			map.put("userId", userId);
 		}
-		Date beginDate = java.sql.Date.valueOf(startTime);
-	    Date endDate = java.sql.Date.valueOf(endTime);
+		Date beginDate = DateUtil.fmtYmdHisToDate(startTime);
+	    Date endDate = DateUtil.fmtYmdHisToDate(endTime);
 		map.put("startTime", beginDate);
 		map.put("endTime", endDate);
 		String userTypeSql="";
