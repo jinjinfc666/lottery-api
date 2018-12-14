@@ -67,21 +67,48 @@
 		
     	
 		
-		<intercept-url pattern="/settings/queryBankCodeList" access="hasRole('ROLE_AGENT')  or hasRole('ROLE_USER')" />
-		<intercept-url pattern="/settings/**" access="hasRole('ROLE_ADMIN')" />
-		<intercept-url pattern="/ip-black-lists/**" access="hasRole('ROLE_ADMIN')" />
-		<intercept-url pattern="/settingPlayType/lotteTypes" access="hasRole('ROLE_ADMIN') or hasRole('ROLE_AGENT')  or hasRole('ROLE_USER')" />
-		<intercept-url pattern="/settingPlayType/**" access="hasRole('ROLE_ADMIN')" />
-		<intercept-url pattern="/SysUser/**" access="hasRole('ROLE_ADMIN')" />
-		<intercept-url pattern="/permission-control/**" access="hasRole('ROLE_ADMIN')" />
+		<intercept-url method="GET" pattern="/settings/queryBankCodeList" access="hasRole('ROLE_AGENT')  or hasRole('ROLE_USER')" />
+		<intercept-url method="GET" pattern="/settings/**" access="hasRole('ROLE_ADMIN')" />
+		<intercept-url method="POST" pattern="/settings/**" access="hasRole('ROLE_ADMIN')" />
+		<intercept-url method="PUT" pattern="/settings/**" access="hasRole('ROLE_ADMIN')" />
+		<intercept-url method="DELETE" pattern="/settings/**" access="hasRole('ROLE_ADMIN')" />
 		
-		<intercept-url pattern="/pay-types/QDPayType" access="hasRole('ROLE_USER') or hasRole('ROLE_CUSTOMER_SERVICE') or hasRole('ROLE_FINANCE') or hasRole('ROLE_MANAGER')" />
-		<intercept-url pattern="/pay-types/QDPayChannel" access="hasRole('ROLE_AGENT')  or hasRole('ROLE_USER')" />
-		<intercept-url pattern="/pay-types/queryAllPayType" access="hasRole('ROLE_AGENT')  or hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')" />
-		<intercept-url pattern="/pay-types/ByPayTypeIdPayChannel" access="hasRole('ROLE_AGENT')  or hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')" />
-		<intercept-url pattern="/pay-types/**" access="hasRole('ROLE_ADMIN')" />
 		
-		<intercept-url pattern="/signup/sgnupRecSave" access="hasRole('ROLE_AGENT')  or hasRole('ROLE_USER')" />
+		<intercept-url method="GET" pattern="/ip-black-lists/**" access="hasRole('ROLE_ADMIN')" />
+		<intercept-url method="POST" pattern="/ip-black-lists/**" access="hasRole('ROLE_ADMIN')" />
+		<intercept-url method="PUT" pattern="/ip-black-lists/**" access="hasRole('ROLE_ADMIN')" />
+		<intercept-url method="DELETE" pattern="/ip-black-lists/**" access="hasRole('ROLE_ADMIN')" />
+		
+		
+		<intercept-url method="GET" pattern="/settingPlayType/lotteTypes" access="hasRole('ROLE_ADMIN') or hasRole('ROLE_AGENT')  or hasRole('ROLE_USER')" />
+		<intercept-url method="GET" pattern="/settingPlayType/**" access="hasRole('ROLE_ADMIN')" />
+		<intercept-url method="POST" pattern="/settingPlayType/**" access="hasRole('ROLE_ADMIN')" />
+		<intercept-url method="PUT" pattern="/settingPlayType/**" access="hasRole('ROLE_ADMIN')" />
+		<intercept-url method="DELETE" pattern="/settingPlayType/**" access="hasRole('ROLE_ADMIN')" />
+		
+		<intercept-url method="GET" pattern="/SysUser/**" access="hasRole('ROLE_ADMIN')" />
+		<intercept-url method="POST" pattern="/SysUser/**" access="hasRole('ROLE_ADMIN')" />
+		<intercept-url method="PUT" pattern="/SysUser/**" access="hasRole('ROLE_ADMIN')" />
+		<intercept-url method="DELETE" pattern="/SysUser/**" access="hasRole('ROLE_ADMIN')" />
+		
+		
+		<intercept-url method="GET" pattern="/permission-control/**" access="hasRole('ROLE_ADMIN')" />
+		<intercept-url method="POST" pattern="/permission-control/**" access="hasRole('ROLE_ADMIN')" />
+		<intercept-url method="PUT" pattern="/permission-control/**" access="hasRole('ROLE_ADMIN')" />
+		<intercept-url method="DELETE" pattern="/permission-control/**" access="hasRole('ROLE_ADMIN')" />
+		
+		
+		<intercept-url method="GET" pattern="/pay-types/QDPayType" access="hasRole('ROLE_USER') or hasRole('ROLE_CUSTOMER_SERVICE') or hasRole('ROLE_FINANCE') or hasRole('ROLE_MANAGER')" />
+		<intercept-url method="GET" pattern="/pay-types/QDPayChannel" access="hasRole('ROLE_AGENT')  or hasRole('ROLE_USER')" />
+		<intercept-url method="GET" pattern="/pay-types/queryAllPayType" access="hasRole('ROLE_AGENT')  or hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')" />
+		<intercept-url method="GET" pattern="/pay-types/ByPayTypeIdPayChannel" access="hasRole('ROLE_AGENT')  or hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')" />
+		
+		<intercept-url method="GET" pattern="/pay-types/**" access="hasRole('ROLE_ADMIN')" />
+		<intercept-url method="POST" pattern="/pay-types/**" access="hasRole('ROLE_ADMIN')" />
+		<intercept-url method="PUT" pattern="/pay-types/**" access="hasRole('ROLE_ADMIN')" />
+		<intercept-url method="DELETE" pattern="/pay-types/**" access="hasRole('ROLE_ADMIN')" />
+		
+		<intercept-url method="POST"  pattern="/signup/sgnupRecSave" access="hasRole('ROLE_AGENT')  or hasRole('ROLE_USER')" />
 		
 		
 		<intercept-url method="POST" pattern="/users/agents" access="hasRole('ROLE_ADMIN')" />
@@ -97,14 +124,12 @@
 		<intercept-url pattern="/users/players" access="hasRole('ROLE_AGENT')" />
 		
 		
-		<intercept-url pattern="/wallet/queryByUserIdUserAccount" access="hasRole('ROLE_USER') or hasRole('ROLE_CUSTOMER_SERVICE') or hasRole('ROLE_FINANCE') or hasRole('ROLE_MANAGER')" />
-		<intercept-url pattern="/wallet/queryUserAccount" access="hasRole('ROLE_CUSTOMER_SERVICE') or hasRole('ROLE_FINANCE') or hasRole('ROLE_MANAGER')" />
-		<intercept-url pattern="/wallet/updateUserAccountState" access="hasRole('ROLE_CUSTOMER_SERVICE') or hasRole('ROLE_FINANCE') or hasRole('ROLE_MANAGER')" />
+		<intercept-url method="GET" pattern="/wallet/queryByUserIdUserAccount" access="hasRole('ROLE_USER') or hasRole('ROLE_CUSTOMER_SERVICE') or hasRole('ROLE_FINANCE') or hasRole('ROLE_MANAGER')" />
+		<intercept-url method="GET" pattern="/wallet/queryUserAccount" access="hasRole('ROLE_CUSTOMER_SERVICE') or hasRole('ROLE_FINANCE') or hasRole('ROLE_MANAGER')" />
+		<intercept-url method="GET" pattern="/wallet/updateUserAccountState" access="hasRole('ROLE_CUSTOMER_SERVICE') or hasRole('ROLE_FINANCE') or hasRole('ROLE_MANAGER')" />
 		
 		
-		
-		
-		<intercept-url pattern="/issues/getIssuesState" access="hasRole('ROLE_CUSTOMER_SERVICE') or hasRole('ROLE_MANAGER')" />
+		<intercept-url method="GET" pattern="/issues/getIssuesState" access="hasRole('ROLE_CUSTOMER_SERVICE') or hasRole('ROLE_MANAGER')" />
 		<intercept-url pattern="/sys/oper/issue/*/disbale" access="hasRole('ROLE_CUSTOMER_SERVICE') or hasRole('ROLE_MANAGER')" />
 		<intercept-url pattern="/sys/oper/issue/*/disbale" access="hasRole('ROLE_CUSTOMER_SERVICE') or hasRole('ROLE_MANAGER')" />
 		<intercept-url method="PUT" pattern="/**/issue/*/manual-draw-result" access="hasRole('ROLE_CUSTOMER_SERVICE') or hasRole('ROLE_MANAGER')" />
@@ -125,11 +150,17 @@
 		<intercept-url pattern="/payment/order/end" access="hasRole('ROLE_CUSTOMER_SERVICE') or hasRole('ROLE_MANAGER')" />
 		<intercept-url pattern="/report/DWD/UpdateDepositState" access="hasRole('ROLE_CUSTOMER_SERVICE') or hasRole('ROLE_MANAGER')" />
 		
-		<intercept-url pattern="/login-log/**" access="hasRole('ROLE_ADMIN')" />
+		<intercept-url method="GET" pattern="/login-log/**" access="hasRole('ROLE_ADMIN')" />
+		<intercept-url method="POST" pattern="/login-log/**" access="hasRole('ROLE_ADMIN')" />
+		<intercept-url method="PUT" pattern="/login-log/**" access="hasRole('ROLE_ADMIN')" />
+		<intercept-url method="DELETE" pattern="/login-log/**" access="hasRole('ROLE_ADMIN')" />
 		
+
+		<intercept-url method="GET" pattern="/**" access="hasRole('ROLE_CUSTOMER_SERVICE') or hasRole('ROLE_ADMIN') or hasRole('ROLE_FINANCE') or hasRole('ROLE_MANAGER') or hasRole('ROLE_USER') or hasRole('ROLE_AGENT') or hasRole('ROLE_RISK_MANAGEMENT')" />
+		<intercept-url method="POST" pattern="/**" access="hasRole('ROLE_CUSTOMER_SERVICE') or hasRole('ROLE_ADMIN') or hasRole('ROLE_FINANCE') or hasRole('ROLE_MANAGER') or hasRole('ROLE_USER') or hasRole('ROLE_AGENT') or hasRole('ROLE_RISK_MANAGEMENT')" />
+		<intercept-url method="PUT" pattern="/**" access="hasRole('ROLE_CUSTOMER_SERVICE') or hasRole('ROLE_ADMIN') or hasRole('ROLE_FINANCE') or hasRole('ROLE_MANAGER') or hasRole('ROLE_USER') or hasRole('ROLE_AGENT') or hasRole('ROLE_RISK_MANAGEMENT')" />
+		<intercept-url method="DELETE" pattern="/**" access="hasRole('ROLE_CUSTOMER_SERVICE') or hasRole('ROLE_ADMIN') or hasRole('ROLE_FINANCE') or hasRole('ROLE_MANAGER') or hasRole('ROLE_USER') or hasRole('ROLE_AGENT') or hasRole('ROLE_RISK_MANAGEMENT')" />
 		
-		
-		<intercept-url pattern="/**" access="hasRole('ROLE_CUSTOMER_SERVICE') or hasRole('ROLE_ADMIN') or hasRole('ROLE_FINANCE') or hasRole('ROLE_MANAGER') or hasRole('ROLE_USER') or hasRole('ROLE_AGENT')" />
 	</http>
 	
 	
