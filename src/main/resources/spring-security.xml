@@ -57,23 +57,80 @@
 		<custom-filter ref="resourceServer" before="PRE_AUTH_FILTER" />
     	<http-basic entry-point-ref="oauth2AuthenticationEntryPoint" />
     	
-    	<intercept-url method="GET" pattern="/report/agent/transfer" access="hasRole('ROLE_AGENT')" />
-    	<intercept-url method="POST" pattern="/users/players" access="hasRole('ROLE_AGENT')" />
-    	<intercept-url method="GET" pattern="/report/MReportNextTeam" access="hasRole('ROLE_AGENT')" />
-    	<intercept-url method="GET" pattern="/users/QDAgentNextAgent" access="hasRole('ROLE_AGENT')" />
-    	<intercept-url pattern="/users/attrs/user-name/**" access="hasRole('ROLE_USER')" />
-    	<intercept-url pattern="/*/bet/zh/*/wallet/*" access="hasRole('ROLE_USER')" />
-		<intercept-url pattern="/*/betting-issue" access="hasRole('ROLE_USER')" />
-		<intercept-url method="POST" pattern="/users/players" access="hasRole('ROLE_AGENT')" />
-		<intercept-url method="POST" pattern="/users/agents" access="hasRole('ROLE_ADMIN')" />
-		<intercept-url method="POST" pattern="/users/sys-users" access="hasRole('ROLE_ADMIN')" />
-		<intercept-url method="GET" pattern="/*/attrs/login-pwd/reset/sms" access="hasRole('ROLE_ANONYMOUS')" />
+    	<intercept-url method="GET" pattern="/*/attrs/login-pwd/reset/sms" access="hasRole('ROLE_ANONYMOUS')" />
 		<intercept-url method="GET" pattern="/users/user-name/by/*" access="hasRole('ROLE_ANONYMOUS')" />
 		<intercept-url method="PUT" pattern="/*/attrs/login-pwd/reset/sms" access="hasRole('ROLE_ANONYMOUS')" />
-		<intercept-url method="GET" pattern="/captcha/VerificationCodeImg" access="hasRole('ROLE_ANONYMOUS')" />
-		<intercept-url method="PUT" pattern="/**/issue/*/manual-draw-result" access="hasRole('ROLE_ADMIN')" />
-		<intercept-url method="GET" pattern="/report/userFlowDetail" access="hasRole('ROLE_CUSTOMER_SERVICE') or hasRole('ROLE_ADMIN')" />
-<!-- 		<intercept-url method="GET" pattern="/report/loyTstRecord" access="hasRole('ROLE_MANAGER','ROLE_CUSTOMER_SERVICE')" /> -->
+		<intercept-url method="GET" pattern="/captchas/verification-code-Img" access="hasRole('ROLE_ANONYMOUS')" />
+		<intercept-url method="GET" pattern="/captchas/query-sesionid" access="hasRole('ROLE_ANONYMOUS')" />
+		<intercept-url method="GET" pattern="/captchas" access="hasRole('ROLE_ANONYMOUS')" />
+		
+		
+    	
+		
+		<intercept-url pattern="/settings/queryBankCodeList" access="hasRole('ROLE_AGENT')  or hasRole('ROLE_USER')" />
+		<intercept-url pattern="/settings/**" access="hasRole('ROLE_ADMIN')" />
+		<intercept-url pattern="/ip-black-lists/**" access="hasRole('ROLE_ADMIN')" />
+		<intercept-url pattern="/settingPlayType/lotteTypes" access="hasRole('ROLE_ADMIN') or hasRole('ROLE_AGENT')  or hasRole('ROLE_USER')" />
+		<intercept-url pattern="/settingPlayType/**" access="hasRole('ROLE_ADMIN')" />
+		<intercept-url pattern="/SysUser/**" access="hasRole('ROLE_ADMIN')" />
+		<intercept-url pattern="/permission-control/**" access="hasRole('ROLE_ADMIN')" />
+		
+		<intercept-url pattern="/pay-types/QDPayType" access="hasRole('ROLE_USER') or hasRole('ROLE_CUSTOMER_SERVICE') or hasRole('ROLE_FINANCE') or hasRole('ROLE_MANAGER')" />
+		<intercept-url pattern="/pay-types/QDPayChannel" access="hasRole('ROLE_AGENT')  or hasRole('ROLE_USER')" />
+		<intercept-url pattern="/pay-types/queryAllPayType" access="hasRole('ROLE_AGENT')  or hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')" />
+		<intercept-url pattern="/pay-types/ByPayTypeIdPayChannel" access="hasRole('ROLE_AGENT')  or hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')" />
+		<intercept-url pattern="/pay-types/**" access="hasRole('ROLE_ADMIN')" />
+		
+		<intercept-url pattern="/signup/sgnupRecSave" access="hasRole('ROLE_AGENT')  or hasRole('ROLE_USER')" />
+		
+		
+		<intercept-url method="POST" pattern="/users/agents" access="hasRole('ROLE_ADMIN')" />
+		<intercept-url method="POST" pattern="/users/sys-users" access="hasRole('ROLE_ADMIN')" />
+		<intercept-url pattern="/users/QDAgentNextAgent" access="hasRole('ROLE_AGENT')" />
+		<intercept-url pattern="/users/queryAllUserInfo" access="hasRole('ROLE_CUSTOMER_SERVICE') or hasRole('ROLE_FINANCE') or hasRole('ROLE_MANAGER')" />
+		<intercept-url pattern="/users/byUIBankList" access="hasRole('ROLE_CUSTOMER_SERVICE') or hasRole('ROLE_FINANCE') or hasRole('ROLE_MANAGER')" />
+		<intercept-url pattern="/users/userAddBank" access="hasRole('ROLE_AGENT')  or hasRole('ROLE_USER')" />
+		<intercept-url pattern="/users/resetLoginPwd" access="hasRole('ROLE_CUSTOMER_SERVICE') or hasRole('ROLE_FINANCE') or hasRole('ROLE_MANAGER')" />
+		<intercept-url pattern="/users/queryAllUserAgent" access="hasRole('ROLE_MANAGER')" />
+		<intercept-url pattern="/users/queryAgentByAgent" access="hasRole('ROLE_MANAGER')" />
+		<intercept-url pattern="/users/agents/**" access="hasRole('ROLE_MANAGER')" />
+		<intercept-url pattern="/users/players" access="hasRole('ROLE_AGENT')" />
+		
+		
+		<intercept-url pattern="/wallet/queryByUserIdUserAccount" access="hasRole('ROLE_USER') or hasRole('ROLE_CUSTOMER_SERVICE') or hasRole('ROLE_FINANCE') or hasRole('ROLE_MANAGER')" />
+		<intercept-url pattern="/wallet/queryUserAccount" access="hasRole('ROLE_CUSTOMER_SERVICE') or hasRole('ROLE_FINANCE') or hasRole('ROLE_MANAGER')" />
+		<intercept-url pattern="/wallet/updateUserAccountState" access="hasRole('ROLE_CUSTOMER_SERVICE') or hasRole('ROLE_FINANCE') or hasRole('ROLE_MANAGER')" />
+		
+		
+		
+		
+		<intercept-url pattern="/issues/getIssuesState" access="hasRole('ROLE_CUSTOMER_SERVICE') or hasRole('ROLE_MANAGER')" />
+		<intercept-url pattern="/sys/oper/issue/*/disbale" access="hasRole('ROLE_CUSTOMER_SERVICE') or hasRole('ROLE_MANAGER')" />
+		<intercept-url pattern="/sys/oper/issue/*/disbale" access="hasRole('ROLE_CUSTOMER_SERVICE') or hasRole('ROLE_MANAGER')" />
+		<intercept-url method="PUT" pattern="/**/issue/*/manual-draw-result" access="hasRole('ROLE_CUSTOMER_SERVICE') or hasRole('ROLE_MANAGER')" />
+		<intercept-url pattern="/sys/oper/issue/*/payout" access="hasRole('ROLE_CUSTOMER_SERVICE') or hasRole('ROLE_MANAGER')" />
+		<intercept-url pattern="/sys/oper/issue/*/re-payout" access="hasRole('ROLE_CUSTOMER_SERVICE') or hasRole('ROLE_MANAGER')" />
+		<intercept-url pattern="/sys/oper/issue/*/re-payout" access="hasRole('ROLE_CUSTOMER_SERVICE') or hasRole('ROLE_MANAGER')" />
+		
+		<intercept-url method="GET" pattern="/report/agent/transfer" access="hasRole('ROLE_AGENT')" />
+    	<intercept-url method="GET" pattern="/report/MReportNextTeam" access="hasRole('ROLE_AGENT')" />
+		<intercept-url pattern="/report/loyTstRecord" access="hasRole('ROLE_CUSTOMER_SERVICE') or hasRole('ROLE_MANAGER') or hasRole('ROLE_USER') or hasRole('ROLE_AGENT')" />
+		<intercept-url pattern="/report/MReportNextTeam" access="hasRole('ROLE_AGENT')" />
+		<intercept-url pattern="/report/agent/transfer" access="hasRole('ROLE_AGENT')" />
+		
+		<intercept-url pattern="/sys/oper/issue/*/delay-payout" access="hasRole('ROLE_CUSTOMER_SERVICE') or hasRole('ROLE_MANAGER')" />
+		<intercept-url pattern="/sys/oper/order/*/manual-payout" access="hasRole('ROLE_CUSTOMER_SERVICE') or hasRole('ROLE_MANAGER')" />
+		<intercept-url pattern="/sys/oper/order/*/cancel" access="hasRole('ROLE_CUSTOMER_SERVICE') or hasRole('ROLE_MANAGER')" />
+		
+		<intercept-url pattern="/payment/order/end" access="hasRole('ROLE_CUSTOMER_SERVICE') or hasRole('ROLE_MANAGER')" />
+		<intercept-url pattern="/report/DWD/UpdateDepositState" access="hasRole('ROLE_CUSTOMER_SERVICE') or hasRole('ROLE_MANAGER')" />
+		
+		<intercept-url pattern="/login-log/**" access="hasRole('ROLE_ADMIN')" />
+		
+		
+		
+		<intercept-url pattern="/**" access="hasRole('ROLE_CUSTOMER_SERVICE') or hasRole('ROLE_ADMIN') or hasRole('ROLE_FINANCE') or hasRole('ROLE_MANAGER') or hasRole('ROLE_USER') or hasRole('ROLE_AGENT')" />
+		
 	</http>
 	
 	
