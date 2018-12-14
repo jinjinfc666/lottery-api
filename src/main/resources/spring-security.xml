@@ -130,7 +130,6 @@
 		
 		
 		<intercept-url pattern="/**" access="hasRole('ROLE_CUSTOMER_SERVICE') or hasRole('ROLE_ADMIN') or hasRole('ROLE_FINANCE') or hasRole('ROLE_MANAGER') or hasRole('ROLE_USER') or hasRole('ROLE_AGENT')" />
-		
 	</http>
 	
 	
