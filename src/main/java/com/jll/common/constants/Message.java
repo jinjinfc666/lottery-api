@@ -103,6 +103,7 @@ public class Message {
 		ERROR_USER_HAS_BEEN_LOCKED_SERVICE("010049","Your account has been locked, please contact customer service! ! !"),
 		ERROR_USER_HAS_BEEN_DESTROY_SERVICE("010050","please contact customer service! ! !"),
 		ERROR_USER_FAILED_TO_GET_VERIFICATION_CODE("010051","Failed to get verification code, please re-acquire! ! !"),
+		ERROR_USER_BANK_CARD_REAL_NAME("010052","Please fill in your real name before you can add a bank card.! ! !"),
 		
 		/**************third party*************************/
 		ERROR_TP_INVALID_SMS("020001", "Invalid SMS!!"),
