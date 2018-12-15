@@ -372,11 +372,13 @@ public class OrderServiceImpl implements OrderService
 					return Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode();
 				}
 				Issue currIssue = bulletinBoard.getCurrIssue();
-				if(currIssue == null 
-						|| currIssue.getId().intValue() >= issueId.intValue()
-						|| issue.getState() != Constants.IssueState.INIT.getCode()) {
-					return Message.Error.ERROR_GAME_EXPIRED_ISSUE.getCode();
-				}	
+				if(issue.getId().intValue() != currIssue.getId().intValue()) {
+					if(currIssue == null 
+							|| currIssue.getId().intValue() >= issueId.intValue()
+							|| issue.getState() != Constants.IssueState.INIT.getCode()) {
+						return Message.Error.ERROR_GAME_EXPIRED_ISSUE.getCode();
+					}
+				}
 				Integer orderIsZh=order.getIsZh();
 				if(orderIsZh==null||orderIsZh.intValue()!=Constants.ZhState.ZH.getCode()) {
 					return Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode();
