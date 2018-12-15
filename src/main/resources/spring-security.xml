@@ -160,11 +160,11 @@
 		<intercept-url method="PUT" pattern="/login-log/**" access="hasRole('ROLE_ADMIN')" />
 		<intercept-url method="DELETE" pattern="/login-log/**" access="hasRole('ROLE_ADMIN')" />
 		
-		
-		<intercept-url method="GET" pattern="/**" access="hasRole('ROLE_CUSTOMER_SERVICE') or hasRole('ROLE_ADMIN') or hasRole('ROLE_FINANCE') or hasRole('ROLE_MANAGER') or hasRole('ROLE_USER') or hasRole('ROLE_AGENT')" />
-		<intercept-url method="POST" pattern="/**" access="hasRole('ROLE_CUSTOMER_SERVICE') or hasRole('ROLE_ADMIN') or hasRole('ROLE_FINANCE') or hasRole('ROLE_MANAGER') or hasRole('ROLE_USER') or hasRole('ROLE_AGENT')" />
-		<intercept-url method="PUT" pattern="/**" access="hasRole('ROLE_CUSTOMER_SERVICE') or hasRole('ROLE_ADMIN') or hasRole('ROLE_FINANCE') or hasRole('ROLE_MANAGER') or hasRole('ROLE_USER') or hasRole('ROLE_AGENT')" />
-		<intercept-url method="DELETE" pattern="/**" access="hasRole('ROLE_CUSTOMER_SERVICE') or hasRole('ROLE_ADMIN') or hasRole('ROLE_FINANCE') or hasRole('ROLE_MANAGER') or hasRole('ROLE_USER') or hasRole('ROLE_AGENT')" />
+
+		<intercept-url method="GET" pattern="/**" access="hasRole('ROLE_CUSTOMER_SERVICE') or hasRole('ROLE_ADMIN') or hasRole('ROLE_FINANCE') or hasRole('ROLE_MANAGER') or hasRole('ROLE_USER') or hasRole('ROLE_AGENT') or hasRole('ROLE_RISK_MANAGEMENT')" />
+		<intercept-url method="POST" pattern="/**" access="hasRole('ROLE_CUSTOMER_SERVICE') or hasRole('ROLE_ADMIN') or hasRole('ROLE_FINANCE') or hasRole('ROLE_MANAGER') or hasRole('ROLE_USER') or hasRole('ROLE_AGENT') or hasRole('ROLE_RISK_MANAGEMENT')" />
+		<intercept-url method="PUT" pattern="/**" access="hasRole('ROLE_CUSTOMER_SERVICE') or hasRole('ROLE_ADMIN') or hasRole('ROLE_FINANCE') or hasRole('ROLE_MANAGER') or hasRole('ROLE_USER') or hasRole('ROLE_AGENT') or hasRole('ROLE_RISK_MANAGEMENT')" />
+		<intercept-url method="DELETE" pattern="/**" access="hasRole('ROLE_CUSTOMER_SERVICE') or hasRole('ROLE_ADMIN') or hasRole('ROLE_FINANCE') or hasRole('ROLE_MANAGER') or hasRole('ROLE_USER') or hasRole('ROLE_AGENT') or hasRole('ROLE_RISK_MANAGEMENT')" />
 		
 	</http>
 	
