@@ -40,7 +40,7 @@ public class SignupRecController {
 	@Resource
 	UserAccountService userAccountService;
 	//通过用户名(false)或时间去查询(true)
-	@RequestMapping(value={"/sgnupRecSave"}, method={RequestMethod.GET}, produces={"application/json"})
+	@RequestMapping(value={"/sgnupRecSave"}, method={RequestMethod.POST}, produces={"application/json"})
 	public Map<String, Object> sgnupRecSave() {
 		Map<String, Object> ret = new HashMap<>();
 		try {

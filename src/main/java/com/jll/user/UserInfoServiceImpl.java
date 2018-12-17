@@ -502,21 +502,24 @@ public class UserInfoServiceImpl implements UserInfoService
 		
 		userDao.saveUser(user);
 		Integer userId=user.getId();
+		
 		if(user.getUserType()!=null) {
-			String roleName="";
-			if(user.getUserType()==0) {
-				roleName=Constants.Permission.ROLE_USER.getCode();
-			}else if(user.getUserType()==1) {
-				roleName=Constants.Permission.ROLE_AGENT.getCode();
+			if(user.getUserType().intValue()!=Constants.UserType.SYS_ADMIN.getCode()) {
+				String roleName="";
+				if(user.getUserType()==0) {
+					roleName=Constants.Permission.ROLE_USER.getCode();
+				}else if(user.getUserType()==1) {
+					roleName=Constants.Permission.ROLE_AGENT.getCode();
+				}
+				SysRole sysRole=sysRoleService.queryByRoleName(roleName);
+				if(sysRole==null) {
+					throw new RuntimeException(Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+				}
+				SysAuthority sysAuthority=new SysAuthority();
+				sysAuthority.setUserId(userId);
+				sysAuthority.setRoleId(sysRole.getId());
+				sysAuthorityDao.saveOrUpdateSysAuthority(sysAuthority);
 			}
-			SysRole sysRole=sysRoleService.queryByRoleName(roleName);
-			if(sysRole==null) {
-				throw new RuntimeException(Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
-			}
-			SysAuthority sysAuthority=new SysAuthority();
-			sysAuthority.setUserId(userId);
-			sysAuthority.setRoleId(sysRole.getId());
-			sysAuthorityDao.saveOrUpdateSysAuthority(sysAuthority);
 		}else {
 			throw new RuntimeException(Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
 		}
@@ -1514,6 +1517,18 @@ public class UserInfoServiceImpl implements UserInfoService
 		Map<String, Object> ret = new HashMap<String, Object>();
 		String userName=SecurityContextHolder.getContext().getAuthentication().getName();//当前登录的用户
 		UserInfo userInfo=userDao.getUserByUserName(userName);
+		if(userInfo==null) {
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_NO_VALID_USER.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_NO_VALID_USER.getErrorMes());
+			return ret;
+		}
+		if(userInfo.getRealName()==null||StringUtils.isBlank(userInfo.getRealName())) {
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_BANK_CARD_REAL_NAME.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_BANK_CARD_REAL_NAME.getErrorMes());
+			return ret;
+		}
 		long count=userDao.queryUserBankCount(userInfo.getId());
 		String keySysRuntimeArg = Constants.SysCodeTypes.SYS_RUNTIME_ARGUMENT.getCode();
 		String numBank = Constants.SysRuntimeArgument.NUMBER_OF_BANK_CARDS.getCode();

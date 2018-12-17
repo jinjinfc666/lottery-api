@@ -1125,13 +1125,16 @@ public class BackstageSysController {
 		try {
 			Map<String,SysCode> sysCodeMaps=cacheRedisService.getSysCode(lotteryConfigCodeName);
 			Map<Integer,SysCode> sysCodeMaps1=new HashMap<Integer, SysCode>();
-			for(String key:sysCodeMaps.keySet()) {
-				SysCode sysCode=sysCodeMaps.get(key);
-				if(sysCode.getSeq()!=null) {
-					sysCodeMaps1.put(sysCode.getSeq(), sysCode);
+			TreeMap treemap=null;
+			if(sysCodeMaps!=null&&sysCodeMaps.size()>0) {
+				for(String key:sysCodeMaps.keySet()) {
+					SysCode sysCode=sysCodeMaps.get(key);
+					if(sysCode.getSeq()!=null) {
+						sysCodeMaps1.put(sysCode.getSeq(), sysCode);
+					}
 				}
+				treemap= new TreeMap(sysCodeMaps1);
 			}
-			TreeMap treemap = new TreeMap(sysCodeMaps1);
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 			ret.put("data", treemap);
