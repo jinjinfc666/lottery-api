@@ -107,7 +107,9 @@
 		
 		<intercept-url method="GET" pattern="/users/*/attrs/login-pwd/reset/sms" access="hasRole('ROLE_ANONYMOUS')" />		
 		<intercept-url method="PUT" pattern="/users/*/attrs/login-pwd/reset/sms" access="hasRole('ROLE_ANONYMOUS')" />
+		<intercept-url method="GET" pattern="/users/*/attrs/login-pwd/pre-reset/email" access="hasRole('ROLE_ANONYMOUS')" />
 		<intercept-url method="GET" pattern="/users/user-name/by/*" access="hasRole('ROLE_ANONYMOUS')" />
+		<intercept-url method="GET" pattern="/users/*/verify/phone-apply" access="hasRole('ROLE_ANONYMOUS')" />
 		<intercept-url method="POST" pattern="/users/agents" access="hasRole('ROLE_ADMIN')" />
 		<intercept-url method="POST" pattern="/users/sys-users" access="hasRole('ROLE_ADMIN')" />
 		<intercept-url method="GET" pattern="/users/QDAgentNextAgent" access="hasRole('ROLE_AGENT')" />
@@ -124,7 +126,6 @@
 		<intercept-url method="POST" pattern="/users/players" access="hasRole('ROLE_AGENT')" />
 		<intercept-url method="POST" pattern="/users/site-msg/lists" access="hasRole('ROLE_AGENT') or hasRole('ROLE_USER') or hasRole('ROLE_CUSTOMER_SERVICE')" />
 		<intercept-url method="GET" pattern="/users/site-msg/*/history-feedback" access="hasRole('ROLE_AGENT') or hasRole('ROLE_USER') or hasRole('ROLE_CUSTOMER_SERVICE')" />
-		
 		
 		<intercept-url method="POST" pattern="/promo/lists" access="hasRole('ROLE_AGENT') or hasRole('ROLE_USER') or hasRole('ROLE_CUSTOMER_SERVICE')" />
 		
