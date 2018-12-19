@@ -110,7 +110,11 @@ public class Pk10ServiceImpl extends DefaultLottoTypeServiceImpl
 			
 		}
 		
-		issueServ.savePlan(issues);
+		try {
+			issueServ.savePlan(issues);			
+		}catch(Exception ex) {
+			
+		}
 		return issues;
 	}
 

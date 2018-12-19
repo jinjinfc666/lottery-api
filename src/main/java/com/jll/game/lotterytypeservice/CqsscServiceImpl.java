@@ -111,7 +111,12 @@ public class CqsscServiceImpl extends DefaultLottoTypeServiceImpl
 			}
 		}
 		
-		issueServ.savePlan(issues);
+		try {
+			issueServ.savePlan(issues);			
+		}catch(Exception ex) {
+			
+		}
+		
 		return issues;
 	}
 

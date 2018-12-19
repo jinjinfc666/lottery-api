@@ -1,5 +1,6 @@
 package com.jll.game;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -83,9 +84,17 @@ public class LotteryCenterServiceImpl implements LotteryCenterService
 					}
 					
 					List<Issue> issues = lotteryTypeServ.makeAPlan();
+					List<Issue> loadedIssues = new ArrayList<>();
+					
 					if(issues != null && issues.size() > 0) {
+						for(Issue issue : issues) {
+							Issue loadedIssue = issueServ.getIssueByIssueNum(issue.getLotteryType(), issue.getIssueNum());
+							if(loadedIssue != null) {
+								loadedIssues.add(loadedIssue);
+							}
+						}
 						String cacheKey = lotteryType;
-						cacheServ.setPlan(cacheKey, issues);
+						cacheServ.setPlan(cacheKey, loadedIssues);
 					}
 				}
 			}finally {

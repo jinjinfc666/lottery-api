@@ -95,7 +95,11 @@ public class Gd11In5ServiceImpl extends DefaultLottoTypeServiceImpl
 			issues.add(issue);
 		}
 		
-		issueServ.savePlan(issues);
+		try {
+			issueServ.savePlan(issues);			
+		}catch(Exception ex) {
+			
+		}
 		return issues;
 	}
 

@@ -82,10 +82,15 @@ public class MmcServiceImpl extends DefaultPrivateLottoTypeServiceImpl
 		
 		issues.add(issue);
 		cacheServ.setMMCIssueCount(currTime, issueCount + 1);
-		issueServ.savePlan(issues);
+		try {
+			issueServ.savePlan(issues);			
+		}catch(Exception ex) {
+			
+		}
 		
 		//String cacheKey = Constants.KEY_PRE_PLAN + lotteryType;
 		cacheServ.setPlan(lotteryType, issues);
+		
 		return issues;
 	}
 

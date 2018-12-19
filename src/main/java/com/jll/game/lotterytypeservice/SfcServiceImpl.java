@@ -94,7 +94,11 @@ public class SfcServiceImpl extends DefaultPrivateLottoTypeServiceImpl
 			issues.add(issue);
 		}
 		
-		issueServ.savePlan(issues);
+		try {
+			issueServ.savePlan(issues);			
+		}catch(Exception ex) {
+			
+		}
 		return issues;
 	}
 
