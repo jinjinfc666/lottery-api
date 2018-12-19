@@ -71,9 +71,9 @@ public class PlayTypeController {
 			return ret;
 		}
 	}
-	//选择:彩种
-	@RequestMapping(value={"/lotteTypes"}, method={RequestMethod.GET}, produces={"application/json"})
-	public Map<String, Object> queryLotteryTypes() {
+	//选择:彩种(后台)
+	@RequestMapping(value={"/lotteTypes/backstage"}, method={RequestMethod.GET}, produces={"application/json"})
+	public Map<String, Object> queryLotteryTypesBackstage() {
 		Map<String, Object> ret = new HashMap<>();
 		try {
 			Map<String,SysCode> types = cacheRedisService.getSysCode(SysCodeTypes.LOTTERY_TYPES.getCode());
@@ -86,6 +86,35 @@ public class PlayTypeController {
 		}
 		return ret;
 	}
+	//选择:彩种(前端)
+		@RequestMapping(value={"/lotteTypes"}, method={RequestMethod.GET}, produces={"application/json"})
+		public Map<String, Object> queryLotteryTypes() {
+			Map<String, Object> ret = new HashMap<>();
+			try {
+				Map<String,SysCode> types = cacheRedisService.getSysCode(SysCodeTypes.LOTTERY_TYPES.getCode());
+				Map<Integer,SysCode> sysCodeMaps1=new HashMap<Integer, SysCode>();
+				TreeMap treemap=null;
+				if(types!=null&&types.size()>0) {
+					for(String key:types.keySet()) {
+						SysCode sysCode=types.get(key);
+						if(sysCode.getState()==Constants.SysCodeState.VALID_STATE.getCode()) {
+							if(sysCode.getSeq()!=null) {
+								sysCodeMaps1.put(sysCode.getSeq(), sysCode);
+							}
+						}
+					}
+					treemap= new TreeMap(sysCodeMaps1);
+				}
+				ret.clear();
+				ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+				ret.put("data", treemap);
+			}catch(Exception e){
+				ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+				ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+				ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			}
+			return ret;
+		}
 	//选择:玩法
 	@RequestMapping(value={"/sysCodePlayType"}, method={RequestMethod.GET}, produces={"application/json"})
 	public Map<String, Object> queryPlayType() {

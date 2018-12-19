@@ -38,11 +38,11 @@ public class FlowDetailDaoImpl extends DefaultGenericDaoImpl<UserAccountDetails>
 			map.put("userName", userName);
 		}
 		if(amountStart!=null) {
-			amountStartSql=" and a.amount>:amount";
+			amountStartSql=" and a.amount>=:amountStart";
 			map.put("amountStart", amountStart);
 		}
 		if(amountEnd!=null) {
-			amountEndSql=" and a.amount<=:amount";
+			amountEndSql=" and a.amount<=:amountEnd";
 			map.put("amountEnd", amountEnd);
 		}
 		if(!StringUtils.isBlank(operationType)) {
@@ -69,7 +69,12 @@ public class FlowDetailDaoImpl extends DefaultGenericDaoImpl<UserAccountDetails>
 		PageBean page=new PageBean();
 		page.setPageIndex(pageIndex);
 		page.setPageSize(pageSize);
-		PageBean pageBean=queryByPagination(page,sql,map);
+		PageBean pageBean=null;
+		try {
+			pageBean=queryByPagination(page,sql,map);
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
 		if (map != null) {  
             Set<String> keySet = map.keySet();  
             for (String string : keySet) {  

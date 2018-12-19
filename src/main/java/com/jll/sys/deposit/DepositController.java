@@ -207,11 +207,25 @@ public class DepositController {
 			String payTypeName=Constants.SysCodeTypes.PAYMENT_PLATFORM.getCode();
 			Integer bigCodeNameId=sysCodeService.queryByCodeName(payTypeName);
 			List<?> lists=payTypeService.queryAllPayType(bigCodeNameId);
+			/*Map<Integer,List> sysCodeMaps1=new HashMap<Integer, List>();
+			TreeMap treemap =null;
+			if(lists!=null&&lists.size()>0) {
+				Iterator<List<?>> iter = lists.iterator();
+				while(iter.hasNext()){  //执行过程中会执行数据锁定，性能稍差，若在循环过程中要去掉某个元素只能调用iter.remove()方法。
+					List<?> list=iter.next();
+					if(list!=null&&list.size()>0) {
+						PayType payType=(PayType) list.get(0);
+						sysCodeMaps1.put(payType.getSeq(), list);
+					}
+				}
+			}
+			treemap= new TreeMap(sysCodeMaps1);*/
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 			ret.put("data", lists);
 			return ret;
 		}catch(Exception e){
+//			e.printStackTrace();
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
