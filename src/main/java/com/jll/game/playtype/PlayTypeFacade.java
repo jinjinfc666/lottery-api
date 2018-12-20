@@ -79,4 +79,12 @@ public interface PlayTypeFacade
 	 * @return
 	 */
 	String obtainSampleBetNumber();
+	
+	
+	/**
+	 * 查询单注奖金
+	 * @param params
+	 * @return
+	 */
+	Map<String, Object> querySingleBettingPrizeRange(Float prizePattern);
 }

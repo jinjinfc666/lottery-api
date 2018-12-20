@@ -458,13 +458,17 @@ public class LotteryCenterController {
 	
 	@RequestMapping(value="/{lottery-type}/play-type/{play-type}/prize-rates", method = { RequestMethod.GET }, produces=MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> queryPrizeRate(@PathVariable(name = "lottery-type", required = true) String lotteryType,
-			@PathVariable(name = "play-type", required = true) String playType,
+			@PathVariable(name = "play-type", required = true) Integer playTypeId,
 			  HttpServletRequest request){
 		Map<String, Object> resp = new HashMap<String, Object>();
 		String userName = null;
 		boolean isExisting = false;
 		UserInfo user = null;
-		Float prizeRate = null;
+		Float prizePattern = null;
+		//Integer playTypeIdInt = null;
+		String playTypeName = null;
+		PlayTypeFacade playTypeFacade = null;
+		//Map<String, Object> params = new HashMap<>();
 		
 		isExisting = cacheServ.isCodeExisting(SysCodeTypes.LOTTERY_TYPES, lotteryType);
 		if(!isExisting) {
@@ -476,10 +480,31 @@ public class LotteryCenterController {
 		
 		userName = SecurityContextHolder.getContext().getAuthentication().getName();
 		user = userServ.getUserByUserName(userName);
-		prizeRate = userServ.calPrizePattern(user, lotteryType);
+		prizePattern = userServ.calPrizePattern(user, lotteryType);
 		
+		
+		PlayType playType = playTypeServ.queryById(playTypeId);
+		if(playType == null) {
+			resp.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			resp.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			resp.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+			return resp;
+		}
+		
+		if(playType.getPtName().equals("fs")) {
+			playTypeName = playType.getClassification() + "/fs";
+		}else if(playType.getPtName().equals("ds")){
+			playTypeName = playType.getClassification() + "/ds";
+		}else {
+			playTypeName = playType.getClassification() + "/" + playType.getPtName();
+		}
+		playTypeFacade = PlayTypeFactory.getInstance().getPlayTypeFacade(playTypeName);
+		
+		
+		Map<String, Object> retPreProcess = playTypeFacade.querySingleBettingPrizeRange(prizePattern);
+				
 		resp.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-		resp.put("singleBettingPrize", prizeRate);
+		resp.put(Message.KEY_DATA, retPreProcess);
 		return resp;
 	}
 	//未结算的注单  (只给30期)前端只传彩种，默认查询state为0的数据显示给前端
