@@ -58,6 +58,8 @@ public class Constants {
 	
 	public final static String KEY_SINGLE_BETTING_PRIZE = "single_betting_prize";
 	
+	/*public final static String KEY_SINGLE_BETTING_PRIZE_NEXT = "single_betting_prize_next";*/
+	
 	public final static String KEY_CLIENT_ID_ADMIN = "lottery-admin";
 	
 	public final static String KEY_CLIENT_ID_CLIENT = "lottery-client";

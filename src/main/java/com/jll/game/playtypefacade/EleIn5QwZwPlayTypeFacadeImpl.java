@@ -552,4 +552,39 @@ public class EleIn5QwZwPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl {
 		
 		return bits;
 	}
+	
+	@Override
+	public Map<String, Object> querySingleBettingPrizeRange(Float prizePattern){
+		BigDecimal singleBettingPrize = null;
+		BigDecimal singleBettingPrizeNext = null;
+		BigDecimal winningRate = calWinningRate(6);
+		Map<String, Object> ret = new HashMap<>();
+		
+		singleBettingPrize =  calSingleBettingPrize(prizePattern, winningRate);
+		
+		/*winningRate = calWinningRate(4);
+		singleBettingPrizeNext =  calSingleBettingPrize(prizePattern, winningRate);
+		
+		winningRate = calWinningRate(5);
+		singleBettingPrizeNext =  calSingleBettingPrize(prizePattern, winningRate);*/
+		
+		winningRate = calWinningRate(3);
+		singleBettingPrizeNext =  calSingleBettingPrize(prizePattern, winningRate);
+		
+		/*winningRate = calWinningRate(7);
+		singleBettingPrizeNext =  calSingleBettingPrize(prizePattern, winningRate);
+		
+		winningRate = calWinningRate(8);
+		singleBettingPrizeNext =  calSingleBettingPrize(prizePattern, winningRate);
+		
+		winningRate = calWinningRate(9);
+		singleBettingPrizeNext =  calSingleBettingPrize(prizePattern, winningRate);*/
+		
+		ret.put(Constants.KEY_SINGLE_BETTING_PRIZE, 
+				String.valueOf(singleBettingPrize) + 
+				"---" + 
+				String.valueOf(singleBettingPrizeNext));
+		//ret.put(Constants.KEY_SINGLE_BETTING_PRIZE_NEXT, singleBettingPrizeNext);
+		return ret;
+	}
 }

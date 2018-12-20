@@ -465,4 +465,24 @@ public class ZszuxHhzxPlayTypeFacadeImpl extends DefaultPlayTypeFacadeImpl  {
 		
 		return true;
 	}
+	
+	@Override
+	public Map<String, Object> querySingleBettingPrizeRange(Float prizePattern){
+		BigDecimal singleBettingPrize = null;
+		BigDecimal singleBettingPrizeNext = null;
+		BigDecimal winningRate = calWinningRateZs();
+		Map<String, Object> ret = new HashMap<>();
+		
+		singleBettingPrize =  calSingleBettingPrize(prizePattern, winningRate);
+		
+		winningRate = calWinningRateZl();
+		singleBettingPrizeNext =  calSingleBettingPrize(prizePattern, winningRate);
+		
+		
+		ret.put(Constants.KEY_SINGLE_BETTING_PRIZE, 
+				String.valueOf(singleBettingPrizeNext) + 
+				"---" + 
+				String.valueOf(singleBettingPrize));
+		return ret;
+	}
 }

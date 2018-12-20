@@ -8,6 +8,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import com.jll.common.cache.CacheRedisService;
+import com.jll.common.constants.Constants;
 import com.jll.common.utils.MathUtil;
 import com.jll.entity.Issue;
 import com.jll.entity.OrderInfo;
@@ -94,5 +95,18 @@ public abstract class DefaultPlayTypeFacadeImpl implements PlayTypeFacade {
 	@Override
 	public String obtainSampleBetNumber(){
 		return null;
+	}
+	
+	@Override
+	public Map<String, Object> querySingleBettingPrizeRange(Float prizePattern){
+		BigDecimal singleBettingPrize = null;
+		BigDecimal winningRate = calWinningRate();
+		Map<String, Object> ret = new HashMap<>();
+		
+		singleBettingPrize =  calSingleBettingPrize(prizePattern, winningRate);
+		
+		
+		ret.put(Constants.KEY_SINGLE_BETTING_PRIZE, String.valueOf(singleBettingPrize));
+		return ret;
 	}
 }
