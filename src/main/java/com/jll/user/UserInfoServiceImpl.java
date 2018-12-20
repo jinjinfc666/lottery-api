@@ -506,9 +506,9 @@ public class UserInfoServiceImpl implements UserInfoService
 		if(user.getUserType()!=null) {
 			if(user.getUserType().intValue()!=Constants.UserType.SYS_ADMIN.getCode()) {
 				String roleName="";
-				if(user.getUserType()==0) {
+				if(user.getUserType()==Constants.UserType.PLAYER.getCode()||user.getUserType()==Constants.UserType.DEMO_PLAYER.getCode()) {
 					roleName=Constants.Permission.ROLE_USER.getCode();
-				}else if(user.getUserType()==1) {
+				}else if(user.getUserType()==Constants.UserType.AGENCY.getCode()) {
 					roleName=Constants.Permission.ROLE_AGENT.getCode();
 				}
 				SysRole sysRole=sysRoleService.queryByRoleName(roleName);
@@ -889,7 +889,11 @@ public class UserInfoServiceImpl implements UserInfoService
 		UserInfo userInfo=userDao.getUserByUserName(proxyName);
 		Integer proxyId=null;
 		if(userInfo!=null) {
-			proxyId=userInfo.getId();
+			if(userInfo.getUserType()==Constants.UserType.GENERAL_AGENCY.getCode()) {
+				proxyId=0;
+			}else {
+				proxyId=userInfo.getId();
+			}
 		}
 		Map<String,Object> userInfoList=userDao.queryAllUserInfo(id, userName, proxyId, startTime, endTime,pageIndex,pageSize);
 		return userInfoList;
@@ -1715,11 +1719,13 @@ public class UserInfoServiceImpl implements UserInfoService
 		UserAccount dbAcc = (UserAccount) supserDao.findByName(UserAccount.class, "userId", user.getId(), "accType", WalletType.MAIN_WALLET.getCode()).get(0);
 		dbAcc.setBalance(new Double(demoBal));
 		supserDao.update(dbAcc);
+		Map<String,Object> map=new HashMap<String,Object>();
+		map.put("userName", demoName);
+		map.put(Message.KEY_DEFAULT_PASSWORD, demoPwd);
+		map.put("balance", demoBal);
 		
 		ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-		ret.put(Message.KEY_DATA,demoName);
-		ret.put(Message.KEY_DEFAULT_PASSWORD,demoPwd);
-		ret.put("balance",demoBal);
+		ret.put(Message.KEY_DATA,map);
 		return ret;
 	}
 
@@ -1785,6 +1791,10 @@ public class UserInfoServiceImpl implements UserInfoService
 		boolean isOrNo=this.isOrNoUserInfo(id);
 		Map<String,Object> map=new HashMap<String,Object>();
 		if(isOrNo) {
+			UserInfo userInfo=userDao.getUserById(id);
+			if(userInfo.getUserType()==Constants.UserType.GENERAL_AGENCY.getCode()) {
+				id=0;
+			}
 			List<UserInfo> list=userDao.queryAgentByAgentHou(id,startTime,endTime);
 			map.clear();
 			map.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());

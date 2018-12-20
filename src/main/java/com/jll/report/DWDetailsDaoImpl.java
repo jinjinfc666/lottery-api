@@ -53,7 +53,7 @@ public class DWDetailsDaoImpl extends DefaultGenericDaoImpl<DepositApplication> 
 			map.put("orderNum", orderNum);
 		}
 		if(amountStart!=null) {
-			amountStartSql=" and a.amount>:amountStart ";
+			amountStartSql=" and a.amount>=:amountStart ";
 			map.put("amountStart", amountStart);
 		}
 		if(amountEnd!=null) {

@@ -28,7 +28,9 @@ import com.jll.common.constants.Constants;
 import com.jll.common.constants.Constants.BankCardState;
 import com.jll.common.constants.Constants.EmailValidState;
 import com.jll.common.constants.Constants.PhoneValidState;
+import com.jll.common.constants.Constants.SysCodeTypes;
 import com.jll.common.constants.Constants.UserType;
+import com.jll.common.constants.Constants.WithdrawConif;
 import com.jll.common.constants.Message;
 import com.jll.common.utils.DateUtil;
 import com.jll.common.utils.StringUtils;
@@ -901,6 +903,7 @@ public class UserController {
 	public Map<String, Object> updateUserType(@RequestBody UserInfo userInfo) {
 		Map<String, Object> ret = new HashMap<>();
 		try {
+			String realName=userInfo.getRealName();
 			Integer userId=userInfo.getId();
 			Integer state=userInfo.getState();
 			Integer userType=userInfo.getUserType();
@@ -912,22 +915,30 @@ public class UserController {
 				user.setUserType(userType);
 			}
 			
-			if(!StringUtils.isBlank(user.getEmail())
-					&& !Utils.validEmail(user.getEmail())) {
+			if(!StringUtils.isBlank(email)
+					&& !Utils.validEmail(email)) {
 				ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 				ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_INVALID_EMAIL.getCode());
 				ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_INVALID_EMAIL.getErrorMes());
 				return ret; 
 			}
 			
-			if(!StringUtils.isBlank(user.getPhoneNum())
-					&& !Utils.validPhone(user.getPhoneNum())) {
+			if(!StringUtils.isBlank(phoneNum)
+					&& !Utils.validPhone(phoneNum)) {
 				ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 				ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_INVALID_PHONE_NUMBER.getCode());
 				ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_INVALID_PHONE_NUMBER.getErrorMes());
 				return ret; 
 			}
-			
+			if(!StringUtils.isBlank(realName)&& !Utils.validRealName(realName)) {
+				ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+				ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_INVALID_REAL_NAME.getCode());
+				ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_INVALID_REAL_NAME.getErrorMes());
+				return ret; 
+			}
+			if(!StringUtils.isBlank(realName)) {
+				user.setRealName(realName);
+			}
 			if(!StringUtils.isBlank(phoneNum)&&!phoneNum.equals(user.getPhoneNum())) {
 				user.setPhoneNum(phoneNum);
 				user.setIsValidPhone(Constants.PhoneValidState.UNVERIFIED.getCode());
@@ -939,13 +950,15 @@ public class UserController {
 			if(state!=null) {
 				user.setState(state);
 			}
-			if(platRebate!=null) {
-				user.setPlatRebate(platRebate);
-				if(!userInfoService.verifRebate(user)) {
-					ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-					ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_PLATREBATE_WRONG.getCode());
-					ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_PLATREBATE_WRONG.getErrorMes());
-					return ret; 
+			if(user.getUserType()!=Constants.UserType.GENERAL_AGENCY.getCode()) {
+				if(platRebate!=null) {
+					user.setPlatRebate(platRebate);
+					if(!userInfoService.verifRebate(user)) {
+						ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+						ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_PLATREBATE_WRONG.getCode());
+						ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_PLATREBATE_WRONG.getErrorMes());
+						return ret; 
+					}
 				}
 			}
 			ret.clear();
@@ -1102,6 +1115,7 @@ public class UserController {
 		wtd.setState(Utils.toInteger(params.get("state")));
    		return userInfoService.saveUpdateUserWithdrawNotices(wtd);
    	}
+    
     
     
     /**
@@ -1473,6 +1487,20 @@ public class UserController {
 		
 		PageBean<UserInfo> users = userInfoService.querySiteMsgRec(pageIndex, pageSize, sender, params);
 		map.put(Message.KEY_DATA, users);
+		map.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		return map;
+	}
+	@RequestMapping(value = { "/getSystemParameters" }, method = {RequestMethod.GET }, produces = MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> getSystemParameters() {
+		Map<String, Object> map = new HashMap<String, Object>();
+		Map<String,Object> data=new HashMap<String,Object>();
+		long maxDayCount = Long.valueOf(cacheRedisService.getSysCode(SysCodeTypes.WITHDRAWAL_CFG.getCode(), WithdrawConif.DAY_COUNT.getCode()).getCodeVal());
+		long minWwithdrawalAmt = Long.valueOf(cacheRedisService.getSysCode(SysCodeTypes.WITHDRAWAL_CFG.getCode(), WithdrawConif.MIN_WITHDRAWAL_AMT.getCode()).getCodeVal());
+		long maxwithdrawalAmt = Long.valueOf(cacheRedisService.getSysCode(SysCodeTypes.WITHDRAWAL_CFG.getCode(), WithdrawConif.MAX_WITHDRAWAL_AMT.getCode()).getCodeVal());
+		data.put(WithdrawConif.DAY_COUNT.getCode(), maxDayCount);
+		data.put(WithdrawConif.MIN_WITHDRAWAL_AMT.getCode(), minWwithdrawalAmt);
+		data.put(WithdrawConif.MAX_WITHDRAWAL_AMT.getCode(), maxwithdrawalAmt);
+		map.put(Message.KEY_DATA, data);
 		map.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
 		return map;
 	}

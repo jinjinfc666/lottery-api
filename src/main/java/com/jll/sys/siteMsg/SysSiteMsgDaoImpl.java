@@ -71,9 +71,15 @@ public class SysSiteMsgDaoImpl extends DefaultGenericDaoImpl<SiteMessage> implem
 		String endTime=(String)params.get("endTime");
 		String timeSql="";
 		if(!StringUtils.isBlank(startTime)&&!StringUtils.isBlank(endTime)) {
+			if(!DateUtil.isValidDate(startTime)||!DateUtil.isValidDate(endTime)) {
+				map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+				map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+				map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+		    	return map;
+			}
 			timeSql=" and a.createTime>=:startTime and a.createTime<:endTime ";
-			Date beginDate = java.sql.Date.valueOf(startTime);
-		    Date endDate = java.sql.Date.valueOf(endTime);
+			Date beginDate = DateUtil.fmtYmdHisToDate(startTime);
+		    Date endDate = DateUtil.fmtYmdHisToDate(endTime);
 		    map.put("startTime", beginDate);
 		    map.put("endTime", endDate);
 		}
@@ -167,8 +173,8 @@ public class SysSiteMsgDaoImpl extends DefaultGenericDaoImpl<SiteMessage> implem
 			UserInfo user=userDao.getUserByUserName(userName);
 			if(null == user){
 				map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
-				map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
-				map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+				map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_INVALID_USER_NAME.getCode());
+				map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_INVALID_USER_NAME.getErrorMes());
 				return map;
 			}
 			userId=user.getId();

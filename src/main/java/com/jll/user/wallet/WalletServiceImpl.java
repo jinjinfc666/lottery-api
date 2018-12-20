@@ -53,6 +53,7 @@ public class WalletServiceImpl implements WalletService
 		wallet.setRewardPoints(0L);
 		wallet.setUserId(user.getId());
 		wallet.setState(Constants.WalletState.NORMAL.getCode());
+		wallet.setRemark(wt.getDesc());
 		walletDao.createWallet(wallet);
 	}
 
