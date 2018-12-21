@@ -339,7 +339,8 @@ public class UserInfoServiceImpl implements UserInfoService
 		
 		if(!isAdmin 
 				&& !StringUtils.isEmpty(dbInfo.getRealName())
-				&& !StringUtils.isEmpty(userInfo.getRealName())){
+				&& !StringUtils.isEmpty(userInfo.getRealName())
+				&& !userInfo.getRealName().equals(dbInfo.getRealName())){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
 			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_MORE_UPDATE_REAL_NAME.getCode());
 			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_MORE_UPDATE_REAL_NAME.getErrorMes());
