@@ -1451,4 +1451,266 @@ public class BackstageSysController {
 		}
 		return ret;
 	}
+	/**
+	 *提款设置的增删改查
+	 */
+	//增加提款设置小类
+	@RequestMapping(value={"/SmallWithdraw"}, method={RequestMethod.POST}, produces={"application/json"})
+	public Map<String, Object> addSmallWithdraw(@RequestParam(name = "codeName", required = true) String codeName,
+			  @RequestParam(name = "codeVal", required = true) String codeVal,
+			  @RequestParam(name = "remark", required = false) String remark,
+			  HttpServletRequest request) {
+		Map<String, Object> ret = new HashMap<>();
+		SysCode sysCode = new SysCode();
+		sysCode.setCodeName(codeName);
+		sysCode.setCodeVal(codeVal);
+		sysCode.setState(Constants.SysCodeState.VALID_STATE.getCode());
+		sysCode.setIsCodeType(0);
+		if(!StringUtils.isBlank(remark)) {
+			sysCode.setRemark(remark);
+		}
+		String bigCodeName=Constants.SysCodeTypes.WITHDRAWAL_CFG.getCode();
+		try {
+			Integer codeType=sysCodeService.queryByCodeName(bigCodeName);
+			sysCode.setCodeType(codeType);	
+			ret.clear();
+			ret=sysCodeService.addSmallSysCode(bigCodeName,sysCode);
+			//存储到缓存
+			List<SysCode> sysCode1=sysCodeService.querySmallType(bigCodeName, codeName);
+			SysCode sysCode2=sysCode1.get(0);
+			cacheRedisService.setSysCode(bigCodeName, sysCode2);
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+		}
+		return ret;
+	}
+	//查询提款设置类型下的所有值
+	@RequestMapping(value={"/queryWithdraw"}, method={RequestMethod.GET}, produces={"application/json"})
+	public Map<String, Object> queryWithdraw() {
+		Map<String, Object> ret = new HashMap<>();
+		String bigCodeName=Constants.SysCodeTypes.WITHDRAWAL_CFG.getCode();
+		try {
+			Map<String,SysCode> sysCodeMaps=cacheRedisService.getSysCode(bigCodeName);
+			Map<Integer,SysCode> sysCodeMaps1=new HashMap<Integer, SysCode>();
+			for(String key:sysCodeMaps.keySet()) {
+				SysCode sysCode=sysCodeMaps.get(key);
+				if(sysCode.getSeq()!=null) {
+					sysCodeMaps1.put(sysCode.getSeq(), sysCode);
+				}
+			}
+			TreeMap treemap = new TreeMap(sysCodeMaps1);
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+			ret.put("data", treemap);
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+		}
+		return ret;
+	}
+	//软删除提款设置类型下的某个小类
+	@RequestMapping(value={"/updateWithdrawState"}, method={RequestMethod.PUT}, produces={"application/json"})
+	public Map<String, Object> updateWithdrawState(@RequestParam(name = "id", required = true) Integer id,
+			@RequestParam(name = "codeName", required = true) String codeName,//不能修改只传值
+			  @RequestParam(name = "state", required = true) Integer state,//1为有效0为无效
+			  HttpServletRequest request) {
+		Map<String, Object> ret = new HashMap<>();
+		String bigCodeName=Constants.SysCodeTypes.WITHDRAWAL_CFG.getCode();
+		try {
+			ret.put("id", id);
+			ret.put("state", state);
+			sysCodeService.updateSmallTypeState(id, state);	
+			//存储到缓存
+			SysCode sysCode=cacheRedisService.getSysCode(bigCodeName, codeName);
+			if(sysCode!=null) {
+				sysCode.setState(state);
+				cacheRedisService.setSysCode(bigCodeName, sysCode);	
+			}
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+		}
+		return ret;
+	}
+	//修改提款设置类型下的某一条数据
+	@RequestMapping(value={"/updateWithdraw"}, method={RequestMethod.PUT}, produces={"application/json"})
+	public Map<String, Object> updateWithdraw(@RequestParam(name = "id", required = true) Integer id,
+			  @RequestParam(name = "codeName", required = true) String codeName,//不能修改只传值
+			  @RequestParam(name = "codeVal", required = false) String codeVal,
+			  @RequestParam(name = "remark", required = false) String remark,
+			  HttpServletRequest request) {
+		Map<String, Object> ret = new HashMap<>();
+		if(StringUtils.isBlank(codeVal)&&StringUtils.isBlank(remark)) {
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+	    	return ret;
+		}
+		String bigCodeName=Constants.SysCodeTypes.WITHDRAWAL_CFG.getCode();
+		ret.put("id", id);
+		ret.put("codeVal", codeVal);
+		ret.put("remark", remark);
+		try {
+			sysCodeService.updateSmallType(ret);
+			//存储到缓存
+			SysCode sysCode1=cacheRedisService.getSysCode(bigCodeName, codeName);
+			if(sysCode1!=null) {
+				if(!StringUtils.isBlank(codeVal)) {
+					sysCode1.setCodeVal(codeVal);
+				}
+				if(!StringUtils.isBlank(remark)) {
+					sysCode1.setRemark(remark);
+				}
+				cacheRedisService.setSysCode(bigCodeName, sysCode1);
+			}
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+		}
+		return ret;
+	}
+	/**
+	 *系统参数设置的增删改查
+	 */
+	//增加系统参数小类
+	@RequestMapping(value={"/SmallSystemParameters"}, method={RequestMethod.POST}, produces={"application/json"})
+	public Map<String, Object> addSmallSystemParameters(@RequestParam(name = "codeName", required = true) String codeName,
+			  @RequestParam(name = "codeVal", required = true) String codeVal,
+			  @RequestParam(name = "remark", required = false) String remark,
+			  HttpServletRequest request) {
+		Map<String, Object> ret = new HashMap<>();
+		SysCode sysCode = new SysCode();
+		sysCode.setCodeName(codeName);
+		sysCode.setCodeVal(codeVal);
+		sysCode.setState(Constants.SysCodeState.VALID_STATE.getCode());
+		sysCode.setIsCodeType(0);
+		if(!StringUtils.isBlank(remark)) {
+			sysCode.setRemark(remark);
+		}
+		String bigCodeName=Constants.SysCodeTypes.SYS_RUNTIME_ARGUMENT.getCode();
+		try {
+			Integer codeType=sysCodeService.queryByCodeName(bigCodeName);
+			sysCode.setCodeType(codeType);	
+			ret.clear();
+			ret=sysCodeService.addSmallSysCode(bigCodeName,sysCode);
+			//存储到缓存
+			List<SysCode> sysCode1=sysCodeService.querySmallType(bigCodeName, codeName);
+			SysCode sysCode2=sysCode1.get(0);
+			cacheRedisService.setSysCode(bigCodeName, sysCode2);
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+		}
+		return ret;
+	}
+	//查询系统参数设置类型下的所有值
+	@RequestMapping(value={"/querySystemParameters"}, method={RequestMethod.GET}, produces={"application/json"})
+	public Map<String, Object> querySystemParameters() {
+		Map<String, Object> ret = new HashMap<>();
+		String bigCodeName=Constants.SysCodeTypes.SYS_RUNTIME_ARGUMENT.getCode();
+		try {
+			Map<String,SysCode> sysCodeMaps=cacheRedisService.getSysCode(bigCodeName);
+			Map<Integer,SysCode> sysCodeMaps1=new HashMap<Integer, SysCode>();
+			for(String key:sysCodeMaps.keySet()) {
+				SysCode sysCode=sysCodeMaps.get(key);
+				if(sysCode.getSeq()!=null) {
+					sysCodeMaps1.put(sysCode.getSeq(), sysCode);
+				}
+			}
+			TreeMap treemap = new TreeMap(sysCodeMaps1);
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+			ret.put("data", treemap);
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+		}
+		return ret;
+	}
+	//软删除系统参数设置类型下的某个小类
+	@RequestMapping(value={"/updateSystemParametersState"}, method={RequestMethod.PUT}, produces={"application/json"})
+	public Map<String, Object> updateSystemParametersState(@RequestParam(name = "id", required = true) Integer id,
+			@RequestParam(name = "codeName", required = true) String codeName,//不能修改只传值
+			  @RequestParam(name = "state", required = true) Integer state,//1为有效0为无效
+			  HttpServletRequest request) {
+		Map<String, Object> ret = new HashMap<>();
+		String bigCodeName=Constants.SysCodeTypes.SYS_RUNTIME_ARGUMENT.getCode();
+		try {
+			ret.put("id", id);
+			ret.put("state", state);
+			sysCodeService.updateSmallTypeState(id, state);	
+			//存储到缓存
+			SysCode sysCode=cacheRedisService.getSysCode(bigCodeName, codeName);
+			if(sysCode!=null) {
+				sysCode.setState(state);
+				cacheRedisService.setSysCode(bigCodeName, sysCode);	
+			}
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+		}
+		return ret;
+	}
+	//修改系统参数设置类型下的某一条数据
+	@RequestMapping(value={"/updateSystemParameters"}, method={RequestMethod.PUT}, produces={"application/json"})
+	public Map<String, Object> updateSystemParameters(@RequestParam(name = "id", required = true) Integer id,
+			  @RequestParam(name = "codeName", required = true) String codeName,//不能修改只传值
+			  @RequestParam(name = "codeVal", required = false) String codeVal,
+			  @RequestParam(name = "remark", required = false) String remark,
+			  HttpServletRequest request) {
+		Map<String, Object> ret = new HashMap<>();
+		if(StringUtils.isBlank(codeVal)&&StringUtils.isBlank(remark)) {
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_ERROR_PARAMS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_ERROR_PARAMS.getErrorMes());
+	    	return ret;
+		}
+		String bigCodeName=Constants.SysCodeTypes.SYS_RUNTIME_ARGUMENT.getCode();
+		ret.put("id", id);
+		ret.put("codeVal", codeVal);
+		ret.put("remark", remark);
+		try {
+			sysCodeService.updateSmallType(ret);
+			//存储到缓存
+			SysCode sysCode1=cacheRedisService.getSysCode(bigCodeName, codeName);
+			if(sysCode1!=null) {
+				if(!StringUtils.isBlank(codeVal)) {
+					sysCode1.setCodeVal(codeVal);
+				}
+				if(!StringUtils.isBlank(remark)) {
+					sysCode1.setRemark(remark);
+				}
+				cacheRedisService.setSysCode(bigCodeName, sysCode1);
+			}
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+		}
+		return ret;
+	}
 }

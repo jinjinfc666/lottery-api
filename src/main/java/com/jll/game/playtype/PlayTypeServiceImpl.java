@@ -193,7 +193,7 @@ public class PlayTypeServiceImpl implements PlayTypeService
 //					playType=list.get(0);
 					playType.setSeq(a+1);
 					playTypeDao.updatePlayTypeSeq(playType);
-					playTypeCacheLists=cacheRedisService.getPlayType(cacheCodeName);
+					/*playTypeCacheLists=cacheRedisService.getPlayType(cacheCodeName);
 					if(playTypeCacheLists!=null&&playTypeCacheLists.size()>0) {
 						Integer id1=null;
 						for(int i=0; i<playTypeCacheLists.size();i++)    {   
@@ -205,7 +205,9 @@ public class PlayTypeServiceImpl implements PlayTypeService
 							}
 						 }
 						cacheRedisService.setPlayType(cacheCodeName, playTypeCacheLists);
-					}
+					}*/
+					List<PlayType> playTypes=playTypeDao.queryByLotteryType(cacheCodeName);
+					cacheRedisService.setPlayType(cacheCodeName, playTypes);
 				}
 			}
 			map.clear();

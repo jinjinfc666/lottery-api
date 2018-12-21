@@ -98,6 +98,12 @@ public class PromoController {
 		}
 		if(!StringUtils.isBlank(userName)) {
 			UserInfo user=userInfoService.getUserByUserName(userName);
+			if(user==null) {
+				map.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+				map.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_USER_INVALID_USER_NAME.getCode());
+				map.put(Message.KEY_ERROR_MES, Message.Error.ERROR_USER_INVALID_USER_NAME.getErrorMes());
+				return map;
+			}
 			userId=user.getId();
 		}
 		Integer pageSize=Constants.Pagination.SUM_NUMBER.getCode();

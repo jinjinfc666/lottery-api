@@ -131,17 +131,19 @@ public class AuthFilter extends ClientCredentialsTokenEndpointFilter {
 			}else {
 				throw new CusAuthenticationException(Message.Error.ERROR_COMMON_NO_PERMISSION.getCode());  
 			}
-			String recCaptcha = request.getParameter("captcha");
-			//String sessionId = request.getParameter("jsessionid");
-			String key=sessionId;
-			String saveCaptcha = cacheRedisService.getSessionIdCaptcha(key);
-			cacheRedisService.deleteSessionIdCaptcha(key);
-			if(recCaptcha == null || saveCaptcha == null)
-	            throw new CusAuthenticationException(Message.Error.ERROR_LOGIN_INVALID_CAPTCHA.getCode());  
-	        if(!saveCaptcha.equalsIgnoreCase(recCaptcha)){   
-	        	
-	            throw new CusAuthenticationException(Message.Error.ERROR_LOGIN_INVALID_CAPTCHA.getCode());  
-	        }
+			if(user.getUserType()!=Constants.UserType.DEMO_PLAYER.getCode()) {
+				String recCaptcha = request.getParameter("captcha");
+				//String sessionId = request.getParameter("jsessionid");
+				String key=sessionId;
+				String saveCaptcha = cacheRedisService.getSessionIdCaptcha(key);
+				cacheRedisService.deleteSessionIdCaptcha(key);
+				if(recCaptcha == null || saveCaptcha == null)
+		            throw new CusAuthenticationException(Message.Error.ERROR_LOGIN_INVALID_CAPTCHA.getCode());  
+		        if(!saveCaptcha.equalsIgnoreCase(recCaptcha)){   
+		        	
+		            throw new CusAuthenticationException(Message.Error.ERROR_LOGIN_INVALID_CAPTCHA.getCode());  
+		        }
+			}
 		}else if(grantType.equals("refresh_token")){
 			String refreshToken = request.getParameter("refresh_token");
 			String clientSecret = request.getParameter("client_secret");

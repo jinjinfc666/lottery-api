@@ -19,7 +19,7 @@ public class PlayTypeDaoImpl extends DefaultGenericDaoImpl<PlayType> implements 
 
 	@Override
 	public List<PlayType> queryByLotteryType(String lotteryType) {
-		String sql = "from PlayType where lotteryType=?";
+		String sql = "from PlayType where lotteryType=? order by seq";
 		List<Object> params = new ArrayList<>();
 		params.add(lotteryType);
 		
