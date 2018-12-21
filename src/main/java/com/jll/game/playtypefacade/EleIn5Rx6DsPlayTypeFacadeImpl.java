@@ -204,15 +204,26 @@ public class EleIn5Rx6DsPlayTypeFacadeImpl  extends DefaultPlayTypeFacadeImpl {
 	 */
 	@Override
 	public BigDecimal calWinningRate() {
-		BigDecimal winningRate = null;
+		/*BigDecimal winningRate = null;
 		BigDecimal winCount = new BigDecimal(1);
 		BigDecimal totalCount = null;
 		Double tempVal = Double.parseDouble(Long.toString(MathUtil.arrangement(1, 5)));
 		Double tempVal1 = Double.parseDouble(Long.toString(MathUtil.combination(1, 11)));
 		
 		tempVal = MathUtil.divide(tempVal, tempVal1, 4);
-		/*totalCount = new BigDecimal(tempVal);
-		winningRate = winCount.divide(totalCount, 4, BigDecimal.ROUND_HALF_UP);*/
+		totalCount = new BigDecimal(tempVal);
+		winningRate = winCount.divide(totalCount, 4, BigDecimal.ROUND_HALF_UP);
+		winningRate = new BigDecimal(tempVal);
+		return winningRate;*/
+		
+		BigDecimal winningRate = null;
+		Double tempVal = Double.parseDouble(Long.toString(MathUtil.combination(5, 5)));
+		Double tempVal1 = Double.parseDouble(Long.toString(MathUtil.combination(6, 11)));
+		Double tempVal3 = Double.parseDouble(Long.toString(MathUtil.combination(1, 6)));
+		
+		//tempVal1 = MathUtil.multiply(tempVal1, tempVal2, Double.class);
+		tempVal = MathUtil.multiply(tempVal, tempVal3, Double.class);
+		tempVal = MathUtil.divide(tempVal, tempVal1, 5);
 		winningRate = new BigDecimal(tempVal);
 		return winningRate;
 	}
