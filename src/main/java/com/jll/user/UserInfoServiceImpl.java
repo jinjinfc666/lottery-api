@@ -354,6 +354,7 @@ public class UserInfoServiceImpl implements UserInfoService
 		
 		if(!isAdmin 
 				&& !StringUtils.isEmpty(userInfo.getEmail())
+				&& !userInfo.getEmail().equals(dbInfo.getEmail())
 				&& (dbInfo.getIsValidEmail().intValue() 
 					== Constants.EmailValidState.VERIFIED.getCode())){
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
@@ -381,6 +382,7 @@ public class UserInfoServiceImpl implements UserInfoService
 			return ret;
 		}else if((!isAdmin 
 						&& !StringUtils.isEmpty(userInfo.getPhoneNum())
+						&& !userInfo.getPhoneNum().equals(dbInfo.getPhoneNum())
 						&& (dbInfo.getIsValidPhone().intValue() 
 								== Constants.PhoneValidState.UNVERIFIED.getCode()))
 				||(isAdmin && !StringUtils.isEmpty(userInfo.getPhoneNum()))){
