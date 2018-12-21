@@ -126,6 +126,8 @@
 		<intercept-url method="POST" pattern="/users/players" access="hasRole('ROLE_AGENT')" />
 		<intercept-url method="POST" pattern="/users/site-msg/lists" access="hasRole('ROLE_AGENT') or hasRole('ROLE_USER') or hasRole('ROLE_CUSTOMER_SERVICE')" />
 		<intercept-url method="GET" pattern="/users/site-msg/*/history-feedback" access="hasRole('ROLE_AGENT') or hasRole('ROLE_USER') or hasRole('ROLE_CUSTOMER_SERVICE')" />
+		<intercept-url method="GET" pattern="/users/getSystemParameters" access="hasRole('ROLE_AGENT') or hasRole('ROLE_USER') or hasRole('ROLE_CUSTOMER_SERVICE')" />
+		<intercept-url method="GET" pattern="/users/demo-players" access="hasRole('ROLE_ANONYMOUS')" />
 		
 		<intercept-url method="POST" pattern="/promo/lists" access="hasRole('ROLE_AGENT') or hasRole('ROLE_USER') or hasRole('ROLE_CUSTOMER_SERVICE')" />
 		
@@ -141,6 +143,7 @@
 		<intercept-url method="POST" pattern="/sys/oper/issue/*/payout" access="hasRole('ROLE_CUSTOMER_SERVICE') or hasRole('ROLE_MANAGER')" />
 		<intercept-url method="POST" pattern="/sys/oper/issue/*/re-payout" access="hasRole('ROLE_CUSTOMER_SERVICE') or hasRole('ROLE_MANAGER')" />
 		<intercept-url method="POST" pattern="/sys/oper/issue/*/delay-payout" access="hasRole('ROLE_CUSTOMER_SERVICE') or hasRole('ROLE_MANAGER')" />
+		<intercept-url method="GET" pattern="/sys/oper/issue/order/*/delay-payout" access="hasRole('ROLE_CUSTOMER_SERVICE') or hasRole('ROLE_MANAGER')" />
 		<intercept-url method="POST" pattern="/sys/oper/order/*/manual-payout" access="hasRole('ROLE_CUSTOMER_SERVICE') or hasRole('ROLE_MANAGER')" />
 		<intercept-url method="POST" pattern="/sys/oper/order/*/cancel" access="hasRole('ROLE_CUSTOMER_SERVICE') or hasRole('ROLE_MANAGER')" />
 		
