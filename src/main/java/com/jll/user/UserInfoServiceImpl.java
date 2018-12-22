@@ -1272,7 +1272,7 @@ public class UserInfoServiceImpl implements UserInfoService
 		valRebatePrizeRate = MathUtil.subtract(maxPrize, minPrize, Double.class);
 		valRebatePrizeRate = MathUtil.divide(valRebatePrizeRate, 
 				Float.valueOf(maxPlatRebate.getCodeVal()).floatValue(), 
-				2);
+				5);
 		valRebatePrizeRate = MathUtil.multiply(valRebatePrizeRate.floatValue(), 
 				user.getPlatRebate().floatValue(), 
 				Double.class);
