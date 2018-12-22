@@ -1413,6 +1413,11 @@ public class UserInfoServiceImpl implements UserInfoService
 
 	@Override
 	public Map<String, Object> saveUpdateDirectOperationUserAmount(UserAccountDetails dtl) {
+		String remark=dtl.getRemark();
+		String remarkNew="";
+		if(remark!=null&&remark.length()>0) {
+			remarkNew=remark;
+		}
 		Map<String, Object> ret = new HashMap<String, Object>();
 		UserInfo userInfo = userDao.getUserById(dtl.getUserId());
 		if(null== getCurLoginInfo()
@@ -1449,24 +1454,24 @@ public class UserInfoServiceImpl implements UserInfoService
 				|| AccOperationType.PROMO_CASH.getCode().equals(dtl.getOperationType())
 				|| AccOperationType.SYS_DEDUCTION.getCode().equals(dtl.getOperationType())
 				|| AccOperationType.SYS_ADD.getCode().equals(dtl.getOperationType())){
-			UserAccountDetails accDtal1 = userAccountDetailsService.initCreidrRecord(userId,userAcc,userAcc.getBalance().doubleValue(),addAmt,dtl.getOperationType(),0,"");
+			UserAccountDetails accDtal1 = userAccountDetailsService.initCreidrRecord(userId,userAcc,userAcc.getBalance().doubleValue(),addAmt,dtl.getOperationType(),0,remarkNew);
 			supserDao.save(accDtal1);
 			userAcc.setBalance(accDtal1.getPostAmount());
 		}else if(AccOperationType.PLAT_REWARD.getCode().equals(dtl.getOperationType())
 				|| AccOperationType.PROMO_POINTS.getCode().equals(dtl.getOperationType())){
 			//只对积分进行操作
-			UserAccountDetails accDtal1 = userAccountDetailsService.initCreidrRecord(userId,userAcc,userAcc.getRewardPoints().doubleValue(),addAmt,dtl.getOperationType(),0,"");
+			UserAccountDetails accDtal1 = userAccountDetailsService.initCreidrRecord(userId,userAcc,userAcc.getRewardPoints().doubleValue(),addAmt,dtl.getOperationType(),0,remarkNew);
 			supserDao.save(accDtal1);
 			userAcc.setRewardPoints(accDtal1.getPostAmount().longValue());
 		
 		}else if(AccOperationType.ACC_FREEZE.getCode().equals(dtl.getOperationType())
 				|| AccOperationType.ACC_UNFREEZE.getCode().equals(dtl.getOperationType())){
 			//对余额和冻结金额进行操作
-			UserAccountDetails accDtal1 = userAccountDetailsService.initCreidrRecord(userId,userAcc,userAcc.getBalance().doubleValue(),addAmt,dtl.getOperationType(),0,"");
+			UserAccountDetails accDtal1 = userAccountDetailsService.initCreidrRecord(userId,userAcc,userAcc.getBalance().doubleValue(),addAmt,dtl.getOperationType(),0,remarkNew);
 			supserDao.save(accDtal1);
 			userAcc.setBalance(accDtal1.getPostAmount());
 			
-			UserAccountDetails accDtal2 = userAccountDetailsService.initCreidrRecord(userId,userAcc,userAcc.getFreeze().doubleValue(),-addAmt,dtl.getOperationType(),0,"");
+			UserAccountDetails accDtal2 = userAccountDetailsService.initCreidrRecord(userId,userAcc,userAcc.getFreeze().doubleValue(),-addAmt,dtl.getOperationType(),0,remarkNew);
 			supserDao.save(accDtal2);
 			userAcc.setFreeze(accDtal2.getPostAmount());
 		}
