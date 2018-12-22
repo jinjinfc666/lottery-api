@@ -43,4 +43,12 @@ public class LoyTstServiceImpl implements LoyTstService {
 		Integer codeTypeNameId=sysCode.getId();
 		return loyTstDao.queryLoyTst(codeTypeNameId,lotteryType,isZh,zhTrasactionNum,state,terminalType,startTime,endTime,issueNum,userName,orderNum,pageIndex,pageSize);
 	}
+	@Override
+	public List<?> queryDetails(Integer id) {
+		String codeTypeName=Constants.SysCodeTypes.LOTTERY_TYPES.getCode();
+		SysCode sysCode=cacheRedisService.getSysCode(codeTypeName,codeTypeName);
+		Integer codeTypeNameId=sysCode.getId();
+		return loyTstDao.queryDetails(codeTypeNameId,id);
+	}
+	
 }
