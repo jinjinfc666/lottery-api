@@ -26,7 +26,9 @@ import com.jll.common.constants.Constants;
 import com.jll.common.utils.DateUtil;
 import com.jll.dao.DefaultGenericDaoImpl;
 import com.jll.dao.PageBean;
+import com.jll.entity.DepositApplication;
 import com.jll.entity.OrderInfo;
+import com.jll.entity.SysCode;
 import com.jll.entity.UserAccountDetails;
 
 
@@ -98,6 +100,15 @@ public class LoyTstDaoImpl extends DefaultGenericDaoImpl<OrderInfo> implements L
 		page.setPageSize(pageSize);
 		PageBean pageBean=queryByPagination(page,sql,map);
 		return pageBean;
+	}
+	@Override
+	public List<?> queryDetails(Integer codeTypeNameId,Integer id) {
+		String sql="from OrderInfo a,UserInfo b,Issue c,SysCode d,PlayType e,UserAccount f where a.userId=b.id and a.issueId=c.id and a.playType=e.id and a.walletId=f.id and c.lotteryType=d.codeName and d.codeType=:codeTypeNameId and a.id=:id";
+		Query query = getSessionFactory().getCurrentSession().createQuery(sql);
+		query.setParameter("codeTypeNameId", codeTypeNameId);
+	    query.setParameter("id", id);
+	    List<?> list = query.list();
+	    return list;
 	}
 	
 }

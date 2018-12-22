@@ -981,4 +981,23 @@ public class ReportController {
 			return ret;
 		}
 	}
+	//代理的转账记录查询  
+	@RequestMapping(value={"/queryDetails"}, method={RequestMethod.GET}, produces=MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> queryDetails(@RequestParam(name = "id", required = true) Integer id,
+			  HttpServletRequest request) {
+		Map<String, Object> ret = new HashMap<>();
+		try {
+			List<?> list= loyTstService.queryDetails(id);
+			ret.put(Message.KEY_DATA, list);
+			logger.debug(ret+"------------------------------queryUserAccountDetails--------------------------------------");
+			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
+			return ret;
+		}catch(Exception e){
+			ret.clear();
+			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
+			ret.put(Message.KEY_ERROR_CODE, Message.Error.ERROR_COMMON_OTHERS.getCode());
+			ret.put(Message.KEY_ERROR_MES, Message.Error.ERROR_COMMON_OTHERS.getErrorMes());
+			return ret;
+		}
+	}
 }

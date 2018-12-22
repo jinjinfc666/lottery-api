@@ -1433,16 +1433,18 @@ public class BackstageSysController {
 		String bigCodeName=Constants.SysCodeTypes.BANK_CODE_LIST.getCode();
 		try {
 			Map<String,SysCode> sysCodeMaps=cacheRedisService.getSysCode(bigCodeName);
-			Map<String,SysCode> sysCodeMaps1=new HashMap<String, SysCode>();
+////			Map<Integer,SysCode> sysCodeMaps1=new HashMap<Integer, SysCode>();
+			Map<String,SysCode> sysCodeMaps2=new HashMap<String, SysCode>();
 			for(String key:sysCodeMaps.keySet()) {
 				SysCode sysCode=sysCodeMaps.get(key);
 				if(sysCode.getState()==1&&sysCode.getCodeType()!=null) {
-					sysCodeMaps1.put(key, sysCode);
+					sysCodeMaps2.put(key, sysCode);
 				}
 			}
+//			TreeMap treeMaps=new TreeMap(sysCodeMaps1);
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.SUCCESS.getCode());
-			ret.put("data", sysCodeMaps1);
+			ret.put("data", sysCodeMaps2);
 		}catch(Exception e){
 			ret.clear();
 			ret.put(Message.KEY_STATUS, Message.status.FAILED.getCode());
